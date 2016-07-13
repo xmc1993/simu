@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+    <bean id="initLoader" lazy-init="false" class="cn.superid.webapp.tasks.AutoStartLoader" init-method="init">
+        <property name="version" value="1"/>
+    </bean>
+
+    <!--&lt;!&ndash; 类似这样定义初始化tasks,并且具有版本管理 &ndash;&gt;-->
+    <!--<bean lazy-init="false" class="cn.superid.webapp.tasks.auto_init_tasks.version1.PermissionsInitTask"-->
+          <!--init-method="init">-->
+        <!--&lt;!&ndash; 此task在哪个版本添加的 &ndash;&gt;-->
+        <!--<property name="version" value="1"/>-->
+    <!--</bean>-->
+</beans>
