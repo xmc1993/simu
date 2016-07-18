@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/superid-web-app/superid-web-app.iml" filepath="$PROJECT_DIR$/superid-web-app/superid-web-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/superid-web-db/superid-web-db.iml" filepath="$PROJECT_DIR$/superid-web-db/superid-web-db.iml" />
+      <module fileurl="file://$PROJECT_DIR$/superid-web-utils/superid-web-utils.iml" filepath="$PROJECT_DIR$/superid-web-utils/superid-web-utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/webapp-parent.iml" filepath="$PROJECT_DIR$/webapp-parent.iml" />
+    </modules>
+  </component>
+</project>
+
