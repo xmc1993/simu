@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="es">
+
+    <diskStore path="java.io.tmpdir"/>
+
+
+    <defaultCache
+            maxElementsOnDisk="20000"
+            maxElementsInMemory="2000"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="false"/>
+    <cache name="rolesCache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+
+    <cache name="userAuthCheckPermissionsCache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+
+    <cache name="user_tags_cache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="email_verify_code"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="mobile_verify_code"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="affair_permission_group_cache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="user_alliance_members_cache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="chat_room_mapping_cache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+    <cache name="alliance_member_roles_cache"
+           maxElementsOnDisk="20000"
+           maxElementsInMemory="2000"
+           eternal="true"
+           overflowToDisk="true"
+           diskPersistent="true"/>
+
+    <!-- 登录记录缓存 锁定10分钟 -->
+    <cache name="passwordRetryCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <cache name="authorizationCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <cache name="authenticationCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <cache name="shiro-activeSessionCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           timeToIdleSeconds="3600"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+    <!-- 验证码分布式缓存-->
+    <!--maxEntriesLocalHeap="2000"-->
+    <cache name="jCaptchaCache"
+           eternal="false"
+           maxEntriesLocalHeap="2000"
+           timeToIdleSeconds="360000"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+    <cache name="jpa_utils_cache"
+           eternal="false"
+           maxEntriesLocalHeap="20000"
+           timeToIdleSeconds="360000"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"
+           statistics="true">
+    </cache>
+
+</ehcache>
