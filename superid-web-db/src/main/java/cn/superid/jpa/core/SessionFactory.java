@@ -1,12 +1,40 @@
 package cn.superid.jpa.core;
 
+import java.sql.SQLException;
 
-public interface SessionFactory {
-    cn.superid.jpa.core.Session getThreadScopeSession();
+/**
+ * Created by zp on 2016/7/18
+ */
+public abstract class SessionFactory {
 
-    cn.superid.jpa.core.Session currentSession();
+    protected final ThreadLocal<cn.superid.jpa.core.Session> sessionThreadLocal = new ThreadLocal<cn.superid.jpa.core.Session>() {
+        @Override
+        public cn.superid.jpa.core.Session initialValue() {
+            return createSession();
+        }
 
-    cn.superid.jpa.core.Session createSession();
+        @Override
+        public cn.superid.jpa.core.Session get() {
+            cn.superid.jpa.core.Session session = super.get();
+            if (session != null) {
+                if (!session.isOpen()) {
+                    this.remove();
+                    session = initialValue();
+                }
+            }
+            return session;
+        }
+    };
 
-    void close();
+    public cn.superid.jpa.core.Session getThreadScopeSession() {
+        return sessionThreadLocal.get();
+    }
+
+    public Session currentSession() {
+        return getThreadScopeSession();
+    }
+
+    public  abstract  cn.superid.jpa.core.Session createSession();
+
+    public  abstract void close() throws SQLException;
 }

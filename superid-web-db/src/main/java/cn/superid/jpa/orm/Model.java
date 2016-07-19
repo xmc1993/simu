@@ -3,28 +3,24 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
+import cn.superid.jpa.util.ExcuteConditions;
+import cn.superid.jpa.util.ParameterBindings;
 
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
+import java.util.List;
 
 @MappedSuperclass
-public class Model {
+public abstract class Model extends ExcuteConditions implements Serializable{
 
-    /**
-     * 默认使用JPA的方式，如果有需要，请在执行DB操作时手动传入session
-     *
-     * @return the result session
-     */
+
     public static Session getSession() {
         return AbstractSession.currentSession();
     }
 
-    public void beforeSave(Session session) {
+    public abstract void beforeSave(Session session);
 
-    }
-
-    public void afterSave(Session session) {
-
-    }
+    public  abstract void afterSave(Session session);
 
     public void save() {
         save(getSession());
@@ -36,13 +32,9 @@ public class Model {
         afterSave(session);
     }
 
-    public void beforeUpdate(Session session) {
+    public abstract void beforeUpdate(Session session);
 
-    }
-
-    public void afterUpdate(Session session) {
-
-    }
+    public abstract void afterUpdate(Session session);
 
     public void update() {
         update(getSession());
@@ -54,13 +46,9 @@ public class Model {
         afterUpdate(session);
     }
 
-    public void beforeDelete(Session session) {
+    public abstract void beforeDelete(Session session);
 
-    }
-
-    public void afterDelete(Session session) {
-
-    }
+    public abstract void afterDelete(Session session);
 
     public void delete() {
         delete(getSession());
@@ -72,53 +60,47 @@ public class Model {
         afterDelete(session);
     }
 
-    public void beforeRefresh(Session session) {
-
-    }
-
-    public void afterRefresh(Session session) {
-
-    }
 
     public void refresh() {
         refresh(getSession());
     }
 
     public void refresh(Session session) {
-        beforeRefresh(session);
         session.refresh(this);
-        afterRefresh(session);
     }
 
-    public void beforeMerge(Session session) {
-
-    }
-
-    public void afterMerge(Session session) {
+    public Object findOne(String sql,Object... params){
+        return getSession().findOne(this.getClass(),sql,params);
 
     }
 
-    public void merge() {
-        merge(getSession());
+    public List findList(String sql,Object... params){
+        return getSession().findList(this.getClass(), sql, params);
     }
 
-    public void merge(Session session) {
-        beforeMerge(session);
-        session.merge(this);
-        afterMerge(session);
+    public Object findOne(String sql,ParameterBindings parameterBindings){
+        return getSession().findOne(this.getClass(),sql,parameterBindings);
     }
-    public void beforeDetach(Session session) {
 
+    public List findList(String sql,ParameterBindings parameterBindings){
+        return getSession().findList(this.getClass(), sql, parameterBindings);
     }
-    public void afterDetach(Session session) {
 
-    }
-    public void detach() {
-        detach(getSession());
-    }
-    public void detach(Session session) {
-        beforeDetach(session);
-        session.detach(this);
-        afterDetach(session);
-    }
+
+   public Object findById(Object id){
+       this.eq("a","a");
+       return getSession().find(this.getClass(),id);
+   }
+
+   public Object findTinyById(Object id){
+       return getSession().findTiny(this.getClass(),id);
+   }
+
+
+
+
+
+
+
+
 }

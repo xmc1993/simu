@@ -1,5 +1,8 @@
 package cn.superid.jpa.core;
 
+/**
+ * Created by zp on 2016/7/18
+ */
 public interface Transaction {
     public void begin();
 

@@ -1,7 +1,6 @@
 package cn.superid.jpa.util;
 
 import com.google.common.base.Function;
-import cn.superid.jpa.util.functions.Function2;
 
 import java.util.*;
 

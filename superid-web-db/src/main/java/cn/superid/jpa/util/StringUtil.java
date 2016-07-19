@@ -50,6 +50,23 @@ public class StringUtil {
         return builder.toString();
     }
 
+    public static StringBuilder join(String sep,String... strs) {
+        StringBuilder builder = new StringBuilder();
+        if (strs == null) {
+            return null;
+        }
+        if (sep == null) {
+            sep = "";
+        }
+        for (int i = 0; i < strs.length; ++i) {
+            if (i > 0) {
+                builder.append(sep);
+            }
+            builder.append(strs[i]);
+        }
+        return builder;
+    }
+
     /**
      * eg. "HelloWorld" to "HELLO_WORLD"
      * @param name name to underscore

@@ -1,18 +1,18 @@
 package cn.superid.jpa.core;
 
 
-import cn.superid.jpa.jdbcorm.ModelMeta;
-import cn.superid.jpa.jdbcorm.sqlmapper.SqlMapper;
-import cn.superid.jpa.query.ParameterBindings;
+import cn.superid.jpa.util.ModelMeta;
+import cn.superid.jpa.util.ParameterBindings;
 
 import java.util.List;
 
-
+/**
+ * Created by zp on 2016/7/18
+ */
 public interface Session {
 
     int getIndexParamBaseOrdinal();
 
-    SqlMapper getSqlMapper();
 
     ModelMeta getEntityMetaOfClass(Class<?> entityCls);
 
@@ -70,5 +70,18 @@ public interface Session {
     void flush();
 
     Session asThreadLocal();
+
+    Object findOne(Class<?> cls, String queryString, Object... params);
+
+    List findList(Class<?> cls, String queryString, Object... params);
+
+    Object findOne(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+
+    List findList(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+
+    int execute(String sql);
+
+    int execute(String sql, ParameterBindings parameterBindings);
+
 
 }

@@ -1,6 +1,5 @@
 package cn.superid.jpa.core.impl;
-import cn.superid.jpa.jdbcorm.ModelMeta;
-import cn.superid.jpa.util.Logger;
+import cn.superid.jpa.util.ModelMeta;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.RowProcessor;
@@ -9,9 +8,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *  on 15/5/1.
- */
+
 public class JdbcOrmBeanHandler<T> implements ResultSetHandler<T> {
     private final Class<T> type;
     private final RowProcessor convert;
@@ -34,7 +31,7 @@ public class JdbcOrmBeanHandler<T> implements ResultSetHandler<T> {
                 || "boolean".equals(type.getName()) || "float".equals(type.getName()) || "double".equals(type.getName());
     }
 
-    public static Object getResultSetRawOfRawType(ResultSet rs, Class<?> type) {
+    public static Object getResultSetRawOfRawType(ResultSet rs, Class<?> type) throws SQLException{
         if(type==null||!isRawType(type)) {
             return null;
         }
@@ -60,8 +57,7 @@ public class JdbcOrmBeanHandler<T> implements ResultSetHandler<T> {
             // TODO: support array/json
             return null;
         }catch (SQLException e) {
-            Logger.error("get result set raw error", e);
-            return null;
+            throw e;
         }
     }
 

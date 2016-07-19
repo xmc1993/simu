@@ -4,9 +4,7 @@ import javax.persistence.Table;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *  on 14-12-23.
- */
+
 public class ModelUtils {
     /**
      * 从model类中找到对应的数据库表名
@@ -24,10 +22,6 @@ public class ModelUtils {
         }
         return table.name().trim();
     }
-
-    private static final Object modelQuerySqlsLock = new Object();
-    private static Map<Class<?>, Map<String, String>> modelQueryRawSqlsMappings = new HashMap<Class<?>, Map<String, String>>();
-    private static Map<Class<?>, Map<String, String>> modelQuerySqlsMappings = new HashMap<Class<?>, Map<String, String>>();
 
     public static Object tryNewInstanceForClass(Class<?> type) {
         try {

@@ -1,20 +1,13 @@
 package cn.superid.jpa.core.impl;
 
-import cn.superid.jpa.core.impl.*;
-import cn.superid.jpa.jdbcorm.ModelMeta;
-import org.apache.commons.dbutils.BasicRowProcessor;
+import cn.superid.jpa.util.ModelMeta;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.RowProcessor;
-import org.apache.commons.dbutils.handlers.ArrayHandler;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *  on 15/5/1.
- */
 public class JdbcOrmBeanListHandler<T> implements ResultSetHandler<List<T>> {
     private final Class<T> type;
     private final RowProcessor convert;

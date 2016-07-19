@@ -1,12 +1,8 @@
 package cn.superid.jpa.core.impl;
 
 import cn.superid.jpa.core.Transaction;
-import cn.superid.jpa.core.impl.*;
-import cn.superid.jpa.exceptions.JdbcTransactionRuntimeException;
+import cn.superid.jpa.exceptions.JdbcRuntimeException;
 
-/**
- *  on 15/1/26.
- */
 public class JdbcTransaction implements Transaction {
     private final cn.superid.jpa.core.impl.JdbcSession jdbcSession;
 
@@ -29,7 +25,7 @@ public class JdbcTransaction implements Transaction {
             jdbcSession.getActiveFlag().set(false);
             jdbcSession.setAutoCommit(true);
         } catch (Exception e) {
-            throw new JdbcTransactionRuntimeException(e);
+            throw new JdbcRuntimeException(e);
         }
     }
 
@@ -42,7 +38,7 @@ public class JdbcTransaction implements Transaction {
             jdbcSession.getActiveFlag().set(false);
             jdbcSession.getJdbcConnection().rollback();
         } catch (Exception e) {
-            throw new JdbcTransactionRuntimeException(e);
+            throw new JdbcRuntimeException(e);
         }
     }
 

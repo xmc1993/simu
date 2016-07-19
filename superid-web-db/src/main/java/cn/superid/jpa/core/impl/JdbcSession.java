@@ -3,16 +3,14 @@ package cn.superid.jpa.core.impl;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.jdbcorm.ModelMeta;
-import cn.superid.jpa.jdbcorm.sqlmapper.MySQLMapper;
-import cn.superid.jpa.jdbcorm.sqlmapper.SqlMapper;
-import cn.superid.jpa.query.ParameterBindings;
-
+import cn.superid.jpa.util.ModelMeta;
 import cn.superid.jpa.util.FieldAccessor;
+import cn.superid.jpa.util.ParameterBindings;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang3.exception.CloneFailedException;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -22,11 +20,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 public class JdbcSession extends AbstractSession {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(JdbcSession.class);
     private Connection jdbcConnection;
     private JdbcSessionFactory jdbcSessionFactory;
     private AtomicBoolean activeFlag = new AtomicBoolean(false);
-    private SqlMapper sqlMapper = new MySQLMapper();
     private transient boolean isInBatch = false;
     private transient PreparedStatement batchStatement;
     private transient boolean closed = false;
@@ -46,9 +45,14 @@ public class JdbcSession extends AbstractSession {
     }
 
     public synchronized Connection getJdbcConnection() {
-        if (jdbcConnection == null) {
-            jdbcConnection = jdbcSessionFactory.createJdbcConnection();
+        try {
+            if (jdbcConnection == null) {
+                jdbcConnection = jdbcSessionFactory.createJdbcConnection();
+            }
+        }catch (Exception e){
+            LOG.error(e.getMessage());
         }
+
         return jdbcConnection;
     }
 
@@ -66,15 +70,6 @@ public class JdbcSession extends AbstractSession {
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         }
-    }
-
-    public void setSqlMapper(SqlMapper sqlMapper) {
-        this.sqlMapper = sqlMapper;
-    }
-
-    @Override
-    public SqlMapper getSqlMapper() {
-        return sqlMapper;
     }
 
     @Override
@@ -117,8 +112,12 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public void shutdown() {
-        if (jdbcSessionFactory != null) {
-            jdbcSessionFactory.close();
+        try {
+            if (jdbcSessionFactory != null) {
+                jdbcSessionFactory.close();
+            }
+        }catch (Exception e){
+            LOG.error(e.getMessage());
         }
     }
 
@@ -145,6 +144,7 @@ public class JdbcSession extends AbstractSession {
                     FieldAccessor idAccessor = modelMeta.getIdAccessor();
                     if (idAccessor != null && idAccessor.getProperty(entity) == null) {
                         ResultSet generatedKeysResultSet = preparedStatement.getGeneratedKeys();
+                        preparedStatement.get
                         try {
                             if (generatedKeysResultSet.next()) {
                                 Object generatedId = generatedKeysResultSet.getObject(1);
@@ -303,18 +303,18 @@ public class JdbcSession extends AbstractSession {
         return new JdbcOrmBeanHandler(modelMeta.getModelCls(), modelMeta);
     }
 
-    /**
-     * 根据id查找model
-     * @param cls
-     * @param id
-     * @return
-     */
-    @Override
-    public Object find(Class<?> cls, Object id) {
+
+    public Object find(Class<?> cls, Object id,boolean tiny) {
         try {
+            String sql;
             ModelMeta modelMeta = getEntityMetaOfClass(cls);
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
-            PreparedStatement preparedStatement=getJdbcConnection().prepareStatement(modelMeta.getFindByIdSql());
+            if(tiny){
+                sql = modelMeta.getFindTinyByIdSql();
+            }else {
+                sql = modelMeta.getFindByIdSql();
+            }
+            PreparedStatement preparedStatement=getJdbcConnection().prepareStatement(sql);
             preparedStatement.setObject(getIndexParamBaseOrdinal(),id);
             try {
                 ResultSet resultSet = preparedStatement.executeQuery();
@@ -330,11 +330,21 @@ public class JdbcSession extends AbstractSession {
                     resultSet.close();
                 }
             } finally {
-               preparedStatement.close();
+                preparedStatement.close();
             }
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         }
+    }
+    /**
+     * 根据id查找model
+     * @param cls
+     * @param id
+     * @return
+     */
+    @Override
+    public Object find(Class<?> cls, Object id) {
+       return  find(cls,  id,false);
     }
 
     @Override
@@ -368,11 +378,10 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public List findListByRawQuery(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+    public List findList(Class<?> cls, String queryString,Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(getEntityMetaOfClass(cls));
-            Object[] params = parameterBindings != null ? parameterBindings.getIndexParametersArray() : new Object[0];
             return runner.query(getJdbcConnection(), queryString, handler, params);
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -382,11 +391,10 @@ public class JdbcSession extends AbstractSession {
 
 
     @Override
-    public Object findFirstByRawQuery(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+    public Object findOne(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(getEntityMetaOfClass(cls));
-            Object[] params = parameterBindings != null ? parameterBindings.getIndexParametersArray() : new Object[0];
             List<Object> result = runner.query(getJdbcConnection(), queryString, handler, params);
             if (result.size() > 0) {
                 return result.get(0);
@@ -398,5 +406,18 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
+    @Override
+    public Object findOne(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+        return findOne(cls,queryString,parameterBindings.getIndexParametersArray()!=null?parameterBindings.getIndexParametersArray():new Object[0]);
+    }
 
+    @Override
+    public List findList(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+        return findList(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
+    }
+
+    @Override
+    public Object findTiny(Class<?> cls, Object id) {
+        return  find(cls,  id,true);
+    }
 }

@@ -1,8 +1,6 @@
 package cn.superid.jpa.core;
 
-import cn.superid.jpa.jdbcorm.ModelMeta;
-import  cn.superid.jpa.util.Logger;
-
+import cn.superid.jpa.util.ModelMeta;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +8,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
+/**
+ * Created by zp on 2016/7/18
+ */
 public abstract class AbstractSession implements Session {
 
     /**
@@ -126,7 +126,7 @@ public abstract class AbstractSession implements Session {
         if(ENTITY_META_CACHE.containsKey(entityCls)) {
             return ENTITY_META_CACHE.get(entityCls);
         }
-        ModelMeta modelMeta = ModelMeta.getModelMeta(entityCls, getSqlMapper());
+        ModelMeta modelMeta = ModelMeta.getModelMeta(entityCls);
         ENTITY_META_CACHE.put(entityCls, modelMeta);
         return modelMeta;
     }
@@ -168,7 +168,6 @@ public abstract class AbstractSession implements Session {
         }
         SessionFactory sessionFactory = (SessionFactory) defaultSessionFactory;
         if(sessionFactory==null) {
-            Logger.error("can't init session");
             return null;
         }
         Session session = sessionFactory.currentSession();
