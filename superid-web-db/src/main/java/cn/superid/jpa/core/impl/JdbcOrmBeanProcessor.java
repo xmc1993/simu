@@ -1,6 +1,6 @@
 package cn.superid.jpa.core.impl;
 
-import cn.superid.jpa.util.ModelMeta;
+import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ModelUtils;
 import org.apache.commons.dbutils.BeanProcessor;
 import java.beans.BeanInfo;

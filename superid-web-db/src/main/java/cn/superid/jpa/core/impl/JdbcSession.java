@@ -3,9 +3,11 @@ package cn.superid.jpa.core.impl;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.util.ModelMeta;
-import cn.superid.jpa.util.FieldAccessor;
+import cn.superid.jpa.orm.Executable;
+import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.jpa.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -31,7 +33,6 @@ public class JdbcSession extends AbstractSession {
     private transient boolean closed = false;
 
 
-
     public AtomicBoolean getActiveFlag() {
         return activeFlag;
     }
@@ -49,7 +50,7 @@ public class JdbcSession extends AbstractSession {
             if (jdbcConnection == null) {
                 jdbcConnection = jdbcSessionFactory.createJdbcConnection();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error(e.getMessage());
         }
 
@@ -80,10 +81,10 @@ public class JdbcSession extends AbstractSession {
     @Override
     public boolean isOpen() {
         try {
-            if(closed) {
+            if (closed) {
                 return false;
             }
-            if(jdbcConnection==null) {
+            if (jdbcConnection == null) {
                 return true;
             }
             return !jdbcConnection.isClosed();
@@ -98,10 +99,10 @@ public class JdbcSession extends AbstractSession {
             return;
         }
         try {
-            if(closed) {
+            if (closed) {
                 return;
             }
-            if(jdbcConnection!=null) {
+            if (jdbcConnection != null) {
                 jdbcConnection.close();
             }
             closed = true;
@@ -116,25 +117,37 @@ public class JdbcSession extends AbstractSession {
             if (jdbcSessionFactory != null) {
                 jdbcSessionFactory.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             LOG.error(e.getMessage());
         }
     }
 
 
-
+    //TODO 代码简化
     @Override
     public void save(Object entity) {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
-            int i=getIndexParamBaseOrdinal();
+            int i = getIndexParamBaseOrdinal();
+            String sql = modelMeta.getInsertSql();
+            Executable executable = (Executable) entity;
+            boolean logging = executable.loggingForExecute();
+            StringBuilder log = null;
+            if (logging) {
+                log = new StringBuilder(sql);
+                log.append("params: ");
+            }
             if (!isInBatch) {
-                PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(modelMeta.getInsertSql());
+                PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
                 for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
                     FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), columnMeta.fieldName);
                     Object value = fieldAccessor.getProperty(entity);
-                    preparedStatement.setObject(i,value);
+                    preparedStatement.setObject(i, value);
                     i++;
+                    if (logging) {
+                        log.append(value);
+                        log.append(",");
+                    }
                 }
                 try {
                     int changedCount = preparedStatement.executeUpdate();
@@ -144,31 +157,40 @@ public class JdbcSession extends AbstractSession {
                     FieldAccessor idAccessor = modelMeta.getIdAccessor();
                     if (idAccessor != null && idAccessor.getProperty(entity) == null) {
                         ResultSet generatedKeysResultSet = preparedStatement.getGeneratedKeys();
-                        preparedStatement.get
                         try {
                             if (generatedKeysResultSet.next()) {
                                 Object generatedId = generatedKeysResultSet.getObject(1);
                                 idAccessor.setProperty(entity, generatedId);
+                                if (logging) {
+                                    log.append("generateId:");
+                                    log.append(generatedId);
+                                }
                             }
                         } finally {
                             generatedKeysResultSet.close();
                         }
                     }
+
                 } finally {
                     preparedStatement.close();
                 }
             } else {
                 if (batchStatement == null) {
-                    batchStatement = getJdbcConnection().prepareStatement(modelMeta.getInsertSql());
+                    batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
                 for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
                     FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), columnMeta.fieldName);
                     Object value = fieldAccessor.getProperty(entity);
                     batchStatement.setObject(i, value);
                     i++;
+                    if (logging) {
+                        log.append(value);
+                        log.append(",");
+                    }
                 }
                 batchStatement.addBatch();
             }
+            if (logging) executable.messageOfExecute(log.toString());
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         }
@@ -180,21 +202,148 @@ public class JdbcSession extends AbstractSession {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
+            int i = getIndexParamBaseOrdinal();
+            String sql = modelMeta.getUpdateSql();
+            Executable executable = (Executable) entity;
+            boolean logging = executable.loggingForExecute();
+            StringBuilder log=null;
+            if (logging) {
+                log = new StringBuilder(sql);
+                log.append("params: ");
+            }
+
             if (!isInBatch) {
-                PreparedStatement preparedStatement= getJdbcConnection().prepareStatement(modelMeta.getUpdateSql());
+                PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+                for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
+                    if (columnMeta.isId) continue;
+                    FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), columnMeta.fieldName);
+                    Object value = fieldAccessor.getProperty(entity);
+                    preparedStatement.setObject(i, value);
+                    i++;
+                    if (logging) {
+                        log.append(value);
+                        log.append(",");
+                    }
+                }
+                Object id = idAccessor.getProperty(entity);
+                preparedStatement.setObject(getIndexParamBaseOrdinal(), id);
+                if (logging) {
+                    log.append(id);
+                }
                 try {
-                    preparedStatement.setObject(getIndexParamBaseOrdinal(),idAccessor.getProperty(entity));
                     preparedStatement.executeUpdate();
                 } finally {
                     preparedStatement.close();
                 }
             } else {
                 if (batchStatement == null) {
-                    batchStatement= getJdbcConnection().prepareStatement(modelMeta.getUpdateSql());
+                    batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
-                batchStatement.setObject(getIndexParamBaseOrdinal(), idAccessor.getProperty(entity));
+                for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
+                    if (columnMeta.isId) continue;
+                    FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), columnMeta.fieldName);
+                    Object value = fieldAccessor.getProperty(entity);
+                    batchStatement.setObject(i, value);
+                    i++;
+                    if (logging) {
+                        log.append(value);
+                        log.append(",");
+                    }
+                }
+                Object id = idAccessor.getProperty(entity);
+                if (logging) {
+                    log.append(id);
+                }
+                batchStatement.setObject(getIndexParamBaseOrdinal(), id);
                 batchStatement.addBatch();
             }
+            if (logging) executable.messageOfExecute(log.toString());
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void update(Object entity, List<String> columns) {
+        try {
+            final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            final FieldAccessor idAccessor = modelMeta.getIdAccessor();
+            ParameterBindings parameterBindings=new ParameterBindings();
+            StringBuilder sb =new StringBuilder(" UPDATE ");
+            sb.append(modelMeta.getTableSchema());
+            sb.append(" SET ");
+            boolean init = true;
+            for(String column:columns){
+                if(init){
+                    init = false;
+                }else{
+                    sb.append(",");
+                }
+                FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), column);
+                Object value = fieldAccessor.getProperty(entity);
+                sb.append(StringUtil.underscoreName(column));
+                sb.append("=? ");
+                parameterBindings.addIndexBinding(value);
+            }
+            sb.append(" WHERE ");
+            sb.append(modelMeta.getIdName());
+            sb.append("=?");
+            parameterBindings.addIndexBinding(idAccessor.getProperty(entity));
+            String sql =sb.toString();
+            PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+            parameterBindings.appendToStatement(preparedStatement);
+            try {
+                preparedStatement.executeUpdate();
+            } finally {
+                preparedStatement.close();
+            }
+            Executable executable = (Executable) entity;
+            boolean logging = executable.loggingForExecute();
+            if (logging) {
+                StringBuilder  log = new StringBuilder(sql);
+                log.append("params: ");
+                log.append(parameterBindings.toString());
+                executable.messageOfExecute(log.toString());
+            }
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(Object entity) {
+        try {
+            ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            FieldAccessor idAccessor = modelMeta.getIdAccessor();
+            String sql = modelMeta.getDeleteSql();
+            Executable executable = (Executable) entity;
+            boolean logging = executable.loggingForExecute();
+            StringBuilder log = null;
+            if (logging) {
+                log = new StringBuilder(sql);
+                log.append("params: ");
+            }
+            if (!isInBatch) {
+                PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+                try {
+                    Object id = idAccessor.getProperty(entity);
+                    preparedStatement.setObject(getIndexParamBaseOrdinal(), id);
+                    if(logging) log.append(id);
+                    preparedStatement.executeUpdate();
+                } finally {
+                    preparedStatement.close();
+                }
+            } else {
+                if (batchStatement == null) {
+                    batchStatement = getJdbcConnection().prepareStatement(sql);
+                }
+                Object id = idAccessor.getProperty(entity);
+                batchStatement.setObject(getIndexParamBaseOrdinal(), id);
+                if(logging) log.append(id);
+                batchStatement.addBatch();
+            }
+            if (logging) executable.messageOfExecute(log.toString());
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         }
@@ -271,7 +420,6 @@ public class JdbcSession extends AbstractSession {
     }
 
 
-
     @Override
     public void detach(Object entity) {
 
@@ -304,18 +452,18 @@ public class JdbcSession extends AbstractSession {
     }
 
 
-    public Object find(Class<?> cls, Object id,boolean tiny) {
+    public Object find(Class<?> cls, Object id, boolean tiny) {
         try {
             String sql;
             ModelMeta modelMeta = getEntityMetaOfClass(cls);
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
-            if(tiny){
+            if (tiny) {
                 sql = modelMeta.getFindTinyByIdSql();
-            }else {
+            } else {
                 sql = modelMeta.getFindByIdSql();
             }
-            PreparedStatement preparedStatement=getJdbcConnection().prepareStatement(sql);
-            preparedStatement.setObject(getIndexParamBaseOrdinal(),id);
+            PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+            preparedStatement.setObject(getIndexParamBaseOrdinal(), id);
             try {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 try {
@@ -336,41 +484,19 @@ public class JdbcSession extends AbstractSession {
             throw new JdbcRuntimeException(e);
         }
     }
+
     /**
      * 根据id查找model
+     *
      * @param cls
      * @param id
      * @return
      */
     @Override
     public Object find(Class<?> cls, Object id) {
-       return  find(cls,  id,false);
+        return find(cls, id, false);
     }
 
-    @Override
-    public void delete(Object entity) {
-        try {
-            ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
-            FieldAccessor idAccessor = modelMeta.getIdAccessor();
-            if (!isInBatch) {
-                PreparedStatement preparedStatement=getJdbcConnection().prepareStatement(modelMeta.getDeleteSql());
-                try {
-                    preparedStatement.setObject(getIndexParamBaseOrdinal(),idAccessor.getProperty(entity));
-                    preparedStatement.executeUpdate();
-                } finally {
-                    preparedStatement.close();
-                }
-            } else {
-                if (batchStatement == null) {
-                    batchStatement = getJdbcConnection().prepareStatement(modelMeta.getDeleteSql());
-                }
-                batchStatement.setObject(1, idAccessor.getProperty(entity));
-                batchStatement.addBatch();
-            }
-        } catch (SQLException e) {
-            throw new JdbcRuntimeException(e);
-        }
-    }
 
 
     @Override
@@ -378,7 +504,7 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public List findList(Class<?> cls, String queryString,Object... params) {
+    public List findList(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(getEntityMetaOfClass(cls));
@@ -387,7 +513,6 @@ public class JdbcSession extends AbstractSession {
             throw new JdbcRuntimeException(e);
         }
     }
-
 
 
     @Override
@@ -408,7 +533,7 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public Object findOne(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
-        return findOne(cls,queryString,parameterBindings.getIndexParametersArray()!=null?parameterBindings.getIndexParametersArray():new Object[0]);
+        return findOne(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
     @Override
@@ -418,6 +543,27 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public Object findTiny(Class<?> cls, Object id) {
-        return  find(cls,  id,true);
+        return find(cls, id, true);
+    }
+
+    @Override
+    public int execute(String sql) {
+        try {
+            PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        }
+    }
+
+    @Override
+    public int execute(String sql, ParameterBindings parameterBindings) {
+        try {
+            PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
+            parameterBindings.appendToStatement(preparedStatement);
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        }
     }
 }

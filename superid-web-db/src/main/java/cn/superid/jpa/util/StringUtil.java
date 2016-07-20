@@ -50,7 +50,10 @@ public class StringUtil {
         return builder.toString();
     }
 
-    public static StringBuilder join(String sep,String... strs) {
+    public static Object join(String sep,String... strs) {
+        if(strs==null||strs.length==0){
+            return "";
+        }
         StringBuilder builder = new StringBuilder();
         if (strs == null) {
             return null;

@@ -1,6 +1,6 @@
 package cn.superid.jpa.core.impl;
 
-import cn.superid.jpa.util.ModelMeta;
+import cn.superid.jpa.orm.ModelMeta;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.RowProcessor;
 import java.sql.ResultSet;

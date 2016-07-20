@@ -1,7 +1,7 @@
 package cn.superid.jpa.core;
 
 
-import cn.superid.jpa.util.ModelMeta;
+import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ParameterBindings;
 
 import java.util.List;
@@ -44,6 +44,8 @@ public interface Session {
 
     void update(Object entity);
 
+    void update(Object entity,List<String> columns);
+
     void startBatch();
 
     void endBatch();
@@ -68,8 +70,6 @@ public interface Session {
     void delete(Object entity);
 
     void flush();
-
-    Session asThreadLocal();
 
     Object findOne(Class<?> cls, String queryString, Object... params);
 

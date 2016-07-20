@@ -1,7 +1,7 @@
 package cn.superid.jpa.core;
 
-import cn.superid.jpa.util.ModelMeta;
-import java.lang.ref.WeakReference;
+import cn.superid.jpa.orm.ModelMeta;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,10 +131,7 @@ public abstract class AbstractSession implements Session {
         return modelMeta;
     }
 
-    /**
-     * manually bind session to current thread
-     */
-    private static final ThreadLocal<WeakReference<Session>> defaultThreadLocalSessions = new ThreadLocal<WeakReference<Session>>();
+
 
     private static transient SessionFactory defaultSessionFactory = null;
 
@@ -154,7 +151,6 @@ public abstract class AbstractSession implements Session {
             }
         }
     }
-
     /**
      * check whether session binded to current thread first
      * and set result to binded session of current thread
@@ -162,39 +158,8 @@ public abstract class AbstractSession implements Session {
      * @return current session of current thread
      */
     public static Session currentSession() {
-        WeakReference<Session> defaultSession = defaultThreadLocalSessions.get();
-        if (defaultSession != null && defaultSession.get() != null) {
-            return defaultSession.get();
-        }
-        SessionFactory sessionFactory = (SessionFactory) defaultSessionFactory;
-        if(sessionFactory==null) {
-            return null;
-        }
-        Session session = sessionFactory.currentSession();
-        defaultThreadLocalSessions.set(new WeakReference<Session>(session));
-        return session;
+        return defaultSessionFactory.currentSession();
     }
-
-    public static void removeBindingCurrentSession() {
-        defaultThreadLocalSessions.remove();
-    }
-
-    public static Session bindCurrentSession(Session session) {
-        synchronized (defaultThreadLocalSessions) {
-            if(session == null) {
-                defaultThreadLocalSessions.remove();
-            } else {
-                defaultThreadLocalSessions.set(new WeakReference<Session>(session));
-            }
-            return session;
-        }
-    }
-
-    @Override
-    public Session asThreadLocal() {
-        return bindCurrentSession(this);
-    }
-
 
 
 
