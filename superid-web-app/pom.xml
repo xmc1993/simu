@@ -13,7 +13,6 @@
     <packaging>war</packaging>
     <name>superid-web-app</name>
     <repositories>
-       
         <repository>
             <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
@@ -61,18 +60,23 @@
     <dependencies>
         <dependency>
             <groupId>cn.superid</groupId>
-            <artifactId>superid-web-db-components</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.superid</groupId>
             <artifactId>superid-web-utils</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>cn.superid</groupId>
-            <artifactId>superid-web-security</artifactId>
+            <artifactId>superid-web-jpa</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.superid</groupId>
+            <artifactId>superid-web-db</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.0.14</version>
         </dependency>
     </dependencies>
 

@@ -1,13 +1,11 @@
 package cn.superid.utils;
 
-import org.omg.CORBA.ORB;
-
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Created by 维 on 2014/8/29.
- */
+
 public class StringUtil {
     public static boolean isEqualWithTrim(String a, String b) {
         if (a == null) {
@@ -75,5 +73,17 @@ public class StringUtil {
         }else{
             return origin.substring(0, index) + sub;
         }
+    }
+
+    public static boolean isEmail(String str){
+        Pattern pattern = Pattern.compile("[//w//.//-]+@([//w//-]+//.)+[//w//-]+",Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(str);
+        return  matcher.matches();
+    }
+
+    public static boolean isMobile(String str){
+        Pattern pattern=Pattern.compile("^((\\+?86)|(\\(\\+86\\)))?1\\d{10}$");
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 }

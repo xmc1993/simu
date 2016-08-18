@@ -1,20 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:security="http://www.springframework.org/schema/security"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context-4.0.xsd
-       http://www.springframework.org/schema/mvc
-       http://www.springframework.org/schema/mvc/spring-mvc.xsd
-       http://www.springframework.org/schema/security
-       http://www.springframework.org/schema/security/spring-security.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
@@ -24,16 +13,12 @@
         <property name="username" value="${jdbc.user}"/>
         <property name="password" value="${jdbc.password}"/>
         <property name="driverClassName" value="${jdbc.driverClass}"/>
-        <property name="filters" value="${jdbc.filters}"/>
-
         <property name="maxActive" value="${jdbc.maxActive}"/>
         <property name="initialSize" value="${jdbc.initialSize}"/>
         <property name="maxWait" value="${jdbc.maxWait}"/>
         <property name="minIdle" value="${jdbc.minIdle}"/>
-
         <property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}"/>
         <property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}"/>
-
         <property name="validationQuery" value="SELECT 'x'"/>
         <property name="testWhileIdle" value="${jdbc.testWhileIdle}"/>
         <property name="testOnBorrow" value="${jdbc.testOnBorrow}"/>
@@ -47,56 +32,13 @@
         <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
         <!-- 关闭abanded连接时输出错误日志 -->
     </bean>
-
-    <!--<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">-->
-        <!--&lt;!&ndash; access &ndash;&gt;-->
-        <!--<property name="driverClass" value="${jdbc.driverClass}"/>-->
-        <!--<property name="jdbcUrl" value="${jdbc.url}"/>-->
-        <!--<property name="user" value="${jdbc.user}"/>-->
-        <!--<property name="password" value="${jdbc.password}"/>-->
-        <!--&lt;!&ndash; pool sizing &ndash;&gt;-->
-        <!--<property name="initialPoolSize" value="3"/>-->
-        <!--<property name="minPoolSize" value="6"/>-->
-        <!--<property name="maxPoolSize" value="25"/>-->
-        <!--<property name="acquireIncrement" value="3"/>-->
-        <!--<property name="maxStatements" value="0"/>-->
-        <!--&lt;!&ndash; retries &ndash;&gt;-->
-        <!--<property name="acquireRetryAttempts" value="30"/>-->
-        <!--<property name="acquireRetryDelay" value="1000"/>-->
-        <!--&lt;!&ndash; 1s &ndash;&gt;-->
-        <!--<property name="breakAfterAcquireFailure" value="false"/>-->
-        <!--&lt;!&ndash; refreshing connections &ndash;&gt;-->
-        <!--<property name="maxIdleTime" value="180"/>-->
-        <!--&lt;!&ndash; 3min &ndash;&gt;-->
-        <!--<property name="maxConnectionAge" value="10"/>-->
-        <!--&lt;!&ndash; 1h &ndash;&gt;-->
-        <!--&lt;!&ndash; timeouts and testing &ndash;&gt;-->
-        <!--<property name="checkoutTimeout" value="5000"/>-->
-        <!--&lt;!&ndash; 5s &ndash;&gt;-->
-        <!--<property name="idleConnectionTestPeriod" value="60"/>-->
-        <!--&lt;!&ndash; 60 &ndash;&gt;-->
-        <!--<property name="testConnectionOnCheckout" value="true"/>-->
-        <!--<property name="preferredTestQuery" value="SELECT 1"/>-->
-        <!--<property name="testConnectionOnCheckin" value="true"/>-->
-        <!--<property name="autoCommitOnClose" value="true"/>-->
-    <!--</bean>-->
-    <!--<bean id="hibernateSessionFactory"-->
-    <!--class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"-->
-    <!--p:packagesToScan="cn.superid.webapp.models">-->
-    <!--<property name="dataSource" ref="dataSource" />-->
-    <!--<property name="configLocation" value="classpath:hibernate.cfg.xml" />-->
-    <!--</bean>-->
-    <!--<bean id="sessionFactory"-->
-    <!--class="com.zoowii.jpa_utils.core.impl.HibernateSessionFactory">-->
-    <!--<constructor-arg ref="hibernateSessionFactory"/>-->
-    <!--</bean>-->
     <bean id="jdbcSessionFactory"
-          class="com.zoowii.jpa_utils.core.impl.JdbcSessionFactory">
+          class="cn.superid.jpa.core.impl.JdbcSessionFactory">
         <constructor-arg ref="dataSource"/>
     </bean>
 
     <!--Transaction Config-->
-    <bean id="transactionManager" class="cn.superid.webapp.db_components.JPAUtilsTransactionManager">
+    <bean id="transactionManager" class="cn.superid.db.TransactionManager">
     </bean>
 
     <!--<bean id="hibernateTransactionManager"-->
@@ -106,54 +48,31 @@
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <tx:advice id="serviceAdvice" transaction-manager="transactionManager">
-        <tx:attributes>
-            <tx:method name="save*" propagation="REQUIRED" />
-            <tx:method name="init*" propagation="REQUIRED" />
-            <tx:method name="log*" propagation="REQUIRED" />
-            <tx:method name="start*" propagation="REQUIRED" />
-            <tx:method name="cancel*" propagation="REQUIRED" />
-            <tx:method name="confirm*" propagation="REQUIRED" />
-            <tx:method name="deConfirm*" propagation="REQUIRED" />
-            <tx:method name="send*" propagation="REQUIRED" />
-            <tx:method name="restart*" propagation="REQUIRED" />
-            <tx:method name="remind*" propagation="REQUIRED" />
-            <tx:method name="other*" propagation="REQUIRED" />
-            <tx:method name="pay*" propagation="REQUIRED" />
-            <tx:method name="import*" propagation="REQUIRED" />
-            <tx:method name="add*" propagation="REQUIRED" />
-            <tx:method name="create*" propagation="REQUIRED" />
-            <tx:method name="insert*" propagation="REQUIRED" />
-            <tx:method name="check*" propagation="REQUIRED" />
-            <tx:method name="certificate*" propagation="REQUIRED" />
-            <tx:method name="set*" propagation="REQUIRED" />
-            <tx:method name="disable*" propagation="REQUIRED" />
-            <tx:method name="accept*" propagation="REQUIRED" />
-            <tx:method name="agree*" propagation="REQUIRED" />
-            <tx:method name="disagree*" propagation="REQUIRED" />
-            <tx:method name="reject*" propagation="REQUIRED" />
-            <tx:method name="deal*" propagation="REQUIRED" />
-            <tx:method name="refresh*" propagation="REQUIRED" />
-            <tx:method name="process*" propagation="REQUIRED" />
-            <tx:method name="update*" propagation="REQUIRED" />
-            <tx:method name="change*" propagation="REQUIRED" />
-            <tx:method name="exchange*" propagation="REQUIRED" />
-            <tx:method name="del*" propagation="REQUIRED" />
-            <tx:method name="remove*" propagation="REQUIRED" />
-            <tx:method name="apply*" propagation="REQUIRED" />
-            <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
-            <tx:method name="count*" propagation="SUPPORTS" read-only="true" />
-            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />
-            <tx:method name="list*" propagation="SUPPORTS" read-only="true" />
-            <tx:method name="*" propagation="SUPPORTS" read-only="true" />
-            <tx:method name="batchSaveOrUpdate" propagation="REQUIRES_NEW" />
-        </tx:attributes>
-    </tx:advice>
-    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <aop:config>
-        <aop:pointcut id="allServiceMethod" expression="execution(* cn.superid.webapp.services.*.*(..))"/>
-        <aop:advisor advice-ref="serviceAdvice" pointcut-ref="allServiceMethod"/>
-    </aop:config>
+    <!--<tx:advice id="serviceAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="add*" propagation="REQUIRED" />-->
+            <!--<tx:method name="create*" propagation="REQUIRED" />-->
+            <!--<tx:method name="set*" propagation="REQUIRED" />-->
+            <!--<tx:method name="disable*" propagation="REQUIRED" />-->
+            <!--<tx:method name="accept*" propagation="REQUIRED" />-->
+            <!--<tx:method name="reject*" propagation="REQUIRED" />-->
+            <!--<tx:method name="update*" propagation="REQUIRED" />-->
+            <!--<tx:method name="change*" propagation="REQUIRED" />-->
+            <!--<tx:method name="del*" propagation="REQUIRED" />-->
+            <!--<tx:method name="remove*" propagation="REQUIRED" />-->
+            <!--<tx:method name="apply*" propagation="REQUIRED" />-->
+            <!--<tx:method name="get*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="count*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="find*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="list*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="*" propagation="SUPPORTS" read-only="true" />-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+    <!--<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>-->
+    <!--<aop:aspectj-autoproxy proxy-target-class="true"/>-->
+    <!--<aop:config>-->
+        <!--<aop:pointcut id="allServiceMethod" expression="execution(* cn.superid.webapp.services.*.*(..))"/>-->
+        <!--<aop:advisor advice-ref="serviceAdvice" pointcut-ref="allServiceMethod"/>-->
+    <!--</aop:config>-->
 
 </beans>

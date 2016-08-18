@@ -4,18 +4,13 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:security="http://www.springframework.org/schema/security"
-
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context-2.5.xsd
-
-
 	http://www.springframework.org/schema/mvc
 	http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
-    
-    <mvc:resources mapping="/app/**" location="/resources/app/" />
-    
+
     <!-- json 转换action的返回值 -->
     <bean id="contentNegotiatingViewResolver"
           class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
@@ -45,9 +40,6 @@
                                 expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
         <context:include-filter type="annotation" expression="org.aspectj.lang.annotation.Aspect"/>
     </context:component-scan>
-    <context:component-scan base-package="cn.superid.push.pushservices">
-    </context:component-scan>
-
 
     <mvc:default-servlet-handler/>
 
@@ -55,11 +47,11 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <bean class="cn.superid.webapp.components.interceptors.UniversalInterceptor"/>
+            <bean class="cn.superid.webapp.security.interceptor.AuthInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <bean class="cn.superid.webapp.components.interceptors.AuthInterceptor"/>
+            <bean class="cn.superid.webapp.security.interceptor.UniversalInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
 

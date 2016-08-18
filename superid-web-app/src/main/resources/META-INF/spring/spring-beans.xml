@@ -2,32 +2,20 @@
 <!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
     <!-- 加解密的实现类 -->
-    <bean id="passwordEncryptor" class="cn.superid.webapp.utils.BCryptPasswordEncryptor"/>
 
-    <!-- auth相关基本辅助类 -->
-    <!--<security:authentication-manager id="accountAuthentication">-->
-    <!--<security:authentication-provider user-service-ref="userDetailService">-->
-    <!--<security:password-encoder ref="encoder"/>-->
-    <!--</security:authentication-provider>-->
-    <!--</security:authentication-manager>-->
-    <bean id="springAuthenticator" class="cn.superid.webapp.security.SpringAuthenticator">
-    </bean>
+
+    <!--<bean id="springAuthenticator" class="cn.superid.webapp.security.SpringAuthenticator">-->
+    <!--</bean>-->
     <!--<bean id="springAuthenticator" class="cn.superid.shiro.ShiroAuthenticator"/>-->
 
-    <bean id="mongoUtils" class="cn.superid.webapp.db_components.MongoUtils">
-        <constructor-arg name="mongoServerUris" value="${mongoServerUris}"/>
-        <constructor-arg name="dbName" value="${mongo.dbName}"/>
-        <constructor-arg name="user" value="${mongo.user}"/>
-        <constructor-arg name="password" value="${mongo.password}"/>
-    </bean>
+    <!--<bean id="mongoUtils" class="cn.superid.webapp.db_components.MongoUtils">-->
+        <!--<constructor-arg name="mongoServerUris" value="${mongoServerUris}"/>-->
+        <!--<constructor-arg name="dbName" value="${mongo.dbName}"/>-->
+        <!--<constructor-arg name="user" value="${mongo.user}"/>-->
+        <!--<constructor-arg name="password" value="${mongo.password}"/>-->
+    <!--</bean>-->
 
     <!--ElasticSearch Client Factory-->
     <!--为了测试时启动快速，可以注释掉-->
@@ -40,25 +28,24 @@
     <!--</bean>-->
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
-    <bean class="com.zoowii.formutils.Validator"/>
 
     <!--<bean class="cn.superid.webapp.oss.impl.QiniuStoreService"/>-->
-    <bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>
-    <bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">
-        <property name="obWebApiUrl" value="${ob.webapi_url}"/>
-    </bean>
+    <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->
+    <!--<bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">-->
+        <!--<property name="obWebApiUrl" value="${ob.webapi_url}"/>-->
+    <!--</bean>-->
 
     <!--<bean class="cn.superid.webapp.components.SmsDao">-->
         <!--<property name="apiUid" value="zoowii"/>-->
         <!--<property name="apiKey" value="2760aea8635143b24809"/>-->
     <!--</bean>-->
-    <bean class="cn.superid.webapp.components.AliSmsDao">
-        <property name="apiUrl" value="${alisms.api_url}"/>
-        <property name="appKey" value="${alisms.api_key}"/>
-        <property name="appSecret" value="${alisms.api_secret}"/>
-    </bean>
+    <!--<bean class="cn.superid.webapp.components.AliSmsDao">-->
+        <!--<property name="apiUrl" value="${alisms.api_url}"/>-->
+        <!--<property name="appKey" value="${alisms.api_key}"/>-->
+        <!--<property name="appSecret" value="${alisms.api_secret}"/>-->
+    <!--</bean>-->
 
-    <bean class="cn.superid.webapp.components.DirectEmailDao" id="emailDao"/>
+    <!--<bean class="cn.superid.webapp.components.DirectEmailDao" id="emailDao"/>-->
     <!--<bean class="cn.superid.webapp.components.SendCloudEmailDao" id="emailDao">-->
         <!--<property name="url" value="${sendcloud.url}"/>-->
         <!--<property name="apiUser" value="${sendcloud.api_user}"/>-->
@@ -66,16 +53,6 @@
     <!--</bean>-->
 
     <!-- id generator service beans -->
-    <bean class="cn.superid.utils.id_generator.beans.decoders.impl.DbTableDecoder"/>
-    <bean class="cn.superid.utils.id_generator.beans.decoders.impl.ServerMigrationDecoder"/>
-    <bean class="cn.superid.utils.id_generator.beans.decoders.impl.ServerStateXmlDecoder"/>
-    <bean class="cn.superid.utils.id_generator.beans.decoders.impl.ServerGroupXmlDecoder"/>
-    <bean class="cn.superid.utils.id_generator.services.impl.ServerGroupService"/>
-    <bean class="cn.superid.utils.id_generator.services.impl.MockDbRouter"/>
-    <bean class="cn.superid.utils.id_generator.services.impl.ServerWeightCountService"/>
-    <bean class="cn.superid.utils.id_generator.services.impl.ObjectIdMerge" id="idMerger"/>
-    <bean class="cn.superid.utils.id_generator.services.impl.XmlMachineClusterStateManager" id="machineClusterStateManager"/>
-    <bean class="cn.superid.utils.id_generator.workers.impl.IdGeneratorWorker" id="idGeneratorWorker"/>
     <!-- end id generator service beans -->
 
 </beans>

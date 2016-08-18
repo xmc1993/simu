@@ -10,9 +10,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by 维 on 2014/9/27.
- */
 public class TemplateUtil {
     private static VelocityEngine velocityEngine = new VelocityEngine();
 
