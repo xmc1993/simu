@@ -212,11 +212,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         int compair=0;
         int a,index;
         while (i<currentPermission.length()){
-            a=0;
-            index=1;
+            a=0;//某项权限大小
+            index=1;//进制比如12,为1*10+2
             char tmp = currentPermission.charAt(i);
             while (tmp!=','){
-
                 a = a*index+(tmp-'0');
                 i++;
                 index=index*10;

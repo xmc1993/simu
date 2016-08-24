@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="superid-web-app:war">
-    <output-path>$PROJECT_DIR$/superid-web-app/target</output-path>
-    <root id="archive" name="superid-web-app-1.0-SNAPSHOT.war">
-      <element id="artifact" artifact-name="superid-web-app:war exploded" />
-    </root>
-  </artifact>
-</component>
