@@ -72,12 +72,6 @@ public class UserService implements IUserService {
         return null;
     }
 
-    @Transactional
-    @Override
-    public boolean register(UserRegisterForm userRegisterForm) {
-
-        return false;
-    }
 
     private boolean canSendVerifyCodeAgain() {
         Date date =(Date)auth.getSessionAttr("last_token_time");
@@ -117,7 +111,7 @@ public class UserService implements IUserService {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.MINUTE, 15);
-            if (calendar.getTime().after(new Date())) {
+            if (calendar.getTime().before(new Date())) {//超过15分钟
                 return false;
             }
             if(code.equals(cachedCode)){
@@ -143,5 +137,20 @@ public class UserService implements IUserService {
     @Override
     public UserEntity findByToken(String token) {
         return UserEntity.dao.or(Expr.eq("email",token),Expr.eq("mobile",token),Expr.eq("superid",token)).selectOne();
+    }
+
+    @Override
+    public boolean validUsername(String username) {
+        return !UserEntity.dao.eq("username",username).exists();
+    }
+
+    @Override
+    public boolean validToken(String token) {
+        if(StringUtil.isEmail(token)){
+            return !UserEntity.dao.eq("email",token).exists();
+        }else if(StringUtil.isMobile(token)){
+            return !UserEntity.dao.eq("mobile",token).exists();
+        }
+        return false;
     }
 }

@@ -6,15 +6,13 @@ import cn.superid.jpa.util.*;
 
 import java.util.List;
 
-
 /**
  * Created by zp on 2016/7/21.
  */
 public class Dao<T> {
-    public static Function<String,Boolean> log =null ;
     private final static String whereStr = " WHERE (1=1) ";
     private Class<?> clazz;
-    private static short whereLength = (short)whereStr.length();
+    private static short whereLength = (short)(whereStr.length());
     private static ThreadLocal<StringBuilder> where = new ThreadLocal<StringBuilder>(){
         @Override
         protected StringBuilder initialValue() {
@@ -71,6 +69,124 @@ public class Dao<T> {
     public T findTinyById(Object id){
         return (T)getSession().findTiny(this.clazz,id);
     }
+
+
+
+
+    public static Object findById(Class<?> cls,Object id){
+        return  getSession().find(cls,id);
+    }
+
+    public T selectOne(String... params){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT ");
+        sb.append(StringUtil.joinParams(",", params));
+        sb.append(" FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        sb.append(" limit 1");
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
+    }
+
+
+    public List<T> selectList(String... params){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT ");
+        sb.append(StringUtil.joinParams(",",params));
+        sb.append(" FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return (List<T>) AbstractSession.currentSession().findList(this.clazz, sql, sqlParams);
+
+    }
+
+    public  int set(Object... params) {
+        if(params==null||params.length==0){
+            throw new JdbcRuntimeException("Error update set");
+        }
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        ParameterBindings pb = new ParameterBindings();
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET ");
+        int i=0;
+        for(Object o:params){
+            if(i%2==0){
+                if(i!=0){
+                    sb.append(",");
+                }
+                sb.append(StringUtil.underscoreName((String)o));
+                sb.append("=?");
+            }else{
+                pb.addIndexBinding(o);
+            }
+            i++;
+        }
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all = pb.addAll(parameterBindings.get());
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,all);
+    }
+
+    public  int remove() {
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" DELETE FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all = parameterBindings.get();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,parameterBindings.get());
+    }
+
+
+    public int execute(String sql,ParameterBindings parameterBindings1){
+        return getSession().execute(sql,parameterBindings1);
+    }
+
+    /**
+        check  meet the conditions
+     **/
+
+    public boolean exists(){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT 1 FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        sb.append(" limit 1");
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams)!=null;
+    }
+
 
 
     public Dao<T> and(String column,String op,Object value){
@@ -159,7 +275,7 @@ public class Dao<T> {
     }
 
     public Dao<T> or(Expr... exprs){
-        where.get().append("and (");
+        where.get().append(" and (");
         boolean init =true;
         for(Expr expr:exprs){
             if(init){
@@ -173,102 +289,6 @@ public class Dao<T> {
         where.get().append(")");
         return this;
     }
-
-    public static Object findById(Class<?> cls,Object id){
-        return  getSession().find(cls,id);
-    }
-
-    public T selectOne(String... params){
-        StringBuilder builder = where.get();
-        if(builder.length()==whereLength){
-            throw new JdbcRuntimeException("You should has where conditions");
-        }
-        StringBuilder sb = new StringBuilder(" SELECT ");
-        sb.append(StringUtil.joinParams(",", params));
-        sb.append(" FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
-        sb.append(builder);
-        sb.append(" limit 1");
-        T rs =(T) AbstractSession.currentSession().findOne(this.clazz,sb.toString(),parameterBindings.get().getIndexParametersArray());
-        builder.delete(whereLength,builder.length()-1);
-        parameterBindings.get().clear();
-        return rs;
-    }
-
-
-    public List<T> selectList(String... params){
-        StringBuilder builder = where.get();
-        if(builder.length()==whereLength){
-            throw new JdbcRuntimeException("You should has where conditions");
-        }
-        StringBuilder sb = new StringBuilder(" SELECT ");
-        sb.append(StringUtil.joinParams(",",params));
-        sb.append(" FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
-        sb.append(builder);
-        List rs = AbstractSession.currentSession().findList(this.clazz, sb.toString(), parameterBindings.get().getIndexParametersArray());
-        builder.delete(whereLength,builder.length()-1);
-        parameterBindings.get().clear();
-        return (List<T>)rs;
-    }
-
-    public  int set(Object... params) {
-        if(params==null||params.length==0){
-            throw new JdbcRuntimeException("Error update set");
-        }
-        StringBuilder builder = where.get();
-        if(builder.length()==whereLength){
-            throw new JdbcRuntimeException("You should have where conditions");
-        }
-        ParameterBindings pb = new ParameterBindings();
-        StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
-        sb.append(" SET ");
-        int i=0;
-        for(Object o:params){
-            if(i%2==0){
-                if(i!=0){
-                    sb.append(",");
-                }
-                sb.append(StringUtil.underscoreName((String)o));
-                sb.append("=?");
-            }else{
-                pb.addIndexBinding(o);
-            }
-            i++;
-        }
-        sb.append(builder);
-        String sql = sb.toString();
-        ParameterBindings all = pb.addAll(parameterBindings.get());
-        int result= getSession().execute(sql,all);
-        builder.delete(whereLength,builder.length()-1);
-        parameterBindings.get().clear();
-        return result;
-    }
-
-    public  int remove() {
-        StringBuilder builder = where.get();
-        if(builder.length()==whereLength){
-            throw new JdbcRuntimeException("You should have where conditions");
-        }
-        StringBuilder sb = new StringBuilder(" DELETE FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
-        sb.append(builder);
-        String sql = sb.toString();
-        int result = getSession().execute(sql,parameterBindings.get());
-        builder.delete(whereLength,builder.length()-1);
-        parameterBindings.get().clear();
-        return result;
-    }
-
-
-    public int execute(String sql,ParameterBindings parameterBindings1){
-        return getSession().execute(sql,parameterBindings1);
-    }
-
-
-
-
 
 
 }

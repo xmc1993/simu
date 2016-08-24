@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <option name="DEFAULT_COMPILER" value="Javac" />
     <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="!?*.java" />
@@ -12,6 +11,7 @@
       <entry name="!?*.flex" />
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
+      <entry name="!?*.aj" />
     </wildcardResourcePatterns>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="false">
@@ -30,9 +30,10 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="superid-web-app" target="1.7" />
+      <module name="superid-web-db" target="1.7" />
       <module name="superid-web-jpa" target="1.7" />
       <module name="superid-web-utils" target="1.7" />
+      <module name="webapp-parent" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
-

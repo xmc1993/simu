@@ -11,7 +11,6 @@ public interface IUserService {
 
     public UserEntity login(String token,String password);
 
-    public boolean register(UserRegisterForm userRegisterForm);
 
     public  boolean getVerifyCode(String token,String template);
 
@@ -20,5 +19,9 @@ public interface IUserService {
     public UserEntity createUser(UserEntity userEntity);
 
     public UserEntity findByToken(String token);
+
+    public boolean validUsername(String username);
+
+    public boolean validToken(String token);
 
 }

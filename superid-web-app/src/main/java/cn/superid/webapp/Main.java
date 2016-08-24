@@ -9,7 +9,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        JettyServer jettyServer = new JettyServer(detectWebAppDir(), 8080, "/", 5);
+        JettyServer jettyServer = new JettyServer(detectWebAppDir(), 9855, "/", 5);
         jettyServer.start();
     }
 

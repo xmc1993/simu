@@ -3,16 +3,19 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
+import cn.superid.webapp.forms.SimpleResponse;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -25,10 +28,16 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+    /**
+     * 获取注册验证码,不允许同一个ip地址频繁访问
+     * @param request
+     * @param token
+     * @return
+     */
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
-    public SimpleResponse getRegisterVerifyCode(String token){
-        if(CheckFrequencyUtil.isFrequent(token)){
+    public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
+        if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
             return SimpleResponse.error("frequent_request");
         }
         if(StringUtil.isEmpty(token)){
@@ -38,10 +47,16 @@ public class UserController {
         }
     }
 
+    /**
+     * 获取登录验证码
+     * @param request
+     * @param token
+     * @return
+     */
     @NotLogin
     @RequestMapping(value = "/get_login_code", method = RequestMethod.GET)
-    public SimpleResponse getLoginVerifyCode(String token){
-        if(CheckFrequencyUtil.isFrequent(token)){
+    public SimpleResponse getLoginVerifyCode(HttpServletRequest request,String token){
+        if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
             return SimpleResponse.error("frequent_request");
         }
         if(StringUtil.isEmpty(token)){
@@ -106,6 +121,25 @@ public class UserController {
         }
         return SimpleResponse.ok(userEntity);
     }
+
+    @NotLogin
+    @RequestMapping(value = "/valid_username", method = RequestMethod.POST)
+    public  SimpleResponse validUsername(String username){
+        return SimpleResponse.ok(userService.validUsername(username));
+    }
+
+    /**
+     * 手机或者邮箱是否合法,格式正确而且没有被注册
+     * @param token
+     * @return
+     */
+
+    @NotLogin
+    @RequestMapping(value = "/valid_token", method = RequestMethod.POST)
+    public  SimpleResponse validToken(String token){
+        return SimpleResponse.ok(userService.validToken(token));
+    }
+
 
 
 }

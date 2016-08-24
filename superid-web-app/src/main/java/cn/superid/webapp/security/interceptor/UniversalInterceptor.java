@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 public class UniversalInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        request.getSession().setMaxInactiveInterval(60*60*100000);
         String origin = request.getHeader("Origin");
         response.setHeader("Access-Control-Allow-Origin", (origin != null && !"null".equals(origin)) ? origin : "*");
         response.setHeader("Access-Control-Allow-Credentials", "true");

@@ -45,20 +45,20 @@ public class SpringAuthenticator implements IAuth {
     }
 
     public HttpSession getCurrentHttpSession() {
-
-        if((RequestContextHolder.getRequestAttributes())==null) {
-            return null;
-        }
-        if(((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest()==null){
-            return null;
-        }
-        HttpSession session =((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession(true);
+        HttpServletRequest request = getRequest();
+        HttpSession session =request==null?null:request.getSession(true);
         session.setMaxInactiveInterval(100000000);
         return session;
     }
 
 
-
+    @Override
+    public HttpServletRequest getRequest() {
+        if((RequestContextHolder.getRequestAttributes())==null) {
+            return null;
+        }
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
 
     @Override
     public boolean isAuthenticated() {
