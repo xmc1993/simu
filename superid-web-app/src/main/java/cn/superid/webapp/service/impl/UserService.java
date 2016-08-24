@@ -64,12 +64,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean belong(Long userId, Long roleId) {
-        return false;
-    }
-
-    @Override
-    public UserEntity login(String token, String password) {
-        return null;
+        return true;
     }
 
 

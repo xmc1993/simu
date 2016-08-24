@@ -160,7 +160,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return notLogin;
         }
 
-        Long roleId = (Long) request.getAttribute("operationRoleId");
+        Long roleId = Long.parseLong(request.getParameter("operationRoleId"));
         if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
             return notPermitted;
         }
@@ -172,7 +172,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
-            Long affairId = (Long)request.getAttribute("affairId");
+            Long affairId = Long.parseLong(request.getParameter("affairId"));
             if(affairId==null){
                 return notPermitted;
             }
@@ -186,7 +186,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] alliancePermissions = requiredPermissions.alliance();//检查盟权限
         if(alliancePermissions!=null&&alliancePermissions.length!=0){
-            Long allianceId = (Long)request.getAttribute("allianceId");
+            Long allianceId = Long.parseLong(request.getParameter("allianceId"));
             if(allianceId==null){
                 return notPermitted;
             }
@@ -204,21 +204,28 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
 
-    @RequiredPermissions(affair = {AffairPermissions.Default})
     private boolean isPermitted(int[] permissions,String currentPermission){
         if(permissions==null&&permissions.length==0){
             return true;
         }
         int i=0;
         int compair=0;
+        int a,index;
         while (i<currentPermission.length()){
-            int a = 0;
-            int index =1;
+            a=0;
+            index=1;
             char tmp = currentPermission.charAt(i);
             while (tmp!=','){
-                a = tmp+a*index;
+
+                a = a*index+(tmp-'0');
                 i++;
-                index++;
+                index=index*10;
+                System.out.println(a);
+                if(i==currentPermission.length()){
+                    break;
+                }
+                tmp  = currentPermission.charAt(i);
+
             }
             for(int p:permissions){
                 if(p==a){

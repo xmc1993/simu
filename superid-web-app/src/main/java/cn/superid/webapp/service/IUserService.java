@@ -9,9 +9,6 @@ import cn.superid.webapp.model.UserEntity;
 public interface IUserService {
     public boolean belong(Long userId,Long roleId);
 
-    public UserEntity login(String token,String password);
-
-
     public  boolean getVerifyCode(String token,String template);
 
     public boolean checkVerifyCode(String code);

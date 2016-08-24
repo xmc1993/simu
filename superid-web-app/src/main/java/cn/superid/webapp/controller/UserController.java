@@ -4,6 +4,7 @@ import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
@@ -27,6 +28,8 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IAuth auth;
 
     /**
      * 获取注册验证码,不允许同一个ip地址频繁访问
@@ -119,6 +122,7 @@ public class UserController {
             }
             return SimpleResponse.error("pwd_error");
         }
+        auth.authUser(userEntity.getId());
         return SimpleResponse.ok(userEntity);
     }
 
@@ -139,6 +143,7 @@ public class UserController {
     public  SimpleResponse validToken(String token){
         return SimpleResponse.ok(userService.validToken(token));
     }
+
 
 
 

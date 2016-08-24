@@ -62,6 +62,7 @@ public class SpringAuthenticator implements IAuth {
 
     @Override
     public boolean isAuthenticated() {
+        Long c= currentUserId();
         return currentUserId() != null;
     }
 

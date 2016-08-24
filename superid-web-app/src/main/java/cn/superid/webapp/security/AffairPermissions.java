@@ -12,8 +12,11 @@ import java.util.List;
 public class AffairPermissions {
     public final static int Default=0;
     public final static int EditNotice=1;
-    public final static int AddNotice =2;
+    public final static int AddNotice =39;
     public final static int DeleteNotice =3;
+    public final static int AddAffair=4;
+
+
 
 
     public static String  getAllAffairPermissions(){

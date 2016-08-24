@@ -4,7 +4,6 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.util.ParameterBindings;
-import com.sun.javafx.sg.PGShape;
 
 import java.io.Serializable;
 

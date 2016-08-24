@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 public class AffairService implements IAffairService {
     @Override
     public String getPermissions(long affairId, long roleId) {
-        return null;
+        return "39,34,1,2,3,32,4";
     }
 }
