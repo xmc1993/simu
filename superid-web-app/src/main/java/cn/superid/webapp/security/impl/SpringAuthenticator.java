@@ -30,7 +30,7 @@ public class SpringAuthenticator implements IAuth {
     }
 
     @Override
-    public void unAuthUser(Long userId) {
+    public void unAuthUser() {
         getCurrentHttpSession().removeAttribute("userId");
     }
 
@@ -47,7 +47,6 @@ public class SpringAuthenticator implements IAuth {
     public HttpSession getCurrentHttpSession() {
         HttpServletRequest request = getRequest();
         HttpSession session =request==null?null:request.getSession(true);
-        session.setMaxInactiveInterval(100000000);
         return session;
     }
 

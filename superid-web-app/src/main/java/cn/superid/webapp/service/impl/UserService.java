@@ -6,7 +6,6 @@ import cn.superid.utils.MapUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.forms.AllianceCreateForm;
-import cn.superid.webapp.forms.UserRegisterForm;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
@@ -88,7 +87,7 @@ public class UserService implements IUserService {
             auth.setSessionAttr("code",code);
             auth.setSessionAttr("last_token_time",new Date());
             if(StringUtil.isEmail(token)){
-                String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", token);
+                String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", code);
                 return DirectEmailDao.sendEmail("SuperId邮箱验证",emailText,token);
             }else{
                 return AliSmsDao.sendSMSMessageToMobileWithTemplate(token,template, MapUtil.hashmap("code",code));

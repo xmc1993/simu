@@ -145,6 +145,12 @@ public class UserController {
     }
 
 
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public  SimpleResponse logout(){
+        auth.unAuthUser();
+        return SimpleResponse.ok("success");
+    }
+
 
 
 }
