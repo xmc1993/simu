@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface IAuth {
     public void authUser(Long userId);
 
-    public void unAuthUser(Long userId);
+    public void unAuthUser();
 
     public UserEntity currentUser();
 

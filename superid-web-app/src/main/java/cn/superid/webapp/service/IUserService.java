@@ -1,6 +1,5 @@
 package cn.superid.webapp.service;
 
-import cn.superid.webapp.forms.UserRegisterForm;
 import cn.superid.webapp.model.UserEntity;
 
 /**
