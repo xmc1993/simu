@@ -34,6 +34,7 @@
 
     <mvc:annotation-driven>
     </mvc:annotation-driven>
+    <mvc:resources mapping="/*.html" location="/swagger/"/>
     <context:component-scan base-package="cn.superid.webapp">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation"
@@ -47,6 +48,7 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/swagger/*"/>
             <bean class="cn.superid.webapp.security.interceptor.AuthInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
