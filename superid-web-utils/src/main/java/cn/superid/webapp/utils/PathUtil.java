@@ -59,7 +59,6 @@ public class PathUtil {
     public static String getWebRootPath() {
         if (webRootPath == null)
             webRootPath = detectWebRootPath();
-        ;
         return webRootPath;
     }
 

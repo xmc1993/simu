@@ -34,7 +34,12 @@
 
     <mvc:annotation-driven>
     </mvc:annotation-driven>
-    <mvc:resources mapping="/*.html" location="/swagger/"/>
+    <mvc:resources mapping="/swagger/*.html" location="/swagger/"/>
+    <mvc:resources mapping="/swagger/css/*.css" location="/swagger/css"/>
+    <mvc:resources mapping="/swagger/fonts/*.ttf" location="/swagger/fonts"/>
+    <mvc:resources mapping="/swagger/images/**" location="/swagger/images"/>
+    <mvc:resources mapping="/swagger/lang/*.js" location="/swagger/lang"/>
+    <mvc:resources mapping="/swagger/lib/*.js" location="/swagger/lib"/>
     <context:component-scan base-package="cn.superid.webapp">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation"
