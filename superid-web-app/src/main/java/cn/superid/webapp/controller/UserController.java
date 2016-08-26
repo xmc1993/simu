@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.InputStream;
+import java.util.Enumeration;
 
 
 /**
@@ -147,6 +149,9 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/valid_token", method = RequestMethod.POST)
     public  SimpleResponse validToken(String token){
+        if(token==null) {
+            return SimpleResponse.error("token is null");
+        }
         return SimpleResponse.ok(userService.validToken(token));
     }
 
