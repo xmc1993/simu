@@ -29,6 +29,9 @@
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
+
+    <bean class="cn.superid.webapp.swagger.MySwaggerConfig" />
+
     <!--<bean class="cn.superid.webapp.oss.impl.QiniuStoreService"/>-->
     <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->
     <!--<bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">-->
