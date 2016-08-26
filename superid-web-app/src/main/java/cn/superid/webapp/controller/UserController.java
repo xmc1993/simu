@@ -10,6 +10,7 @@ import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
+import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class UserController {
      * @param token
      * @return
      */
+    @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = boolean.class, notes = "不允许同一个IP地址频繁访问")
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
@@ -56,6 +58,7 @@ public class UserController {
      * @param token
      * @return
      */
+    @ApiOperation(value = "获取登录验证码", httpMethod = "GET", response = boolean.class, notes = "获取登录验证码")
     @NotLogin
     @RequestMapping(value = "/get_login_code", method = RequestMethod.GET)
     public SimpleResponse getLoginVerifyCode(HttpServletRequest request,String token){
@@ -69,7 +72,7 @@ public class UserController {
         }
     }
 
-
+    @ApiOperation(value = "用户注册", httpMethod = "POST", response = SimpleResponse.class, notes = "用户注册")
     @NotLogin
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SimpleResponse register(String token,String password,String username,String verifyCode){
@@ -95,6 +98,8 @@ public class UserController {
         }
     }
 
+
+    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token,String password,String verifyCode){
@@ -126,6 +131,7 @@ public class UserController {
         return SimpleResponse.ok(userEntity);
     }
 
+    @ApiOperation(value = "验证用户名", httpMethod = "GET", response = boolean.class, notes = "验证用户名")
     @NotLogin
     @RequestMapping(value = "/valid_username", method = RequestMethod.POST)
     public  SimpleResponse validUsername(String username){
@@ -137,7 +143,7 @@ public class UserController {
      * @param token
      * @return
      */
-
+    @ApiOperation(value = "验证手机邮箱是否合法", httpMethod = "GET", response = boolean.class, notes = "格式正确而且没有被注册")
     @NotLogin
     @RequestMapping(value = "/valid_token", method = RequestMethod.POST)
     public  SimpleResponse validToken(String token){
