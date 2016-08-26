@@ -11,6 +11,8 @@ import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
 import org.apache.poi.ss.formula.functions.T;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,8 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private IAuth auth;
+    public static Logger LOG = LoggerFactory.getLogger(UserController.class);
+
 
     /**
      * 获取注册验证码,不允许同一个ip地址频繁访问
@@ -40,6 +44,7 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
+        LOG.info("get_register_code",request.getRemoteAddr());
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
             return SimpleResponse.error("frequent_request");
         }
@@ -82,7 +87,8 @@ public class UserController {
             userEntity.setEmail(token);
         }else if(StringUtil.isMobile(token)){
             userEntity.setMobile(token);
-        }else{
+        }
+        if(!userService.validToken(token)){
             return new SimpleResponse(ResponseCode.BadRequest,"error_token");
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));
