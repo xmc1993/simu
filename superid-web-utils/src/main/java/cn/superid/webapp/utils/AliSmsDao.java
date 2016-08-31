@@ -65,6 +65,7 @@ public class AliSmsDao {
         TaobaoClient client = new DefaultTaobaoClient(apiUrl, appKey, appSecret);
         AlibabaAliqinFcSmsNumSendRequest req = new AlibabaAliqinFcSmsNumSendRequest();
         req.setExtend(mobile);
+
         req.setSmsType("normal");
         req.setSmsFreeSignName(getSupportTemplateSign(templateId));
         if(params == null) {
