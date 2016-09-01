@@ -1,5 +1,6 @@
 package cn.superid.jpa.core;
 
+import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 
@@ -119,14 +120,13 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public synchronized ModelMeta getEntityMetaOfClass(Class<?> entityCls) {
-        if(ENTITY_META_CACHE.containsKey(entityCls)) {
+        if (ENTITY_META_CACHE.containsKey(entityCls)) {
             return ENTITY_META_CACHE.get(entityCls);
         }
         ModelMeta modelMeta = ModelMeta.getModelMeta(entityCls);
         ENTITY_META_CACHE.put(entityCls, modelMeta);
         return modelMeta;
     }
-
 
 
     private static transient SessionFactory defaultSessionFactory = null;
@@ -147,6 +147,7 @@ public abstract class AbstractSession implements Session {
             }
         }
     }
+
     /**
      * check whether session binded to current thread first
      * and set result to binded session of current thread
@@ -159,18 +160,41 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public void copyProperties(Object from, Object to) {
-        Session session =currentSession();
-        ModelMeta fromMeta =session.getEntityMetaOfClass(from.getClass());
+        Session session = currentSession();
+        ModelMeta fromMeta = session.getEntityMetaOfClass(from.getClass());
         ModelMeta toMeta = session.getEntityMetaOfClass(to.getClass());
-        for(ModelMeta.ModelColumnMeta fromColumnMeta:fromMeta.getColumnMetaSet()){
-            for(ModelMeta.ModelColumnMeta toColumnMeta:toMeta.getColumnMetaSet()){
-                if(toColumnMeta.fieldName.equals(fromColumnMeta.fieldName)&&toColumnMeta.fieldType.equals(fromColumnMeta.fieldType)){
-                    FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(),fromColumnMeta.fieldName);
-                    FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(),toColumnMeta.fieldName);
-                    toFa.setProperty(to,fromFa.getProperty(from));
+        for (ModelMeta.ModelColumnMeta fromColumnMeta : fromMeta.getColumnMetaSet()) {
+            for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
+                if (toColumnMeta.fieldName.equals(fromColumnMeta.fieldName) && toColumnMeta.fieldType.equals(fromColumnMeta.fieldType)) {
+                    FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(), fromColumnMeta.fieldName);
+                    FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(), toColumnMeta.fieldName);
+                    toFa.setProperty(to, fromFa.getProperty(from));
                 }
             }
 
         }
+    }
+
+    @Override
+    public HashMap<String, Object> getHashMapFromEntity(Object entity) {
+        Session session = currentSession();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            hashMap.put(modelColumnMeta.fieldName, fieldAccessor.getProperty(entity));
+        }
+        return hashMap;
+    }
+
+    @Override
+    public Object generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
+        Session session = currentSession();
+        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            fieldAccessor.setProperty(entity,hashMap.get(modelColumnMeta.fieldName));
+        }
+        return entity;
     }
 }

@@ -6,6 +6,7 @@ import cn.superid.jpa.core.Session;
 import cn.superid.jpa.util.ParameterBindings;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 public abstract class ExecutableModel<T>  implements Serializable,Executable{
 
@@ -70,6 +71,8 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public void copyPropertiesFrom(Object from){
        getSession().copyProperties(from,this);
     }
+
+    public HashMap<String,Object> getHashMap(){ return getSession().getHashMapFromEntity(this);}
 
 
 }

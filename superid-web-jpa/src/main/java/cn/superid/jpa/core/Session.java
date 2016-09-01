@@ -4,6 +4,7 @@ package cn.superid.jpa.core;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ParameterBindings;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -84,5 +85,9 @@ public interface Session {
     int execute(String sql, ParameterBindings parameterBindings);
 
     void copyProperties(Object from,Object to);
+
+    HashMap<String,Object> getHashMapFromEntity(Object entity);
+
+    Object generateHashMapFromEntity(HashMap<String,Object> hashMap,Object entity);
 
 }

@@ -6,6 +6,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -90,6 +91,21 @@ public class testExecute extends TestCase {
         user.save();
         User.dao.eq("name", "tms").remove();
         Assert.assertTrue(User.dao.findById(user.getId()) == null);
+    }
+
+    public void testHashMapFromEntity(){
+        User user = new User();
+        user.setName("src/test");
+        user.setAge(18);
+        user.save();
+        HashMap<String,Object> hashMap=user.getHashMap();
+        Assert.assertTrue(hashMap.get("age").equals(18));
+
+        User user1=new User();
+        User.getSession().generateHashMapFromEntity(hashMap,user1);
+
+        Assert.assertTrue(user1.getAge()==18);
+
     }
 
 
