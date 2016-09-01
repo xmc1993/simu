@@ -19,7 +19,7 @@ import java.util.Enumeration;
  * Created by zp on 2016/8/9.
  */
 @RunWith(util.JUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/spring-all.xml")
+@ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all.xml"})
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
