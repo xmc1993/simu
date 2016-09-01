@@ -11,7 +11,6 @@ import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
-import java.util.Enumeration;
 
 
 /**
@@ -139,7 +136,7 @@ public class UserController {
         return SimpleResponse.ok(userEntity);
     }
 
-    @ApiOperation(value = "验证用户名", httpMethod = "GET", response = boolean.class, notes = "验证用户名")
+    @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名")
     @NotLogin
     @RequestMapping(value = "/valid_username", method = RequestMethod.POST)
     public  SimpleResponse validUsername(String username){
@@ -151,7 +148,7 @@ public class UserController {
      * @param token
      * @return
      */
-    @ApiOperation(value = "验证手机邮箱是否合法", httpMethod = "GET", response = boolean.class, notes = "格式正确而且没有被注册")
+    @ApiOperation(value = "验证手机邮箱是否合法", response = boolean.class, notes = "格式正确而且没有被注册")
     @NotLogin
     @RequestMapping(value = "/valid_token", method = RequestMethod.POST)
     public  SimpleResponse validToken(String token){
@@ -168,6 +165,13 @@ public class UserController {
         return SimpleResponse.ok("success");
     }
 
+    /**
+     * TODO 用户信息修改
+     */
 
+
+    /**
+     *
+     */
 
 }

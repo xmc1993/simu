@@ -1,6 +1,8 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.AffairPermissions;
@@ -23,23 +25,18 @@ public class AffairController {
     @Autowired
     private IAffairService affairService;
 
-
-    @ApiOperation(value = "创建事务", httpMethod = "POST", response = UserEntity.class, notes = "创建一个新的事务")
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
-    @RequiredPermissions(affair = {AffairPermissions.AddAffair,AffairPermissions.AddNotice})
-    public SimpleResponse CreateAffair(HttpServletRequest request, String token){
-
+    /**
+     * 增加事务,参数
+     */
+    @ApiOperation(value = "添加事务", response = boolean.class, notes = "格式正确而且没有被注册")
+    @RequiredPermissions(affair = AffairPermissions.AddAffair)
+    @RequestMapping(value = "/create_affair", method = RequestMethod.POST)
+    public  SimpleResponse createAffair(CreateAffairForm createAffairForm){
         return null;
-
     }
 
-    @ApiOperation(value = "创建事务B", httpMethod = "POST", response = SimpleResponse.class, notes = "创建一个新的事务")
-    @RequestMapping(value = "/createB", method = RequestMethod.GET)
-    @RequiredPermissions(affair = {AffairPermissions.AddAffair,AffairPermissions.AddNotice})
-    public SimpleResponse CreateAffairB(HttpServletRequest request, String token){
 
-        return null;
 
-    }
+
 
 }

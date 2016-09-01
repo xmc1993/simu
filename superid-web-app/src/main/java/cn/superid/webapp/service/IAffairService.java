@@ -10,4 +10,5 @@ import cn.superid.webapp.security.IGetPermissions;
 public interface IAffairService  {
 
     public String getPermissions(long affairId,long roleId);
+
 }
