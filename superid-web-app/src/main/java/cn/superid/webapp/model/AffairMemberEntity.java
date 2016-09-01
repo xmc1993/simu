@@ -13,7 +13,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "affair_member")
 public class AffairMemberEntity extends ExecutableModel {
-    public Dao<AffairMemberEntity> dao = new Dao<>(this.getClass());
+    public final static Dao<AffairMemberEntity> dao = new Dao<>(AffairMemberEntity.class);
     private Long id;
     private Long affairId;
     private Long roleId;

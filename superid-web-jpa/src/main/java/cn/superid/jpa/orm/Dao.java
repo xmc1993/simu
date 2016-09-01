@@ -82,9 +82,7 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT ");
-        sb.append(StringUtil.joinParams(",", params));
-        sb.append(" FROM ");
+        StringBuilder sb = new StringBuilder(" SELECT 1 FROM ");
         sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(builder);
         sb.append(" limit 1");
@@ -94,6 +92,24 @@ public class Dao<T> {
         parameterBindings.get().clear();
         return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
     }
+
+    public int count(){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT count(id) FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
+    }
+
+
+
 
 
     public List<T> selectList(String... params){
