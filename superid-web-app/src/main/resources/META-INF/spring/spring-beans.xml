@@ -31,7 +31,7 @@
 
     <bean class="org.springframework.mock.web.MockServletContext"/>
     <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
-    <bean id="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig"/>
+    <!--<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->
     <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->
     <!--<bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">-->
         <!--<property name="obWebApiUrl" value="${ob.webapi_url}"/>-->

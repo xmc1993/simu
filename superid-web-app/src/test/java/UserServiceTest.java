@@ -38,6 +38,8 @@ public class UserServiceTest{
     }
 
 
+
+
     @Test
     public void getVerifyCode(){
         UserEntity.execute("SET @uids := '';" +
