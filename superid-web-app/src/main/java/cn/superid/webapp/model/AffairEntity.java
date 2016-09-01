@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.utils.TimeUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -27,8 +28,8 @@ public class AffairEntity extends ExecutableModel {
     private int isFree;
     private String path;
     private int level;
-    private Timestamp createTime;
-    private Timestamp modifyTime;
+    private Timestamp createTime = TimeUtil.getCurrentSqlTime();
+    private Timestamp modifyTime = TimeUtil.getCurrentSqlTime() ;
     private String videoUrl;
     private String videoImg;
     private int guestVisible;

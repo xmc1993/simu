@@ -30,9 +30,8 @@
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
 
-    <bean class="cn.superid.webapp.swagger.MySwaggerConfig" />
-
-    <!--<bean class="cn.superid.webapp.oss.impl.QiniuStoreService"/>-->
+    <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
+    <bean id="springSwaggerConfig" class="com.mangofactory.swagger.configuration.SpringSwaggerConfig"/>
     <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->
     <!--<bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">-->
         <!--<property name="obWebApiUrl" value="${ob.webapi_url}"/>-->

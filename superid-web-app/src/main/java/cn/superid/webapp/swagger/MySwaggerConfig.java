@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableSwagger
 public class MySwaggerConfig {
-    private SpringSwaggerConfig springSwaggerConfig;
+    private SpringSwaggerConfig springSwaggerConfig ;
 
     @Autowired
     public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig)
