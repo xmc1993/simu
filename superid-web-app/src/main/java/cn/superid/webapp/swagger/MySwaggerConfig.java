@@ -7,12 +7,15 @@ import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * Created by xmc1993 on 16/8/25.
  */
-@Configuration
-@EnableSwagger
+
+//@Configuration
+//@EnableWebMvc
+//@EnableSwagger
 public class MySwaggerConfig {
     private SpringSwaggerConfig springSwaggerConfig ;
 

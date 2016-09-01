@@ -98,8 +98,10 @@ public class testExecute extends TestCase {
         user.setAge(33);
         user.setName("tms");
         user.save();
-        User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
+//        User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
+//        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
+
+        User.dao.eq("name","tms").set("age","age + "+38);
     }
 
     public void testExecute() {
@@ -133,6 +135,7 @@ public class testExecute extends TestCase {
         Assert.assertTrue(test2.getName().equals("zp")&&test2.getAge()==null);
 
     }
+
 
 
 }

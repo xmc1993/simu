@@ -134,6 +134,7 @@ public class Dao<T> {
         if(params==null||params.length==0){
             throw new JdbcRuntimeException("Error update set");
         }
+
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should have where conditions");

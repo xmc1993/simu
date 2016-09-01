@@ -129,7 +129,6 @@ public class JdbcSession extends AbstractSession {
                     Object value = fieldAccessor.getProperty(entity);
                     preparedStatement.setObject(i, value);
                     i++;
-
                 }
                 try {
 

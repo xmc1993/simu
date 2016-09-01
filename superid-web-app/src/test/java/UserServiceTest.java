@@ -33,9 +33,13 @@ public class UserServiceTest{
             userEntity.setMobile("15951818230"+i);
             UserEntity result = userService.createUser(userEntity);
             Assert.assertFalse(result==null);
+
+
         }
 
     }
+
+
 
 
     @Test
