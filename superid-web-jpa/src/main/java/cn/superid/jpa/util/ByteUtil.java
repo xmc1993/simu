@@ -29,27 +29,27 @@ public class ByteUtil<T> {
 
     }
 
-    public static  bytes2BasicType(byte[] bytes, Class<?> clazz){
-
-//        if(clazz == Long.class){
-//            return
-//        }else if(clazz == Integer.class){
-//            return intToBytes((Integer)o);
-//        }else if(clazz == Float.class){
-//            return floatToBytes((Float) o);
-//        }else if(clazz == Double.class){
-//            return doubleToBytes((Double) o);
-//        }else if(clazz == Short.class){
-//            return shortToBytes((Short) o);
-//        }else if(clazz == Boolean.class){
-//            return booleanToBytes((Boolean) o);
-//        }else if(clazz == Character.class){
-//            return charToBytes((Character) o);
-//        }else {
-//            throw new RuntimeException("Error: The parameter is not basic type!");
-//        }
-
-    }
+//    public static  bytes2BasicType(byte[] bytes, Class<?> clazz){
+//
+////        if(clazz == Long.class){
+////            return
+////        }else if(clazz == Integer.class){
+////            return intToBytes((Integer)o);
+////        }else if(clazz == Float.class){
+////            return floatToBytes((Float) o);
+////        }else if(clazz == Double.class){
+////            return doubleToBytes((Double) o);
+////        }else if(clazz == Short.class){
+////            return shortToBytes((Short) o);
+////        }else if(clazz == Boolean.class){
+////            return booleanToBytes((Boolean) o);
+////        }else if(clazz == Character.class){
+////            return charToBytes((Character) o);
+////        }else {
+////            throw new RuntimeException("Error: The parameter is not basic type!");
+////        }
+//
+//    }
 
     public static byte[] longToBytes(long x) {
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
