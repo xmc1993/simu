@@ -20,4 +20,8 @@ public interface IUserService {
 
     public boolean validToken(String token);
 
+    public UserEntity getCurrentUser();
+
+    public long currentUserId();
+
 }

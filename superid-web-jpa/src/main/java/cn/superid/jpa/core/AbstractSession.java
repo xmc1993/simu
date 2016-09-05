@@ -1,6 +1,5 @@
 package cn.superid.jpa.core;
 
-import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 
@@ -14,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AbstractSession implements Session {
 
     protected final Queue<Object> txStack = new ConcurrentLinkedQueue<Object>();
+
 
     @Override
     public int getIndexParamBaseOrdinal() {

@@ -82,7 +82,9 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT 1 FROM ");
+        StringBuilder sb = new StringBuilder(" SELECT ");
+        sb.append(StringUtil.joinParams(",",params));
+        sb.append(" FROM ");
         sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(builder);
         sb.append(" limit 1");
@@ -109,6 +111,36 @@ public class Dao<T> {
     }
 
 
+
+
+
+    public List<T> selectByPagination(Pagination pagination,String... params){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT count(id) FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        int total = (int) AbstractSession.currentSession().findOne(Integer.class,sb.toString(),sqlParams);
+        pagination.setTotal(total);
+
+
+        StringBuilder list = new StringBuilder(" SELECT ");
+        list.append(StringUtil.joinParams(",",params));
+        list.append(" FROM ");
+        list.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        list.append(builder);
+        list.append(" limit ?,? ");
+        parameterBindings.get().addIndexBinding(pagination.getOffset());
+        parameterBindings.get().addIndexBinding(pagination.getSize());
+        Object[] listParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return (List<T>) AbstractSession.currentSession().findList(this.clazz, list.toString(), listParams);
+
+    }
 
 
 
@@ -164,6 +196,65 @@ public class Dao<T> {
         return getSession().execute(sql,all);
     }
 
+    public  int set(Expr... exprs) {
+        if(exprs==null||exprs.length==0){
+            throw new JdbcRuntimeException("Error update set");
+        }
+
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        ParameterBindings pb = new ParameterBindings();
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET ");
+        boolean init =true;
+        for(Expr expr:exprs){
+            if(init){
+                init = false;
+            }else{
+                sb.append(',');
+            }
+            sb.append(expr.getSql());
+            if(expr.getRight()!=null){
+                pb.addIndexBinding(expr.getRight());
+            }
+
+        }
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all = pb.addAll(parameterBindings.get());
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,all);
+    }
+
+
+    public int set(String setSql,ParameterBindings setParams){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET ");
+        sb.append(setSql);
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all  ;
+        if(setParams==null){
+            setParams = new ParameterBindings();
+        }
+        all= setParams.addAll(parameterBindings.get());
+
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,all);
+
+    }
+
+
     public  int remove() {
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
@@ -183,6 +274,8 @@ public class Dao<T> {
     public int execute(String sql,ParameterBindings parameterBindings1){
         return getSession().execute(sql,parameterBindings1);
     }
+
+
 
     /**
         check  meet the conditions

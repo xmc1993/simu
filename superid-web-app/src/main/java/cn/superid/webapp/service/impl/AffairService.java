@@ -1,11 +1,14 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.Expr;
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IAffairService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.ByteBuffer;
 
 /**
  * Created by zp on 2016/8/8.
@@ -17,9 +20,9 @@ public class AffairService implements IAffairService {
         return "39,34,1,2,3,32,4";
     }
 
-    private void JustIndex(long affairId,int index){
-
-
+    private void JustIndex(long parentId,int index){
+        AffairEntity.execute(" update affair set index = index +1 where parent_id = ? and index>= ?",new ParameterBindings(parentId,index));//调整index顺序
+        //TODO 如果redis缓存,需要更新缓存
     }
 
     @Override
@@ -42,9 +45,8 @@ public class AffairService implements IAffairService {
         affairEntity.setPath(parentAffair.getPath()+'/'+affairEntity.getPathIndex());
         affairEntity.save();
 
-        AffairEntity.dao.eq("id",affairEntity.getId()).set("index",2);
+        this.JustIndex(parentAffair.getId(),createAffairForm.getIndex());
 
-
-        return null;
+        return affairEntity;
     }
 }

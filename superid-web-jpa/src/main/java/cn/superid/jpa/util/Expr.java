@@ -7,6 +7,7 @@ public class Expr {
     private String left;
     private String op;
     private Object right;
+    private String sql=null;
 
     public Expr(){};
 
@@ -14,6 +15,9 @@ public class Expr {
         this.left =left;
         this.right = right;
         this.op =op;
+    }
+    public Expr(String sql){
+        this.sql =sql;
     }
 
     public static Expr eq(String left,Object right){
@@ -41,6 +45,7 @@ public class Expr {
     }
 
 
+
     public String getLeft() {
         return left;
     }
@@ -66,11 +71,14 @@ public class Expr {
     }
 
     public String getSql(){
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(left);
-        stringBuilder.append(op);
-        stringBuilder.append("?");
-        return stringBuilder.toString();
+        if(sql==null){
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(StringUtil.underscoreName(left));
+            stringBuilder.append(op);
+            stringBuilder.append("?");
+            sql = stringBuilder.toString();
+        }
+        return sql;
     }
 
 }

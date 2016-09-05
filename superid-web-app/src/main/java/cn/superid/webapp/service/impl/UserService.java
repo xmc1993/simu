@@ -147,4 +147,14 @@ public class UserService implements IUserService {
         }
         return false;
     }
+
+    @Override
+    public UserEntity getCurrentUser() {
+         return UserEntity.dao.findById(currentUserId());
+    }
+
+    @Override
+    public long currentUserId() {
+        return auth.currentUserId();
+    }
 }

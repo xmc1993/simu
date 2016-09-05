@@ -26,14 +26,12 @@ public class UserServiceTest{
 
     @Test
     public void testCreateUser(){
-        for(int i=0;i<10;i++){
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername("大哥鹏");
-            userEntity.setPassword(PasswordEncryptor.encode("123456"));
-            userEntity.setMobile("15951818230"+i);
-            UserEntity result = userService.createUser(userEntity);
-            Assert.assertFalse(result==null);
-        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("大哥鹏");
+        userEntity.setPassword(PasswordEncryptor.encode("123456"));
+        userEntity.setMobile("15951818230");
+        UserEntity result = userService.createUser(userEntity);
+        Assert.assertFalse(result==null);
 
     }
 

@@ -41,6 +41,7 @@ public class UserEntity extends ExecutableModel {
     private String detailAddress;
     private String description;
     private double faith;
+    private int gender;
 
     @Id
     @Column(name = "id")
@@ -68,6 +69,15 @@ public class UserEntity extends ExecutableModel {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public String getFamilyName() {
