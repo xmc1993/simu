@@ -6,6 +6,7 @@ import cn.superid.jpa.util.ParameterBindings;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zp on 2016/7/18
@@ -86,8 +87,16 @@ public interface Session {
 
     void copyProperties(Object from,Object to);
 
-    HashMap<String,Object> getHashMapFromEntity(Object entity);
+    HashMap<String, Object> getHashMapFromEntity(Object entity);
 
-    Object generateHashMapFromEntity(HashMap<String,Object> hashMap,Object entity);
+    HashMap<String, byte[]> getHashByteMapFromEntity(Object entity);
+
+    Object generateHashMapFromEntity(HashMap<String, Object> hashMap,Object entity);
+
+    Object generateHashByteMapFromEntity(HashMap<String, byte[]> hashMap,Object entity);
+
+
+
+
 
 }
