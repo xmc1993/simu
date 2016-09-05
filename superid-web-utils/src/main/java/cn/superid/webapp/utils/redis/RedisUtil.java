@@ -31,8 +31,8 @@ public class RedisUtil {
 
     public static Map<byte[], byte[]> map2map(Map<String, byte[]> source) throws UnsupportedEncodingException {
         Map<byte[], byte[]> map = new HashMap<>();
-        for(Map.Entry entry : source.entrySet()){
-            map.put(ByteUtil.stringToBytes((String)entry.getKey()), (byte[])entry.getValue());
+        for(Map.Entry<String, byte[]> entry : source.entrySet()){
+            map.put(ByteUtil.stringToBytes(entry.getKey()), entry.getValue());
         }
 
         return map;
