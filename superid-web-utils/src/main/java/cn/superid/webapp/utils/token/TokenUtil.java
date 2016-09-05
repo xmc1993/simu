@@ -19,7 +19,7 @@ public class TokenUtil {
      * 用户登录时生成TOKEN
      * @param uid
      */
-    public static void setLoginToken(BigInteger uid){
+    public static void setLoginToken(Long uid){
         String token = UUID.randomUUID().toString();
         RedisUtil.getJedisClient().sadd(String.valueOf(uid), token);
     }
@@ -29,7 +29,7 @@ public class TokenUtil {
      * @param uid 用户ID
      * @return
      */
-    public static boolean invaildLoginToken(BigInteger uid, String token){
+    public static boolean invaildLoginToken(Long uid, String token){
         return RedisUtil.getJedisClient().srem(String.valueOf(uid), token) != 0;
     }
 
@@ -38,7 +38,7 @@ public class TokenUtil {
      * @param uid
      * @return
      */
-    public static Set<String> getLoginToken(BigInteger uid){
+    public static Set<String> getLoginToken(Long uid){
         return RedisUtil.getJedisClient().smembers(String.valueOf(uid));
 
     }
