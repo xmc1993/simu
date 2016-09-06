@@ -46,7 +46,7 @@ public interface Session {
 
     void update(Object entity);
 
-    void update(Object entity, List<String> columns);
+    boolean update(Object entity, List<String> columns);
 
     void startBatch();
 

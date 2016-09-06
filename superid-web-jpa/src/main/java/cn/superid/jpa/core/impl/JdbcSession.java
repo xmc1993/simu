@@ -222,7 +222,7 @@ public class JdbcSession extends AbstractSession {
 
 
     @Override
-    public void update(Object entity, List<String> columns) {
+    public boolean update(Object entity, List<String> columns) {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
@@ -251,7 +251,8 @@ public class JdbcSession extends AbstractSession {
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
             parameterBindings.appendToStatement(preparedStatement);
             try {
-                preparedStatement.executeUpdate();
+                int i = preparedStatement.executeUpdate();
+                return i > 0;
             } finally {
                 preparedStatement.close();
             }
