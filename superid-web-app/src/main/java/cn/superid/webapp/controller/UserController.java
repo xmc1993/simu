@@ -3,6 +3,9 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
+import cn.superid.webapp.forms.EditUserBaseInfo;
+import cn.superid.webapp.forms.EditUserDetailForm;
+import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -56,6 +61,31 @@ public class UserController {
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, AliSmsDao.registerCode));
         }
     }
+
+
+
+    /**
+     * 获取身份验证码
+     * @param request
+     * @param token
+     * @return
+     */
+    @ApiOperation(value = "获取身份验证码", httpMethod = "GET", response = boolean.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @RequestMapping(value = "/get_verify_code", method = RequestMethod.GET)
+    public SimpleResponse getVerifyCode(HttpServletRequest request,String token){
+        if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
+            return SimpleResponse.error("frequent_request");
+        }
+        if(StringUtil.isEmpty(token)){
+            return new SimpleResponse(ResponseCode.BadRequest,null);
+        }else {
+            return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, AliSmsDao.checkIdentityCode));
+        }
+    }
+
+
+
+
 
     /**
      * 获取登录验证码
@@ -103,6 +133,37 @@ public class UserController {
             return SimpleResponse.error("server_error");
         }
     }
+
+    @ApiOperation(value = "判断验证码是否正确", httpMethod = "POST", response = SimpleResponse.class, notes = "判断验证码是否正确")
+    @RequestMapping(value = "/check_token", method = RequestMethod.POST)
+    public SimpleResponse checkToken(String verifyCode,HttpServletRequest request,String token){
+        if(!userService.checkVerifyCode(verifyCode)){
+            return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+        }
+        auth.setSessionAttr("verified_time",new Date());
+        return SimpleResponse.ok("success");
+    }
+
+    @ApiOperation(value = "修改手机或者邮箱号码",response = SimpleResponse.class)
+    @RequestMapping(value = "/change_mobile_or_email",method = RequestMethod.POST)
+    public SimpleResponse changeMobileOrEmail(String token,String verifyCode){
+        Date date =(Date) auth.getSessionAttr("verified_time");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MINUTE, 15);
+        if (calendar.getTime().before(new Date())) {//超过15分钟
+            return SimpleResponse.error("not_verified_time");
+        }
+        if (!userService.checkVerifyCode(verifyCode)){
+            return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+
+        }
+        return new SimpleResponse(userService.changeToken(token));
+
+    }
+
+
+
 
 
     @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
@@ -171,12 +232,40 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(UserBaseInfo userBaseInfo){
-
+    public  SimpleResponse editBase(EditUserBaseInfo userBaseInfo){
         return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
     }
 
 
+    /**
+     * 修改密码
+     */
+    @ApiOperation(value = "修改密码", response = String.class)
+    @RequestMapping(value = "/change_pwd", method = RequestMethod.POST)
+    public  SimpleResponse changePwd(String oldPwd,String newPwd){
+        return new SimpleResponse(userService.changePwd(oldPwd,newPwd));
+    }
+
+
+
+    @ApiOperation(value = "编辑详细信息", response = String.class)
+    @RequestMapping(value = "/edit_detail", method = RequestMethod.POST)
+    public  SimpleResponse editDetail(EditUserDetailForm editUserDetailForm){
+        return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
+    }
+
+    @ApiOperation(value = "设置详细信息公开性", response = String.class)
+    @RequestMapping(value = "/change_public_type", method = RequestMethod.POST)
+    public  SimpleResponse changePublicType(int publicType){
+        return new SimpleResponse(userService.changePublicType(publicType));
+    }
+
+    @ApiOperation(value = "设置详细信息公开性", response = String.class)
+    @RequestMapping(value = "/user_info", method = RequestMethod.POST)
+    public  SimpleResponse getUserInfo(long userId){
+        ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
+        return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+    }
 
 
 

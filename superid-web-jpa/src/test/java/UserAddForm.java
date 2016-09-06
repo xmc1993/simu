@@ -4,7 +4,7 @@
 public class UserAddForm {
     private int id;
     private String name;
-    private Long age;
+    private Integer age;
 
     public int getId() {
         return id;
@@ -22,11 +22,11 @@ public class UserAddForm {
         this.name = name;
     }
 
-    public Long getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(Long age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 }

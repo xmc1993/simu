@@ -5,9 +5,11 @@ import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import com.alibaba.druid.pool.DruidDataSource;
+import com.sun.tools.javac.code.Attribute;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
+import javax.validation.constraints.AssertTrue;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,7 +102,7 @@ public class testExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String,Object> hashMap=User.getSession().getHashMapFromEntity(user);
+        HashMap<String,Object> hashMap=User.getSession().getHashMapFromEntity(user,false);
         Assert.assertTrue(hashMap.get("age").equals(18));
 
         User user1=new User();
@@ -163,14 +165,14 @@ public class testExecute extends TestCase {
     public void testCopy(){
         UserAddForm userAddForm = new UserAddForm();
         userAddForm.setName("zp");
-        userAddForm.setAge(10L);//类型不同不会copy
+        userAddForm.setAge(10);
         User user=new User();
         user.copyPropertiesFrom(userAddForm);
-        Assert.assertTrue(user.getName().equals("zp")&&user.getAge()==0);
+        Assert.assertTrue(user.getName().equals("zp")&&user.getAge()==10);
 
         UserAddForm test2 = new UserAddForm();
         user.copyPropertiesTo(test2);
-        Assert.assertTrue(test2.getName().equals("zp")&&test2.getAge()==null);
+        Assert.assertFalse(test2.getName().equals("zp")&&test2.getAge()==null);
 
     }
 

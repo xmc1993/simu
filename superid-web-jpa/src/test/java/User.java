@@ -19,6 +19,7 @@ public class User  extends ExecutableModel{
     private int age;
     private String details;
 
+
     @Id
     public int getId() {
         return id;

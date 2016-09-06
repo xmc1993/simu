@@ -84,7 +84,10 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
 
 
 
-    public HashMap<String,Object> hashMap(){ return getSession().getHashMapFromEntity(this);}
+    public HashMap<String,Object> hashMap(){ return getSession().getHashMapFromEntity(this,false);}
+
+    public HashMap<String,Object> hashMapSkipNull(){ return getSession().getHashMapFromEntity(this,true);}
+
 
     public HashMap<String,byte[]> getHashByteMap(){ return getSession().getHashByteMapFromEntity(this);}
 

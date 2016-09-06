@@ -1,26 +1,19 @@
-package cn.superid.webapp.model;
+package cn.superid.webapp.forms;
 
-import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.model.AffairEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
- * Created by zp on 2016/7/25.
+ * Created by xiaofengxu on 16/9/6.
  */
-@Table(name = "user")
-public class UserEntity extends ExecutableModel {
-    public final static Dao<UserEntity> dao = new Dao<>(UserEntity.class);
+public class ResultUserInfo extends ExecutableModel{
 
+    public final static Dao<ResultUserInfo> dao = new Dao<>(ResultUserInfo.class);
     private Long id;
     private String superid;
-    private String password;
-    private String familyName;
-    private String givenName;
     private int state;
     private String videoUrl;
     private String videoImg;
@@ -36,73 +29,18 @@ public class UserEntity extends ExecutableModel {
     private int educationLevel;
     private String school;
     private Timestamp createTime;
-    private Timestamp modifyTime;
     private String address;
     private String detailAddress;
     private String description;//描述
     private double faith;
     private int gender;
-    private int publicType;
 
-    @Id
-    @Column(name = "id")
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getSuperid() {
-        return superid;
-    }
-
-    public void setSuperid(String superid) {
-        this.superid = superid;
-    }
-
-
-    @NotTooSimple
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
     }
 
     public int getState() {
@@ -113,6 +51,14 @@ public class UserEntity extends ExecutableModel {
         this.state = state;
     }
 
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
     public String getVideoImg() {
         return videoImg;
     }
@@ -121,20 +67,20 @@ public class UserEntity extends ExecutableModel {
         this.videoImg = videoImg;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public int getIsVideo() {
         return isVideo;
     }
 
     public void setIsVideo(int isVideo) {
         this.isVideo = isVideo;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Timestamp getBirthday() {
@@ -217,14 +163,6 @@ public class UserEntity extends ExecutableModel {
         this.createTime = createTime;
     }
 
-    public Timestamp getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Timestamp modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -257,11 +195,11 @@ public class UserEntity extends ExecutableModel {
         this.faith = faith;
     }
 
-    public int getPublicType() {
-        return publicType;
+    public int getGender() {
+        return gender;
     }
 
-    public void setPublicType(int publicType) {
-        this.publicType = publicType;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 }

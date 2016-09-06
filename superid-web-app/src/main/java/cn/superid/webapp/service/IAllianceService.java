@@ -12,4 +12,7 @@ public interface IAllianceService {
 
     public AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm);
 
+    public boolean inSameAlliance(long userId1,long userId2);
+
+
 }

@@ -20,6 +20,7 @@ public class UserBaseInfo extends ExecutableModel{
     private int gender;
     private Timestamp birthday;
     private String username;
+    private int publicType;
 
     @Id
     public long getId() {
@@ -30,19 +31,43 @@ public class UserBaseInfo extends ExecutableModel{
         this.id = id;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getGender() {
+        return gender;
     }
 
     public void setGender(int gender) {
         this.gender = gender;
     }
 
+    public Timestamp getBirthday() {
+        return birthday;
+    }
+
     public void setBirthday(Timestamp birthday) {
         this.birthday = birthday;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public int getPublicType() {
+        return publicType;
+    }
+
+    public void setPublicType(int publicType) {
+        this.publicType = publicType;
     }
 }

@@ -1,5 +1,8 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.forms.EditUserBaseInfo;
+import cn.superid.webapp.forms.EditUserDetailForm;
+import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 
@@ -7,24 +10,33 @@ import cn.superid.webapp.model.UserEntity;
  * Created by zp on 2016/7/26.
  */
 public interface IUserService {
-    public boolean belong(Long userId,Long roleId);
+     boolean belong(Long userId,Long roleId);
 
-    public  boolean getVerifyCode(String token,String template);
+     boolean getVerifyCode(String token,String template);
 
-    public boolean checkVerifyCode(String code);
+     boolean checkVerifyCode(String code);
 
-    public UserEntity createUser(UserEntity userEntity);
+     UserEntity createUser(UserEntity userEntity);
 
-    public UserEntity findByToken(String token);
+     UserEntity findByToken(String token);
 
-    public boolean validUsername(String username);
+     boolean validUsername(String username);
 
-    public boolean validToken(String token);
+     boolean validToken(String token);
 
-    public UserEntity getCurrentUser();
+     UserEntity getCurrentUser();
 
-    public long currentUserId();
+     long currentUserId();
 
-    public boolean editBaseInfo(UserBaseInfo userBaseInfo);
+     boolean editBaseInfo(EditUserBaseInfo userBaseInfo);
 
+     boolean changeToken(String token);
+
+     boolean changePwd(String oldPwd,String newPwd);
+
+     boolean editDetailInfo(EditUserDetailForm editUserDetailForm);
+
+     boolean changePublicType(int publicType);
+
+     ResultUserInfo getUserInfo(long userId);
 }

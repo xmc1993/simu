@@ -4,7 +4,9 @@ import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.util.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zp on 2016/7/21.
@@ -230,6 +232,34 @@ public class Dao<T> {
         return getSession().execute(sql,all);
     }
 
+    public  int set(Map<String,Object> map) {
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        ParameterBindings pb = new ParameterBindings();
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET ");
+        boolean init =true;
+        for(String key:map.keySet()){
+            if(init){
+                init = false;
+            }else {
+                sb.append(',');
+            }
+            sb.append(StringUtil.underscoreName(key));
+            sb.append("=?");
+            pb.addIndexBinding(map.get(key));
+        }
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all = pb.addAll(parameterBindings.get());
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,all);
+    }
+
 
     public int set(String setSql,ParameterBindings setParams){
         StringBuilder builder = where.get();
@@ -311,6 +341,11 @@ public class Dao<T> {
     public Dao<T> eq(String column,Object value){
         return and(column,"=",value);
     }
+
+    public Dao<T> idEqual(Object value){
+        return and("id","=",value);
+    }
+
 
     public Dao<T> gt(String column,Object value){
         return and(column,">",value);

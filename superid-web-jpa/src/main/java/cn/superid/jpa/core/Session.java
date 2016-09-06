@@ -87,7 +87,7 @@ public interface Session {
 
     void copyProperties(Object from,Object to,boolean skipNull);
 
-    HashMap<String, Object> getHashMapFromEntity(Object entity);
+    HashMap<String, Object> getHashMapFromEntity(Object entity,boolean skipNull);
 
     HashMap<String, byte[]> getHashByteMapFromEntity(Object entity);
 

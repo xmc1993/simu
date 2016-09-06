@@ -5,7 +5,11 @@ import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
+import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.AllianceCreateForm;
+import cn.superid.webapp.forms.EditUserBaseInfo;
+import cn.superid.webapp.forms.EditUserDetailForm;
+import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
@@ -15,6 +19,7 @@ import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.DirectEmailDao;
 import cn.superid.webapp.utils.NumberUtils;
+import cn.superid.webapp.utils.PasswordEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +27,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by zp on 2016/8/1.
@@ -160,13 +164,61 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean editBaseInfo(UserBaseInfo userBaseInfo) {
-        UserBaseInfo update = UserBaseInfo.dao.findById(userBaseInfo.getId());
+    public boolean editBaseInfo(EditUserBaseInfo userBaseInfo) {
+        UserBaseInfo update = UserBaseInfo.dao.findById(currentUserId());//有缓存的实体可以先获取再更新
         if(update==null){
             return false;
         }else{
-            userBaseInfo.copyPropertiesToAndSkipNull(update);
+            update.copyPropertiesFromAndSkipNull(userBaseInfo);
+            update.update();
         }
         return true;
+    }
+
+    @Override
+    public boolean changeToken(String token) {
+        long userId = currentUserId();
+        String column = StringUtil.isEmail(token)?"email":"mobile";
+        int result =  UserEntity.dao.eq("id",userId).set(column,token);
+        return result>0;
+    }
+
+    @Override
+    public boolean changePwd(String oldPwd, String newPwd) {
+        UserEntity userEntity = getCurrentUser();
+        if(!PasswordEncryptor.matches(oldPwd,userEntity.getPassword())){
+            return false;
+        }
+        newPwd = PasswordEncryptor.encode(newPwd);
+        int result =  UserEntity.dao.eq("id",userEntity.getId()).set("password",newPwd);
+        return result>0;
+
+    }
+
+    @Override
+    public boolean editDetailInfo(EditUserDetailForm editUserDetailForm) {
+        int result =  UserEntity.dao.eq("id",currentUserId()).set(editUserDetailForm.hashMapSkipNull());
+        return result>0;
+    }
+
+    @Override
+    public boolean changePublicType(int publicType) {
+        UserBaseInfo userBaseInfo =UserBaseInfo.dao.findById(currentUserId());
+        userBaseInfo.setPublicType(publicType);
+        userBaseInfo.update();
+        return true;
+    }
+
+    @Override
+    public ResultUserInfo getUserInfo(long userId) {
+        long thisUserId = currentUserId();
+        UserBaseInfo userBaseInfo =UserBaseInfo.dao.findById(userId);
+        if(userBaseInfo.getPublicType()== PublicType.ALL||(userBaseInfo.getPublicType()==PublicType.TO_ALLIANCE&&allianceService.inSameAlliance(userId,thisUserId))){//如果公开或者对盟内成员公开
+            return ResultUserInfo.dao.idEqual(userId).selectOne();
+        }
+
+        ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
+        resultUserInfo.copyPropertiesFrom(userBaseInfo);
+        return resultUserInfo;
     }
 }

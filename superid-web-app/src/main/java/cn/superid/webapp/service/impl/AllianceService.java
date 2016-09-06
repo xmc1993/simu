@@ -21,4 +21,9 @@ public class AllianceService  implements IAllianceService{
 //        throw new JdbcRuntimeException("error");
         return new AllianceEntity();
     }
+
+    @Override
+    public boolean inSameAlliance(long userId1, long userId2) {
+        return false;
+    }
 }

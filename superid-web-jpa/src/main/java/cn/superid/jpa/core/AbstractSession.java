@@ -4,6 +4,7 @@ import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ByteUtil;
 import cn.superid.jpa.util.FromByteUtilMapper;
+import com.google.common.collect.ImmutableMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -161,17 +162,59 @@ public abstract class AbstractSession implements Session {
         return defaultSessionFactory.currentSession();
     }
 
+    private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS
+            = new ImmutableMap.Builder<Class<?>, Class<?>>()
+            .put(boolean.class, Boolean.class)
+            .put(byte.class, Byte.class)
+            .put(char.class, Character.class)
+            .put(double.class, Double.class)
+            .put(float.class, Float.class)
+            .put(int.class, Integer.class)
+            .put(long.class, Long.class)
+            .put(short.class, Short.class)
+            .put(void.class, Void.class)
+            .build();
+
+    private boolean canSetProperties(ModelMeta.ModelColumnMeta fromColumnMeta,ModelMeta.ModelColumnMeta toColumnMeta){
+        if(!toColumnMeta.fieldName.equals(fromColumnMeta.fieldName)){
+            return false;
+        }
+        Class<?> from = fromColumnMeta.fieldType;
+        Class<?> to = toColumnMeta.fieldType;
+        if(from.equals(to)){
+            return true;
+        }
+        if(from.isPrimitive()){
+            System.out.print(PRIMITIVES_TO_WRAPPERS.get(from));
+           return  PRIMITIVES_TO_WRAPPERS.get(from).equals(to);
+        }
+        if(to.isPrimitive()){
+            System.out.print(PRIMITIVES_TO_WRAPPERS.get(to));
+
+            return PRIMITIVES_TO_WRAPPERS.get(to).equals(from);
+        }
+        return false;
+    }
+
+
+
+
     @Override
-    public void copyProperties(Object from, Object to,boolean skipNull) {
+    public void copyProperties(Object from, Object to, boolean skipNull) {
         Session session = currentSession();
+
         ModelMeta fromMeta = session.getEntityMetaOfClass(from.getClass());
         ModelMeta toMeta = session.getEntityMetaOfClass(to.getClass());
         for (ModelMeta.ModelColumnMeta fromColumnMeta : fromMeta.getColumnMetaSet()) {
             for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
-                if (toColumnMeta.fieldName.equals(fromColumnMeta.fieldName) && toColumnMeta.fieldType.equals(fromColumnMeta.fieldType)) {
+                if (fromColumnMeta.isId && skipNull) {
+                    continue;
+                }
+
+                if (canSetProperties(fromColumnMeta,toColumnMeta)) {
                     FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(), fromColumnMeta.fieldName);
                     Object value = fromFa.getProperty(from);
-                    if(skipNull&&value==null){
+                    if (skipNull && value == null) {
                         continue;
                     }
                     FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(), toColumnMeta.fieldName);
@@ -183,19 +226,27 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public HashMap<String, Object> getHashMapFromEntity(Object entity) {
+    public HashMap<String, Object> getHashMapFromEntity(Object entity,boolean skipNull) {
         Session session = currentSession();
         HashMap<String, Object> hashMap = new HashMap<>();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            if(modelColumnMeta.isId&&skipNull){
+                continue;
+            }
             FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            Object value = fieldAccessor.getProperty(entity);
+            if(value==null&&skipNull){
+                continue;
+            }
+
             hashMap.put(modelColumnMeta.fieldName, fieldAccessor.getProperty(entity));
         }
         return hashMap;
     }
 
     @Override
-    public HashMap<String, byte[]> getHashByteMapFromEntity(Object entity){
+    public HashMap<String, byte[]> getHashByteMapFromEntity(Object entity) {
         Session session = currentSession();
         HashMap<String, byte[]> hashMap = new HashMap<>();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
@@ -216,13 +267,13 @@ public abstract class AbstractSession implements Session {
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
-            fieldAccessor.setProperty(entity,hashMap.get(modelColumnMeta.fieldName));
+            fieldAccessor.setProperty(entity, hashMap.get(modelColumnMeta.fieldName));
         }
         return entity;
     }
 
     @Override
-    public Object generateHashByteMapFromEntity(HashMap<String,byte[]> hashMap,Object entity) {
+    public Object generateHashByteMapFromEntity(HashMap<String, byte[]> hashMap, Object entity) {
         Session session = currentSession();
 
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
