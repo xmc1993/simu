@@ -181,8 +181,9 @@ public abstract class AbstractSession implements Session {
     @Override
     public HashMap<String, Object> getHashMapFromEntity(Object entity) {
         Session session = currentSession();
-        HashMap<String, Object> hashMap = new HashMap<>();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        //给定HashMap初始大小 防止过度分配空间浪费
+        HashMap<String, Object> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
             hashMap.put(modelColumnMeta.fieldName, fieldAccessor.getProperty(entity));
@@ -193,8 +194,9 @@ public abstract class AbstractSession implements Session {
     @Override
     public HashMap<String, byte[]> getHashByteMapFromEntity(Object entity){
         Session session = currentSession();
-        HashMap<String, byte[]> hashMap = new HashMap<>();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        //给定HashMap初始大小 防止过度分配空间浪费
+        HashMap<String, byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
             try {
