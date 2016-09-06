@@ -1,6 +1,5 @@
 package cn.superid.jpa.core;
 
-import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ByteUtil;
@@ -17,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AbstractSession implements Session {
 
     protected final Queue<Object> txStack = new ConcurrentLinkedQueue<Object>();
+
 
     @Override
     public int getIndexParamBaseOrdinal() {
@@ -162,7 +162,7 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public void copyProperties(Object from, Object to) {
+    public void copyProperties(Object from, Object to,boolean skipNull) {
         Session session = currentSession();
         ModelMeta fromMeta = session.getEntityMetaOfClass(from.getClass());
         ModelMeta toMeta = session.getEntityMetaOfClass(to.getClass());
@@ -170,6 +170,10 @@ public abstract class AbstractSession implements Session {
             for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
                 if (toColumnMeta.fieldName.equals(fromColumnMeta.fieldName) && toColumnMeta.fieldType.equals(fromColumnMeta.fieldType)) {
                     FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(), fromColumnMeta.fieldName);
+                    Object value = fromFa.getProperty(from);
+                    if(skipNull&&value==null){
+                        continue;
+                    }
                     FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(), toColumnMeta.fieldName);
                     toFa.setProperty(to, fromFa.getProperty(from));
                 }

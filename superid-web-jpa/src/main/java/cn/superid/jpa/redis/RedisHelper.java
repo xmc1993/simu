@@ -19,11 +19,17 @@ public final class RedisHelper<T>{
      * @param id
      * @param h
      */
-    public static void setEntityCache(Class clazz, long id,HashMap h){
+    public static void setEntityCache(Class clazz, long id,HashMap h) {
         HashMap<String, Object> hashMap = new HashMap<>();
         String key = clazz.getName() + id;
+    }
+
+    public static Object getEntityCache(Class clzz, int id){
+        String key = clzz.getName() + id;
+        return null;
 
     }
+
 
     /**
      * 从缓存中获取

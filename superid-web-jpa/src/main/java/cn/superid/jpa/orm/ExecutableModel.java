@@ -4,7 +4,9 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.util.ParameterBindings;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -65,14 +67,24 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
     public void copyPropertiesTo(Object to){
-       getSession().copyProperties(this,to);
+       getSession().copyProperties(this,to,false);
     }
 
     public void copyPropertiesFrom(Object from){
-       getSession().copyProperties(from,this);
+       getSession().copyProperties(from,this,false);
     }
 
-    public HashMap<String,Object> getHashMap(){ return getSession().getHashMapFromEntity(this);}
+    public void copyPropertiesToAndSkipNull(Object to){
+        getSession().copyProperties(this,to,true);
+    }
+
+    public void copyPropertiesFromAndSkipNull(Object from){
+        getSession().copyProperties(from,this,true);
+    }
+
+
+
+    public HashMap<String,Object> hashMap(){ return getSession().getHashMapFromEntity(this);}
 
     public HashMap<String,byte[]> getHashByteMap(){ return getSession().getHashByteMapFromEntity(this);}
 

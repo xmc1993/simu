@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by zp on 2016/8/9.
  */
 @RunWith(util.JUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all-test.xml"})
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
@@ -32,14 +32,12 @@ public class UserServiceTest{
 
     @Test
     public void testCreateUser(){
-        for(int i=0;i<10;i++){
-            UserEntity userEntity = new UserEntity();
-            userEntity.setUsername("大哥鹏");
-            userEntity.setPassword(PasswordEncryptor.encode("123456"));
-            userEntity.setMobile("15951818230"+i);
-            UserEntity result = userService.createUser(userEntity);
-            Assert.assertFalse(result==null);
-        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("大哥鹏");
+        userEntity.setPassword(PasswordEncryptor.encode("123456"));
+        userEntity.setMobile("15951818231");
+        UserEntity result = userService.createUser(userEntity);
+        Assert.assertFalse(result==null);
 
     }
 

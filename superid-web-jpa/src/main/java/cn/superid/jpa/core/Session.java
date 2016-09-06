@@ -85,7 +85,7 @@ public interface Session {
 
     int execute(String sql, ParameterBindings parameterBindings);
 
-    void copyProperties(Object from,Object to);
+    void copyProperties(Object from,Object to,boolean skipNull);
 
     HashMap<String, Object> getHashMapFromEntity(Object entity);
 

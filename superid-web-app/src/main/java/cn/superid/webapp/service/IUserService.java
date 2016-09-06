@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 
 /**
@@ -19,5 +20,11 @@ public interface IUserService {
     public boolean validUsername(String username);
 
     public boolean validToken(String token);
+
+    public UserEntity getCurrentUser();
+
+    public long currentUserId();
+
+    public boolean editBaseInfo(UserBaseInfo userBaseInfo);
 
 }

@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
+import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
@@ -158,7 +159,7 @@ public class UserController {
         return SimpleResponse.ok(userService.validToken(token));
     }
 
-
+    @ApiOperation(value = "登出", response = String.class, notes = "登出")
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public  SimpleResponse logout(){
         auth.unAuthUser();
@@ -166,12 +167,17 @@ public class UserController {
     }
 
     /**
-     * TODO 用户信息修改
+     * 修改用户信息
      */
+    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
+    @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
+    public  SimpleResponse editBase(UserBaseInfo userBaseInfo){
+
+        return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
+    }
 
 
-    /**
-     *
-     */
+
+
 
 }

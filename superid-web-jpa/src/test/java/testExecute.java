@@ -1,6 +1,8 @@
 
 
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
+import cn.superid.jpa.util.Expr;
+import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
@@ -98,7 +100,7 @@ public class testExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String,Object> hashMap=user.getHashMap();
+        HashMap<String,Object> hashMap=User.getSession().getHashMapFromEntity(user);
         Assert.assertTrue(hashMap.get("age").equals(18));
 
         User user1=new User();
@@ -129,10 +131,15 @@ public class testExecute extends TestCase {
         user.setAge(33);
         user.setName("tms");
         user.save();
-//        User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
-//        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
+        User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
+        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
 
-        User.dao.eq("name","tms").set("age","age + "+38);
+        User.dao.eq("name","xxf").set(new Expr(" age = age + 1 "));
+        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 39);
+
+        User.dao.eq("name","xxf").set(" age = age + 1 ",null);
+        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 40);
+
     }
 
     public void testExecute() {
@@ -164,6 +171,13 @@ public class testExecute extends TestCase {
         UserAddForm test2 = new UserAddForm();
         user.copyPropertiesTo(test2);
         Assert.assertTrue(test2.getName().equals("zp")&&test2.getAge()==null);
+
+    }
+
+    public void testPagination(){
+        Pagination pagination=new Pagination();
+        List<User> users=User.dao.eq("name","xxf").selectByPagination(pagination);
+        Assert.assertFalse(users.size()>pagination.getTotal());
 
     }
 
