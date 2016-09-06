@@ -16,10 +16,16 @@ public class SimpleResponse {
         this.data = "Success";
     }
 
+    public SimpleResponse(boolean success){
+        this.code = success?0:-1;
+        this.data = success?"success":"failed";
+    }
+
     public SimpleResponse(int code, Object data) {
         this.code = code;
         this.data = data;
     }
+
 
     public Object getData() {
         return data;

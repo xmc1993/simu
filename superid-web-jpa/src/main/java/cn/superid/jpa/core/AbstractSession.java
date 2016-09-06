@@ -2,7 +2,10 @@ package cn.superid.jpa.core;
 
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.util.ByteUtil;
+import cn.superid.jpa.util.FromByteUtilMapper;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,7 +162,7 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public void copyProperties(Object from, Object to) {
+    public void copyProperties(Object from, Object to,boolean skipNull) {
         Session session = currentSession();
         ModelMeta fromMeta = session.getEntityMetaOfClass(from.getClass());
         ModelMeta toMeta = session.getEntityMetaOfClass(to.getClass());
@@ -167,6 +170,10 @@ public abstract class AbstractSession implements Session {
             for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
                 if (toColumnMeta.fieldName.equals(fromColumnMeta.fieldName) && toColumnMeta.fieldType.equals(fromColumnMeta.fieldType)) {
                     FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(), fromColumnMeta.fieldName);
+                    Object value = fromFa.getProperty(from);
+                    if(skipNull&&value==null){
+                        continue;
+                    }
                     FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(), toColumnMeta.fieldName);
                     toFa.setProperty(to, fromFa.getProperty(from));
                 }
@@ -188,6 +195,22 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
+    public HashMap<String, byte[]> getHashByteMapFromEntity(Object entity){
+        Session session = currentSession();
+        HashMap<String, byte[]> hashMap = new HashMap<>();
+        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            try {
+                hashMap.put(modelColumnMeta.fieldName, ByteUtil.basicType2Bytes(fieldAccessor.getProperty(entity)));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+        return hashMap;
+    }
+
+    @Override
     public Object generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
@@ -196,5 +219,22 @@ public abstract class AbstractSession implements Session {
             fieldAccessor.setProperty(entity,hashMap.get(modelColumnMeta.fieldName));
         }
         return entity;
+    }
+
+    @Override
+    public Object generateHashByteMapFromEntity(HashMap<String,byte[]> hashMap,Object entity) {
+        Session session = currentSession();
+
+        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            try {
+                fieldAccessor.setProperty(entity, new FromByteUtilMapper(fieldAccessor.getPropertyType()).bytes2BasicType(hashMap.get(modelColumnMeta.fieldName)));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
     }
 }

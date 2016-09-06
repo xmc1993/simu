@@ -164,7 +164,9 @@ public class UserService implements IUserService {
         UserBaseInfo update = UserBaseInfo.dao.findById(userBaseInfo.getId());
         if(update==null){
             return false;
+        }else{
+            userBaseInfo.copyPropertiesToAndSkipNull(update);
         }
-        return false;
+        return true;
     }
 }

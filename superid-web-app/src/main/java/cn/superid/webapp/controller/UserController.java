@@ -172,11 +172,8 @@ public class UserController {
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
     public  SimpleResponse editBase(UserBaseInfo userBaseInfo){
-        UserBaseInfo update = new UserBaseInfo();
 
-        userBaseInfo.update();
-
-        return SimpleResponse.ok("success");
+        return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
     }
 
 
