@@ -5,7 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
     <!-- 加解密的实现类 -->
 
-
     <!--<bean id="springAuthenticator" class="cn.superid.webapp.security.SpringAuthenticator">-->
     <!--</bean>-->
     <!--<bean id="springAuthenticator" class="cn.superid.shiro.ShiroAuthenticator"/>-->
@@ -28,6 +27,32 @@
     <!--</bean>-->
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+    <bean class="org.springframework.mock.web.MockServletContext"/>
+
+    <!-- jedis pool配置 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--<property name="maxActive" value="${redis.maxActive}" />-->
+        <property name="maxIdle" value="${redis.maxIdle}" />
+        <!--<property name="maxWait" value="${redis.maxWait}" />-->
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+    </bean>
+
+    <!-- spring data redis -->
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="usePool" value="true"></property>
+        <property name="hostName" value="${redis.host}" />
+        <property name="port" value="${redis.port}" />
+        <property name="password" value="${redis.pass}" />
+        <property name="timeout" value="${redis.timeout}" />
+        <property name="database" value="${redis.default.db}"/>
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="connectionFactory" />
+    </bean>
+
 
     <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
     <!--<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->

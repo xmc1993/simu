@@ -4,7 +4,10 @@ import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,22 @@ public class AffairService implements IAffairService {
         this.JustIndex(parentAffair.getId(),createAffairForm.getIndex());
 
         return affairEntity;
+    }
+
+    @Override
+    @Transactional
+    public String applyForEnterAffair(long affairId, long roleId) {
+        AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
+        RoleEntity roleEntity = RoleEntity.dao.findById(roleId);
+        affairMemberEntity.setAffairId(affairId);
+        affairMemberEntity.setPermissions("");
+        affairMemberEntity.setRoleId(roleId);
+        affairMemberEntity.setUserId(roleEntity.getUserId());
+        affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        affairMemberEntity.setState(0);
+        affairMemberEntity.setType(0);
+        affairMemberEntity.save();
+        return "等待审核中";
     }
 }

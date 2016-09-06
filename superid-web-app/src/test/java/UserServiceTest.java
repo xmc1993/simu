@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.BoundHashOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.servlet.ServletContext;
@@ -14,6 +16,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 import javax.validation.constraints.AssertTrue;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zp on 2016/8/9.
@@ -23,6 +27,9 @@ import java.util.Enumeration;
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
     @Test
     public void testCreateUser(){
         UserEntity userEntity = new UserEntity();
@@ -47,5 +54,13 @@ public class UserServiceTest{
                 "SELECT @uids;");
     }
 
+    @Test
+    public void testRedis(){
+        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");
+        Map<String, String> data = new HashMap();
+        data.put("test", "test");
+
+        ops.putAll(data);
+    }
 
 }
