@@ -18,6 +18,7 @@ public final class RedisHelper<T>{
 
     public static Object getEntityCache(Class clzz, int id){
         String key = clzz.getName() + id;
+        return null;
 
     }
 }

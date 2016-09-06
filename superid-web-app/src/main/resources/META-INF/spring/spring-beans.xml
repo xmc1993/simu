@@ -29,7 +29,6 @@
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
-    <bean class="org.springframework.mock.web.MockServletContext"/>
     <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
     <!--<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->
     <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->

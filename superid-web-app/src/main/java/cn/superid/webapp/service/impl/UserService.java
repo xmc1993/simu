@@ -6,6 +6,7 @@ import cn.superid.utils.MapUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.forms.AllianceCreateForm;
+import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
@@ -156,5 +157,14 @@ public class UserService implements IUserService {
     @Override
     public long currentUserId() {
         return auth.currentUserId();
+    }
+
+    @Override
+    public boolean editBaseInfo(UserBaseInfo userBaseInfo) {
+        UserBaseInfo update = UserBaseInfo.dao.findById(userBaseInfo.getId());
+        if(update==null){
+            return false;
+        }
+        return false;
     }
 }

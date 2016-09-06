@@ -19,17 +19,16 @@ import java.util.Enumeration;
  * Created by zp on 2016/8/9.
  */
 @RunWith(util.JUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all.xml"})
+@ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all-test.xml"})
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
-
     @Test
     public void testCreateUser(){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("大哥鹏");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
-        userEntity.setMobile("15951818230");
+        userEntity.setMobile("15951818231");
         UserEntity result = userService.createUser(userEntity);
         Assert.assertFalse(result==null);
 

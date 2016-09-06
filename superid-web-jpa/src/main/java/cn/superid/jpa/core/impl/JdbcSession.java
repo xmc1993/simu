@@ -107,7 +107,7 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
-    private void setStatement(ModelMeta modelMeta,PreparedStatement preparedStatement,Object entity,boolean skipId){
+    private int setStatement(ModelMeta modelMeta,PreparedStatement preparedStatement,Object entity,boolean skipId){
         int i = getIndexParamBaseOrdinal();
         try {
             for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
@@ -117,6 +117,7 @@ public class JdbcSession extends AbstractSession {
                 preparedStatement.setObject(i, value);
                 i++;
             }
+            return i;
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         }
@@ -178,12 +179,11 @@ public class JdbcSession extends AbstractSession {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
-            int i = getIndexParamBaseOrdinal();
             String sql = modelMeta.getUpdateSql();
 
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
-                setStatement(modelMeta,preparedStatement,entity,true);
+                int i= setStatement(modelMeta,preparedStatement,entity,true);
                 Object id = idAccessor.getProperty(entity);
                 preparedStatement.setObject(i, id);
                 try {
@@ -196,10 +196,10 @@ public class JdbcSession extends AbstractSession {
                 if (batchStatement == null) {
                     batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
-                setStatement(modelMeta,batchStatement,entity,true);
+                int i=setStatement(modelMeta,batchStatement,entity,true);
 
                 Object id = idAccessor.getProperty(entity);
-                batchStatement.setObject(getIndexParamBaseOrdinal(), id);
+                batchStatement.setObject(i, id);
                 batchStatement.addBatch();
             }
 

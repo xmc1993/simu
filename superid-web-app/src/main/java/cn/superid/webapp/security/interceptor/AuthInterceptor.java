@@ -115,6 +115,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if(!(handler instanceof HandlerMethod)){
+            return super.preHandle(request, response, handler);
+        }
         int rs = checkPermissions(request, response, handler);
         if(rs==notLogin){
             permissionDeniedNeedLoginHandle(response);
@@ -160,14 +163,22 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return notLogin;
         }
 
-        Long roleId = Long.parseLong(request.getParameter("operationRoleId"));
-        if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
-            return notPermitted;
-        }
 
+        String  thisRole = request.getParameter("operationRoleId");
+        Long roleId =null;
+        if(thisRole!=null){
+            roleId = Long.parseLong(request.getParameter("operationRoleId"));
+            if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
+                return notPermitted;
+            }
+        }
         RequiredPermissions requiredPermissions = getRequiredPermissionsFromHandlerMethodWithCache(handlerMethod);
         if (requiredPermissions == null) {
             return hasPermission; // 不做检查
+        }else{
+            if(roleId==null){
+                return notPermitted;
+            }
         }
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限

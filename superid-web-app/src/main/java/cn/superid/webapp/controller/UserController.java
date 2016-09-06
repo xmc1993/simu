@@ -3,7 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.forms.UserBaseInfo;
+import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
@@ -169,9 +169,11 @@ public class UserController {
     /**
      * 修改用户信息
      */
-    @ApiOperation(value = "修改用户信息", response = String.class)
+    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editUser(UserBaseInfo userBaseInfo){
+    public  SimpleResponse editBase(UserBaseInfo userBaseInfo){
+        UserBaseInfo update = new UserBaseInfo();
+
         userBaseInfo.update();
 
         return SimpleResponse.ok("success");
@@ -180,9 +182,5 @@ public class UserController {
 
 
 
-
-    /**
-     *
-     */
 
 }
