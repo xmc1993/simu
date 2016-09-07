@@ -12,5 +12,4 @@
     <import resource="spring-tasks.xml"/>
     <bean class="org.springframework.mock.web.MockServletContext"/>
 
-
 </beans>
