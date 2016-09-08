@@ -102,7 +102,7 @@ public class testExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String,Object> hashMap=User.getSession().getHashMapFromEntity(user,false);
+        HashMap<String,Object> hashMap=User.getSession().generateHashMapFromEntity(user,false);
         Assert.assertTrue(hashMap.get("age").equals(18));
 
         User user1=new User();
