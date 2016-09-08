@@ -1,11 +1,10 @@
-import cn.superid.webapp.controller.UserController;
 import cn.superid.webapp.forms.EditUserBaseInfo;
+import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.tasks.RunningTests;
-import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,11 +14,6 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
-import javax.validation.constraints.AssertTrue;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,8 +55,26 @@ public class UserServiceTest{
         userService.editBaseInfo(editUserBaseInfo);
         UserBaseInfo userBaseInfo=UserBaseInfo.dao.findById(testUser.getId());
         Assert.assertTrue(userBaseInfo.getAvatar().equals("test"));
+        Assert.assertTrue(userBaseInfo.getUsername().equals("大哥鹏"));
 
     }
+
+
+    @Test
+    public void testEditDetailInfo(){
+        UserEntity testUser = addUser();
+        RunningTests.userId =testUser.getId();
+        EditUserDetailForm editUserDetailForm= new EditUserDetailForm();
+        editUserDetailForm.setAddress("南京");
+        userService.editDetailInfo(editUserDetailForm);
+        UserEntity userEntity= UserEntity.dao.findById(testUser.getId());
+        Assert.assertTrue(userEntity.getEducationLevel()==0);
+        Assert.assertTrue(userEntity.getAddress().equals("南京"));
+
+    }
+
+
+
 
 
 
