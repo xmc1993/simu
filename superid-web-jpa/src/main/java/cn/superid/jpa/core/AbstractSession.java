@@ -212,12 +212,12 @@ public abstract class AbstractSession implements Session {
                 }
 
                 if (canSetProperties(fromColumnMeta,toColumnMeta)) {
-                    FieldAccessor fromFa = FieldAccessor.getFieldAccessor(from.getClass(), fromColumnMeta.fieldName);
+                    FieldAccessor fromFa = fromColumnMeta.fieldAccessor;
                     Object value = fromFa.getProperty(from);
                     if (skipNull && value == null) {
                         continue;
                     }
-                    FieldAccessor toFa = FieldAccessor.getFieldAccessor(to.getClass(), toColumnMeta.fieldName);
+                    FieldAccessor toFa = toColumnMeta.fieldAccessor;
                     toFa.setProperty(to, fromFa.getProperty(from));
                 }
             }
@@ -235,7 +235,7 @@ public abstract class AbstractSession implements Session {
             if(modelColumnMeta.isId&&skipNull){
                 continue;
             }
-            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             Object value = fieldAccessor.getProperty(entity);
             if(value==null&&skipNull){
                 continue;
@@ -253,7 +253,7 @@ public abstract class AbstractSession implements Session {
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<String, byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
-            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             try {
                 hashMap.put(modelColumnMeta.fieldName, ByteUtil.basicType2Bytes(fieldAccessor.getProperty(entity)));
             } catch (UnsupportedEncodingException e) {
@@ -268,7 +268,7 @@ public abstract class AbstractSession implements Session {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
-            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity, hashMap.get(modelColumnMeta.fieldName));
         }
         return entity;
@@ -280,7 +280,7 @@ public abstract class AbstractSession implements Session {
 
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
-            FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(entity.getClass(), modelColumnMeta.fieldName);
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             try {
                 fieldAccessor.setProperty(entity, new FromByteUtilMapper(fieldAccessor.getPropertyType()).bytes2BasicType(hashMap.get(modelColumnMeta.fieldName)));
             } catch (UnsupportedEncodingException e) {

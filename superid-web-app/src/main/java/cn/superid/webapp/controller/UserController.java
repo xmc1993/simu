@@ -166,8 +166,6 @@ public class UserController {
 
 
 
-
-
     @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -252,7 +250,7 @@ public class UserController {
 
     @ApiOperation(value = "编辑详细信息", response = String.class)
     @RequestMapping(value = "/edit_detail", method = RequestMethod.POST)
-    public  SimpleResponse editDetail(@RequestParam EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editDetail(@RequestBody EditUserDetailForm editUserDetailForm){
         return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
     }
 
@@ -262,7 +260,7 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "获取其他用户的详细消息", response = String.class)
+    @ApiOperation(value = "获取其他用户的详细消息", response = ResultUserInfo.class)
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(long userId){
         ResultUserInfo resultUserInfo=userService.getUserInfo(userId);

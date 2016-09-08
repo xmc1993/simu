@@ -28,6 +28,7 @@ public class ModelMeta {
         public String columnName;
         public Class<?> fieldType;
         public boolean nullable;
+        public FieldAccessor fieldAccessor;
     }
 
     private List<ModelColumnMeta> getColumnMetas() {
@@ -48,6 +49,7 @@ public class ModelMeta {
                 continue;
             }
             ModelColumnMeta columnMeta = new ModelColumnMeta();
+            columnMeta.fieldAccessor = new FieldAccessor(modelCls, field.getName());
 
             columnMeta.fieldName = field.getName();
             columnMeta.fieldType = field.getType();
@@ -94,6 +96,7 @@ public class ModelMeta {
             }
             columnMetas.add(columnMeta);
         }
+
 
         this.columnMetas = columnMetas;
         if(this.idColumnMeta!=null){
@@ -272,7 +275,7 @@ public class ModelMeta {
         if (idColumnMeta == null) {
             return null;
         }
-        return FieldAccessor.getFieldAccessor(modelCls, idColumnMeta.fieldName);
+        return idColumnMeta.fieldAccessor;
     }
 
     public String getIdName(){

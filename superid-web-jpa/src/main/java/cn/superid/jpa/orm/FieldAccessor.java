@@ -1,5 +1,7 @@
 package cn.superid.jpa.orm;
 
+import cn.superid.jpa.core.AbstractSession;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -20,7 +22,10 @@ public class FieldAccessor {
     private static final Map<String, FieldAccessor> fieldAccessorCache = new HashMap<String, FieldAccessor>();
 
     public static FieldAccessor getFieldAccessor(Class<?> cls, String name) {
-        String key = cls.getCanonicalName() + "@" + name;
+        StringBuilder stringBuilder=new StringBuilder(cls.getCanonicalName());
+        stringBuilder.append("@");
+        stringBuilder.append(name);
+        String key = stringBuilder.toString();
         if(!fieldAccessorCache.containsKey(key)) {
             synchronized (fieldAccessorCache) {
                 if(!fieldAccessorCache.containsKey(key)) {

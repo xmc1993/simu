@@ -1,12 +1,15 @@
 package cn.superid.webapp.forms;
 
 import cn.superid.jpa.orm.ExecutableModel;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 import java.sql.Timestamp;
 
 /**
  * Created by xiaofengxu on 16/9/6.
  */
+@ApiModel
 public class EditUserDetailForm extends ExecutableModel {
     private Integer age;//年龄
     private String idCard;//身份证
@@ -37,7 +40,6 @@ public class EditUserDetailForm extends ExecutableModel {
     public Integer getMarriageStatus() {
         return marriageStatus;
     }
-
     public void setMarriageStatus(Integer marriageStatus) {
         this.marriageStatus = marriageStatus;
     }
