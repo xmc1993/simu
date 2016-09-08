@@ -1,11 +1,16 @@
 package cn.superid.webapp.forms;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import java.sql.Timestamp;
 
 /**
  * Created by xiaofengxu on 16/9/6.
  */
+@ApiModel
 public class EditUserBaseInfo {
+    @ApiModelProperty
     private String avatar;
     private int gender;
     private Timestamp birthday;
