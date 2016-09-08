@@ -10,7 +10,6 @@ import java.sql.Timestamp;
  */
 @ApiModel
 public class EditUserBaseInfo {
-    @ApiModelProperty
     private String avatar;
     private int gender;
     private Timestamp birthday;

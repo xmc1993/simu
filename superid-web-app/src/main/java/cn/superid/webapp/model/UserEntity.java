@@ -17,29 +17,29 @@ public class UserEntity extends ExecutableModel {
     public final static Dao<UserEntity> dao = new Dao<>(UserEntity.class);
 
     private Long id;
-    private String superid;
-    private String password;
-    private String familyName;
-    private String givenName;
+    private String superid ="";
+    private String password ="";
+    private String familyName ="";
+    private String givenName="";
     private int state;
-    private String videoUrl;
-    private String videoImg;
+    private String videoUrl ="";
+    private String videoImg ="";
     private int isVideo;
-    private String username;
+    private String username ="";
     private Timestamp birthday;
     private int age;
-    private String email;
-    private String mobile;
+    private String email ="";
+    private String mobile ="";
     private Long personalRoleId;
-    private String idCard;
-    private int marriageStatus;
+    private String idCard ="";
+    private int marriageStatus ;
     private int educationLevel;
-    private String school;
+    private String school ="";
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private String address;
-    private String detailAddress;
-    private String description;//描述
+    private String address ="";
+    private String detailAddress ="";
+    private String description ="";//描述
     private double faith;
     private int gender;
     private int publicType;

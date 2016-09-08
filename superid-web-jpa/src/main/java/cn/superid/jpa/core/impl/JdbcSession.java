@@ -112,7 +112,7 @@ public class JdbcSession extends AbstractSession {
         try {
             for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
                 if(skipId&&columnMeta.isId) continue;
-                FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(), columnMeta.fieldName);
+                FieldAccessor fieldAccessor = columnMeta.fieldAccessor;
                 Object value = fieldAccessor.getProperty(entity);
                 preparedStatement.setObject(i, value);
                 i++;
