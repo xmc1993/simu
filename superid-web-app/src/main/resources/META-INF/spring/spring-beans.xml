@@ -52,9 +52,7 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
         <property name="connectionFactory" ref="connectionFactory" />
     </bean>
-    <bean class="cn.superid.webapp.tasks.RunningTests">
-        <property name="running" value="0"></property>
-    </bean>
+
 
 
     <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->

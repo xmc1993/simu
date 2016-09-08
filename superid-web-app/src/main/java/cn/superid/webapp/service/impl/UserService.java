@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
@@ -141,8 +142,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity findByToken(String token) {
-        return UserEntity.dao.or(Expr.eq("email",token),Expr.eq("mobile",token),Expr.eq("superid",token)).selectOne();
+    public UserEntity findByToken(String token,String pwd) {
+        Dao<UserEntity> dao = UserEntity.dao;
+        if(StringUtil.isEmail(token)){
+            dao.eq("email",token);
+        }else if(StringUtil.isMobile(token)){
+            dao.eq("mobile",token);
+        }else {
+            return null;
+        }
+        return dao.eq("password",pwd).selectOne();
     }
 
     @Override

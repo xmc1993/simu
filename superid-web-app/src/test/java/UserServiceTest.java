@@ -1,5 +1,6 @@
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
+import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
@@ -25,8 +26,6 @@ import java.util.Map;
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
-    @Autowired
-    private IAuth auth;
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -73,18 +72,33 @@ public class UserServiceTest{
 
     }
 
+   @Test
+   public void testGetUserInfo(){
+       UserEntity testUser = addUser();
+       RunningTests.userId =testUser.getId();
+       ResultUserInfo resultUserInfo=userService.getUserInfo(testUser.getId());
+       Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
+   }
 
+    @Test
+    public void testChangePassWord(){
+        UserEntity testUser = addUser();
+        RunningTests.userId =testUser.getId();
+        userService.changePwd("123456","111111");
+
+        Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
+    }
 
 
 
 
     @Test
     public void testRedis(){
-        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");
-        Map<String, String> data = new HashMap();
-        data.put("test", "test");
-
-        ops.putAll(data);
+//        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");
+//        Map<String, String> data = new HashMap();
+//        data.put("test", "test");
+//
+//        ops.putAll(data);
     }
 
 }

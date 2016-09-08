@@ -172,7 +172,8 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token,String password,String verifyCode){
         int limit =3;
-        UserEntity userEntity =userService.findByToken(token);
+        String encodePwd = PasswordEncryptor.encode(password);
+        UserEntity userEntity =userService.findByToken(token,encodePwd);
 
         if(userEntity==null){
             if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
@@ -183,17 +184,6 @@ public class UserController {
                 }
             }
             return SimpleResponse.error("not_exist");
-        }
-
-        if(!PasswordEncryptor.matches(password,userEntity.getPassword())){
-            if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
-                if(userService.checkVerifyCode(verifyCode)){
-                    CheckFrequencyUtil.reset(token);
-                }else{
-                    return SimpleResponse.error("need_verify_code");
-                }
-            }
-            return SimpleResponse.error("pwd_error");
         }
         auth.authUser(userEntity.getId());
         return SimpleResponse.ok(userEntity);

@@ -4,11 +4,13 @@ import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.model.AffairEntity;
 
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
  * Created by xiaofengxu on 16/9/6.
  */
+@Table(name="user")
 public class ResultUserInfo extends ExecutableModel{
 
     public final static Dao<ResultUserInfo> dao = new Dao<>(ResultUserInfo.class);

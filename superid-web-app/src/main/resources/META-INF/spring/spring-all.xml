@@ -11,5 +11,7 @@
     <import resource="spring-beans.xml"/>
     <import resource="spring-tasks.xml"/>
 
-
+    <bean class="cn.superid.webapp.tasks.RunningTests">
+        <property name="running" value="0"></property>
+    </bean>
 </beans>
