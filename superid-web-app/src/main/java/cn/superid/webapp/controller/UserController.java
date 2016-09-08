@@ -269,6 +269,15 @@ public class UserController {
         return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
     }
 
+    @RequestMapping(value = "/test_log", method = RequestMethod.GET)
+    @NotLogin
+    public SimpleResponse testLogger(){
+        LOG.error("------------------end end end end --------------------");
+        LOG.warn("------hello world------");
+        LOG.info("-------------test info ----------");
+        return new SimpleResponse(true);
+    }
+
 
 
 }

@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Created by jizhenya on 16/8/26.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:META-INF/spring/spring-all.xml")
+@ContextConfiguration(locations = "classpath:META-INF/spring/spring-all-test.xml")
 public class LogTest {
 
     @Test
