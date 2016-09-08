@@ -87,9 +87,9 @@ public interface Session {
 
     void copyProperties(Object from,Object to,boolean skipNull);
 
-    HashMap<String, Object> getHashMapFromEntity(Object entity,boolean skipNull);
+    HashMap<String, Object> generateHashMapFromEntity(Object entity,boolean skipNull);
 
-    HashMap<String, byte[]> getHashByteMapFromEntity(Object entity);
+    HashMap<String, byte[]> generateHashByteMapFromEntity(Object entity);
 
     Object generateHashMapFromEntity(HashMap<String, Object> hashMap,Object entity);
 

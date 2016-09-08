@@ -226,7 +226,7 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public HashMap<String, Object> getHashMapFromEntity(Object entity,boolean skipNull) {
+    public HashMap<String, Object> generateHashMapFromEntity(Object entity,boolean skipNull) {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
@@ -247,7 +247,7 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public HashMap<String, byte[]> getHashByteMapFromEntity(Object entity) {
+    public HashMap<String, byte[]> generateHashByteMapFromEntity(Object entity) {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
