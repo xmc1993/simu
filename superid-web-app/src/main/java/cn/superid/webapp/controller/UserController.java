@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -250,7 +251,7 @@ public class UserController {
 
     @ApiOperation(value = "编辑详细信息", response = String.class)
     @RequestMapping(value = "/edit_detail", method = RequestMethod.POST)
-    public  SimpleResponse editDetail(EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editDetail(@RequestParam EditUserDetailForm editUserDetailForm){
         return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
     }
 
@@ -260,7 +261,7 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "设置详细信息公开性", response = String.class)
+    @ApiOperation(value = "获取其他用户的详细消息", response = String.class)
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(long userId){
         ResultUserInfo resultUserInfo=userService.getUserInfo(userId);

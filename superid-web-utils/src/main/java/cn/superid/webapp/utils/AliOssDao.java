@@ -29,11 +29,11 @@ public class AliOssDao {
     private static final Logger LOG = LoggerFactory.getLogger(AliOssDao.class);
     private static String MTS_SERVER_URL = "http://mts.aliyuncs.com/";
     private final static String endpoint ="oss-cn-hangzhou.aliyuncs.com";
-    private final static String accessId ="MtwtIlsti1P6UKDx";
-    private final static String accessKey="JN7fXj9sNPbLkfUTQh1zcJpwLPncHo";
-    private final static String bucket = "superid-ali-oss";
-    private final static String host = "http://superid-ali-oss.oss-cn-hangzhou.aliyuncs.com";
-    private final static String location = "oss-cn-hangzhou";
+    private final static String accessId ="LTAIJ1mKhbLQyBnK";
+    private final static String accessKey="DHnYFEI9gF1CMhh1fzSlwj8MkjjPnK";
+    private final static String bucket = "simucy";
+    private final static String host = "http://simucy.oss-cn-shanghai.aliyuncs.com";
+    private final static String location = "oss-cn-shanghai";
     private final static AliyunClient aliyunClient = new DefaultAliyunClient(MTS_SERVER_URL,accessId,accessKey);
 
     private final static OSSClient client = new OSSClient(endpoint, accessId, accessKey);

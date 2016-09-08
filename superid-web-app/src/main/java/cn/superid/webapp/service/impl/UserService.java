@@ -16,6 +16,7 @@ import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.tasks.RunningTests;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.DirectEmailDao;
 import cn.superid.webapp.utils.NumberUtils;
@@ -24,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.io.InputStream;
 import java.util.*;
@@ -37,6 +40,10 @@ public class UserService implements IUserService {
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private IAuth auth;
+
+    @Resource
+    private RunningTests runningTests;
+
     @Autowired
     private IAllianceService allianceService;
 
@@ -160,11 +167,15 @@ public class UserService implements IUserService {
 
     @Override
     public long currentUserId() {
+        if(runningTests.getRunning()==1){
+            return RunningTests.userId;
+        }
+
         return auth.currentUserId();
     }
 
     @Override
-    public boolean editBaseInfo(EditUserBaseInfo userBaseInfo) {
+    public boolean editBaseInfo(@RequestParam EditUserBaseInfo userBaseInfo) {
         UserBaseInfo update = UserBaseInfo.dao.findById(currentUserId());//有缓存的实体可以先获取再更新
         if(update==null){
             return false;

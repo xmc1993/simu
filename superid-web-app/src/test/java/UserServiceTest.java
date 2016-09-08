@@ -4,6 +4,7 @@ import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.tasks.RunningTests;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import org.junit.Assert;
@@ -54,7 +55,7 @@ public class UserServiceTest{
     @Test
      public void testEditInfo(){
         UserEntity testUser = addUser();
-        auth.authUser(testUser.getId());
+        RunningTests.userId =testUser.getId();
         EditUserBaseInfo editUserBaseInfo = new EditUserBaseInfo();
         editUserBaseInfo.setAvatar("test");
         userService.editBaseInfo(editUserBaseInfo);
@@ -64,16 +65,6 @@ public class UserServiceTest{
     }
 
 
-
-    @Test
-    public void getVerifyCode(){
-        UserEntity.execute("SET @uids := '';" +
-                "UPDATE user u" +
-                "   SET u.mobile = '1234'" +
-                " WHERE u.username ='大哥鹏'" +
-                "   AND ( SELECT @uids := CONCAT_WS(',',u.id, @uids) );" +
-                "SELECT @uids;");
-    }
 
     @Test
     public void testRedis(){
