@@ -142,16 +142,14 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity findByToken(String token,String pwd) {
-        Dao<UserEntity> dao = UserEntity.dao;
+    public UserEntity findByToken(String token) {
         if(StringUtil.isEmail(token)){
-            dao.eq("email",token);
+            return UserEntity.dao.eq("email",token).selectOne();
         }else if(StringUtil.isMobile(token)){
-            dao.eq("mobile",token);
+           return UserEntity.dao.eq("mobile",token).selectOne();
         }else {
             return null;
         }
-        return dao.eq("password",pwd).selectOne();
     }
 
     @Override

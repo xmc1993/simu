@@ -14,14 +14,14 @@ import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
-import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -172,8 +172,7 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token,String password,String verifyCode){
         int limit =3;
-        String encodePwd = PasswordEncryptor.encode(password);
-        UserEntity userEntity =userService.findByToken(token,encodePwd);
+         UserEntity userEntity =userService.findByToken(token);
 
         if(userEntity==null){
             if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
@@ -184,6 +183,17 @@ public class UserController {
                 }
             }
             return SimpleResponse.error("not_exist");
+        }
+
+        if(!PasswordEncryptor.matches(password,userEntity.getPassword())){
+            if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
+                if(userService.checkVerifyCode(verifyCode)){
+                    CheckFrequencyUtil.reset(token);
+                }else{
+                    return SimpleResponse.error("need_verify_code");
+                }
+            }
+            return SimpleResponse.error("pwd_error");
         }
         auth.authUser(userEntity.getId());
         return SimpleResponse.ok(userEntity);
@@ -223,8 +233,7 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    @ResponseBody
-    public  SimpleResponse editBase(@RequestBody EditUserBaseInfo userBaseInfo){
+    public  SimpleResponse editBase(EditUserBaseInfo userBaseInfo){
         return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
     }
 

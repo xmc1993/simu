@@ -18,7 +18,7 @@ public interface IUserService {
 
      UserEntity createUser(UserEntity userEntity);
 
-     UserEntity findByToken(String token,String pwd);
+     UserEntity findByToken(String token);
 
      boolean validUsername(String username);
 
