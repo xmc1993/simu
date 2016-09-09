@@ -2,6 +2,8 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.enums.AllianceType;
+import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -82,6 +84,22 @@ public class AffairService implements IAffairService {
     }
 
     @Override
+    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
+        AffairEntity affairEntity=new AffairEntity();
+        affairEntity.setType(type);
+        affairEntity.setPublicType(PublicType.TO_ALLIANCE);
+        affairEntity.setAllianceId(allianceId);
+        affairEntity.setName(name);
+        affairEntity.setLevel(1);
+        affairEntity.setPathIndex(1);
+        affairEntity.setPath("/"+affairEntity.getPathIndex());
+        affairEntity.save();
+
+
+        return affairEntity;
+    }
+
+    @Override
     @Transactional
     public String applyForEnterAffair(long affairId, long roleId) {
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
@@ -93,7 +111,6 @@ public class AffairService implements IAffairService {
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setState(0);
-        affairMemberEntity.setType(0);
         affairMemberEntity.save();
         return "等待审核中";
     }

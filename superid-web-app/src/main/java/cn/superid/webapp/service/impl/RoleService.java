@@ -2,10 +2,12 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.service.IRoleService;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by xiaofengxu on 16/9/9.
  */
+@Service
 public class RoleService implements IRoleService {
 
     @Override

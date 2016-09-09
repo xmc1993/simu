@@ -17,4 +17,6 @@ public interface IAffairService  {
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
 
     public String applyForEnterAffair(long affairId,long roleId);
+
+    public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
 }

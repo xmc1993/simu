@@ -2,6 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.webapp.enums.IntBoolean;
+import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AllianceEntity;
@@ -33,9 +34,12 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setShortName(allianceCreateForm.getShortName());
             allianceEntity.save();
 
-//            AffairEntity
+            roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),0,"*", RoleType.Alliance);
 
-            roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),allianceCreateForm.)
+//            AffairEntity affairEntity = new AffairEntity();
+//            affairEntity.set
+//
+//            roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),allianceCreateForm.ge)
         }
 
 
