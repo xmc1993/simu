@@ -32,6 +32,7 @@ public class SpringAuthenticator implements IAuth {
     @Override
     public void unAuthUser() {
         getCurrentHttpSession().removeAttribute("userId");
+        getCurrentHttpSession().invalidate();
     }
 
     @Override

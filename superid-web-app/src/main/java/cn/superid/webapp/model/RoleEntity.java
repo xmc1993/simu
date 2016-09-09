@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
  * Created by njuTms on 16/8/31.
  */
 @Table(name = "role")
+@Cacheable
 public class RoleEntity extends ExecutableModel {
     public final static Dao<RoleEntity> dao = new Dao<>(RoleEntity.class);
     private Long id;
@@ -20,6 +22,7 @@ public class RoleEntity extends ExecutableModel {
     private Long belongAffairId;
     private String title;
     private String permissions;
+
     private int type;
     private int visible;
     private int state;

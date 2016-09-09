@@ -14,6 +14,7 @@ import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -260,11 +261,16 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "获取其他用户的详细消息", response = ResultUserInfo.class)
+    @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
-    public  SimpleResponse getUserInfo(long userId){
-        ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
-        return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+    public  SimpleResponse getUserInfo(Long userId){
+        if(userId==null||userId==userService.currentUserId()){
+            return SimpleResponse.ok(userService.getCurrentUser());
+        }else{
+            ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
+            return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+        }
+
     }
 
 

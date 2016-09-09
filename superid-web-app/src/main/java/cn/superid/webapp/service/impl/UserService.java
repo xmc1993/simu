@@ -135,7 +135,7 @@ public class UserService implements IUserService {
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setName(userEntity.getUsername());
         allianceCreateForm.setIsPersonal(IntBoolean.TRUE);
-        allianceCreateForm.setUserEntity(userEntity);
+//        allianceCreateForm.setUserEntity(userEntity);
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
         if(allianceEntity==null) return null;
         return userEntity;

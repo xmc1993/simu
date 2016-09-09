@@ -1,20 +1,16 @@
 
-
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import com.alibaba.druid.pool.DruidDataSource;
-import com.sun.tools.javac.code.Attribute;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
 import javax.sql.DataSource;
-import javax.validation.constraints.AssertTrue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
 

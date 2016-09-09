@@ -3,24 +3,17 @@ package cn.superid.webapp.forms;
 
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.model.UserEntity;
+import com.wordnik.swagger.annotations.ApiModel;
 
+@ApiModel
 public class AllianceCreateForm {
-    private String allianceId;
-    private String SerialNum;
+    private String shortName;
     private String name;
-    private String ownerUserId;
     private String logoUrl;
     private int isPersonal = IntBoolean.FALSE;
-    private String operationRoleId;
+    private long userId;
     private UserEntity userEntity;
 
-    public String getSerialNum() {
-        return SerialNum;
-    }
-
-    public void setSerialNum(String serialNum) {
-        SerialNum = serialNum;
-    }
 
     public String getName() {
         return name;
@@ -30,21 +23,7 @@ public class AllianceCreateForm {
         this.name = name;
     }
 
-    public String getOwnerUserId() {
-        return ownerUserId;
-    }
 
-    public void setOwnerUserId(String ownerUserId) {
-        this.ownerUserId = ownerUserId;
-    }
-
-    public String getAllianceId() {
-        return allianceId;
-    }
-
-    public void setAllianceId(String allianceId) {
-        this.allianceId = allianceId;
-    }
 
     public String getLogoUrl() {
         return logoUrl;
@@ -62,12 +41,23 @@ public class AllianceCreateForm {
         this.isPersonal = isPersonal;
     }
 
-    public String getOperationRoleId() {
-        return operationRoleId;
+
+
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setOperationRoleId(String operationRoleId) {
-        this.operationRoleId = operationRoleId;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public UserEntity getUserEntity() {
