@@ -16,14 +16,15 @@ import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.apache.commons.logging.Log;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -41,7 +42,7 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private IAuth auth;
-    public static Logger LOG = LoggerFactory.getLogger(UserController.class);
+    public static Log LOG = LogFactory.getLog(UserController.class);
 
 
     /**
@@ -54,7 +55,6 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
-        LOG.info("get_register_code",request.getRemoteAddr());
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
             return SimpleResponse.error("frequent_request");
         }

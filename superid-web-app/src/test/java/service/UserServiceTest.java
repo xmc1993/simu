@@ -93,13 +93,6 @@ public class UserServiceTest{
     }
 
 
-
-
-
-
-
-
-
     @Test
     public void testRedis(){
 //        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");

@@ -31,7 +31,8 @@ public class AffairService implements IAffairService {
     @Override
     @Transactional
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception{
-        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getParentId());
+
+        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getAffairId());
         if(parentAffair==null){
             throw new Exception("parent affair not found ");
         }
