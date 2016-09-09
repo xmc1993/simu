@@ -6,27 +6,27 @@ import javax.persistence.Id;
  * Created by xiaofengxu on 16/9/2.
  */
 public class AffairLog {
-    private Long id;
-    private Long affairId;
+    private long id;
+    private long affairId;
     private int type;
-    private Long roleId;
-    private Long allianceId;
+    private long roleId;
+    private long allianceId;
     private String content;
 
     @Id
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getAffairId() {
+    public long getAffairId() {
         return affairId;
     }
 
-    public void setAffairId(Long affairId) {
+    public void setAffairId(long affairId) {
         this.affairId = affairId;
     }
 
@@ -38,19 +38,19 @@ public class AffairLog {
         this.type = type;
     }
 
-    public Long getRoleId() {
+    public long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(long roleId) {
         this.roleId = roleId;
     }
 
-    public Long getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(Long allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 

@@ -268,5 +268,9 @@ public class UserController {
     }
 
 
-
+    @RequestMapping(value = "/debug",method = RequestMethod.POST)
+    @NotLogin
+    public SimpleResponse bug(EditUserBaseInfo userBaseInfo){
+        return SimpleResponse.ok("1");
+    }
 }

@@ -5,7 +5,9 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.PermissionGroupEntity;
 import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.security.PermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,32 @@ import java.nio.ByteBuffer;
 public class AffairService implements IAffairService {
     @Override
     public String getPermissions(long affairId, long roleId) {
-        return "39,34,1,2,3,32,4";
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.eq("affairId",affairId).eq("roleId",roleId).selectOne();
+        if(affairMemberEntity.getPermissions()==""){
+            long permissionGroupId = affairMemberEntity.getPermissionGroupId();
+            //switch不支持long
+            if(permissionGroupId==1L){
+                return PermissionRoleType.OWNER;
+            }
+            else if(permissionGroupId == 2L){
+                return PermissionRoleType.ADMINISTRATOR;
+            }
+            else if(permissionGroupId == 3L){
+                return PermissionRoleType.OFFCIAL;
+            }
+            else if(permissionGroupId == 4L){
+                return PermissionRoleType.GUEST;
+            }else if(permissionGroupId == 5L){
+                return PermissionRoleType.VISITOR;
+            }
+            else{
+                PermissionGroupEntity permissionGroupEntity = PermissionGroupEntity.dao.findById(permissionGroupId);
+                return permissionGroupEntity.getPermissions();
+            }
+        }
+        else{
+            return affairMemberEntity.getPermissions();
+        }
     }
 
     private void JustIndex(long parentId,int index){

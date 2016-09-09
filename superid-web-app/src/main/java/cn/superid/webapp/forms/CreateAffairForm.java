@@ -1,8 +1,12 @@
 package cn.superid.webapp.forms;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 /**
  * Created by xiaofengxu on 16/8/31.
  */
+@ApiModel
 public class CreateAffairForm {
     private String name;
     private long parentId;
