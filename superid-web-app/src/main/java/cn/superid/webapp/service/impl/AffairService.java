@@ -33,7 +33,7 @@ public class AffairService implements IAffairService {
                 return PermissionRoleType.ADMINISTRATOR;
             }
             else if(permissionGroupId == 3L){
-                return PermissionRoleType.OFFCIAL;
+                return PermissionRoleType.OFFICIAL;
             }
             else if(permissionGroupId == 4L){
                 return PermissionRoleType.GUEST;
