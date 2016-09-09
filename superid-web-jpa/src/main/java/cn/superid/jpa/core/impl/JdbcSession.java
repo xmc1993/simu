@@ -178,6 +178,15 @@ public class JdbcSession extends AbstractSession {
     public void update(final Object entity) {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            boolean isSharding = modelMeta.getPatitionColumn()!=null;
+            Object partitionId =null;
+
+            if(isSharding){
+                partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
+                if(partitionId==null||partitionId==0){
+                    throw new JdbcRuntimeException("you should update with partition id");
+                }
+            }
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
             String sql = modelMeta.getUpdateSql();
 
@@ -185,7 +194,13 @@ public class JdbcSession extends AbstractSession {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
                 int i= setStatement(modelMeta,preparedStatement,entity,true);
                 Object id = idAccessor.getProperty(entity);
+                if(isSharding){
+                    preparedStatement.setObject(i, partitionId);
+                    i= i+1;
+
+                }
                 preparedStatement.setObject(i, id);
+
                 try {
                     preparedStatement.executeUpdate();
                 } finally {
@@ -198,6 +213,11 @@ public class JdbcSession extends AbstractSession {
                 }
                 int i=setStatement(modelMeta,batchStatement,entity,true);
 
+                if(isSharding){
+                    batchStatement.setObject(i, partitionId);
+                    i= i+1;
+
+                }
                 Object id = idAccessor.getProperty(entity);
                 batchStatement.setObject(i, id);
                 batchStatement.addBatch();
@@ -212,7 +232,11 @@ public class JdbcSession extends AbstractSession {
     @Override
     public boolean update(Object entity, List<String> columns) {
         try {
+
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            if(modelMeta.getPatitionColumn()!=null){
+                throw new JdbcRuntimeException("this method not support");
+            }
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
             ParameterBindings parameterBindings=new ParameterBindings();
             StringBuilder sb =new StringBuilder(" UPDATE ");
@@ -255,12 +279,28 @@ public class JdbcSession extends AbstractSession {
         try {
             ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             FieldAccessor idAccessor = modelMeta.getIdAccessor();
+            boolean isSharding = modelMeta.getPatitionColumn()!=null;
+            Object partitionId =null;
+
+            if(isSharding){
+                partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
+                if(partitionId==null||partitionId==0){
+                    throw new JdbcRuntimeException("you should delete with partition id");
+                }
+            }
+
             String sql = modelMeta.getDeleteSql();
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
                 try {
+                    int i= getIndexParamBaseOrdinal();
+                    if(isSharding){
+                        preparedStatement.setObject(i, partitionId);
+                        i= i+1;
+
+                    }
                     Object id = idAccessor.getProperty(entity);
-                    preparedStatement.setObject(getIndexParamBaseOrdinal(), id);
+                    preparedStatement.setObject(i ,id);
                     preparedStatement.executeUpdate();
                 } finally {
                     preparedStatement.close();
@@ -270,8 +310,14 @@ public class JdbcSession extends AbstractSession {
                 if (batchStatement == null) {
                     batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
+                int i= getIndexParamBaseOrdinal();
+                if(isSharding){
+                    batchStatement.setObject(i, partitionId);
+                    i= i+1;
+
+                }
                 Object id = idAccessor.getProperty(entity);
-                batchStatement.setObject(getIndexParamBaseOrdinal(), id);
+                batchStatement.setObject(i,id);
                 batchStatement.addBatch();
             }
         } catch (SQLException e) {

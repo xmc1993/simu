@@ -10,8 +10,10 @@ import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.PermissionRoleType;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.utils.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,9 @@ import java.nio.ByteBuffer;
  */
 @Service
 public class AffairService implements IAffairService {
+    @Autowired
+    private IAffairMemberService affairMemberService;
+
     @Override
     public String getPermissions(long affairId, long roleId) {
         AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.eq("affairId",affairId).eq("roleId",roleId).selectOne();
@@ -35,7 +40,7 @@ public class AffairService implements IAffairService {
                 return PermissionRoleType.ADMINISTRATOR;
             }
             else if(permissionGroupId == 3L){
-                return PermissionRoleType.OFFCIAL;
+                return PermissionRoleType.OFFICIAL;
             }
             else if(permissionGroupId == 4L){
                 return PermissionRoleType.GUEST;
@@ -83,6 +88,14 @@ public class AffairService implements IAffairService {
         return affairEntity;
     }
 
+    /**
+     * 创建根事务,一般根据盟名称产生,一个盟对应一个根事务
+     * @param allianceId
+     * @param name
+     * @param roleId
+     * @param type
+     * @return
+     */
     @Override
     public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
         AffairEntity affairEntity=new AffairEntity();
@@ -95,7 +108,7 @@ public class AffairService implements IAffairService {
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
 
-
+        affairMemberService.addMember(affairEntity.getId(),roleId,null,PermissionRoleType.OWNER_ID);//加入根事务
         return affairEntity;
     }
 

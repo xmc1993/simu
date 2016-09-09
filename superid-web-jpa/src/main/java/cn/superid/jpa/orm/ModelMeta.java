@@ -1,6 +1,7 @@
 package cn.superid.jpa.orm;
 
 import cn.superid.jpa.annotation.NotTooSimple;
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.util.StringUtil;
 
 import javax.persistence.Transient;
@@ -19,11 +20,13 @@ public class ModelMeta {
     private String findTinyByIdSql;
     private List<ModelColumnMeta> columnMetas;
     private ModelColumnMeta idColumnMeta;
+    private ModelColumnMeta partitionColumn;
     /**
      * column info of orm model class, ignore all fields with @javax.sql.Transient
      */
     public static class ModelColumnMeta {
         public boolean isId = false;
+        public boolean isPartition = false;
         public String fieldName;
         public String columnName;
         public Class<?> fieldType;
@@ -72,10 +75,15 @@ public class ModelMeta {
             }else{
                 insertSb.append(",");
             }
+
+
             if (fieldAccessor.getPropertyAnnotation(javax.persistence.Id.class) != null) {
                 columnMeta.isId = true;
                 this.idColumnMeta = columnMeta;
-            }else{
+            }else if(fieldAccessor.getPropertyAnnotation(PartitionId.class)==null){
+                columnMeta.isPartition = true;
+                this.partitionColumn = columnMeta;
+            } else{
                 if(initForUpdate){
                     initForUpdate = false;
                 }else{
@@ -85,6 +93,8 @@ public class ModelMeta {
                 updateSb.append("=? ");
             }
             insertSb.append(columnMeta.columnName);
+
+
 
             if(fieldAccessor.getPropertyAnnotation(NotTooSimple.class)==null){
                 if(initForTiny){
@@ -143,9 +153,15 @@ public class ModelMeta {
         sql.append(this.getTableName());
         sql.append(" SET ");
         sql.append(updateSql);
+
         sql.append(" WHERE ");
+        if(this.partitionColumn!=null){
+            sql.append(this.partitionColumn.columnName);
+            sql.append("=? and ");
+        }
         sql.append(this.idColumnMeta.columnName);
         sql.append("=?");
+
         this.updateSql = sql.toString();
     }
 
@@ -157,6 +173,10 @@ public class ModelMeta {
         StringBuilder sql = new StringBuilder("DELETE FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
+        if(this.partitionColumn!=null){
+            sql.append(this.partitionColumn.columnName);
+            sql.append("=? and ");
+        }
         sql.append(this.idColumnMeta.columnName);
         sql.append("=?");
         this.deleteSql = sql.toString();
@@ -276,6 +296,10 @@ public class ModelMeta {
             return null;
         }
         return idColumnMeta.fieldAccessor;
+    }
+
+    public ModelColumnMeta getPatitionColumn(){
+        return this.partitionColumn;
     }
 
     public String getIdName(){

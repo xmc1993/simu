@@ -1,11 +1,15 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.webapp.enums.AllianceType;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AllianceEntity;
+import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.security.PermissionRoleType;
+import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AllianceService  implements IAllianceService{
     @Autowired
     private IRoleService roleService;
+
+    @Autowired
+    private IAffairService affairService;
 
     @Override
     public String getPermissions(long alliance, long roleId) {
@@ -34,12 +41,12 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setShortName(allianceCreateForm.getShortName());
             allianceEntity.save();
 
-            roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),0,"*", RoleType.Alliance);
+            RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),0, "*", AllianceType.Personal);//创建一个盟主角色
 
-//            AffairEntity affairEntity = new AffairEntity();
-//            affairEntity.set
-//
-//            roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),allianceCreateForm.ge)
+            AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), AllianceType.Personal);
+
+            roleEntity.setBelongAffairId(affairEntity.getId());
+            roleEntity.update();
         }
 
 
