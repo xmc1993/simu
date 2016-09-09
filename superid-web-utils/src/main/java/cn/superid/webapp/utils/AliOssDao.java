@@ -28,7 +28,7 @@ import java.util.Map;
 public class AliOssDao {
     private static final Logger LOG = LoggerFactory.getLogger(AliOssDao.class);
     private static String MTS_SERVER_URL = "http://mts.aliyuncs.com/";
-    private final static String endpoint ="oss-cn-hangzhou.aliyuncs.com";
+    private final static String endpoint ="oss-cn-shanghai.aliyuncs.com";
     private final static String accessId ="LTAIJ1mKhbLQyBnK";
     private final static String accessKey="DHnYFEI9gF1CMhh1fzSlwj8MkjjPnK";
     private final static String bucket = "simucy";

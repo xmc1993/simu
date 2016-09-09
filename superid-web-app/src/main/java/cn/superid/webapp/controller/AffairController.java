@@ -7,8 +7,7 @@ import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.IAffairService;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiResponses;
+import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +28,7 @@ public class AffairController {
      * 增加事务,参数
      */
     @ApiOperation(value = "添加事务", response = boolean.class, notes = "格式正确而且没有被注册")
-    @RequiredPermissions(affair = AffairPermissions.AddAffair)
+    @RequiredPermissions(affair = AffairPermissions.CREATEAFFAIR)
     @RequestMapping(value = "/create_affair", method = RequestMethod.POST)
     public  SimpleResponse createAffair(CreateAffairForm createAffairForm){
         return null;

@@ -46,11 +46,11 @@ public class UserEntity extends ExecutableModel {
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -169,11 +169,11 @@ public class UserEntity extends ExecutableModel {
         this.mobile = mobile;
     }
 
-    public Long getPersonalRoleId() {
+    public long getPersonalRoleId() {
         return personalRoleId;
     }
 
-    public void setPersonalRoleId(Long personalRoleId) {
+    public void setPersonalRoleId(long personalRoleId) {
         this.personalRoleId = personalRoleId;
     }
 

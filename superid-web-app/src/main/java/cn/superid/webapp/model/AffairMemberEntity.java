@@ -14,47 +14,48 @@ import java.sql.Timestamp;
 @Table(name = "affair_member")
 public class AffairMemberEntity extends ExecutableModel {
     public final static Dao<AffairMemberEntity> dao = new Dao<>(AffairMemberEntity.class);
-    private Long id;
-    private Long affairId;
-    private Long roleId;
-    private Long userId;
+    private long id;
+    private long affairId;
+    private long roleId;
+    private long userId;
     private int type;
     private int state;
     private String permissions;
     private Timestamp createTime;
     private Timestamp modifyTime;
+    private long permissionGroupId;
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getAffairId() {
+    public long getAffairId() {
         return affairId;
     }
 
-    public void setAffairId(Long affairId) {
+    public void setAffairId(long affairId) {
         this.affairId = affairId;
     }
 
-    public Long getRoleId() {
+    public long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(long roleId) {
         this.roleId = roleId;
     }
 
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -96,5 +97,13 @@ public class AffairMemberEntity extends ExecutableModel {
 
     public void setModifyTime(Timestamp modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public long getPermissionGroupId() {
+        return permissionGroupId;
+    }
+
+    public void setPermissionGroupId(long permissionGroupId) {
+        this.permissionGroupId = permissionGroupId;
     }
 }

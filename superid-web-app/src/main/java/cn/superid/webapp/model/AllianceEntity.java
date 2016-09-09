@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "alliance")
 public class AllianceEntity extends ExecutableModel {
     public final static Dao<AllianceEntity> dao = new Dao<>(AllianceEntity.class);
-    private Long id;
+    private long id;
     private String name;
     private Long ownerRoleId;
     private int state;
@@ -31,11 +31,11 @@ public class AllianceEntity extends ExecutableModel {
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

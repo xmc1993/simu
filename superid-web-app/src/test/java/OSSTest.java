@@ -20,6 +20,6 @@ public class OSSTest {
         Map<String,String> result = AliOssDao.generateToken("user/101");
         System.out.println(result.get("signature"));
         System.out.println(result.get("expire"));
-
+        System.out.println(result.get("host"));
     }
 }

@@ -16,9 +16,9 @@ import java.sql.Timestamp;
 @Cacheable
 public class RoleEntity extends ExecutableModel {
     public final static Dao<RoleEntity> dao = new Dao<>(RoleEntity.class);
-    private Long id;
-    private Long userId;
-    private Long allianceId;
+    private long id;
+    private long userId;
+    private long allianceId;
     private Long belongAffairId;
     private String title;
     private String permissions;
@@ -31,35 +31,35 @@ public class RoleEntity extends ExecutableModel {
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public Long getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(Long allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 
-    public Long getBelongAffairId() {
+    public long getBelongAffairId() {
         return belongAffairId;
     }
 
-    public void setBelongAffairId(Long belongAffairId) {
+    public void setBelongAffairId(long belongAffairId) {
         this.belongAffairId = belongAffairId;
     }
 
