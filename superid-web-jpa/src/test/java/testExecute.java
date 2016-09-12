@@ -1,9 +1,11 @@
 
 
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.jpa.util.SerializeUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.sun.tools.javac.code.Attribute;
 import junit.framework.TestCase;
@@ -11,10 +13,12 @@ import org.junit.Assert;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.AssertTrue;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -129,6 +133,36 @@ public class testExecute extends TestCase {
         User.getSession().generateHashByteMapFromEntity(hashMap, user1);
 
         Assert.assertTrue(user1.getAge() == 18);
+
+    }
+
+    public void testBytesHashRedis() throws UnsupportedEncodingException {
+        User user = new User();
+        user.setName("src/test");
+        user.setAge(18);
+        user.save();
+        HashMap<String, byte[]> hashMap = user.getHashByteMap();
+        long beginTime = new Date().getTime();
+        for(int i = 0; i < 1000; i++){  //100 32ms 1000 116ms
+            RedisUtil.hmset("user" + i, hashMap);
+        }
+        long endTime = new Date().getTime();
+        System.out.println("total time is: " + (endTime - beginTime) + "ms");
+
+    }
+
+    public void testObjectSerializeRedis() throws UnsupportedEncodingException {
+        User user = new User();
+        user.setName("src/test");
+        user.setAge(18);
+        user.save();
+        byte[] serialize = SerializeUtil.serialize(user);
+        long beginTime = new Date().getTime();
+        for(int i = 0; i < 1000; i++){  //
+            RedisUtil.getJedisClient().set(("user" + i).getBytes(), serialize);
+        }
+        long endTime = new Date().getTime();
+        System.out.println("total time is: " + (endTime - beginTime) + "ms");
 
     }
 
