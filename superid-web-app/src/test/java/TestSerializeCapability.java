@@ -5,14 +5,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.hash.BeanUtilsHashMapper;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +23,7 @@ public class TestSerializeCapability {
     Map<String, String> stringHashMap;
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
 
     @Before
@@ -52,7 +49,7 @@ public class TestSerializeCapability {
     public void testObjectSerialize(){
         long beginTime = new Date().getTime();
         for(int i = 0; i < 1000; i++) {
-            BoundHashOperations<String, String, String> ops = redisTemplate.boundHashOps(TestEntity.class.getName() + i);
+            BoundHashOperations<String, String, String> ops = stringRedisTemplate.boundHashOps(TestEntity.class.getName() + i);
             ops.putAll(stringHashMap);
         }
         long endTime = new Date().getTime();
@@ -63,7 +60,7 @@ public class TestSerializeCapability {
     @Test
     public void testHashSerialize(){
         for(int i = 0; i < 100; i++){
-//            BoundValueOperations<String, String> ops = redisTemplate.boundValueOps("dd");
+//            BoundValueOperations<String, String> ops = stringRedisTemplate.boundValueOps("dd");
 
 
         }
