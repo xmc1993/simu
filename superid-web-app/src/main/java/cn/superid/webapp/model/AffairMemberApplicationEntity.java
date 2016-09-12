@@ -24,8 +24,8 @@ public class AffairMemberApplicationEntity extends ExecutableModel {
     private long allianceId;
     private long dealRoleId;
     private long dealUserId;
-    private long dealReason;
-    private int state = 0;
+    private String dealReason;
+    private int state = 0;//0表示未处理,1表示接受,2表示拒绝
     private Timestamp createTime;
     private Timestamp modifyTime;
 
@@ -88,11 +88,11 @@ public class AffairMemberApplicationEntity extends ExecutableModel {
         this.dealUserId = dealUserId;
     }
 
-    public long getDealReason() {
+    public String getDealReason() {
         return dealReason;
     }
 
-    public void setDealReason(long dealReason) {
+    public void setDealReason(String dealReason) {
         this.dealReason = dealReason;
     }
 

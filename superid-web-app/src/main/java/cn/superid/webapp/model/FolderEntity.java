@@ -15,21 +15,21 @@ import java.sql.Timestamp;
 @Table(name = "folder")
 public class FolderEntity extends ExecutableModel {
     public final static Dao<FolderEntity> dao = new Dao<>(FolderEntity.class);
-    private Long id;
+    private long id;
     private String name;
     private String path;
-    private Long affair_id;
-    private Long task_id;
+    private long affair_id;
+    private long task_id;
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
-    private Long uploader;
+    private long uploader;
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -49,19 +49,19 @@ public class FolderEntity extends ExecutableModel {
         this.path = path;
     }
 
-    public Long getAffair_id() {
+    public long getAffair_id() {
         return affair_id;
     }
 
-    public void setAffair_id(Long affair_id) {
+    public void setAffair_id(long affair_id) {
         this.affair_id = affair_id;
     }
 
-    public Long getTask_id() {
+    public long getTask_id() {
         return task_id;
     }
 
-    public void setTask_id(Long task_id) {
+    public void setTask_id(long task_id) {
         this.task_id = task_id;
     }
 
@@ -73,11 +73,11 @@ public class FolderEntity extends ExecutableModel {
         this.createTime = createTime;
     }
 
-    public Long getUploader() {
+    public long getUploader() {
         return uploader;
     }
 
-    public void setUploader(Long uploader) {
+    public void setUploader(long uploader) {
         this.uploader = uploader;
     }
 }

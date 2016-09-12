@@ -19,7 +19,7 @@ public class RoleEntity extends ExecutableModel {
     private long id;
     private long userId;
     private long allianceId;
-    private Long belongAffairId;
+    private long belongAffairId;
     private String title;
     private String permissions;
 
