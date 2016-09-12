@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "folder")
 public class FolderEntity extends ExecutableModel {
     public final static Dao<FolderEntity> dao = new Dao<>(FolderEntity.class);
-    private Long id;
+    private long id;
     private String name;
     private String path;
     private Long affairId;
@@ -24,13 +25,15 @@ public class FolderEntity extends ExecutableModel {
     private Long uploader;
     private long parentId;
 
+
+
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -58,11 +61,11 @@ public class FolderEntity extends ExecutableModel {
         this.createTime = createTime;
     }
 
-    public Long getUploader() {
+    public long getUploader() {
         return uploader;
     }
 
-    public void setUploader(Long uploader) {
+    public void setUploader(long uploader) {
         this.uploader = uploader;
     }
 

@@ -1,6 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.Cacheable;
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -19,7 +20,7 @@ public class RoleEntity extends ExecutableModel {
     private long id;
     private long userId;
     private long allianceId;
-    private Long belongAffairId;
+    private long belongAffairId;
     private String title;
     private String permissions;
 
@@ -47,6 +48,7 @@ public class RoleEntity extends ExecutableModel {
         this.userId = userId;
     }
 
+    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }

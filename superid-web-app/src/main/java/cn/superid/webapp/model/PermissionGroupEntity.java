@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 
 import javax.persistence.Column;
@@ -31,6 +32,7 @@ public class PermissionGroupEntity {
         this.id = id;
     }
 
+    @PartitionId
     public long getAffairId() {
         return affairId;
     }

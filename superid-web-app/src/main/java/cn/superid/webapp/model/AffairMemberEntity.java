@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -34,6 +35,7 @@ public class AffairMemberEntity extends ExecutableModel {
         this.id = id;
     }
 
+    @PartitionId
     public long getAffairId() {
         return affairId;
     }

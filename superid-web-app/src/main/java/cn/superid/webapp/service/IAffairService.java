@@ -3,6 +3,8 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.model.AffairMemberApplicationEntity;
+import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IGetPermissions;
 import org.elasticsearch.index.engine.Engine;
@@ -19,4 +21,33 @@ public interface IAffairService  {
     public String applyForEnterAffair(long affairId,long roleId);
 
     public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
+
+
+    /**
+     * 通过申请的id找到事务的成员
+     * @param applicationId
+     * @return
+     */
+    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long applicationId);
+
+    /**
+     * 同意加入事务的申请
+     * @param applicationId
+     * @param dealRoleId
+     * @param dealReason
+     * @return
+     * @throws Exception
+     */
+    public AffairMemberEntity agreeAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+
+    /**
+     * 拒绝加入事务的申请
+     * @param applicationId
+     * @param dealRoleId
+     * @param dealReason
+     * @return
+     * @throws Exception
+     */
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+
 }

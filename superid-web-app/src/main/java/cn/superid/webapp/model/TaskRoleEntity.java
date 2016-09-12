@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -29,6 +30,7 @@ public class TaskRoleEntity extends ExecutableModel {
         this.id = id;
     }
 
+    @PartitionId
     public long getTaskId() {
         return taskId;
     }
