@@ -342,6 +342,8 @@ public class Dao<T> {
         return and(column,"=",value);
     }
 
+    public Dao<T> lk(String colum,Object value){return and(colum,"LIKE",value);}
+
     public Dao<T> idEqual(Object value){
         return and("id","=",value);
     }
