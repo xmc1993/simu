@@ -41,19 +41,19 @@ public class AffairEntity extends ExecutableModel {
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(long parentId) {
         this.parentId = parentId;
     }
 
@@ -81,19 +81,19 @@ public class AffairEntity extends ExecutableModel {
         this.description = description;
     }
 
-    public Long getCreateRoleId() {
+    public long getCreateRoleId() {
         return createRoleId;
     }
 
-    public void setCreateRoleId(Long createRoleId) {
+    public void setCreateRoleId(long createRoleId) {
         this.createRoleId = createRoleId;
     }
 
-    public Long getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(Long allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 

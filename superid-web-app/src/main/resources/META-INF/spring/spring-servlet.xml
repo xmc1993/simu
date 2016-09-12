@@ -11,6 +11,8 @@
 	http://www.springframework.org/schema/mvc
 	http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
+
+
     <!-- json 转换action的返回值 -->
     <bean id="contentNegotiatingViewResolver"
           class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">

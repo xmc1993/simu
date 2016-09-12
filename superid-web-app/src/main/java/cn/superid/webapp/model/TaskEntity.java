@@ -15,8 +15,8 @@ import java.sql.Timestamp;
 public class TaskEntity extends ExecutableModel{
 
     public final static Dao<TaskEntity> dao = new Dao<>(TaskEntity.class);
-    private Long id;
-    private Long affairId;
+    private long id;
+    private long affairId;
     private String title;
     private int state;
     private String description;
@@ -26,23 +26,23 @@ public class TaskEntity extends ExecutableModel{
     private String circleDate;
     private Timestamp createTime;
     private Timestamp endTime;
-    private Long discussGroupId;
+    private long discussGroupId;
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getAffairId() {
+    public long getAffairId() {
         return affairId;
     }
 
-    public void setAffairId(Long affairId) {
+    public void setAffairId(long affairId) {
         this.affairId = affairId;
     }
 
@@ -118,11 +118,11 @@ public class TaskEntity extends ExecutableModel{
         this.endTime = endTime;
     }
 
-    public Long getDiscussGroupId() {
+    public long getDiscussGroupId() {
         return discussGroupId;
     }
 
-    public void setDiscussGroupId(Long discussGroupId) {
+    public void setDiscussGroupId(long discussGroupId) {
         this.discussGroupId = discussGroupId;
     }
 }

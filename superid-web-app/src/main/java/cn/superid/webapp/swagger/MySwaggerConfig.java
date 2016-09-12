@@ -34,7 +34,7 @@ public class MySwaggerConfig {
     {
         ApiInfo apiInfo = new ApiInfo(
                 "SuperId",//My Apps API Title
-                "SuperId接口文档",//My Apps API Description
+                " {保密0 男1  女2} {客方0 官方1} {false0 true1}  {公开0 对盟内公开1 不公开2} {失效0 正常1}",//My Apps API Description
                 "My Apps API terms of service",
                 "My Apps API Contact Email",
                 "My Apps API Licence Type",

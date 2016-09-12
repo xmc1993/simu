@@ -2,12 +2,18 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.enums.AllianceType;
+import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.PermissionGroupEntity;
 import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.security.PermissionRoleType;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.utils.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +24,37 @@ import java.nio.ByteBuffer;
  */
 @Service
 public class AffairService implements IAffairService {
+    @Autowired
+    private IAffairMemberService affairMemberService;
+
     @Override
     public String getPermissions(long affairId, long roleId) {
-        return "39,34,1,2,3,32,4";
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.eq("affairId",affairId).eq("roleId",roleId).selectOne();
+        if(affairMemberEntity.getPermissions()==""){
+            long permissionGroupId = affairMemberEntity.getPermissionGroupId();
+            //switch不支持long
+            if(permissionGroupId==1L){
+                return PermissionRoleType.OWNER;
+            }
+            else if(permissionGroupId == 2L){
+                return PermissionRoleType.ADMINISTRATOR;
+            }
+            else if(permissionGroupId == 3L){
+                return PermissionRoleType.OFFICIAL;
+            }
+            else if(permissionGroupId == 4L){
+                return PermissionRoleType.GUEST;
+            }else if(permissionGroupId == 5L){
+                return PermissionRoleType.VISITOR;
+            }
+            else{
+                PermissionGroupEntity permissionGroupEntity = PermissionGroupEntity.dao.findById(permissionGroupId);
+                return permissionGroupEntity.getPermissions();
+            }
+        }
+        else{
+            return affairMemberEntity.getPermissions();
+        }
     }
 
     private void JustIndex(long parentId,int index){
@@ -31,7 +65,8 @@ public class AffairService implements IAffairService {
     @Override
     @Transactional
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception{
-        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getParentId());
+
+        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getAffairId());
         if(parentAffair==null){
             throw new Exception("parent affair not found ");
         }
@@ -53,6 +88,30 @@ public class AffairService implements IAffairService {
         return affairEntity;
     }
 
+    /**
+     * 创建根事务,一般根据盟名称产生,一个盟对应一个根事务
+     * @param allianceId
+     * @param name
+     * @param roleId
+     * @param type
+     * @return
+     */
+    @Override
+    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
+        AffairEntity affairEntity=new AffairEntity();
+        affairEntity.setType(type);
+        affairEntity.setPublicType(PublicType.TO_ALLIANCE);
+        affairEntity.setAllianceId(allianceId);
+        affairEntity.setName(name);
+        affairEntity.setLevel(1);
+        affairEntity.setPathIndex(1);
+        affairEntity.setPath("/"+affairEntity.getPathIndex());
+        affairEntity.save();
+
+        affairMemberService.addMember(affairEntity.getId(),roleId,null,PermissionRoleType.OWNER_ID);//加入根事务
+        return affairEntity;
+    }
+
     @Override
     @Transactional
     public String applyForEnterAffair(long affairId, long roleId) {
@@ -65,7 +124,6 @@ public class AffairService implements IAffairService {
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setState(0);
-        affairMemberEntity.setType(0);
         affairMemberEntity.save();
         return "等待审核中";
     }

@@ -1,5 +1,4 @@
 
-
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
@@ -7,7 +6,6 @@ import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.SerializeUtil;
 import com.alibaba.druid.pool.DruidDataSource;
-import com.sun.tools.javac.code.Attribute;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
@@ -19,6 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -126,7 +127,7 @@ public class testExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String, byte[]> hashMap = user.getHashByteMap();
+        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
 //        Assert.assertTrue(hashMap.get("age").equals(18));
 
         User user1 = new User();
@@ -141,7 +142,7 @@ public class testExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String, byte[]> hashMap = user.getHashByteMap();
+        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
         long beginTime = new Date().getTime();
         for(int i = 0; i < 1000; i++){  //100 32ms 1000 116ms
             RedisUtil.hmset("user" + i, hashMap);

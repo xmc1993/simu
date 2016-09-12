@@ -14,5 +14,7 @@ public interface IAllianceService {
 
     public boolean inSameAlliance(long userId1,long userId2);
 
+    public boolean validName(String name);
+
 
 }

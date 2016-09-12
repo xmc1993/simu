@@ -4,25 +4,27 @@ import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
- * Created by njuTms on 16/8/31.
+ * Created by njuTms on 16/9/9.
  */
-@Table(name = "affair_member")
-public class AffairMemberEntity extends ExecutableModel {
-    public final static Dao<AffairMemberEntity> dao = new Dao<>(AffairMemberEntity.class);
+@Entity
+@Table(name = "affair_member_invitation")
+public class AffairMemberInvitationEntity extends ExecutableModel {
+    public final static Dao<AffairMemberInvitationEntity> dao = new Dao<>(AffairMemberInvitationEntity.class);
     private long id;
     private long affairId;
-    private long roleId;
-    private long userId;
-    private int state;
-    private String permissions;
+    private long inviteRoleId;
+    private long beInvitedRoleId;
+    private long permissionGroup;
+    private int state = 0;
+    private String reason = "";
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private long permissionGroupId;
 
     @Id
     @Column(name = "id")
@@ -42,20 +44,28 @@ public class AffairMemberEntity extends ExecutableModel {
         this.affairId = affairId;
     }
 
-    public long getRoleId() {
-        return roleId;
+    public long getInviteRoleId() {
+        return inviteRoleId;
     }
 
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
+    public void setInviteRoleId(long inviteRoleId) {
+        this.inviteRoleId = inviteRoleId;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getBeInvitedRoleId() {
+        return beInvitedRoleId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setBeInvitedRoleId(long beInvitedRoleId) {
+        this.beInvitedRoleId = beInvitedRoleId;
+    }
+
+    public long getPermissionGroup() {
+        return permissionGroup;
+    }
+
+    public void setPermissionGroup(long permissionGroup) {
+        this.permissionGroup = permissionGroup;
     }
 
     public int getState() {
@@ -66,12 +76,12 @@ public class AffairMemberEntity extends ExecutableModel {
         this.state = state;
     }
 
-    public String getPermissions() {
-        return permissions;
+    public String getReason() {
+        return reason;
     }
 
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
     public Timestamp getCreateTime() {
@@ -88,13 +98,5 @@ public class AffairMemberEntity extends ExecutableModel {
 
     public void setModifyTime(Timestamp modifyTime) {
         this.modifyTime = modifyTime;
-    }
-
-    public long getPermissionGroupId() {
-        return permissionGroupId;
-    }
-
-    public void setPermissionGroupId(long permissionGroupId) {
-        this.permissionGroupId = permissionGroupId;
     }
 }

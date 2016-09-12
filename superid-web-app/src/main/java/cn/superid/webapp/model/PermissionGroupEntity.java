@@ -1,24 +1,24 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.orm.Dao;
-import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
- * Created by jizhenya on 16/9/7.
+ * Created by njuTms on 16/9/8.
  */
-@Table(name = "task_log")
-public class TaskLogEntity  extends ExecutableModel {
+@Entity
+@Table(name = "permission_group")
 
-    public final static Dao<TaskLogEntity> dao = new Dao<>(TaskLogEntity.class);
-
+public class PermissionGroupEntity {
+    public final static Dao<PermissionGroupEntity> dao = new Dao<>(PermissionGroupEntity.class);
     private long id;
-    private long taskId;
-    private String message;
+    private long affairId;
+    private String permissions;
     private Timestamp createTime;
 
     @Id
@@ -31,20 +31,20 @@ public class TaskLogEntity  extends ExecutableModel {
         this.id = id;
     }
 
-    public long getTaskId() {
-        return taskId;
+    public long getAffairId() {
+        return affairId;
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
     }
 
-    public String getMessage() {
-        return message;
+    public String getPermissions() {
+        return permissions;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
     }
 
     public Timestamp getCreateTime() {

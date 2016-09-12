@@ -14,15 +14,17 @@ import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.forms.SimpleResponse;
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.apache.commons.logging.Log;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -40,7 +42,7 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private IAuth auth;
-    public static Logger LOG = LoggerFactory.getLogger(UserController.class);
+    public static Log LOG = LogFactory.getLog(UserController.class);
 
 
     /**
@@ -53,7 +55,6 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
-        LOG.info("get_register_code",request.getRemoteAddr());
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
             return SimpleResponse.error("frequent_request");
         }
@@ -260,11 +261,16 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "获取其他用户的详细消息", response = ResultUserInfo.class)
+    @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
-    public  SimpleResponse getUserInfo(long userId){
-        ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
-        return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+    public  SimpleResponse getUserInfo(Long userId){
+        if(userId==null||userId==userService.currentUserId()){
+            return SimpleResponse.ok(userService.getCurrentUser());
+        }else{
+            ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
+            return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+        }
+
     }
 
     @RequestMapping(value = "/test_log", method = RequestMethod.GET)
@@ -277,5 +283,9 @@ public class UserController {
     }
 
 
-
+    @RequestMapping(value = "/debug",method = RequestMethod.POST)
+    @NotLogin
+    public SimpleResponse bug(EditUserBaseInfo userBaseInfo){
+        return SimpleResponse.ok("1");
+    }
 }

@@ -15,33 +15,33 @@ public class TaskRoleEntity extends ExecutableModel {
 
     public final static Dao<TaskRoleEntity> dao = new Dao<>(TaskRoleEntity.class);
 
-    private Long id;
-    private Long taskId;
-    private Long roleId;
+    private long id;
+    private long taskId;
+    private long roleId;
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getTaskId() {
+    public long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(long taskId) {
         this.taskId = taskId;
     }
 
-    public Long getRoleId() {
+    public long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(long roleId) {
         this.roleId = roleId;
     }
 }

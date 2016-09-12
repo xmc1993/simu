@@ -216,6 +216,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
     private boolean isPermitted(int[] permissions,String currentPermission){
+        if(currentPermission.equals("*")){
+            return true;
+        }
         if(permissions==null&&permissions.length==0){
             return true;
         }
