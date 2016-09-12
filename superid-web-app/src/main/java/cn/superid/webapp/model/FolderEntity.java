@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
@@ -49,6 +50,7 @@ public class FolderEntity extends ExecutableModel {
         this.path = path;
     }
 
+    @PartitionId
     public Long getAffair_id() {
         return affair_id;
     }

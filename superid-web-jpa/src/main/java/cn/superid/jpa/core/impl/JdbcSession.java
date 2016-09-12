@@ -107,15 +107,19 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
-    private int setStatement(ModelMeta modelMeta,PreparedStatement preparedStatement,Object entity,boolean skipId){
+    private int setStatementAllField(ModelMeta modelMeta,PreparedStatement preparedStatement,Object entity,boolean skipId){
         int i = getIndexParamBaseOrdinal();
         try {
             for (ModelMeta.ModelColumnMeta columnMeta : modelMeta.getColumnMetaSet()) {
-                if(skipId&&columnMeta.isId) continue;
+                if(skipId&&(columnMeta.isId||columnMeta.isPartition)) continue;
                 FieldAccessor fieldAccessor = columnMeta.fieldAccessor;
                 Object value = fieldAccessor.getProperty(entity);
+                if((value==null||value.equals(0))&&columnMeta.isPartition){
+                    throw  new JdbcRuntimeException("Partition Column's value  can't be null:"+columnMeta.columnName);
+                }
                 preparedStatement.setObject(i, value);
                 i++;
+
             }
             return i;
         } catch (SQLException e) {
@@ -132,7 +136,7 @@ public class JdbcSession extends AbstractSession {
             String sql = modelMeta.getInsertSql();
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                setStatement(modelMeta,preparedStatement,entity,false);
+                setStatementAllField(modelMeta,preparedStatement,entity,false);
                 try {
 
                     int changedCount = preparedStatement.executeUpdate();
@@ -164,7 +168,7 @@ public class JdbcSession extends AbstractSession {
                 if (batchStatement == null) {
                     batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
-                setStatement(modelMeta,batchStatement,entity,false);
+                setStatementAllField(modelMeta,batchStatement,entity,false);
                 batchStatement.addBatch();
             }
 
@@ -183,7 +187,7 @@ public class JdbcSession extends AbstractSession {
 
             if(isSharding){
                 partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
-                if(partitionId==null||partitionId==0){
+                if(partitionId==null||partitionId.equals(0)){
                     throw new JdbcRuntimeException("you should update with partition id");
                 }
             }
@@ -192,7 +196,7 @@ public class JdbcSession extends AbstractSession {
 
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
-                int i= setStatement(modelMeta,preparedStatement,entity,true);
+                int i= setStatementAllField(modelMeta,preparedStatement,entity,true);
                 Object id = idAccessor.getProperty(entity);
                 if(isSharding){
                     preparedStatement.setObject(i, partitionId);
@@ -211,7 +215,7 @@ public class JdbcSession extends AbstractSession {
                 if (batchStatement == null) {
                     batchStatement = getJdbcConnection().prepareStatement(sql);
                 }
-                int i=setStatement(modelMeta,batchStatement,entity,true);
+                int i=setStatementAllField(modelMeta,batchStatement,entity,true);
 
                 if(isSharding){
                     batchStatement.setObject(i, partitionId);
@@ -235,8 +239,9 @@ public class JdbcSession extends AbstractSession {
 
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             if(modelMeta.getPatitionColumn()!=null){
-                throw new JdbcRuntimeException("this method not support");
+                throw new JdbcRuntimeException(" This method don't support partition entity:"+modelMeta.getPatitionColumn().columnName);
             }
+
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
             ParameterBindings parameterBindings=new ParameterBindings();
             StringBuilder sb =new StringBuilder(" UPDATE ");
@@ -258,6 +263,7 @@ public class JdbcSession extends AbstractSession {
             sb.append(" WHERE ");
             sb.append(modelMeta.getIdName());
             sb.append("=?");
+
             parameterBindings.addIndexBinding(idAccessor.getProperty(entity));
             String sql =sb.toString();
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
@@ -284,8 +290,8 @@ public class JdbcSession extends AbstractSession {
 
             if(isSharding){
                 partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
-                if(partitionId==null||partitionId==0){
-                    throw new JdbcRuntimeException("you should delete with partition id");
+                if(partitionId==null||partitionId.equals(0)){
+                    throw new JdbcRuntimeException("you should delete with partition column value:"+modelMeta.getPatitionColumn().columnName);
                 }
             }
 
@@ -300,6 +306,9 @@ public class JdbcSession extends AbstractSession {
 
                     }
                     Object id = idAccessor.getProperty(entity);
+                    if(id==null||id.equals(0)){
+                        throw new JdbcRuntimeException("id should not be null");
+                    }
                     preparedStatement.setObject(i ,id);
                     preparedStatement.executeUpdate();
                 } finally {
@@ -428,24 +437,33 @@ public class JdbcSession extends AbstractSession {
     }
 
 
-    public Object find(Class<?> cls, Object id, boolean tiny) {
+    public Object find(Class<?> cls, Object id,Object partitionId, boolean tiny) {
         try {
             String sql;
             ModelMeta modelMeta = getEntityMetaOfClass(cls);
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
+            ModelMeta.ModelColumnMeta partitionColumn = modelMeta.getPatitionColumn();
             if (tiny) {
                 sql = modelMeta.getFindTinyByIdSql();
             } else {
                 sql = modelMeta.getFindByIdSql();
             }
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
-            preparedStatement.setObject(getIndexParamBaseOrdinal(), id);
+            int i =getIndexParamBaseOrdinal();
+            if(partitionColumn!=null){
+                if(partitionId==null||partitionId.equals(0)){
+                    throw new JdbcRuntimeException("you should have partition column:"+partitionColumn.columnName);
+
+                }
+                preparedStatement.setObject(i,partitionId);
+                i++;
+            }
+            preparedStatement.setObject(i, id);
             try {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 try {
                     List result = handler.handle(resultSet);
                     if (result.size() > 0) {
-                        Object bean = result.get(0);
                         return result.get(0);
                     } else {
                         return null;
@@ -471,7 +489,7 @@ public class JdbcSession extends AbstractSession {
      */
     @Override
     public Object find(Class<?> cls, Object id) {
-        return find(cls, id, false);
+        return find(cls, id, null,false);
     }
 
 
@@ -525,7 +543,17 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public Object findTiny(Class<?> cls, Object id) {
-        return find(cls, id, true);
+        return find(cls, id,null, true);
+    }
+
+    @Override
+    public Object find(Class<?> cls, Object id, Object partitionId) {
+        return find(cls,id,partitionId,false);
+    }
+
+    @Override
+    public Object findTiny(Class<?> cls, Object id, Object partitionId) {
+        return find(cls,id,partitionId,true);
     }
 
     @Override
@@ -570,4 +598,29 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
+
+    @Override
+    public int execute(String sql, Object[] params) {
+        PreparedStatement preparedStatement =null;
+        try {
+            preparedStatement = getJdbcConnection().prepareStatement(sql);
+            int i= getIndexParamBaseOrdinal();
+            for(Object p:params){
+                preparedStatement.setObject(i,p);
+                i++;
+            }
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        }finally {
+            if(preparedStatement!=null){
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    throw  new JdbcRuntimeException(e);
+                }
+            }
+            close();
+        }
+    }
 }

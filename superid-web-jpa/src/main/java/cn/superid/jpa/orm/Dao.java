@@ -74,6 +74,17 @@ public class Dao<T> {
 
 
 
+    public T findById(Object id,Object partitionId){
+        return  (T) getSession().find(this.clazz,id,partitionId);
+    }
+
+
+    public T findTinyById(Object id,Object partitionId){
+        return (T)getSession().findTiny(this.clazz,id,partitionId);
+    }
+
+
+
 
     public static Object findById(Class<?> cls,Object id){
         return  getSession().find(cls,id);
@@ -294,10 +305,10 @@ public class Dao<T> {
         sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(builder);
         String sql = sb.toString();
-        ParameterBindings all = parameterBindings.get();
+        Object[] params = parameterBindings.get().getIndexParametersArray();
         builder.delete(whereLength,builder.length());
         parameterBindings.get().clear();
-        return getSession().execute(sql,parameterBindings.get());
+        return getSession().execute(sql,params);
     }
 
 

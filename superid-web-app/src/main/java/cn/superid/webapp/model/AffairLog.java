@@ -1,5 +1,7 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
+
 import javax.persistence.Id;
 
 /**
@@ -46,6 +48,7 @@ public class AffairLog {
         this.roleId = roleId;
     }
 
+    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }

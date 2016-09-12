@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.webapp.utils.TimeUtil;
 
@@ -50,6 +51,7 @@ public class FileEntity {
         this.path = path;
     }
 
+    @PartitionId
     public Long getFolderId() {
         return folderId;
     }

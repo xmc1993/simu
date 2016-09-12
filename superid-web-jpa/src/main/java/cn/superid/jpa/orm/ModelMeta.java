@@ -80,7 +80,7 @@ public class ModelMeta {
             if (fieldAccessor.getPropertyAnnotation(javax.persistence.Id.class) != null) {
                 columnMeta.isId = true;
                 this.idColumnMeta = columnMeta;
-            }else if(fieldAccessor.getPropertyAnnotation(PartitionId.class)==null){
+            }else if(fieldAccessor.getPropertyAnnotation(PartitionId.class)!=null){
                 columnMeta.isPartition = true;
                 this.partitionColumn = columnMeta;
             } else{
@@ -153,12 +153,8 @@ public class ModelMeta {
         sql.append(this.getTableName());
         sql.append(" SET ");
         sql.append(updateSql);
-
         sql.append(" WHERE ");
-        if(this.partitionColumn!=null){
-            sql.append(this.partitionColumn.columnName);
-            sql.append("=? and ");
-        }
+        generatePartitionCondition(sql);
         sql.append(this.idColumnMeta.columnName);
         sql.append("=?");
 
@@ -173,13 +169,18 @@ public class ModelMeta {
         StringBuilder sql = new StringBuilder("DELETE FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
+        generatePartitionCondition(sql);
+        sql.append(this.idColumnMeta.columnName);
+        sql.append("=?");
+        this.deleteSql = sql.toString();
+    }
+
+
+    private void generatePartitionCondition(StringBuilder sql){
         if(this.partitionColumn!=null){
             sql.append(this.partitionColumn.columnName);
             sql.append("=? and ");
         }
-        sql.append(this.idColumnMeta.columnName);
-        sql.append("=?");
-        this.deleteSql = sql.toString();
     }
 
     public String getFindByIdSql() {
@@ -190,6 +191,7 @@ public class ModelMeta {
         StringBuilder sql = new StringBuilder("SELECT * FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
+        generatePartitionCondition(sql);
         sql.append(this.idColumnMeta.columnName);
         sql.append("=?");
         this.findByIdSql = sql.toString();
@@ -206,6 +208,7 @@ public class ModelMeta {
         sql.append(" FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
+        generatePartitionCondition(sql);
         sql.append(this.idColumnMeta.columnName);
         sql.append("=?");
         this.findTinyByIdSql = sql.toString();

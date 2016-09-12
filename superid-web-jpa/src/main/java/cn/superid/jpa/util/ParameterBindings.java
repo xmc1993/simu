@@ -1,5 +1,7 @@
 package cn.superid.jpa.util;
 
+import cn.superid.jpa.core.AbstractSession;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
