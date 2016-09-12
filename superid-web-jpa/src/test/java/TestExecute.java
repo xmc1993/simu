@@ -1,10 +1,7 @@
 
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-<<<<<<< HEAD:superid-web-jpa/src/test/java/TestExecute.java
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-=======
 import cn.superid.jpa.redis.RedisUtil;
->>>>>>> a3d371e6aa74337912719dfe4b00b4bc59bdaee6:superid-web-jpa/src/test/java/testExecute.java
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
@@ -14,21 +11,8 @@ import junit.framework.TestCase;
 import model.Role;
 import model.User;
 import org.junit.Assert;
-
-<<<<<<< HEAD:superid-web-jpa/src/test/java/TestExecute.java
-=======
-import javax.sql.DataSource;
-import javax.validation.constraints.AssertTrue;
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Time;
 import java.util.Date;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
->>>>>>> a3d371e6aa74337912719dfe4b00b4bc59bdaee6:superid-web-jpa/src/test/java/testExecute.java
 import java.util.HashMap;
 import java.util.List;
 
