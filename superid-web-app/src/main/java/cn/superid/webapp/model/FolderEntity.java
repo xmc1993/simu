@@ -19,10 +19,13 @@ public class FolderEntity extends ExecutableModel {
     private long id;
     private String name;
     private String path;
-    private long affair_id;
-    private long task_id;
+    private Long affairId;
+    private Long taskId;
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
-    private long uploader;
+    private Long uploader;
+    private long parentId;
+
+
 
     @Id
     @Column(name = "id")
@@ -50,23 +53,6 @@ public class FolderEntity extends ExecutableModel {
         this.path = path;
     }
 
-    @PartitionId
-    public long getAffair_id() {
-        return affair_id;
-    }
-
-    public void setAffair_id(long affair_id) {
-        this.affair_id = affair_id;
-    }
-
-    public long getTask_id() {
-        return task_id;
-    }
-
-    public void setTask_id(long task_id) {
-        this.task_id = task_id;
-    }
-
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -81,5 +67,29 @@ public class FolderEntity extends ExecutableModel {
 
     public void setUploader(long uploader) {
         this.uploader = uploader;
+    }
+
+    public long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
+    }
+
+    public Long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(Long affairId) {
+        this.affairId = affairId;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 }
