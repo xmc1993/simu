@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
@@ -15,13 +16,13 @@ import java.sql.Timestamp;
 @Table(name = "affair")
 public class AffairEntity extends ExecutableModel {
     public final static Dao<AffairEntity> dao = new Dao<>(AffairEntity.class);
-    private Long id;
-    private Long parentId;
+    private long id;
+    private long parentId;
     private String name ="";
     private String logoUrl="";
     private String description="";
-    private Long createRoleId;
-    private Long allianceId;
+    private long createRoleId;
+    private long allianceId;
     private int publicType;
     private int type;
     private int state;
@@ -37,7 +38,7 @@ public class AffairEntity extends ExecutableModel {
     private int isVideo;
     private int index;
     private int pathIndex;
-
+    private long folderId;
 
     @Id
     @Column(name = "id")
@@ -89,6 +90,7 @@ public class AffairEntity extends ExecutableModel {
         this.createRoleId = createRoleId;
     }
 
+    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }
@@ -215,5 +217,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setPathIndex(int pathIndex) {
         this.pathIndex = pathIndex;
+    }
+
+    public long getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(long folderId) {
+        this.folderId = folderId;
     }
 }

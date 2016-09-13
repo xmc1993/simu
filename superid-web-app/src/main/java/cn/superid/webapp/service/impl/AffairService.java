@@ -5,13 +5,11 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.enums.AllianceType;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
-import cn.superid.webapp.model.AffairEntity;
-import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.PermissionGroupEntity;
-import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.model.*;
 import cn.superid.webapp.security.PermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +25,7 @@ public class AffairService implements IAffairService {
     @Autowired
     private IAffairMemberService affairMemberService;
 
+    private IUserService userService;
     @Override
     public String getPermissions(long affairId, long roleId) {
         AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.eq("affairId",affairId).eq("roleId",roleId).selectOne();
@@ -127,4 +126,63 @@ public class AffairService implements IAffairService {
         affairMemberEntity.save();
         return "等待审核中";
     }
+
+    @Override
+    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long applicationId) {
+        return AffairMemberApplicationEntity.dao.findById(applicationId);
+    }
+
+    @Override
+    @Transactional
+    public AffairMemberEntity agreeAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception {
+        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId);
+        if (affairMemberApplicationEntity == null) {
+            throw new Exception("找不到此申请");
+        }
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairMemberApplicationEntity.getAffairId());
+        if (affairEntity == null) {
+            throw new Exception("找不到事务" + affairMemberApplicationEntity.getAffairId());
+        }
+
+        // TODO: 设置权限,暂时设置为游客即为5
+
+        AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
+        affairMemberEntity.setRoleId(affairMemberApplicationEntity.getRoleId());
+        affairMemberEntity.setAffairId(affairEntity.getId());
+        affairMemberEntity.setUserId(affairMemberApplicationEntity.getUserId());
+        affairMemberEntity.setState(0);
+        affairMemberEntity.setPermissions("");
+        affairMemberEntity.setPermissionGroupId(5L);
+        affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        affairMemberEntity.save();
+
+
+        //更新申请信息
+        affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        affairMemberApplicationEntity.setState(1);
+        affairMemberApplicationEntity.setDealRoleId(dealRoleId);
+        affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
+        affairMemberApplicationEntity.setDealReason(dealReason);
+        affairMemberApplicationEntity.update();
+        return affairMemberEntity;
+    }
+
+    @Override
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception {
+        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId);
+        if (affairMemberApplicationEntity == null) {
+            throw new Exception("找不到此申请");
+        }
+        //更新申请信息
+        affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        affairMemberApplicationEntity.setState(2);
+        affairMemberApplicationEntity.setDealRoleId(dealRoleId);
+        affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
+        affairMemberApplicationEntity.setDealReason(dealReason);
+        affairMemberApplicationEntity.update();
+        return affairMemberApplicationEntity;
+    }
+
+
 }

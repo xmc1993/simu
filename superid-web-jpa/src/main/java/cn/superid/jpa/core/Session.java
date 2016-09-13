@@ -69,6 +69,10 @@ public interface Session {
 
     Object findTiny(Class<?> cls, Object id);
 
+    Object find(Class<?> cls, Object id,Object partitionId);
+
+    Object findTiny(Class<?> cls, Object id,Object partitionId);
+
     void delete(Object entity);
 
     void flush();
@@ -84,6 +88,9 @@ public interface Session {
     int execute(String sql);
 
     int execute(String sql, ParameterBindings parameterBindings);
+
+    int execute(String sql, Object[] params);
+
 
     void copyProperties(Object from,Object to,boolean skipNull);
 

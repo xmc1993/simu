@@ -1,6 +1,8 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
 
 import javax.persistence.Column;
@@ -12,25 +14,27 @@ import java.sql.Timestamp;
  * Created by jizhenya on 16/9/9.
  */
 @Table(name = "file")
-public class FileEntity {
+public class FileEntity extends ExecutableModel {
 
     public final static Dao<FileEntity> dao = new Dao<>(FileEntity.class);
-    private Long id;
+    private long id;
     private String name;
     private String path;
-    private Long folderId;
+    private long folderId;
     private String fileId;
-    private Long uploader;
+    private long uploader;
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
     private String historyId;
+    private long size;
+    private int state; //0为失效,1为有效且为最新版,2表示有效且是历史版本
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -50,11 +54,12 @@ public class FileEntity {
         this.path = path;
     }
 
-    public Long getFolderId() {
+    @PartitionId
+    public long getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(Long folderId) {
+    public void setFolderId(long folderId) {
         this.folderId = folderId;
     }
 
@@ -66,11 +71,11 @@ public class FileEntity {
         this.fileId = fileId;
     }
 
-    public Long getUploader() {
+    public long getUploader() {
         return uploader;
     }
 
-    public void setUploader(Long uploader) {
+    public void setUploader(long uploader) {
         this.uploader = uploader;
     }
 
@@ -88,5 +93,21 @@ public class FileEntity {
 
     public void setHistoryId(String historyId) {
         this.historyId = historyId;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

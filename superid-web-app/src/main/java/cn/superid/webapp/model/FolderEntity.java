@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
@@ -15,21 +16,25 @@ import java.sql.Timestamp;
 @Table(name = "folder")
 public class FolderEntity extends ExecutableModel {
     public final static Dao<FolderEntity> dao = new Dao<>(FolderEntity.class);
-    private Long id;
+    private long id;
     private String name;
     private String path;
-    private Long affair_id;
-    private Long task_id;
+    private Long affairId;
+    private Long taskId;
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
-    private Long uploader;
+    private long uploader;
+    private long parentId;
+    private int state;
+
+
 
     @Id
     @Column(name = "id")
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -49,22 +54,6 @@ public class FolderEntity extends ExecutableModel {
         this.path = path;
     }
 
-    public Long getAffair_id() {
-        return affair_id;
-    }
-
-    public void setAffair_id(Long affair_id) {
-        this.affair_id = affair_id;
-    }
-
-    public Long getTask_id() {
-        return task_id;
-    }
-
-    public void setTask_id(Long task_id) {
-        this.task_id = task_id;
-    }
-
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -73,11 +62,43 @@ public class FolderEntity extends ExecutableModel {
         this.createTime = createTime;
     }
 
-    public Long getUploader() {
+    public long getUploader() {
         return uploader;
     }
 
-    public void setUploader(Long uploader) {
+    public void setUploader(long uploader) {
         this.uploader = uploader;
+    }
+
+    public long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
+    }
+
+    public Long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(Long affairId) {
+        this.affairId = affairId;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }
