@@ -22,4 +22,12 @@ public class RedisMessageServiceTest {
         redisMessageService.sendMessage("room_message", message);
         System.out.println("---end---");
     }
+
+    @Test
+    public void testPublishJsonMessage(){
+        Message message = new Message();
+        message.setContent("test room message");
+        redisMessageService.sendJsonMessage("room_message", message);
+        System.out.println("---end---");
+    }
 }
