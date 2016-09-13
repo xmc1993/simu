@@ -15,8 +15,8 @@ import javax.persistence.Table;
 public class RoleBaseInfo  extends ExecutableModel {
     public final static Dao<RoleBaseInfo> dao = new Dao<>(RoleBaseInfo.class);
     private long id;
-    private Long userId;
-    private Long allianceId;
+    private long userId;
+    private long allianceId;
     private String title;
 
     @Id
@@ -28,19 +28,19 @@ public class RoleBaseInfo  extends ExecutableModel {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
-    public Long getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(Long allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 

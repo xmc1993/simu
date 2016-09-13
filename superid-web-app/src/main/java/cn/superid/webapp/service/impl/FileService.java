@@ -30,7 +30,7 @@ public class FileService implements IFileService{
             return null;
         }
         List<FolderEntity> folders = null;
-        if(folder.getTaskId() == null ){
+        if(folder.getTaskId() == 0L ){
             folders = FolderEntity.dao.eq("affair_id",folder.getAffairId()).lk("path",folder.getPath()+"%").selectList();
         }else{
             folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).lk("path",folder.getPath()+"%").selectList();

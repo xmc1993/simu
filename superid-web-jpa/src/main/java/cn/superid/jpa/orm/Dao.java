@@ -359,6 +359,15 @@ public class Dao<T> {
         return and("id","=",value);
     }
 
+    public Dao<T> id(Object value){
+        return and("id","=",value);
+    }
+
+    public Dao<T> partitionId(Object value){return and("id","=",value);
+    }
+
+
+
 
     public Dao<T> gt(String column,Object value){
         return and(column,">",value);
@@ -379,6 +388,7 @@ public class Dao<T> {
     public Dao<T> ge(String column,Object value){
         return and(column,">=",value);
     }
+
 
 
 

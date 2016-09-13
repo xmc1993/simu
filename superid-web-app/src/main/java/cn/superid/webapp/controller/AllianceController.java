@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
 
@@ -32,6 +33,10 @@ public class AllianceController {
         if (StringUtil.isEmpty(name)||allianceService.validName(name)) {
             return SimpleResponse.error("error_name");
         }
+
+        AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
+
+
 
 //        try {
 //            allianceEntity = allianceService.createAlliance(allianceCreateForm);

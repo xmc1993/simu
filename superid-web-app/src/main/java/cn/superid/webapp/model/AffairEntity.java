@@ -29,8 +29,8 @@ public class AffairEntity extends ExecutableModel {
     private int isFree;
     private String path ="";
     private int level;
-    private Timestamp createTime = TimeUtil.getCurrentSqlTime();
-    private Timestamp modifyTime = TimeUtil.getCurrentSqlTime() ;
+    private Timestamp createTime ;
+    private Timestamp modifyTime ;
     private String videoUrl ="";
     private String videoImg ="";
     private int guestVisible;
