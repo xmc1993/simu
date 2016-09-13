@@ -39,12 +39,12 @@ public class FileController {
 
     @ApiOperation(value = "得到该文件下所有子文件夹和文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/get_child", method = RequestMethod.POST)
-    public SimpleResponse getChild(Long folderId) {
-        if(folderId == null){
-            return SimpleResponse.error("未传递文件夹id");
+    public SimpleResponse getChild(Long folderId,Long affairId) {
+        if(folderId == null | affairId == null){
+            return SimpleResponse.error("参数错误");
         }
-        List<FolderForm> folders = fileService.getChildFolder(folderId);
-        List<FileForm> files = fileService.getChildFile(folderId);
+        List<FolderForm> folders = fileService.getChildFolder(folderId,affairId);
+        List<FileForm> files = fileService.getChildFile(folderId,affairId);
         if(folders == null || files == null){
             return SimpleResponse.error("id不合法");
         }
@@ -89,7 +89,7 @@ public class FileController {
         boolean result = fileService.removeFile(id,folderId);
 
 
-        return SimpleResponse.ok("");
+        return SimpleResponse.ok(result);
     }
 
 

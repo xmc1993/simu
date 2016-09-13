@@ -78,6 +78,7 @@ public class FolderEntity extends ExecutableModel {
         this.parentId = parentId;
     }
 
+    @PartitionId
     public long getAffairId() {
         return affairId;
     }

@@ -14,8 +14,9 @@ public class FileForm {
     private Long uploaderId;
     private Timestamp createTime;
     private Long size;
+    private boolean hasHistory;
 
-    public FileForm(Long id,String fileId, String name, String uploaderName, Long uploaderId, Timestamp createTime,Long size) {
+    public FileForm(Long id,String fileId, String name, String uploaderName, Long uploaderId, Timestamp createTime,Long size,boolean hasHistory) {
         this.id = id;
         this.fileId = fileId;
         this.name = name;
@@ -23,6 +24,7 @@ public class FileForm {
         this.uploaderId = uploaderId;
         this.createTime = createTime;
         this.size = size;
+        this.hasHistory = hasHistory;
     }
 
     public Long getId() {
@@ -79,5 +81,13 @@ public class FileForm {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public boolean isHasHistory() {
+        return hasHistory;
+    }
+
+    public void setHasHistory(boolean hasHistory) {
+        this.hasHistory = hasHistory;
     }
 }

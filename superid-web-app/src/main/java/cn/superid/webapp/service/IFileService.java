@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface IFileService {
 
-    public List<FolderForm> getChildFolder(Long folderId);
+    public List<FolderForm> getChildFolder(long folderId,long affairId);
 
-    public List<FileForm> getChildFile(Long folderId);
+    public List<FileForm> getChildFile(long folderId,long affairId);
 
-    public boolean addFolder(Long folderId,String name,Long operationRoleId,Long affairId,Long taskId);
+    public boolean addFolder(long folderId,String name,long operationRoleId,long affairId,long taskId);
 
     public boolean removeFile(long id,long folderId);
 

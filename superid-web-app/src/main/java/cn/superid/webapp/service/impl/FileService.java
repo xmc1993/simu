@@ -23,9 +23,9 @@ public class FileService implements IFileService{
     private IRoleService roleService;
 
     @Override
-    public List<FolderForm> getChildFolder(Long folderId) {
+    public List<FolderForm> getChildFolder(long folderId,long affairId) {
 
-        FolderEntity folder = FolderEntity.dao.findById(folderId);
+        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
         if(folder == null){
             return null;
         }
@@ -33,7 +33,7 @@ public class FileService implements IFileService{
         if(folder.getTaskId() == 0L ){
             folders = FolderEntity.dao.eq("affair_id",folder.getAffairId()).lk("path",folder.getPath()+"%").selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).eq("state",1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
         }
 
         if(folders == null ){
@@ -49,26 +49,30 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public List<FileForm> getChildFile(Long folderId) {
-        FolderEntity folder = FolderEntity.dao.findById(folderId);
+    public List<FileForm> getChildFile(long folderId,long affairId) {
+        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
 
         if(folder == null){
             return null;
         }
-        List<FileEntity> files = FileEntity.dao.eq("folder_id",folderId).selectList();
+        List<FileEntity> files = FileEntity.dao.eq("folder_id",folderId).eq("state",1).selectList();
         if(files == null){
             return null;
         }
         List<FileForm> result = new ArrayList<>();
         for(FileEntity f : files){
-            result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize()));
+            boolean hasHistory = false;
+            if(f.getHistoryId()!= ""){
+                hasHistory = true;
+            }
+            result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize(),hasHistory));
         }
 
         return result;
     }
 
     @Override
-    public boolean addFolder(Long folderId, String name, Long operationRoleId,Long affairId,Long taskId) {
+    public boolean addFolder(long folderId, String name, long operationRoleId,long affairId,long taskId) {
         FolderEntity folder = new FolderEntity();
         FolderEntity parent = FolderEntity.dao.findById(folderId);
         folder.setName(name);
@@ -76,6 +80,7 @@ public class FileService implements IFileService{
 
         if(taskId == 0){
             count = FolderEntity.dao.eq("affair_id",affairId).eq("parent_id",folderId).count();
+
         }else{
             count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).count();
         }
