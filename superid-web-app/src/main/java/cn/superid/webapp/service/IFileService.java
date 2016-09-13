@@ -16,7 +16,7 @@ public interface IFileService {
 
     public boolean addFolder(Long folderId,String name,Long operationRoleId,Long affairId,Long taskId);
 
-    public boolean removeFile(long id);
+    public boolean removeFile(long id,long folderId);
 
 
 }

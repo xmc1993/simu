@@ -81,8 +81,12 @@ public class FileController {
 
     @ApiOperation(value = "删除文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/remove_file", method = RequestMethod.POST)
-    public SimpleResponse removeFile(Long id , Long operationRoleId) {
+    public SimpleResponse removeFile(Long id , Long folderId) {
 
+        if(id == null | folderId == null){
+            return SimpleResponse.error("参数错误");
+        }
+        boolean result = fileService.removeFile(id,folderId);
 
 
         return SimpleResponse.ok("");

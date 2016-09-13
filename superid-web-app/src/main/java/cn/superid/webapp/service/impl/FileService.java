@@ -91,13 +91,13 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public boolean removeFile(long id) {
-        FileEntity file = FileEntity.dao.findById(id);
+    public boolean removeFile(long id,long folderId) {
+        FileEntity file = FileEntity.dao.findById(id,folderId);
         if(file == null | file.getState() == 0){
             return false;
         }
         file.setState(0);
         file.update();
-        return false;
+        return true;
     }
 }
