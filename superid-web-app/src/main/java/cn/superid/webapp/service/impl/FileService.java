@@ -31,7 +31,7 @@ public class FileService implements IFileService{
         }
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.eq("affair_id",folder.getAffairId()).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").selectList();
         }else{
             folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).eq("state",1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
         }
@@ -55,7 +55,7 @@ public class FileService implements IFileService{
         if(folder == null){
             return null;
         }
-        List<FileEntity> files = FileEntity.dao.eq("folder_id",folderId).eq("state",1).selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(folderId).eq("state",1).selectList();
         if(files == null){
             return null;
         }
@@ -79,10 +79,11 @@ public class FileService implements IFileService{
         int count = 0 ;
 
         if(taskId == 0){
-            count = FolderEntity.dao.eq("affair_id",affairId).eq("parent_id",folderId).count();
+            count = FolderEntity.dao.partitionId(affairId).eq("parent_id",folderId).count();
 
         }else{
-            count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).count();
+            //如果task不为空,表示是在任务中查看文件,则要过滤affair中其他任务文件
+            count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(affairId).count();
         }
         folder.setPath(parent.getPath()+"/"+(count+1));
         folder.setAffairId(affairId);
