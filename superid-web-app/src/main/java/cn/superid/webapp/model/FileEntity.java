@@ -27,6 +27,7 @@ public class FileEntity extends ExecutableModel {
     private String historyId;
     private long size;
     private int state; //0为失效,1为有效且为最新版,2表示有效且是历史版本
+    private long affairId;
 
     @Id
     @Column(name = "id")
@@ -54,7 +55,6 @@ public class FileEntity extends ExecutableModel {
         this.path = path;
     }
 
-    @PartitionId
     public long getFolderId() {
         return folderId;
     }
@@ -109,5 +109,14 @@ public class FileEntity extends ExecutableModel {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    @PartitionId
+    public long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
     }
 }

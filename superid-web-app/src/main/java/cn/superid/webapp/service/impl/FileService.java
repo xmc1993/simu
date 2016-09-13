@@ -10,6 +10,7 @@ import cn.superid.webapp.service.forms.FolderForm;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,9 @@ public class FileService implements IFileService{
         }
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.partitionId(affairId).state(1).eq("parent_id",folder.getId()).selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).eq("parent_id",folder.getId()).partitionId(affairId).selectList();
         }
 
         if(folders == null ){
@@ -43,7 +44,10 @@ public class FileService implements IFileService{
 
         List<FolderForm> result = new ArrayList<>();
         for(FolderEntity f : folders){
-            result.add(new FolderForm(f.getName(),f.getId()));
+            //计算该目录下所有文件数量
+            int count = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").count();
+
+            result.add(new FolderForm(f.getName(),f.getId(),count));
         }
 
         return result;
@@ -56,7 +60,7 @@ public class FileService implements IFileService{
         if(folder == null){
             return null;
         }
-        List<FileEntity> files = FileEntity.dao.partitionId(folderId).state(1).selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(affairId).eq("folder_id",folderId).state(1).selectList();
         if(files == null){
             return null;
         }
@@ -98,6 +102,7 @@ public class FileService implements IFileService{
     }
 
     @Override
+    @Transactional
     public boolean addFile(AddFileForm form) {
         FolderEntity folder = FolderEntity.dao.findById(form.getFolderId(),form.getAffairId());
         if(folder == null){
@@ -113,6 +118,7 @@ public class FileService implements IFileService{
         file.setUploader(form.getUploader());
         file.setSize(form.getSize());
         file.setName(form.getFileName());
+        file.setAffairId(form.getAffairId());
 
         //计算path
 
@@ -120,7 +126,7 @@ public class FileService implements IFileService{
         file.setPath(folder.getPath()+"/"+(count+1));
 
         //第三步,计算history_id
-        FileEntity latest = FileEntity.dao.partitionId(form.getFolderId()).state(1).eq("name",form.getFileName()).selectOne();
+        FileEntity latest = FileEntity.dao.partitionId(form.getAffairId()).eq("folder_id",form.getFolderId()).state(1).eq("name",form.getFileName()).selectOne();
         if(latest != null){
             if(latest.getHistoryId().equals("")){
                 file.setHistoryId(latest.getId()+"");
@@ -150,6 +156,7 @@ public class FileService implements IFileService{
     }
 
     @Override
+    @Transactional
     public boolean removeFolder(long affairId, long folderId) {
         //第一步,本文件夹状态为置为失效
         FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
@@ -177,7 +184,7 @@ public class FileService implements IFileService{
         }
 
         //第三步,文件状态为置为失效
-        List<FileEntity> files = FileEntity.dao.partitionId(folderId).state(1).selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").selectList();
         if(files == null){
             return false;
         }
@@ -187,6 +194,18 @@ public class FileService implements IFileService{
             f.update();
         }
 
+
+        return true;
+    }
+
+    @Override
+    public boolean renameFolder(long affairId, long folderId, String name) {
+        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+        if(folder == null){
+            return false;
+        }
+        folder.setName(name);
+        folder.update();
 
         return true;
     }

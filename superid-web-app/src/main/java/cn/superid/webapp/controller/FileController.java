@@ -38,7 +38,7 @@ public class FileController {
         return  SimpleResponse.ok(AliOssDao.generateToken(sb.toString()));
     }
 
-    @ApiOperation(value = "得到该文件下所有子文件夹和文件", response = SimpleResponse.class, notes = "")
+    @ApiOperation(value = "得到该文件下所有直系子文件夹和文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/get_child", method = RequestMethod.POST)
     public SimpleResponse getChild(Long folderId,Long affairId) {
         if(folderId == null | affairId == null){
@@ -105,6 +105,21 @@ public class FileController {
 
         return SimpleResponse.ok(result);
     }
+
+    @ApiOperation(value = "重命名文件夹", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/rename_folder", method = RequestMethod.POST)
+    public SimpleResponse renameFolder(Long affairId , Long folderId , String name) {
+
+        if(affairId == null | folderId == null | name == null){
+            return SimpleResponse.error("参数错误");
+        }
+        boolean result = fileService.renameFolder(affairId,folderId,name);
+
+
+        return SimpleResponse.ok(result);
+    }
+
+
 
 
 }

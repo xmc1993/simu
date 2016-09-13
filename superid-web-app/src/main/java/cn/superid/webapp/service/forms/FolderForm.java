@@ -7,10 +7,12 @@ public class FolderForm {
 
     private String name;
     private Long id;
+    private int total;
 
-    public FolderForm(String name, Long id) {
+    public FolderForm(String name, Long id,int total) {
         this.name = name;
         this.id = id;
+        this.total = total;
     }
 
     public String getName() {
@@ -27,5 +29,13 @@ public class FolderForm {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 }

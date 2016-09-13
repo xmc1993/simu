@@ -23,5 +23,7 @@ public interface IFileService {
 
     public boolean removeFolder(long affairId,long folderId);
 
+    public boolean renameFolder(long affairId,long folderId,String name);
+
 
 }
