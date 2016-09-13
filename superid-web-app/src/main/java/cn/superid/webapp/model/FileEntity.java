@@ -26,7 +26,7 @@ public class FileEntity extends ExecutableModel {
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
     private String historyId;
     private long size;
-    private int state;
+    private int state; //0为失效,1为有效且为最新版,2表示有效且是历史版本
 
     @Id
     @Column(name = "id")
