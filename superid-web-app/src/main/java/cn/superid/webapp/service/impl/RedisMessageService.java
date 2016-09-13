@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by xmc1993 on 16/9/12.
@@ -20,6 +22,8 @@ public class RedisMessageService implements IRedisMessageService {
     @Autowired
     private JedisConnectionFactory jedisConnectionFactory;
 
+    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+
     @Override
     public void sendMessage(String channel, Serializable message) {
         redisTemplate.convertAndSend(channel, message);
@@ -28,9 +32,13 @@ public class RedisMessageService implements IRedisMessageService {
     @Override
     public void sendJsonMessage(String channel, Message message) {
         Gson gson = new Gson();
-        String msg = gson.toJson(message);
-        //TODO 改为线程池的方式?
-        jedisConnectionFactory.getConnection().publish("room_message".getBytes(), msg.getBytes());
+        final String msg = gson.toJson(message);
 
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                jedisConnectionFactory.getConnection().publish("room_message".getBytes(), msg.getBytes());
+            }
+        });
     }
 }
