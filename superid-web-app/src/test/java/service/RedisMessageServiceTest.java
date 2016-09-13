@@ -1,5 +1,6 @@
 package service;
 
+import cn.superid.webapp.forms.Message;
 import cn.superid.webapp.service.IRedisMessageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +18,16 @@ public class RedisMessageServiceTest {
 
     @Test
     public void testPublishMessage(){
+        Message message = new Message();
+        redisMessageService.sendMessage("room_message", message);
+        System.out.println("---end---");
+    }
 
+    @Test
+    public void testPublishJsonMessage(){
+        Message message = new Message();
+        message.setContent("test room message");
+        redisMessageService.sendJsonMessage("room_message", message);
+        System.out.println("---end---");
     }
 }

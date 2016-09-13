@@ -1,5 +1,7 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.forms.Message;
+
 import java.io.Serializable;
 
 /**
@@ -13,4 +15,7 @@ public interface IRedisMessageService {
      * @param message
      */
     void sendMessage(String channel, Serializable message);
+
+
+    void sendJsonMessage(String channel, Message message);
 }
