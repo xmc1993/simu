@@ -24,6 +24,8 @@ public class FileEntity {
     private long uploader;
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
     private String historyId;
+    private long size;
+    private int state;
 
     @Id
     @Column(name = "id")
@@ -90,5 +92,21 @@ public class FileEntity {
 
     public void setHistoryId(String historyId) {
         this.historyId = historyId;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

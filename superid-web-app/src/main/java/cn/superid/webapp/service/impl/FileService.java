@@ -61,7 +61,7 @@ public class FileService implements IFileService{
         }
         List<FileForm> result = new ArrayList<>();
         for(FileEntity f : files){
-            result.add(new FileForm(f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime()));
+            result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize()));
         }
 
         return result;

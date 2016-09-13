@@ -67,5 +67,24 @@ public class FileController {
 
     }
 
+    @ApiOperation(value = "添加文件", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/add_file", method = RequestMethod.POST)
+    public SimpleResponse addFile(Long folderId,String name,Long operationRoleId,Long affairId,Long taskId) {
+        if(folderId == null || name == null || operationRoleId == null){
+            return SimpleResponse.error("参数错误");
+        }
+        boolean result = fileService.addFolder(folderId,name,operationRoleId,affairId,taskId);
+
+        return SimpleResponse.ok(result);
+
+    }
+
+    @ApiOperation(value = "删除文件", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/remove_file", method = RequestMethod.POST)
+    public SimpleResponse removeFile(Long id , Long operationRoleId) {
+
+        return SimpleResponse.ok("");
+    }
+
 
 }

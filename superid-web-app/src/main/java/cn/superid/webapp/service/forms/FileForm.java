@@ -7,18 +7,30 @@ import java.sql.Timestamp;
  */
 public class FileForm {
 
+    private Long id;
     private String fileId;
     private String name;
     private String uploaderName;
     private Long uploaderId;
     private Timestamp createTime;
+    private Long size;
 
-    public FileForm(String fileId, String name, String uploaderName, Long uploaderId, Timestamp createTime) {
+    public FileForm(Long id,String fileId, String name, String uploaderName, Long uploaderId, Timestamp createTime,Long size) {
+        this.id = id;
         this.fileId = fileId;
         this.name = name;
         this.uploaderName = uploaderName;
         this.uploaderId = uploaderId;
         this.createTime = createTime;
+        this.size = size;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFileId() {
@@ -59,5 +71,13 @@ public class FileForm {
 
     public void setUploaderId(Long uploaderId) {
         this.uploaderId = uploaderId;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
     }
 }
