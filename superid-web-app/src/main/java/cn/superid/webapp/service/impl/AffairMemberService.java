@@ -11,12 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AffairMemberService implements IAffairMemberService {
     @Override
-    public AffairMemberEntity addMember(Long affairId, Long roleId,  String permissions,long permissionGroupId) {
+    public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId) {
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setRoleId(roleId);
         affairMemberEntity.setPermissions(permissions);
         affairMemberEntity.setPermissionGroupId(permissionGroupId);
+        affairMemberEntity.setAllianceId(allianceId);
         affairMemberEntity.save();
         return affairMemberEntity;
     }

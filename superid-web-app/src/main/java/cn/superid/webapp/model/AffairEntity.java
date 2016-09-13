@@ -36,7 +36,7 @@ public class AffairEntity extends ExecutableModel {
     private int guestVisible;
     private int guestCreateDg;
     private int isVideo;
-    private int index;
+    private int number;
     private int pathIndex;
     private long folderId;
 
@@ -203,12 +203,12 @@ public class AffairEntity extends ExecutableModel {
         this.isVideo = isVideo;
     }
 
-    public int getIndex() {
-        return index;
+    public int getNumber() {
+        return number;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public int getPathIndex() {

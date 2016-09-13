@@ -47,6 +47,8 @@ public class TestExecute extends TestCase {
         user.setName("zp");
         user.setAge(18);
         user.save();
+        Long a = new Long(0);
+        int b =a.intValue();
         Assert.assertTrue(User.dao.findById(user.getId()) != null);
         return user;
     }

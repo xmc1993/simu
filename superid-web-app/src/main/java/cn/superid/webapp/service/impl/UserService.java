@@ -137,11 +137,8 @@ public class UserService implements IUserService {
         allianceCreateForm.setUserId(userEntity.getId());
         allianceCreateForm.setIsPersonal(IntBoolean.TRUE);
         allianceCreateForm.setUserEntity(userEntity);
-//        allianceCreateForm.setUserEntity(userEntity);
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
         UserEntity.dao.id(allianceCreateForm.getUserEntity().getId()).set("personalRoleId",userEntity.getPersonalRoleId());//更新personalRoleId
-
-
         if(allianceEntity==null) return null;
         return userEntity;
     }
