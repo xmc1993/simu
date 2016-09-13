@@ -24,6 +24,7 @@ public class FolderEntity extends ExecutableModel {
     private Timestamp createTime = TimeUtil.getCurrentSqlTime();
     private long uploader;
     private long parentId;
+    private int state;
 
 
 
@@ -91,5 +92,13 @@ public class FolderEntity extends ExecutableModel {
 
     public void setTaskId(long taskId) {
         this.taskId = taskId;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

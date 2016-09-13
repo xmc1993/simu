@@ -61,7 +61,7 @@ public class FileService implements IFileService{
         }
         List<FileForm> result = new ArrayList<>();
         for(FileEntity f : files){
-            result.add(new FileForm(f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime()));
+            result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize()));
         }
 
         return result;
@@ -87,6 +87,17 @@ public class FileService implements IFileService{
         folder.save();
 
 
+        return true;
+    }
+
+    @Override
+    public boolean removeFile(long id,long folderId) {
+        FileEntity file = FileEntity.dao.findById(id,folderId);
+        if(file == null | file.getState() == 0){
+            return false;
+        }
+        file.setState(0);
+        file.update();
         return true;
     }
 }
