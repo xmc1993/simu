@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.model.FileEntity;
 import cn.superid.webapp.model.FolderEntity;
 import cn.superid.webapp.service.IFileService;
@@ -31,9 +32,9 @@ public class FileService implements IFileService{
         }
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"%").selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).eq("state",1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
         }
 
         if(folders == null ){
@@ -55,7 +56,7 @@ public class FileService implements IFileService{
         if(folder == null){
             return null;
         }
-        List<FileEntity> files = FileEntity.dao.partitionId(folderId).eq("state",1).selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(folderId).state(1).selectList();
         if(files == null){
             return null;
         }
@@ -97,6 +98,47 @@ public class FileService implements IFileService{
     }
 
     @Override
+    public boolean addFile(AddFileForm form) {
+        FolderEntity folder = FolderEntity.dao.findById(form.getFolderId(),form.getAffairId());
+        if(folder == null){
+            return false;
+        }
+
+        //第一步,初始化file
+        FileEntity file = new FileEntity();
+        file.setState(1);
+        file.setCreateTime(TimeUtil.getCurrentSqlTime());
+        file.setFolderId(form.getFolderId());
+        file.setFileId(form.getFileId());
+        file.setUploader(form.getUploader());
+        file.setSize(form.getSize());
+        file.setName(form.getFileName());
+
+        //计算path
+
+        int count = FileEntity.dao.partitionId(form.getFolderId()).count();
+        file.setPath(folder.getPath()+"/"+(count+1));
+
+        //第三步,计算history_id
+        FileEntity latest = FileEntity.dao.partitionId(form.getFolderId()).state(1).eq("name",form.getFileName()).selectOne();
+        if(latest != null){
+            if(latest.getHistoryId().equals("")){
+                file.setHistoryId(latest.getId()+"");
+            }else{
+                file.setHistoryId(latest.getHistoryId()+","+latest.getId());
+            }
+
+            latest.setState(2);
+            latest.update();
+        }else{
+            file.setHistoryId("");
+        }
+        file.save();
+
+        return true;
+    }
+
+    @Override
     public boolean removeFile(long id,long folderId) {
         FileEntity file = FileEntity.dao.findById(id,folderId);
         if(file == null | file.getState() == 0){
@@ -104,6 +146,48 @@ public class FileService implements IFileService{
         }
         file.setState(0);
         file.update();
+        return true;
+    }
+
+    @Override
+    public boolean removeFolder(long affairId, long folderId) {
+        //第一步,本文件夹状态为置为失效
+        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+        if(folder == null){
+            return false;
+        }
+        folder.setState(0);
+        folder.update();
+
+
+        //第二步,子文件夹状态为置为失效
+        List<FolderEntity> folders = null;
+        if(folder.getTaskId() == 0L ){
+            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"%").selectList();
+        }else{
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
+        }
+
+        if(folders != null & folders.size() > 0){
+            return false;
+        }
+        for(FolderEntity f: folders){
+            f.setState(0);
+            f.update();
+        }
+
+        //第三步,文件状态为置为失效
+        List<FileEntity> files = FileEntity.dao.partitionId(folderId).state(1).selectList();
+        if(files == null){
+            return false;
+        }
+        List<FileForm> result = new ArrayList<>();
+        for(FileEntity f : files){
+            f.setState(0);
+            f.update();
+        }
+
+
         return true;
     }
 }
