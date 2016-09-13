@@ -129,14 +129,19 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @Transactional
+//    @Transactional  TODO 支持分布式事务再开启
     public UserEntity createUser(UserEntity userEntity) {
         userEntity.save();
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setName(userEntity.getUsername());
+        allianceCreateForm.setUserId(userEntity.getId());
         allianceCreateForm.setIsPersonal(IntBoolean.TRUE);
+        allianceCreateForm.setUserEntity(userEntity);
 //        allianceCreateForm.setUserEntity(userEntity);
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
+        UserEntity.dao.id(allianceCreateForm.getUserEntity().getId()).set("personalRoleId",userEntity.getPersonalRoleId());//更新personalRoleId
+
+
         if(allianceEntity==null) return null;
         return userEntity;
     }

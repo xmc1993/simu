@@ -30,10 +30,10 @@ public class FileService implements IFileService{
             return null;
         }
         List<FolderEntity> folders = null;
-        if(folder.getTaskId() == null ){
-            folders = FolderEntity.dao.eq("affair_id",folder.getAffairId()).eq("state",1).lk("path",folder.getPath()+"%").selectList();
+        if(folder.getTaskId() == 0L ){
+            folders = FolderEntity.dao.eq("affair_id",folder.getAffairId()).lk("path",folder.getPath()+"%").selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).eq("state",1).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).eq("state",1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
         }
 
         if(folders == null ){

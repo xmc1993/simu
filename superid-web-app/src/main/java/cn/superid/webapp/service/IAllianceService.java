@@ -8,13 +8,13 @@ import cn.superid.webapp.model.AllianceEntity;
  */
 public interface IAllianceService {
 
-    public String getPermissions(long alliance,long roleId);
+    String getPermissions(long alliance,long roleId);
 
-    public AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm);
+    AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm);
 
-    public boolean inSameAlliance(long userId1,long userId2);
+    boolean inSameAlliance(long userId1,long userId2);
 
-    public boolean validName(String name);
+    boolean validName(String name);
 
 
 }

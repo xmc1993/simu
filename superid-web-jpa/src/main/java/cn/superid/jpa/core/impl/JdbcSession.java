@@ -147,7 +147,7 @@ public class JdbcSession extends AbstractSession {
 
                     if (idAccessor != null) {
                         Object value = idAccessor.getProperty(entity);
-                        if(value==null||value.equals(0)){
+                        if(value==null||value.equals(0)||value==0){
                             ResultSet generatedKeysResultSet = preparedStatement.getGeneratedKeys();
                             try {
                                 if (generatedKeysResultSet.next()) {

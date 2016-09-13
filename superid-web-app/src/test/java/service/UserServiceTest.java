@@ -44,7 +44,7 @@ public class UserServiceTest{
     public void testCreateUser(){
         UserEntity result = addUser();
         Assert.assertFalse(result==null);
-
+        Assert.assertTrue(result.getPersonalRoleId()!=0);
     }
 
     @Test

@@ -8,13 +8,13 @@ import java.sql.Timestamp;
  * Created by xmc1993 on 16/9/2.
  */
 public class TestEntity {
-    private Long id;
-    private Long parentId;
+    private long id;
+    private long parentId;
     private String name;
     private String logoUrl;
     private String description;
-    private Long createRoleId;
-    private Long allianceId;
+    private long createRoleId;
+    private long allianceId;
     private int publicType;
     private int type;
     private int state;
@@ -31,19 +31,19 @@ public class TestEntity {
     private int index;
     private int pathIndex;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(long parentId) {
         this.parentId = parentId;
     }
 
@@ -71,19 +71,19 @@ public class TestEntity {
         this.description = description;
     }
 
-    public Long getCreateRoleId() {
+    public long getCreateRoleId() {
         return createRoleId;
     }
 
-    public void setCreateRoleId(Long createRoleId) {
+    public void setCreateRoleId(long createRoleId) {
         this.createRoleId = createRoleId;
     }
 
-    public Long getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(Long allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 

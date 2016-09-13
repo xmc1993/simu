@@ -24,7 +24,6 @@ public class AllianceCreateForm {
     }
 
 
-
     public String getLogoUrl() {
         return logoUrl;
     }

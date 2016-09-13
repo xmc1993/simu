@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 public class UserEntity extends ExecutableModel {
     public final static Dao<UserEntity> dao = new Dao<>(UserEntity.class);
 
-    private Long id;
+    private long id;
     private String superid ="";
     private String password ="";
     private String familyName ="";
@@ -30,7 +30,7 @@ public class UserEntity extends ExecutableModel {
     private int age;
     private String email ="";
     private String mobile ="";
-    private Long personalRoleId;
+    private long personalRoleId;
     private String idCard ="";
     private int marriageStatus ;
     private int educationLevel;

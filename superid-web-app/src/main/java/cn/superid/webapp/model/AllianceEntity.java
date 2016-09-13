@@ -17,11 +17,11 @@ public class AllianceEntity extends ExecutableModel {
     public final static Dao<AllianceEntity> dao = new Dao<>(AllianceEntity.class);
     private long id;
     private String name;
-    private Long ownerRoleId;
+    private long ownerRoleId;
     private int state;
     private int applyCertificateState;
-    private Long verifyAffairId;
-    private Long rootAffairId;
+    private long verifyAffairId;
+    private long rootAffairId;
     private String logoUrl;
     private int isPersonal;
     private String shortName;
@@ -48,11 +48,11 @@ public class AllianceEntity extends ExecutableModel {
         this.name = name;
     }
 
-    public Long getOwnerRoleId() {
+    public long getOwnerRoleId() {
         return ownerRoleId;
     }
 
-    public void setOwnerRoleId(Long ownerRoleId) {
+    public void setOwnerRoleId(long ownerRoleId) {
         this.ownerRoleId = ownerRoleId;
     }
 
@@ -72,19 +72,19 @@ public class AllianceEntity extends ExecutableModel {
         this.applyCertificateState = applyCertificateState;
     }
 
-    public Long getVerifyAffairId() {
+    public long getVerifyAffairId() {
         return verifyAffairId;
     }
 
-    public void setVerifyAffairId(Long verifyAffairId) {
+    public void setVerifyAffairId(long verifyAffairId) {
         this.verifyAffairId = verifyAffairId;
     }
 
-    public Long getRootAffairId() {
+    public long getRootAffairId() {
         return rootAffairId;
     }
 
-    public void setRootAffairId(Long rootAffairId) {
+    public void setRootAffairId(long rootAffairId) {
         this.rootAffairId = rootAffairId;
     }
 
