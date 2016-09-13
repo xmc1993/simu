@@ -10,7 +10,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class CreateAffairForm {
     private String name;
     private long affairId;
-    private Integer index;
+    private Integer number;
     private long operationRoleId;
     private int publicType;
 
@@ -30,14 +30,6 @@ public class CreateAffairForm {
         this.affairId = affairId;
     }
 
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
-
     public long getOperationRoleId() {
         return operationRoleId;
     }
@@ -52,5 +44,13 @@ public class CreateAffairForm {
 
     public void setPublicType(int publicType) {
         this.publicType = publicType;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 }

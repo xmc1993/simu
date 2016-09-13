@@ -5,6 +5,7 @@ import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
+import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
@@ -114,7 +115,7 @@ public class JdbcSession extends AbstractSession {
                 if(skipId&&(columnMeta.isId||columnMeta.isPartition)) continue;
                 FieldAccessor fieldAccessor = columnMeta.fieldAccessor;
                 Object value = fieldAccessor.getProperty(entity);
-                if((value==null||value.equals(0))&&columnMeta.isPartition){
+                if(columnMeta.isPartition&&NumberUtil.isUndefined(value)){
                     throw  new JdbcRuntimeException("Partition Column's value  can't be null:"+columnMeta.columnName);
                 }
                 preparedStatement.setObject(i, value);
@@ -147,7 +148,7 @@ public class JdbcSession extends AbstractSession {
 
                     if (idAccessor != null) {
                         Object value = idAccessor.getProperty(entity);
-                        if(value==null||value.equals(0)||value==0){
+                        if(NumberUtil.isUndefined(value)){
                             ResultSet generatedKeysResultSet = preparedStatement.getGeneratedKeys();
                             try {
                                 if (generatedKeysResultSet.next()) {
@@ -187,7 +188,7 @@ public class JdbcSession extends AbstractSession {
 
             if(isSharding){
                 partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
-                if(partitionId==null||partitionId.equals(0)){
+                if(NumberUtil.isUndefined(partitionId)){
                     throw new JdbcRuntimeException("you should update with partition id");
                 }
             }
@@ -290,7 +291,7 @@ public class JdbcSession extends AbstractSession {
 
             if(isSharding){
                 partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
-                if(partitionId==null||partitionId.equals(0)){
+                if(NumberUtil.isUndefined(partitionId)){
                     throw new JdbcRuntimeException("you should delete with partition column value:"+modelMeta.getPatitionColumn().columnName);
                 }
             }
@@ -306,7 +307,7 @@ public class JdbcSession extends AbstractSession {
 
                     }
                     Object id = idAccessor.getProperty(entity);
-                    if(id==null||id.equals(0)){
+                    if(NumberUtil.isUndefined(id)){
                         throw new JdbcRuntimeException("id should not be null");
                     }
                     preparedStatement.setObject(i ,id);
@@ -451,7 +452,7 @@ public class JdbcSession extends AbstractSession {
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
             int i =getIndexParamBaseOrdinal();
             if(partitionColumn!=null){
-                if(partitionId==null||partitionId.equals(0)){
+                if(NumberUtil.isUndefined(partitionId)){
                     throw new JdbcRuntimeException("you should have partition column:"+partitionColumn.columnName);
 
                 }
