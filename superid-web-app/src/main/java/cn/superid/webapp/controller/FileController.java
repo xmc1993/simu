@@ -83,6 +83,8 @@ public class FileController {
     @RequestMapping(value = "/remove_file", method = RequestMethod.POST)
     public SimpleResponse removeFile(Long id , Long operationRoleId) {
 
+
+
         return SimpleResponse.ok("");
     }
 

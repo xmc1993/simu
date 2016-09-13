@@ -89,4 +89,15 @@ public class FileService implements IFileService{
 
         return true;
     }
+
+    @Override
+    public boolean removeFile(long id) {
+        FileEntity file = FileEntity.dao.findById(id);
+        if(file == null | file.getState() == 0){
+            return false;
+        }
+        file.setState(0);
+        file.update();
+        return false;
+    }
 }

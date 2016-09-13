@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
 
 import javax.persistence.Column;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
  * Created by jizhenya on 16/9/9.
  */
 @Table(name = "file")
-public class FileEntity {
+public class FileEntity extends ExecutableModel {
 
     public final static Dao<FileEntity> dao = new Dao<>(FileEntity.class);
     private long id;
