@@ -82,12 +82,12 @@ public class FileController {
 
     @ApiOperation(value = "删除文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/remove_file", method = RequestMethod.POST)
-    public SimpleResponse removeFile(Long id , Long folderId) {
+    public SimpleResponse removeFile(Long id , Long affairId) {
 
-        if(id == null | folderId == null){
+        if(id == null | affairId == null){
             return SimpleResponse.error("参数错误");
         }
-        boolean result = fileService.removeFile(id,folderId);
+        boolean result = fileService.removeFile(id,affairId);
 
 
         return SimpleResponse.ok(result);
@@ -114,6 +114,19 @@ public class FileController {
             return SimpleResponse.error("参数错误");
         }
         boolean result = fileService.renameFolder(affairId,folderId,name);
+
+
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "得到某个文件历史版本", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/get_history", method = RequestMethod.POST)
+    public SimpleResponse getHistoryFile(Long affairId , Long fileId ) {
+
+        if(affairId == null | fileId == null){
+            return SimpleResponse.error("参数错误");
+        }
+        List<FileForm> result = fileService.getHistoryFile(fileId,affairId);
 
 
         return SimpleResponse.ok(result);

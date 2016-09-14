@@ -45,7 +45,7 @@ public class FileService implements IFileService{
         List<FolderForm> result = new ArrayList<>();
         for(FolderEntity f : folders){
             //计算该目录下所有文件数量
-            int count = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").count();
+            int count = FileEntity.dao.partitionId(affairId).lk("path",f.getPath()+"/%").count();
 
             result.add(new FolderForm(f.getName(),f.getId(),count));
         }
@@ -67,7 +67,7 @@ public class FileService implements IFileService{
         List<FileForm> result = new ArrayList<>();
         for(FileEntity f : files){
             boolean hasHistory = false;
-            if(f.getHistoryId()!= ""){
+            if(!f.getHistoryId().equals("")){
                 hasHistory = true;
             }
             result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize(),hasHistory));
@@ -85,7 +85,6 @@ public class FileService implements IFileService{
 
         if(taskId == 0){
             count = FolderEntity.dao.partitionId(affairId).eq("parent_id",folderId).count();
-            System.out.println(count);
 
         }else{
             //如果task不为空,表示是在任务中查看文件,则要过滤affair中其他任务文件
@@ -148,8 +147,8 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public boolean removeFile(long id,long folderId) {
-        FileEntity file = FileEntity.dao.findById(id,folderId);
+    public boolean removeFile(long id,long affairId) {
+        FileEntity file = FileEntity.dao.findById(id,affairId);
         if(file == null | file.getState() == 0){
             return false;
         }
@@ -163,7 +162,7 @@ public class FileService implements IFileService{
     public boolean removeFolder(long affairId, long folderId) {
         //第一步,本文件夹状态为置为失效
         FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
-        if(folder == null){
+        if(folder == null | folder.getState() == 0){
             return false;
         }
         folder.setState(0);
@@ -173,21 +172,21 @@ public class FileService implements IFileService{
         //第二步,子文件夹状态为置为失效
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"%").selectList();
+            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"/%").selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"%").partitionId(affairId).selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"/%").partitionId(affairId).selectList();
         }
 
         if(folders != null & folders.size() > 0){
-            return false;
-        }
-        for(FolderEntity f: folders){
-            f.setState(0);
-            f.update();
+            for(FolderEntity f: folders){
+                f.setState(0);
+                f.update();
+            }
         }
 
+
         //第三步,文件状态为置为失效
-        List<FileEntity> files = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"%").selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"/%").selectList();
         if(files == null){
             return false;
         }
@@ -211,5 +210,22 @@ public class FileService implements IFileService{
         folder.update();
 
         return true;
+    }
+
+    @Override
+    public List<FileForm> getHistoryFile(long fileId, long affairId) {
+        FileEntity file = FileEntity.dao.findById(fileId,affairId);
+        if(file == null){
+            return null;
+        }
+        String[] ids = file.getHistoryId().split(",");
+        List<FileForm> result = new ArrayList<>();
+        for(int i = 0 ; i < ids.length ; i++){
+            FileEntity f = FileEntity.dao.findById(Integer.parseInt(ids[i]),affairId);
+            if(f != null){
+                result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize(),false));
+            }
+        }
+        return result;
     }
 }

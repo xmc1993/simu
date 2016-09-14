@@ -19,11 +19,13 @@ public interface IFileService {
 
     public boolean addFile(AddFileForm addFileForm);
 
-    public boolean removeFile(long id,long folderId);
+    public boolean removeFile(long id,long affairId);
 
     public boolean removeFolder(long affairId,long folderId);
 
     public boolean renameFolder(long affairId,long folderId,String name);
+
+    public List<FileForm> getHistoryFile(long fileId,long affairId);
 
 
 }
