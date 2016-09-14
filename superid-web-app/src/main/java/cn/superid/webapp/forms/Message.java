@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Message implements Serializable{
     private Integer type;
     private Integer subType;
-    private Long toRole;
+    private String toRole;
     private Long affairId;
     private String displayName;
     private Long toUserId;
@@ -30,11 +30,11 @@ public class Message implements Serializable{
         this.subType = subType;
     }
 
-    public Long getToRole() {
+    public String getToRole() {
         return toRole;
     }
 
-    public void setToRole(Long toRole) {
+    public void setToRole(String toRole) {
         this.toRole = toRole;
     }
 
