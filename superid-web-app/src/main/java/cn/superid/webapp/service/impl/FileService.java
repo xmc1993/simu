@@ -233,6 +233,7 @@ public class FileService implements IFileService{
     @Override
     public long createRootFolder(long allianceId,long affairId, long taskId, long folderId,long role) {
         AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+        long id = 0;
         if(affair == null){
             return 0;
         }
@@ -248,6 +249,7 @@ public class FileService implements IFileService{
             folder.setParentId(0);
             folder.setState(1);
             folder.save();
+            id = folder.getId();
         }else{
             FolderEntity parent = FolderEntity.dao.findById(folderId,affairId);
             if(parent == null){
@@ -264,8 +266,9 @@ public class FileService implements IFileService{
             folder.setParentId(folderId);
             folder.setState(1);
             folder.save();
+            id = folder.getId();
         }
 
-        return 0;
+        return id;
     }
 }
