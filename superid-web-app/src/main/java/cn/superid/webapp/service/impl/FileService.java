@@ -79,12 +79,13 @@ public class FileService implements IFileService{
     @Override
     public boolean addFolder(long folderId, String name, long operationRoleId,long affairId,long taskId) {
         FolderEntity folder = new FolderEntity();
-        FolderEntity parent = FolderEntity.dao.findById(folderId);
+        FolderEntity parent = FolderEntity.dao.findById(folderId,affairId);
         folder.setName(name);
         int count = 0 ;
 
         if(taskId == 0){
             count = FolderEntity.dao.partitionId(affairId).eq("parent_id",folderId).count();
+            System.out.println(count);
 
         }else{
             //如果task不为空,表示是在任务中查看文件,则要过滤affair中其他任务文件
@@ -95,6 +96,8 @@ public class FileService implements IFileService{
         folder.setTaskId(taskId);
         folder.setCreateTime(TimeUtil.getCurrentSqlTime());
         folder.setUploader(operationRoleId);
+        folder.setState(1);
+        folder.setParentId(folderId);
         folder.save();
 
 
