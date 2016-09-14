@@ -18,7 +18,7 @@ public interface IAffairService  {
 
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
 
-    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId);
+    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId) throws Exception;
 
     public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
 
@@ -48,7 +48,7 @@ public interface IAffairService  {
      * @return
      * @throws Exception
      */
-    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
 
     /**
      * 失效事务

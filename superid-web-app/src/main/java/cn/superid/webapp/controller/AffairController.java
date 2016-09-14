@@ -59,9 +59,9 @@ public class AffairController {
     @ApiOperation(value = "拒绝进入事务申请",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse disagreeAffairMemberApplication(Long affairId, Long applicationId,Long dealRoleId,String dealReason) {
+    public SimpleResponse disagreeAffairMemberApplication(Long allianceId,Long affairId, Long applicationId,Long dealRoleId,String dealReason) {
         try {
-            affairService.rejectAffairMemberApplication(affairId,applicationId, dealRoleId,dealReason);
+            affairService.rejectAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
             return new SimpleResponse(ResponseCode.OK, "已拒绝此申请");
         } catch (Exception e) {
             //LOG.error("disagree affair member application error", e);

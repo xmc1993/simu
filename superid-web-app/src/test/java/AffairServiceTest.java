@@ -1,4 +1,7 @@
+import cn.superid.webapp.service.IAffairService;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -8,4 +11,34 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(util.JUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all-test.xml"})
 public class AffairServiceTest {
+    @Autowired
+    private IAffairService affairService;
+    @Test
+    public void applyForAffairTest(){
+        try {
+            affairService.applyForEnterAffair(5L,8L,4L);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void rejectApplicationTest(){
+        try{
+            affairService.rejectAffairMemberApplication(5L,8L,4L,2L,"不爽");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void agreeApplicationTest() {
+        try {
+            affairService.agreeAffairMemberApplication(5L, 8L, 5L, 2L, "看你爽");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

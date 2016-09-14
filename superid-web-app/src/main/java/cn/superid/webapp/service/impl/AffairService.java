@@ -28,7 +28,7 @@ public class AffairService implements IAffairService {
     private IUserService userService;
     @Override
     public String getPermissions(Long allianceId,Long affairId, Long roleId) throws Exception{
-        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("roleId",roleId).selectOne();
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).selectOne();
         if(affairMemberEntity == null){
             throw new Exception("找不到该事务成员");
         }
@@ -115,18 +115,45 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    @Transactional
-    public String applyForEnterAffair(Long allianceId,Long affairId, Long roleId) {
+    public String applyForEnterAffair(Long allianceId,Long affairId, Long roleId) throws Exception{
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
+        if(affairEntity == null){
+            throw new Exception("找不到该事务");
+        }
+        RoleEntity roleEntity = RoleEntity.dao.findById(roleId,allianceId);
+        if(roleEntity == null){
+            throw new Exception("找不到该角色");
+        }
+        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).state(0).exists();
+        if(isExist){
+            throw new Exception("该角色已在此事务中");
+        }
+        boolean isApplied = AffairMemberApplicationEntity.dao.partitionId(affairId).eq("role_id",roleId).eq("affair_id",affairId).state(0).exists();
+        if(isApplied){
+            throw new Exception("该角色已申请,正在等待审核");
+        }
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
-        RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).findById(roleId);
+        affairMemberEntity.setAllianceId(allianceId);
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setPermissions("");
         affairMemberEntity.setRoleId(roleId);
         affairMemberEntity.setUserId(roleEntity.getUserId());
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        affairMemberEntity.setState(0);
+        affairMemberEntity.setState(2);
+        affairMemberEntity.setPermissionGroupId(AffairPermissionRoleType.VISITOR_ID);
         affairMemberEntity.save();
+
+        AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
+        affairMemberApplicationEntity.setRoleId(roleId);
+        affairMemberApplicationEntity.setUserId(roleEntity.getUserId());
+        affairMemberApplicationEntity.setAffairId(affairId);
+        affairMemberApplicationEntity.setAllianceId(allianceId);
+        affairMemberApplicationEntity.setState(0);
+        affairMemberApplicationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        affairMemberApplicationEntity.setDealReason("");
+        affairMemberApplicationEntity.save();
         return "等待审核中";
     }
 
@@ -136,21 +163,23 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    @Transactional
     public AffairMemberEntity agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception {
 
-        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.partitionId(affairId).findById(applicationId);
-        if (affairMemberApplicationEntity == null) {
+        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId,affairId);
+        if ((affairMemberApplicationEntity == null)||(affairMemberApplicationEntity.getState() != 0)) {
             throw new Exception("找不到此申请");
         }
-        AffairEntity affairEntity = AffairEntity.dao.partitionId(allianceId).findById(affairMemberApplicationEntity.getAffairId());
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairMemberApplicationEntity.getAffairId(),allianceId);
         if (affairEntity == null) {
             throw new Exception("找不到事务" + affairMemberApplicationEntity.getAffairId());
         }
 
         // TODO: 设置权限,暂时设置为客方
-        AffairMemberEntity affairMemberEntity = affairMemberService.addMember(affairMemberApplicationEntity.getAllianceId(),affairEntity.getId(),affairMemberApplicationEntity.getRoleId(),"",AffairPermissionRoleType.GUEST_ID);
-
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId)
+                .eq("role_id",affairMemberApplicationEntity.getRoleId()).eq("affair_id",affairId).selectOne();
+        affairMemberEntity.setState(0);
+        affairMemberEntity.setPermissionGroupId(AffairPermissionRoleType.GUEST_ID);
+        affairMemberEntity.update();
         /*
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setRoleId(affairMemberApplicationEntity.getRoleId());
@@ -169,6 +198,7 @@ public class AffairService implements IAffairService {
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberApplicationEntity.setState(1);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
+        //此处测试时没有currentUserId,运行报错
         affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
         affairMemberApplicationEntity.setDealReason(dealReason);
         affairMemberApplicationEntity.update();
@@ -176,15 +206,22 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception {
-        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.partitionId(affairId).findById(applicationId);
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception {
+        AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId,affairId);
         if (affairMemberApplicationEntity == null) {
             throw new Exception("找不到此申请");
         }
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId)
+                .eq("affair_id",affairId).eq("role_id",affairMemberApplicationEntity.getRoleId()).selectOne();
+        if(affairMemberEntity == null){
+            throw new Exception("找不到该申请人");
+        }
+        affairMemberEntity.delete();
         //更新申请信息
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberApplicationEntity.setState(2);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
+        //此处测试时没有currentUserId,运行报错
         affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
         affairMemberApplicationEntity.setDealReason(dealReason);
         affairMemberApplicationEntity.update();
