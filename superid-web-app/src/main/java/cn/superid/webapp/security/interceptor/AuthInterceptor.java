@@ -151,7 +151,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
 
-    protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         if (getNotLoginFromHandlerMethodWithCache(handlerMethod) != null) {
@@ -184,13 +184,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
             Long affairId = Long.parseLong(request.getParameter("affairId"));
+            Long allianceId = Long.parseLong(request.getParameter("allianceId"));
             if(affairId==null){
                 return notPermitted;
             }
             if(roleId==null){
                 return notPermitted;
             }
-            if(!isPermitted(affairPermissions,affairService.getPermissions(affairId,roleId))){
+            if(!isPermitted(affairPermissions,affairService.getPermissions(allianceId,affairId,roleId))){
                 return notPermitted;
             }
         }
