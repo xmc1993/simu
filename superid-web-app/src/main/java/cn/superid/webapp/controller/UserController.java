@@ -270,7 +270,6 @@ public class UserController {
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
             return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
         }
-
     }
 
     @RequestMapping(value = "/test_log", method = RequestMethod.GET)

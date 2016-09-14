@@ -12,6 +12,7 @@ import model.Role;
 import model.User;
 import org.junit.Assert;
 import java.io.UnsupportedEncodingException;
+import java.lang.instrument.Instrumentation;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -162,6 +163,32 @@ public class TestExecute extends TestCase {
         long endTime = new Date().getTime();
         System.out.println("total time is: " + (endTime - beginTime) + "ms");
 
+    }
+
+    public void testHashOrSerialize() {
+        User user = new User();
+        user.setName("src/test");
+        user.setAge(18);
+        user.save();
+        Timer timer = new Timer();
+
+//
+//
+//        try {
+//            for(int i=0;i<1000;i++){
+//                RedisUtil.hmset("user" + i, user.generateHashByteMap());
+//            }
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+//        timer.end();
+//
+//        Timer timer1 = new Timer();
+//
+//        for(int i=0;i<1000;i++){
+//            RedisUtil.getJedisClient().set(("user" + i).getBytes(), SerializeUtil.serialize(user));
+//        }
+//        timer1.end();
     }
 
 

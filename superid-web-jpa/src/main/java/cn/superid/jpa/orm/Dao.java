@@ -311,6 +311,19 @@ public class Dao<T> {
         return getSession().execute(sql,params);
     }
 
+    /**
+     * get auto_increment_id ,when DRDS it get Sequence
+     * @return
+     */
+    public long getDRDSAutoId(){
+        Session session=getSession();
+        ModelMeta modelMeta= session.getEntityMetaOfClass(this.clazz);
+        StringBuilder stringBuilder=new StringBuilder("select AUTO_SEQ_");
+        stringBuilder.append(modelMeta.getTableName());
+        stringBuilder.append(".NEXTVAL");
+        return  (Long) session.findOne(Long.class,stringBuilder.toString());
+    }
+
 
     public int execute(String sql,ParameterBindings parameterBindings1){
         return getSession().execute(sql,parameterBindings1);
