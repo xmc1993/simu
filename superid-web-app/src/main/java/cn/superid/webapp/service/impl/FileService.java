@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.controller.forms.AddFileForm;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.FileEntity;
 import cn.superid.webapp.model.FolderEntity;
 import cn.superid.webapp.service.IFileService;
@@ -227,5 +228,44 @@ public class FileService implements IFileService{
             }
         }
         return result;
+    }
+
+    @Override
+    public long createRootFolder(long allianceId,long affairId, long taskId, long folderId,long role) {
+        AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+        if(affair == null){
+            return 0;
+        }
+        if(taskId == 0){
+            //表示创建事务的根文件夹
+            FolderEntity folder = new FolderEntity();
+            folder.setName(affair.getName()+"的根文件夹");
+            folder.setPath("1");
+            folder.setAffairId(affairId);
+            folder.setTaskId(0);
+            folder.setCreateTime(TimeUtil.getCurrentSqlTime());
+            folder.setUploader(role);
+            folder.setParentId(0);
+            folder.setState(1);
+            folder.save();
+        }else{
+            FolderEntity parent = FolderEntity.dao.findById(folderId,affairId);
+            if(parent == null){
+                return 0;
+            }
+            FolderEntity folder = new FolderEntity();
+            folder.setName(affair.getName()+"的根文件夹");
+            int count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(affairId).count();
+            folder.setPath(parent.getPath()+"/"+(count+1));
+            folder.setAffairId(affairId);
+            folder.setTaskId(taskId);
+            folder.setCreateTime(TimeUtil.getCurrentSqlTime());
+            folder.setUploader(role);
+            folder.setParentId(folderId);
+            folder.setState(1);
+            folder.save();
+        }
+
+        return 0;
     }
 }

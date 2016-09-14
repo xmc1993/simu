@@ -27,5 +27,7 @@ public interface IFileService {
 
     public List<FileForm> getHistoryFile(long fileId,long affairId);
 
+    public long createRootFolder(long allianceId,long affairId,long taskId,long folderId,long role);
+
 
 }
