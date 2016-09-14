@@ -17,6 +17,7 @@ public class AffairMemberEntity extends ExecutableModel {
     public final static Dao<AffairMemberEntity> dao = new Dao<>(AffairMemberEntity.class);
     private long id;
     private long affairId;
+    private long allianceId;
     private long roleId;
     private long userId;
     private int state;
@@ -36,6 +37,15 @@ public class AffairMemberEntity extends ExecutableModel {
     }
 
     @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
+
     public long getAffairId() {
         return affairId;
     }

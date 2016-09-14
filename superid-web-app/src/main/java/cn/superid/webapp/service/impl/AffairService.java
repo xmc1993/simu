@@ -56,8 +56,8 @@ public class AffairService implements IAffairService {
         }
     }
 
-    private void JustIndex(long parentId,int index){
-        AffairEntity.execute(" update affair set index = index +1 where parent_id = ? and index>= ?",new ParameterBindings(parentId,index));//调整index顺序
+    private void JustIndex(long parentId,int index,long allianceId){
+        AffairEntity.execute(" update affair set number = number +1 where alliance_id = ? and parent_id = ? and number>= ?",new ParameterBindings(allianceId,parentId,index));//调整index顺序
         //TODO 如果redis缓存,需要更新缓存
     }
 
@@ -70,7 +70,7 @@ public class AffairService implements IAffairService {
             throw new Exception("parent affair not found ");
         }
 
-        int count = AffairEntity.dao.eq("parentId",parentAffair.getId()).count();//已有数目
+        int count = AffairEntity.dao.eq("parentId",parentAffair.getId()).partitionId(parentAffair.getAllianceId()).count();//已有数目
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(parentAffair.getType());
@@ -79,10 +79,11 @@ public class AffairService implements IAffairService {
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
+        affairEntity.setNumber(createAffairForm.getNumber());
         affairEntity.setPath(parentAffair.getPath()+'/'+affairEntity.getPathIndex());
         affairEntity.save();
 
-        this.JustIndex(parentAffair.getId(),createAffairForm.getIndex());
+        this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());
 
         return affairEntity;
     }
@@ -104,10 +105,10 @@ public class AffairService implements IAffairService {
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
+        affairEntity.setNumber(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
-
-        affairMemberService.addMember(affairEntity.getId(),roleId,null,PermissionRoleType.OWNER_ID);//加入根事务
+        affairMemberService.addMember(affairEntity.getAllianceId(),affairEntity.getId(),roleId,null,PermissionRoleType.OWNER_ID);//加入根事务
         return affairEntity;
     }
 

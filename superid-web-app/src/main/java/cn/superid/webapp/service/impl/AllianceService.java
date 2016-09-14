@@ -36,7 +36,7 @@ public class AllianceService  implements IAllianceService{
     }
 
     @Override
-//    @Transactional
+    @Transactional
     public AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm) {
         AllianceEntity allianceEntity;
         if(allianceCreateForm.getIsPersonal()== IntBoolean.TRUE){

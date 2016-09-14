@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.service.forms.FileForm;
 import cn.superid.webapp.service.forms.FolderForm;
 
@@ -16,7 +17,13 @@ public interface IFileService {
 
     public boolean addFolder(long folderId,String name,long operationRoleId,long affairId,long taskId);
 
+    public boolean addFile(AddFileForm addFileForm);
+
     public boolean removeFile(long id,long folderId);
+
+    public boolean removeFolder(long affairId,long folderId);
+
+    public boolean renameFolder(long affairId,long folderId,String name);
 
 
 }
