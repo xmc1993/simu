@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +16,10 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "permission_group")
 
-public class PermissionGroupEntity {
+public class PermissionGroupEntity extends ExecutableModel{
     public final static Dao<PermissionGroupEntity> dao = new Dao<>(PermissionGroupEntity.class);
     private long id;
+    private String name;
     private long affairId;
     private String permissions;
     private Timestamp createTime;
@@ -30,6 +32,14 @@ public class PermissionGroupEntity {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @PartitionId
