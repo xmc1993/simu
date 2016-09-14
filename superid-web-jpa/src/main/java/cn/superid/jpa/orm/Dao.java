@@ -366,7 +366,7 @@ public class Dao<T> {
         return and(column,"=",value);
     }
 
-    public Dao<T> lk(String colum,Object value){return and(colum,"LIKE",value);}
+    public Dao<T> lk(String colum,Object value){return and(colum," LIKE ",value);}
 
     public Dao<T> idEqual(Object value){
         return and("id","=",value);
@@ -376,7 +376,12 @@ public class Dao<T> {
         return and("id","=",value);
     }
 
-    public Dao<T> partitionId(Object value){return and("id","=",value);
+    public Dao<T> state(Object value){
+        return and("state","=",value);
+    }
+
+    public Dao<T> partitionId(Object value){return
+            and(getSession().getEntityMetaOfClass(this.clazz).getPatitionColumn().columnName,"=",value);
     }
 
 

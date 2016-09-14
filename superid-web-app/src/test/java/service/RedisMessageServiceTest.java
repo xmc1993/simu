@@ -26,6 +26,7 @@ public class RedisMessageServiceTest {
     @Test
     public void testPublishJsonMessage(){
         Message message = new Message();
+        message.setToRole("ea0ee39c-3ebf-45f2-8c34-7a594def2150");
         message.setContent("test room message");
         redisMessageService.sendJsonMessage("room_message", message);
         System.out.println("---end---");

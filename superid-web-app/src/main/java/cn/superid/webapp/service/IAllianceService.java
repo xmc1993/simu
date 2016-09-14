@@ -8,7 +8,7 @@ import cn.superid.webapp.model.AllianceEntity;
  */
 public interface IAllianceService {
 
-    String getPermissions(long alliance,long roleId);
+    public String getPermissions(long alliance,long roleId) throws Exception;
 
     AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm);
 

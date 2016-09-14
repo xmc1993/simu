@@ -14,11 +14,11 @@ import org.elasticsearch.index.engine.Engine;
  */
 public interface IAffairService  {
 
-    public String getPermissions(long affairId,long roleId);
+    public String getPermissions(Long allianceId,Long affairId,Long roleId) throws Exception;
 
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
 
-    public String applyForEnterAffair(long affairId,long roleId);
+    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId) throws Exception;
 
     public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
 
@@ -28,7 +28,7 @@ public interface IAffairService  {
      * @param applicationId
      * @return
      */
-    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long applicationId);
+    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long affairId,Long applicationId);
 
     /**
      * 同意加入事务的申请
@@ -38,7 +38,7 @@ public interface IAffairService  {
      * @return
      * @throws Exception
      */
-    public AffairMemberEntity agreeAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+    public AffairMemberEntity agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
 
     /**
      * 拒绝加入事务的申请
@@ -48,6 +48,12 @@ public interface IAffairService  {
      * @return
      * @throws Exception
      */
-    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
 
+    /**
+     * 失效事务
+     * @param affairId
+     * @return
+     */
+    public boolean disableAffair(Long allianceId,Long affairId) throws Exception;
 }

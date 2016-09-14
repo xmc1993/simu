@@ -40,15 +40,15 @@ public class AffairController {
      *申请的id放在url传过来,再将处理人的角色id传过来
      */
     @ApiOperation(value = "同意进入事务申请",response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
-    @RequestMapping(value = "/agree_affair_member_application/{applicationId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.GENERATE_PERMISSION_GROUP})
-    public SimpleResponse agreeAffairMemberApplication(@PathVariable Long applicationId,Long dealRoleId,String dealReason) {
+    public SimpleResponse agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId,Long dealRoleId,String dealReason) {
         try {
-            AffairMemberApplicationEntity applicationEntity = affairService.findAffairMemberApplicationById(applicationId);
+            AffairMemberApplicationEntity applicationEntity = affairService.findAffairMemberApplicationById(affairId,applicationId);
             if(applicationEntity == null) {
                 return new SimpleResponse(100, "Can't find this application");
             }
-            AffairMemberEntity affairMemberEntity = affairService.agreeAffairMemberApplication(applicationId, dealRoleId,dealReason);
+            AffairMemberEntity affairMemberEntity = affairService.agreeAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
             return new SimpleResponse(ResponseCode.OK, affairMemberEntity);
         } catch (Exception e) {
            // LOG.error("agree affair member application error", e);
@@ -57,11 +57,11 @@ public class AffairController {
     }
 
     @ApiOperation(value = "拒绝进入事务申请",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/reject_affair_member_application/{applicationId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse disagreeAffairMemberApplication(@PathVariable Long applicationId,Long dealRoleId,String dealReason) {
+    public SimpleResponse disagreeAffairMemberApplication(Long allianceId,Long affairId, Long applicationId,Long dealRoleId,String dealReason) {
         try {
-            affairService.rejectAffairMemberApplication(applicationId, dealRoleId,dealReason);
+            affairService.rejectAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
             return new SimpleResponse(ResponseCode.OK, "已拒绝此申请");
         } catch (Exception e) {
             //LOG.error("disagree affair member application error", e);
@@ -69,4 +69,18 @@ public class AffairController {
         }
     }
 
+    @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse disableAffair(Long allianceId,Long affairId) {
+        boolean success;
+        try {
+            success = affairService.disableAffair(allianceId,affairId);
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
+        if (success) {
+            return SimpleResponse.ok("yep");
+        }
+        return SimpleResponse.error("因为某些奇怪的原因失败了");
+    }
 }

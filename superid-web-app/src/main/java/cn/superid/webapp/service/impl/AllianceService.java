@@ -1,21 +1,17 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.webapp.enums.AllianceType;
+import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.enums.StateType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AllianceEntity;
+import cn.superid.webapp.model.AllianceRoleEntity;
 import cn.superid.webapp.model.RoleEntity;
-import cn.superid.webapp.model.UserEntity;
-import cn.superid.webapp.security.PermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +27,13 @@ public class AllianceService  implements IAllianceService{
     private IAffairService affairService;
 
     @Override
-    public String getPermissions(long alliance, long roleId) {
-        return null;
+    public String getPermissions(long alliance, long roleId) throws Exception{
+        AllianceRoleEntity allianceRoleEntity = AllianceRoleEntity.dao.partitionId(alliance).eq("roleId",roleId).selectOne();
+        if((allianceRoleEntity == null)||(StringUtil.isEmpty(allianceRoleEntity.getPermissions()))){
+            throw  new Exception("找不到盟成员");
+        }
+
+        return allianceRoleEntity.getPermissions();
     }
 
     @Override

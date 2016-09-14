@@ -1,10 +1,12 @@
 package cn.superid.webapp.security;
 
 
+import java.util.HashMap;
+
 /**
  * Created by njuTms on 16/9/7.
  */
-public class  PermissionRoleType {
+public class AffairPermissionRoleType {
 
     private final static int[] administrator= {AffairPermissions.CREATE_AFFAIR,AffairPermissions.MOVE_AFFAIR,AffairPermissions.INVALID_AFFAIR,
             AffairPermissions.CHECK_AFFAIR_HOMEPAGE, AffairPermissions.EDIT_AFFAIR_INFO,
@@ -49,6 +51,16 @@ public class  PermissionRoleType {
     public final static long OFFICIAL_ID = 3L;
     public final static long GUEST_ID = 4L;
     public final static long VISITOR_ID = 5L;
+
+    public final static HashMap<Long,String> roles= new HashMap<Long,String>(){
+        {
+            put(OWNER_ID,OWNER);
+            put(ADMINISTRATOR_ID,ADMINISTRATOR);
+            put(OFFICIAL_ID,OFFICIAL);
+            put(GUEST_ID,GUEST);
+            put(VISITOR_ID,VISITOR);
+        }
+    };
 
 //    public static String getPermissions(Long id){
 //        switch (id){
