@@ -1,16 +1,17 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.webapp.model.ContractEntity;
-import cn.superid.webapp.model.ContractLogEntity;
-import cn.superid.webapp.model.ContractRoleEntity;
-import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.model.*;
 import cn.superid.webapp.service.IContractService;
 import cn.superid.webapp.service.IRoleService;
+import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.SignForm;
 import cn.superid.webapp.utils.TimeUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.management.relation.RoleResult;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,6 +21,9 @@ public class ContractService implements IContractService {
 
     @Autowired
     private IRoleService roleService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public int confirm(long allianceId,long operatorId, long contractId) {
@@ -91,7 +95,7 @@ public class ContractService implements IContractService {
         ContractEntity contract = ContractEntity.dao.findById(contractId);
         ContractRoleEntity signer = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operatorId).selectOne();
         RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
-        if(contract == null | contract.getState() != 2 | signer == null | role ==null){
+        if(contract == null | contract.getState() != 2 | signer == null | signer.getSignature() != 0 | role ==null){
             return new SignForm(0,null,null);
         }
 
@@ -113,13 +117,7 @@ public class ContractService implements IContractService {
         }
 
         //第三步，增加log
-        ContractLogEntity log = new ContractLogEntity();
-        log.setContractId(contractId);
-        log.setMessage(roleService.getNameByRoleId(operatorId)+ "已确认合同并签字");
-        log.setModifyTime(TimeUtil.getCurrentSqlTime());
-        log.setHasDetail(0);
-        log.setDetail("");
-        log.save();
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "已确认合同并签字");
 
         if(isAllSign){
             //如果所有人已确认
@@ -130,6 +128,232 @@ public class ContractService implements IContractService {
         }
 
         return new SignForm(1,roleService.getNameByRoleId(operatorId),signer.getSignatureTime().getTime());
+    }
+
+    @Override
+    public boolean undoSign(long allianceId, long operatorId, long contractId) {
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        ContractRoleEntity signer = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operatorId).selectOne();
+        RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
+        //如果不存在或者状态已经生效，则无法撤销
+        if(contract == null | contract.getState() == 3 | signer == null | signer.getSignature() != 1 | role == null){
+            return false;
+        }
+        //将标志位置为初始状态
+        signer.setSignature(0);
+        signer.setSignatureTime(null);
+        signer.update();
+
+        //第二步,检查是不是所有人都未同意,是则回到编辑态
+        int isAllUnsign = ContractRoleEntity.dao.partitionId(contractId).sum("signature");
+        if( isAllUnsign == 0 ){
+            contract.setIsBlock(0);
+            contract.update();
+        }
+
+        //第三步，增加log
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "撤销确认签字");
+
+        return true;
+    }
+
+    @Override
+    public boolean terminate(long allianceId, long operatorId, long contractId) {
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
+        List<ContractRoleEntity> contractRoleList = ContractRoleEntity.dao.partitionId(contractId).selectList();
+
+        if(contract == null | contract.getState() != 3 | contractRoleList == null | role == null){
+            return false;
+        }
+
+        //把合同置为正在终止
+        contract.setState(4);
+        contract.update();
+        //把所有人的终止标志位置为0
+        for(ContractRoleEntity c : contractRoleList){
+            if(c.getRoleId() == operatorId){
+                c.setTerminate(1);
+            }else{
+                c.setTerminate(0);
+            }
+            c.update();
+        }
+
+        //第三步，增加log
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "发起终止合同");
+
+        return true;
+    }
+
+    @Override
+    public SignForm agreeTerminate(long allianceId, long operatorId, long contractId) {
+        //第一步,检查
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
+        ContractRoleEntity terminater = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operatorId).selectOne();
+        if(contract == null | contract.getState()!=4 | role == null | terminater == null | terminater.getTerminate() != 0){
+            return new SignForm(0,null,null);
+        }
+
+        terminater.setTerminate(1);
+        terminater.setTerminateTime(TimeUtil.getCurrentSqlTime());
+        terminater.update();
+
+        //第二步，检查是不是最后一个同意的
+        List<Integer> terminateList = ContractRoleEntity.dao.partitionId(contractId).groupBy("alliance_id").sumList("terminate");
+        boolean isAllTerminated = true;
+        for(Integer i : terminateList){
+            if(i != 1){
+                isAllTerminated = false;
+            }
+        }
+
+        //第三步，增加log
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "同意终止合同");
+
+        if(isAllTerminated){
+            //如果所有人已同意
+            contract.setState(0);
+            contract.setTerminateTime(TimeUtil.getCurrentSqlTime());
+            contract.update();
+            return new SignForm(2,roleService.getNameByRoleId(operatorId),terminater.getTerminateTime().getTime());
+        }
+
+        return new SignForm(1,roleService.getNameByRoleId(operatorId),terminater.getTerminateTime().getTime());
+    }
+
+    @Override
+    public SignForm refuseTerminate(long allianceId, long operatorId, long contractId) {
+        //第一步,检查
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
+        ContractRoleEntity terminater = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operatorId).selectOne();
+        if(contract == null | contract.getState()!=4 | role == null | terminater == null | terminater.getTerminate() != 0){
+            return new SignForm(0,null,null);
+        }
+
+        //第二步,改变标志位
+        terminater.setTerminate(2);
+        terminater.setTerminateTime(TimeUtil.getCurrentSqlTime());
+        terminater.update();
+        contract.setState(3);
+        contract.update();
+
+        //第三步，增加log
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "拒绝终止合同");
+
+        return new SignForm(1,roleService.getNameByRoleId(operatorId),terminater.getTerminateTime().getTime());
+    }
+
+    @Override
+    public SignForm signAddition(long allianceId, long operatorId, long contractId, long additionId) {
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        RoleEntity role = RoleEntity.dao.findById(operatorId,allianceId);
+        UserEntity user = userService.getCurrentUser();
+        ContractRoleEntity signer = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operatorId).selectOne();
+        AdditionEntity addition = AdditionEntity.dao.findById(additionId,contractId);
+
+        if(contract == null | role == null | signer == null | signer.getAddition() != 0 | addition == null | addition.getState() != 1 | user ==null){
+            return new SignForm(0,null,null);
+        }
+
+        //第一步，将该角色确认位置为1，并且记录下签字信息
+        signer.setAddition(1);
+        signer.setAdditionTime(TimeUtil.getCurrentSqlTime());
+        signer.update();
+
+        String signedRole = addition.getSignedRole();
+        if(signedRole == null || signedRole.equals("[]")){
+            addition.setSignedRole("[{\"roleName\":\""+role.getTitle()+"\",\"kind\":\""+signer.getKind()+"\",\"signedTime\":\""+TimeUtil.getCurrentSqlTime()+"\",\"userName\":\""+user.getUsername()+"\",\"roleId\":\""+role.getId()+"\"}]");
+        }else{
+            HashMap<String,String> hash = new HashMap<>();
+            hash.put("roleName",role.getTitle());
+            hash.put("kind",signer.getKind()+"");
+            hash.put("signedTime",TimeUtil.getCurrentSqlTime().toString());
+            hash.put("userName",user.getUsername());
+            hash.put("roleId",role.getId()+"");
+            JSONArray info = JSONArray.parseArray(signedRole);
+            info.add(0,hash);
+            addition.setSignedRole(info.toString());
+        }
+        addition.setIsBlock(1);
+        addition.update();
+
+        //第二步，检测是否所有方都已经确认
+        List<Integer> additionList = ContractRoleEntity.dao.partitionId(contractId).groupBy("alliance_id").sumList("addition");
+        boolean isAllSigned = true;
+        for(Integer i : additionList){
+            if(i != 1){
+                isAllSigned = false;
+            }
+        }
+
+        //第三步，增加log
+        recorcSimpleLog(contractId,roleService.getNameByRoleId(operatorId)+ "已确认附加条款并签字");
+
+        if(isAllSigned){
+            //如果所有人已确认
+            addition.setState(2);
+            addition.setConfirmedTime(TimeUtil.getCurrentSqlTime());
+            addition.update();
+            return new SignForm(2,roleService.getNameByRoleId(operatorId),signer.getAdditionTime().getTime());
+        }
+
+        return new SignForm(1,roleService.getNameByRoleId(operatorId),signer.getAdditionTime().getTime());
+    }
+
+    @Override
+    public boolean undoAddition(long allianceId, long operatorId, long contractId, long additionId) {
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        RoleEntity role = RoleEntity.dao.findById(operatorId, allianceId);
+        ContractRoleEntity signer = ContractRoleEntity.dao.partitionId(contractId).eq("role_id", operatorId).selectOne();
+        AdditionEntity addition = AdditionEntity.dao.findById(additionId, contractId);
+        if (contract == null | role == null | signer == null | signer.getAddition() == 0 | addition == null | addition.getState() != 1) {
+            return false;
+        }
+        signer.setAddition(0);
+        signer.setAdditionTime(null);
+        signer.update();
+
+        //第二步,检查是不是所有人都未同意,是则回到编辑态
+        int isAllUnsign = ContractRoleEntity.dao.partitionId(contractId).sum("addition");
+        if (isAllUnsign == 0) {
+            addition.setIsBlock(0);
+        }
+
+        //这一步用来把当时的签字信息从addition json记录中抹去
+        JSONArray info = JSONArray.parseArray(addition.getSignedRole());
+        int location = 0;
+        boolean isExist = false;
+        for (int i = 0; i < info.size(); i++) {
+            JSONObject j = info.getJSONObject(i);
+            if (((Long) j.get("roleId") == role.getId())) {
+                isExist = true;
+                location = i;
+                break;
+            }
+        }
+        if (isExist) {
+            info.remove(location);
+        }
+        addition.setSignedRole(info.toString());
+        addition.update();
+
+        //第三步，增加log
+        recorcSimpleLog(contractId, roleService.getNameByRoleId(operatorId) + "撤销附加条款签字");
+
+        return true;
+    }
+
+    private void recorcSimpleLog(long contractId,String content){
+        ContractLogEntity log = new ContractLogEntity();
+        log.setContractId(contractId);
+        log.setMessage(content);
+        log.setModifyTime(TimeUtil.getCurrentSqlTime());
+        log.setHasDetail(0);
+        log.setDetail("");
+        log.save();
     }
 
 

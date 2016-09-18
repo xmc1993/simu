@@ -32,4 +32,61 @@ public interface IContractService {
      * @return
      */
     public SignForm sign(long allianceId, long operatorId, long contractId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @return
+     */
+    public boolean undoSign(long allianceId, long operatorId,long contractId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @return
+     */
+    public boolean terminate(long allianceId, long operatorId,long contractId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @return
+     */
+    public SignForm agreeTerminate(long allianceId, long operatorId,long contractId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @return
+     */
+    public SignForm refuseTerminate(long allianceId, long operatorId,long contractId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @param additionId
+     * @return
+     */
+    public SignForm signAddition(long allianceId,long operatorId,long contractId,long additionId);
+
+    /**
+     *
+     * @param allianceId
+     * @param operatorId
+     * @param contractId
+     * @param additionId
+     * @return
+     */
+    public boolean undoAddition(long allianceId,long operatorId,long contractId,long additionId);
+
 }
