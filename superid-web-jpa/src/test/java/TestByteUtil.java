@@ -1,14 +1,12 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-import cn.superid.jpa.util.ByteUtil;
-import cn.superid.jpa.util.ObjectSizeFetcher;
 import cn.superid.jpa.util.SerializeUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import model.User;
-import org.junit.Assert;
-import org.junit.Test;
+import org.github.jamm.MemoryMeter;
 
 import java.util.HashMap;
+
 
 /**
  * Created by xmc1993 on 16/9/5.
@@ -37,23 +35,30 @@ public class TestByteUtil extends TestCase {
 
     static {
         JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(getDataSource());
-    }
-
-
-    public static long getByteSize(Object o){
-        System.gc();
-        long begin = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-         o=null;
-        System.gc();
-        long end = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println(begin-end);
-        return begin-end;
-    }
-
-    public void testSize(){
-
-        System.out.println(ObjectSizeFetcher.getObjectSize(new User()));
 
 
     }
+
+
+
+    public void testSize() throws Exception{
+        MemoryMeter memoryMeter = new MemoryMeter();
+
+
+        User user = new User();
+        user.setName("src/test");
+        user.setAge(18);
+        user.save();
+        System.out.println(memoryMeter.measureDeep(user));
+
+        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
+        System.out.println(memoryMeter.measureDeep(hashMap));
+
+        byte[] serialize = SerializeUtil.serialize(user);
+        System.out.println(memoryMeter.measureDeep(serialize));
+
+
+
+    }
+
 }

@@ -8,7 +8,7 @@ import java.util.HashMap;
  */
 public class AffairPermissionRoleType {
 
-    private final static int[] administrator= {AffairPermissions.CREATE_AFFAIR,AffairPermissions.MOVE_AFFAIR,AffairPermissions.INVALID_AFFAIR,
+    private final static int[] administrator= {AffairPermissions.CREATE_AFFAIR,AffairPermissions.MOVE_AFFAIR,
             AffairPermissions.CHECK_AFFAIR_HOMEPAGE, AffairPermissions.EDIT_AFFAIR_INFO,
             AffairPermissions.CREATE_CHILD_AFFAIR,AffairPermissions.GENERATE_CHILD_AFFAIR_PERMISSION,
             AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.INVALID_AFFAIR_MEMBER,
