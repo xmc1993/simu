@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -35,6 +36,7 @@ public class AdditionEntity extends ExecutableModel {
         this.id = id;
     }
 
+    @PartitionId
     public long getContractId() {
         return contractId;
     }
