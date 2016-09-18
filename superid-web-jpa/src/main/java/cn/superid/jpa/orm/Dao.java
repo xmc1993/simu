@@ -123,6 +123,36 @@ public class Dao<T> {
         return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
     }
 
+    public int sum(String param){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
+    }
+
+    public List<Integer> sumList(String param){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") FROM ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(builder);
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return  AbstractSession.currentSession().findList(Integer.class,sql,sqlParams);
+    }
+
 
 
 
@@ -443,6 +473,12 @@ public class Dao<T> {
     public  Dao<T> orderBy(String orderBy){
         where.get().append(" ORDER BY ");
         where.get().append(orderBy);
+        return  this;
+    }
+
+    public  Dao<T> groupBy(String groupBy){
+        where.get().append(" GROUP BY ");
+        where.get().append(groupBy);
         return  this;
     }
 

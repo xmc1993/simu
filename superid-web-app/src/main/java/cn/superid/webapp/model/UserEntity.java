@@ -43,6 +43,7 @@ public class UserEntity extends ExecutableModel {
     private double faith;
     private int gender;
     private int publicType;
+    private String avatar;
 
     @Id
     @Column(name = "id")
@@ -263,5 +264,13 @@ public class UserEntity extends ExecutableModel {
 
     public void setPublicType(int publicType) {
         this.publicType = publicType;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
