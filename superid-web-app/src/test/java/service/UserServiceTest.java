@@ -3,6 +3,7 @@ package service;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
@@ -95,6 +96,11 @@ public class UserServiceTest{
 
     @Test
     public void testRedis(){
+
+        for(int i=0;i<1000;i++){
+            RoleEntity.dao.getDRDSAutoId();
+        }
+        System.out.println(RoleEntity.dao.getDRDSAutoId());
 //        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");
 //        Map<String, String> data = new HashMap();
 //        data.put("test", "test");

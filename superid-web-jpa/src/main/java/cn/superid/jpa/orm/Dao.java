@@ -259,8 +259,14 @@ public class Dao<T> {
 
     }
 
+    /**
+     * 以下几种set方法用于更新时
+     *
+     * @param params columnName,value,columnName,value的形式
+     * @return 更新的行数
+     */
     public  int set(Object... params) {
-        if(params==null||params.length==0){
+        if(params==null||params.length==0||params.length%2!=0){
             throw new JdbcRuntimeException("Error update set");
         }
 
@@ -441,8 +447,6 @@ public class Dao<T> {
         parameterBindings.get().clear();
         return AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams)!=null;
     }
-
-
 
 
 }

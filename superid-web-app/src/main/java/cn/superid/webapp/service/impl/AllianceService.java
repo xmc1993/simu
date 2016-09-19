@@ -6,12 +6,12 @@ import cn.superid.webapp.enums.StateType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AllianceEntity;
-import cn.superid.webapp.model.AllianceRoleEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +28,12 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public String getPermissions(long alliance, long roleId) throws Exception{
-        AllianceRoleEntity allianceRoleEntity = AllianceRoleEntity.dao.partitionId(alliance).eq("roleId",roleId).selectOne();
-        if((allianceRoleEntity == null)||(StringUtil.isEmpty(allianceRoleEntity.getPermissions()))){
+        RoleEntity roleEntity= RoleEntity.dao.findById(roleId,alliance);
+        if((roleEntity == null)||(StringUtil.isEmpty(roleEntity.getPermissions()))){
             throw  new Exception("找不到盟成员");
         }
 
-        return allianceRoleEntity.getPermissions();
+        return roleEntity.getPermissions();
     }
 
     @Override

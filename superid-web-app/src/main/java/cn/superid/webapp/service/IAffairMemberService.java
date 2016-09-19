@@ -7,7 +7,7 @@ import cn.superid.webapp.model.PermissionGroupEntity;
  * Created by xiaofengxu on 16/9/2.
  */
 public interface IAffairMemberService {
-    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId);//type为
+    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId) throws Exception;//type为
 
     /**
      * 给某个角色设置权限组

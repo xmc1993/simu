@@ -83,4 +83,6 @@ public class AffairController {
         }
         return SimpleResponse.error("因为某些奇怪的原因失败了");
     }
+
+
 }

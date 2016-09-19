@@ -23,7 +23,7 @@ public class RoleEntity extends ExecutableModel {
     private long belongAffairId;
     private String title;
     private String permissions;
-
+    private String allocatePermissions;
     private int type;
     private int visible;
     private int state;
@@ -79,6 +79,15 @@ public class RoleEntity extends ExecutableModel {
 
     public void setPermissions(String permissions) {
         this.permissions = permissions;
+    }
+
+    public String getAllocatePermissions() {
+
+        return allocatePermissions;
+    }
+
+    public void setAllocatePermissions(String allocatePermissions) {
+        this.allocatePermissions = allocatePermissions;
     }
 
     public int getType() {

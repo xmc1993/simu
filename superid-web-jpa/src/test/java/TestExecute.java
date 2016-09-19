@@ -10,6 +10,7 @@ import model.Role;
 import model.User;
 import org.junit.Assert;
 import org.springframework.beans.BeanUtils;
+import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,7 @@ public class TestExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-//        user.delete();
+        user.delete();
         Assert.assertTrue(User.dao.findById(user.getId()) == null);
     }
 
@@ -132,62 +133,6 @@ public class TestExecute extends TestCase {
 
         Assert.assertTrue(user1.getAge() == 18);
 
-    }
-//
-//    public void testBytesHashRedis() throws UnsupportedEncodingException {
-//        User user = new User();
-//        user.setName("src/test");
-//        user.setAge(18);
-//        user.save();
-//        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
-//        long beginTime = new Date().getTime();
-//        for(int i = 0; i < 1000; i++){  //100 32ms 1000 116ms
-//            RedisUtil.hmset("user" + i, hashMap);
-//        }
-//        long endTime = new Date().getTime();
-//        System.out.println("total time is: " + (endTime - beginTime) + "ms");
-//
-//    }
-//
-//    public void testObjectSerializeRedis() throws UnsupportedEncodingException {
-//        User user = new User();
-//        user.setName("src/test");
-//        user.setAge(18);
-//        user.save();
-//        byte[] serialize = SerializeUtil.serialize(user);
-//        long beginTime = new Date().getTime();
-//        for(int i = 0; i < 1000; i++){  //
-//            RedisUtil.getJedisClient().set(("user" + i).getBytes(), serialize);
-//        }
-//        long endTime = new Date().getTime();
-//        System.out.println("total time is: " + (endTime - beginTime) + "ms");
-//
-//    }
-
-    public void testHashOrSerialize() {
-        User user = new User();
-        user.setName("src/test");
-        user.setAge(18);
-        user.save();
-        Timer timer = new Timer();
-
-//
-//
-//        try {
-//            for(int i=0;i<1000;i++){
-//                RedisUtil.hmset("user" + i, user.generateHashByteMap());
-//            }
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
-//        timer.end();
-//
-//        Timer timer1 = new Timer();
-//
-//        for(int i=0;i<1000;i++){
-//            RedisUtil.getJedisClient().set(("user" + i).getBytes(), SerializeUtil.serialize(user));
-//        }
-//        timer1.end();
     }
 
 
@@ -370,52 +315,15 @@ public class TestExecute extends TestCase {
 
     }
 
-    private void tmp(){
-        System.out.print("aa");
-    }
 
 
 
+    @Test(threadPoolSize = 10, invocationCount = 100)
+    public void testMutilThread(){
+        testUpdate();
+        testDelete();
+        testSelectOne();
 
-    public void testThread(){
-//        ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
-//        for (int i = 0; i < 10; i++) {
-//            final int index = i;
-//
-//            fixedThreadPool.execute(new Runnable() {
-//                public void run() {
-//                    try {
-//                         testDelete();
-////                        System.out.println(index);
-////                        User user = new User();
-////                        user.setName("zdddd");
-////                        user.setAge(18);
-////                        user.save();
-////                        tmp();
-////                        Thread.sleep(2000);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                User user = new User();
-                user.setName("zp");
-                user.setAge(18);
-                user.save();
-                Assert.assertTrue(User.dao.findById(user.getId()) == null);
-            }
-        });
-        try {
-            thread.start();
-            thread.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }
