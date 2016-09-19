@@ -76,23 +76,24 @@ public class StringUtil {
      * @return underscored name             
      */
     public static String underscoreName(String name) {
+        if(name ==null) {
+            return null;
+        }
         int length =  name.length()*3/2;
         char[] rs = new char[length];
         int i=1;
         char tmp;
-        if (name != null ) {
-            rs[0] = Character.toUpperCase(name.charAt(0));
-            for(int j=1;j<name.length();j++){
-                tmp = name.charAt(j);
-                if(tmp>='A'&&tmp<='Z'){
-                    rs[i] = '_';
-                    i++;
-                    rs[i] = tmp;
-                    i++;
-                }else{
-                    rs[i] =  Character.toUpperCase(tmp);
-                    i++;
-                }
+        rs[0] = Character.toUpperCase(name.charAt(0));
+        for(int j=1;j<name.length();j++){
+            tmp = name.charAt(j);
+            if(tmp>='A'&&tmp<='Z'){
+                rs[i] = '_';
+                i++;
+                rs[i] = tmp;
+                i++;
+            }else{
+                rs[i] =  Character.toUpperCase(tmp);
+                i++;
             }
         }
         return String.valueOf(rs,0,i);
