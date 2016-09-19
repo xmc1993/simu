@@ -16,9 +16,13 @@ import java.util.Iterator;
  * Created by xiaofengxu on 16/9/2.
  */
 @Service
-public class AffairMemberService implements IAffairMemberService {
+public class AffairMemberService implements IAffairMemberService{
     @Override
-    public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId) {
+    public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId) throws Exception{
+        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).exists();
+        if(isExist){
+            throw new Exception("该成员已在事务中");
+        }
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setAllianceId(allianceId);
         affairMemberEntity.setAffairId(affairId);
@@ -91,6 +95,6 @@ public class AffairMemberService implements IAffairMemberService {
         permissionGroupEntity.setPermissions(permissions);
         permissionGroupEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         permissionGroupEntity.save();
-        return null;
+        return permissionGroupEntity;
     }
 }
