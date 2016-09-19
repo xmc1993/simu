@@ -234,7 +234,7 @@ public class UserService implements IUserService {
         long thisUserId = currentUserId();
         UserBaseInfo userBaseInfo =UserBaseInfo.dao.findById(userId);
         if(userBaseInfo.getPublicType()== PublicType.ALL||(userBaseInfo.getPublicType()==PublicType.TO_ALLIANCE&&allianceService.inSameAlliance(userId,thisUserId))){//如果公开或者对盟内成员公开
-            return ResultUserInfo.dao.idEqual(userId).selectOne();
+            return ResultUserInfo.dao.id(userId).selectOne();
         }
 
         ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息

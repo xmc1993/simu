@@ -28,9 +28,6 @@ public class ConditionalDao<T> extends Dao<T> {
 
     public ConditionalDao<T> lk(String colum, Object value){return and(colum," LIKE ",value);}
 
-    public ConditionalDao<T> idEqual(Object value){
-        return and("id","=",value);
-    }
 
     public ConditionalDao<T> id(Object value){
         return and("id","=",value);
