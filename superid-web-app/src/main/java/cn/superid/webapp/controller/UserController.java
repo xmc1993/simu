@@ -134,7 +134,7 @@ public class UserController {
 
     @ApiOperation(value = "判断验证码是否正确", httpMethod = "POST", response = SimpleResponse.class, notes = "判断验证码是否正确")
     @RequestMapping(value = "/check_token", method = RequestMethod.POST)
-    public SimpleResponse checkToken(String verifyCode,HttpServletRequest request,String token){
+    public SimpleResponse checkToken(String verifyCode){
         if(!userService.checkVerifyCode(verifyCode)){
             return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
         }

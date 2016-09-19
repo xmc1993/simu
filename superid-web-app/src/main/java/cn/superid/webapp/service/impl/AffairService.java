@@ -8,9 +8,11 @@ import cn.superid.webapp.model.*;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.service.IFileService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
 
+import com.wordnik.swagger.annotations.ApiModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,9 @@ import java.util.Iterator;
 public class AffairService implements IAffairService {
     @Autowired
     private IAffairMemberService affairMemberService;
-
+    @Autowired
+    private IFileService fileService;
+    @Autowired
     private IUserService userService;
     @Override
     public String getPermissions(Long allianceId,Long affairId, Long roleId) throws Exception{
@@ -99,6 +103,7 @@ public class AffairService implements IAffairService {
      */
     @Override
     public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
+
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(type);
         affairEntity.setPublicType(PublicType.TO_ALLIANCE);
@@ -109,7 +114,15 @@ public class AffairService implements IAffairService {
         affairEntity.setNumber(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
-        affairMemberService.addMember(affairEntity.getAllianceId(),affairEntity.getId(),roleId,"",AffairPermissionRoleType.OWNER_ID);//加入根事务
+        long folderId = fileService.createRootFolder(allianceId,affairEntity.getId(),0,0,roleId);
+        affairEntity.setFolderId(folderId);
+        AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId",folderId);
+        try{
+            affairMemberService.addMember(affairEntity.getAllianceId(),affairEntity.getId(),roleId,"",AffairPermissionRoleType.OWNER_ID);//加入根事务
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         return affairEntity;
     }
@@ -120,10 +133,12 @@ public class AffairService implements IAffairService {
         if(affairEntity == null){
             throw new Exception("找不到该事务");
         }
+        /*
         RoleEntity roleEntity = RoleEntity.dao.findById(roleId,allianceId);
         if(roleEntity == null){
             throw new Exception("找不到该角色");
         }
+        */
         boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).state(0).exists();
         if(isExist){
             throw new Exception("该角色已在此事务中");
@@ -137,7 +152,8 @@ public class AffairService implements IAffairService {
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setPermissions("");
         affairMemberEntity.setRoleId(roleId);
-        affairMemberEntity.setUserId(roleEntity.getUserId());
+        //此处测试时没有currentUserId,运行报错
+        affairMemberEntity.setUserId(userService.currentUserId());
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setState(2);
@@ -146,7 +162,8 @@ public class AffairService implements IAffairService {
 
         AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
         affairMemberApplicationEntity.setRoleId(roleId);
-        affairMemberApplicationEntity.setUserId(roleEntity.getUserId());
+        //此处测试时没有currentUserId,运行报错
+        affairMemberApplicationEntity.setUserId(userService.currentUserId());
         affairMemberApplicationEntity.setAffairId(affairId);
         affairMemberApplicationEntity.setAllianceId(allianceId);
         affairMemberApplicationEntity.setState(0);
@@ -234,9 +251,11 @@ public class AffairService implements IAffairService {
         if(affairEntity == null){
             throw new Exception("找不到该事务"+affairId);
         }
+        /*
         if(affairEntity.getLevel()<1) {
             throw new Exception("根事务不能失效");
         }
+        */
         affairEntity.setState(AffairState.INVALID);
         affairEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairEntity.update();
