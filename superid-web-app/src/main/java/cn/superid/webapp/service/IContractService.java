@@ -1,6 +1,7 @@
 package cn.superid.webapp.service;
 
 import cn.superid.webapp.model.ContractTemplateEntity;
+import cn.superid.webapp.service.forms.ContractTemplateForm;
 import cn.superid.webapp.service.forms.SignForm;
 
 import java.util.List;
@@ -118,6 +119,26 @@ public interface IContractService {
      * @param operationRoleId
      * @return
      */
-    public List<ContractTemplateEntity> listTemplate(long operationRoleId,long allianceId);
+    public List<ContractTemplateForm> listTemplate(long operationRoleId, long allianceId);
+
+    /**
+     *
+     * @param id
+     * @param affairId
+     * @return
+     */
+    public String getContentOfTemplate(long id , long affairId);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param id
+     * @param affairId
+     * @param title
+     * @param content
+     * @param thumbContent
+     * @return
+     */
+    public boolean editTemplate(long operationRoleId ,long id ,long affairId ,String title ,String content ,String thumbContent);
 
 }
