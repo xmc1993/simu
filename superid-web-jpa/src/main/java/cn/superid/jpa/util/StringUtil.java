@@ -81,7 +81,7 @@ public class StringUtil {
             result.append(name.substring(0, 1).toUpperCase());
             for (int i = 1; i < name.length(); i++) {
                 String s = name.substring(i, i + 1);
-                if (s.equals(s.toUpperCase()) && !Character.isDigit(s.charAt(0))) {
+                if (s.equals(s.toUpperCase()) && Character.isLetter(s.charAt(0))) {
                     result.append("_");
                 }
                 result.append(s.toUpperCase());

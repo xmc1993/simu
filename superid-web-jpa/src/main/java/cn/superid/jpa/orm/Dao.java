@@ -12,14 +12,23 @@ import java.util.Map;
  */
 public class Dao<T> {
     protected final static String whereStr = " WHERE (1=1) ";
+    protected final static String fromStr = " FROM ";
     protected Class<?> clazz;
     protected static short whereLength = (short)(whereStr.length());
+    protected static short fromLength = (short)(fromStr.length());
     protected static ThreadLocal<StringBuilder> where = new ThreadLocal<StringBuilder>(){
         @Override
         protected StringBuilder initialValue() {
             return new StringBuilder(whereStr);
         }
     };
+    protected static ThreadLocal<StringBuilder> from = new ThreadLocal<StringBuilder>(){
+        @Override
+        protected StringBuilder initialValue() {
+            return new StringBuilder(fromStr);
+        }
+    };
+
     protected static ThreadLocal<ParameterBindings> parameterBindings = new ThreadLocal<ParameterBindings>(){
         @Override
         protected ParameterBindings initialValue() {
@@ -96,8 +105,15 @@ public class Dao<T> {
         }
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        sb.append(" FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
+
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
@@ -112,8 +128,15 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT count(id) FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder sb = new StringBuilder(" SELECT count(id) ");
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -127,8 +150,15 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -142,8 +172,15 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -161,8 +198,15 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT count(id) FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder sb = new StringBuilder(" SELECT count(id) ");
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         int total = (int) AbstractSession.currentSession().findOne(Integer.class,sb.toString(),sqlParams);
@@ -171,8 +215,13 @@ public class Dao<T> {
 
         StringBuilder list = new StringBuilder(" SELECT ");
         list.append(StringUtil.joinParams(",",params));
-        list.append(" FROM ");
-        list.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         list.append(builder);
         list.append(" limit ?,? ");
         parameterBindings.get().addIndexBinding(pagination.getOffset());
@@ -193,8 +242,14 @@ public class Dao<T> {
         }
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        sb.append(" FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -375,8 +430,15 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
         }
-        StringBuilder sb = new StringBuilder(" SELECT 1 FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        StringBuilder sb = new StringBuilder(" SELECT 1 ");
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
