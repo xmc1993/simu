@@ -22,15 +22,28 @@ public class ConditionalDao<T> extends Dao<T> {
         return this;
     }
 
+    public ConditionalDao<T>  join (ConditionalDao table){
+        from.get().append(getSession().getEntityMetaOfClass(this.clazz).getTableName() + " a");
+        from.get().append(" join ");
+        from.get().append(getSession().getEntityMetaOfClass(table.clazz).getTableName() + " b");
+        return this;
+    }
+
+    public ConditionalDao<T> on (String leftParam , String rightParam ){
+        from.get().append(" on ");
+        from.get().append("a."+leftParam);
+        from.get().append(" = ");
+        from.get().append("b."+rightParam);
+        return this;
+
+    }
+
     public ConditionalDao<T> eq(String column, Object value){
         return and(column,"=",value);
     }
 
     public ConditionalDao<T> lk(String colum, Object value){return and(colum," LIKE ",value);}
 
-    public ConditionalDao<T> idEqual(Object value){
-        return and("id","=",value);
-    }
 
     public ConditionalDao<T> id(Object value){
         return and("id","=",value);

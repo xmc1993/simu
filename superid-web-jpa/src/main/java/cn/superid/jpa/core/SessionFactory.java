@@ -7,7 +7,7 @@ import java.sql.SQLException;
  */
 public abstract class SessionFactory {
 
-    protected final ThreadLocal<Session> sessionThreadLocal = new ThreadLocal<Session>() {
+    protected final  ThreadLocal<Session> sessionThreadLocal = new ThreadLocal<Session>() {
         @Override
         public Session initialValue() {
             return createSession();
@@ -34,7 +34,7 @@ public abstract class SessionFactory {
         return getThreadScopeSession();
     }
 
-    public  abstract  Session createSession();
+    public  abstract    Session createSession();
 
     public  abstract void close() throws SQLException;
 }

@@ -6,7 +6,6 @@ import cn.superid.webapp.enums.StateType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AllianceEntity;
-import cn.superid.webapp.model.AllianceRoleEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
