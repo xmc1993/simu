@@ -152,7 +152,7 @@ public class AffairService implements IAffairService {
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setPermissions("");
         affairMemberEntity.setRoleId(roleId);
-        //此处测试时没有currentUserId,运行报错
+        //TODO 此处测试时没有currentUserId,运行报错
         affairMemberEntity.setUserId(userService.currentUserId());
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -162,7 +162,7 @@ public class AffairService implements IAffairService {
 
         AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
         affairMemberApplicationEntity.setRoleId(roleId);
-        //此处测试时没有currentUserId,运行报错
+        //TODO 此处测试时没有currentUserId,运行报错
         affairMemberApplicationEntity.setUserId(userService.currentUserId());
         affairMemberApplicationEntity.setAffairId(affairId);
         affairMemberApplicationEntity.setAllianceId(allianceId);
