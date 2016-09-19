@@ -22,10 +22,10 @@ public class ConditionalDao<T> extends Dao<T> {
         return this;
     }
 
-    public ConditionalDao<T>  join (ConditionalDao table){
+    public ConditionalDao<T>  join (Class<?> table){
         from.get().append(getSession().getEntityMetaOfClass(this.clazz).getTableName() + " a");
         from.get().append(" join ");
-        from.get().append(getSession().getEntityMetaOfClass(table.clazz).getTableName() + " b");
+        from.get().append(getSession().getEntityMetaOfClass(table).getTableName() + " b");
         return this;
     }
 
