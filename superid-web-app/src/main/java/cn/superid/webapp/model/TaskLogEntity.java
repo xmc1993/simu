@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Table(name = "task_log")
 public class TaskLogEntity  extends ExecutableModel {
 
-    public final static Dao<TaskLogEntity> dao = new Dao<>(TaskLogEntity.class);
+    public final static ConditionalDao<TaskLogEntity> dao = new ConditionalDao<>(TaskLogEntity.class);
 
     private long id;
     private long taskId;

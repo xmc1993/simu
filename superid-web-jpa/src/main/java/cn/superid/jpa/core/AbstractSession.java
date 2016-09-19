@@ -159,6 +159,7 @@ public abstract class AbstractSession implements Session {
      * @return current session of current thread
      */
     public static Session currentSession() {
+
         return defaultSessionFactory.currentSession();
     }
 
@@ -185,12 +186,9 @@ public abstract class AbstractSession implements Session {
             return true;
         }
         if(from.isPrimitive()){
-            System.out.print(PRIMITIVES_TO_WRAPPERS.get(from));
            return  PRIMITIVES_TO_WRAPPERS.get(from).equals(to);
         }
         if(to.isPrimitive()){
-            System.out.print(PRIMITIVES_TO_WRAPPERS.get(to));
-
             return PRIMITIVES_TO_WRAPPERS.get(to).equals(from);
         }
         return false;

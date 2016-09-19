@@ -2,6 +2,7 @@ package model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
@@ -10,7 +11,7 @@ import javax.persistence.Id;
  * Created by xiaofengxu on 16/9/12.
  */
 public class Role extends ExecutableModel{
-    public static Dao<Role> dao = new Dao(Role.class);
+    public static ConditionalDao<Role> dao = new ConditionalDao<>(Role.class);
 
     private int id;
     private int userId;

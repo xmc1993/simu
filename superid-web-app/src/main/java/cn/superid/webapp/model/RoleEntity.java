@@ -2,7 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "role")
 @Cacheable
 public class RoleEntity extends ExecutableModel {
-    public final static Dao<RoleEntity> dao = new Dao<>(RoleEntity.class);
+    public final static ConditionalDao<RoleEntity> dao = new ConditionalDao<>(RoleEntity.class);
     private long id;
     private long userId;
     private long allianceId;

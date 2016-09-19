@@ -1,7 +1,7 @@
 package cn.superid.webapp.model.base;
 
 import cn.superid.jpa.annotation.Cacheable;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "user")
 @Cacheable
 public class UserBaseInfo extends ExecutableModel{
-    public final static Dao<UserBaseInfo> dao = new Dao<>(UserBaseInfo.class);
+    public final static ConditionalDao<UserBaseInfo> dao = new ConditionalDao<>(UserBaseInfo.class);
     private long id;
     private String avatar;
     private int gender;

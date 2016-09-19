@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.NotTooSimple;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "user")
 public class UserEntity extends ExecutableModel {
-    public final static Dao<UserEntity> dao = new Dao<>(UserEntity.class);
+    public final static ConditionalDao<UserEntity> dao = new ConditionalDao<>(UserEntity.class);
 
     private long id;
     private String superid ="";

@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 
 import javax.persistence.Id;
 
@@ -9,7 +9,7 @@ import javax.persistence.Id;
  * Created by xiaofengxu on 16/9/2.
  */
 public class AffairLog {
-    public final static Dao<AffairLog> dao = new Dao<>(AffairLog.class);
+    public final static ConditionalDao<AffairLog> dao = new ConditionalDao<>(AffairLog.class);
     private long id;
     private long affairId;
     private int type;

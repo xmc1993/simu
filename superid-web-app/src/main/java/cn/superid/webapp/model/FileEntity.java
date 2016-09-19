@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
 
@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "file")
 public class FileEntity extends ExecutableModel {
 
-    public final static Dao<FileEntity> dao = new Dao<>(FileEntity.class);
+    public final static ConditionalDao<FileEntity> dao = new ConditionalDao<>(FileEntity.class);
     private long id;
     private String name;
     private String path;

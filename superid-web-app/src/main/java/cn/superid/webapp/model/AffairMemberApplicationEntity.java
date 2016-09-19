@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "affair_member_application")
 public class AffairMemberApplicationEntity extends ExecutableModel {
-    public final static Dao<AffairMemberApplicationEntity> dao = new Dao<>(AffairMemberApplicationEntity.class);
+    public final static ConditionalDao<AffairMemberApplicationEntity> dao = new ConditionalDao<>(AffairMemberApplicationEntity.class);
     private long id;
     private long roleId;
     private long userId;

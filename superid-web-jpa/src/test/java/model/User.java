@@ -1,7 +1,7 @@
 package model;
 
 import cn.superid.jpa.annotation.NotTooSimple;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Entity;
@@ -14,13 +14,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 public class User  extends ExecutableModel{
-   public static Dao<User> dao = new Dao(User.class);
+   public static ConditionalDao<User> dao = new ConditionalDao<>(User.class);
     private int id;
     private String name;
     private int age;
     private String details;
-
-
 
     @Id
     public int getId() {

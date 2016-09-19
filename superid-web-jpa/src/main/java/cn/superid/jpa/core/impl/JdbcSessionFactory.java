@@ -17,7 +17,8 @@ public class JdbcSessionFactory extends SessionFactory {
 
     @Override
     public Session createSession() {
-        JdbcSession session = new JdbcSession(this);
+        JdbcSessionFactory jdbcSessionFactory=new JdbcSessionFactory(dataSource);
+        JdbcSession session = new JdbcSession(jdbcSessionFactory);
         return session;
     }
 

@@ -66,7 +66,6 @@ public class UserController {
     }
 
 
-
     /**
      * 获取身份验证码
      * @param request
@@ -85,10 +84,6 @@ public class UserController {
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, AliSmsDao.checkIdentityCode));
         }
     }
-
-
-
-
 
     /**
      * 获取登录验证码

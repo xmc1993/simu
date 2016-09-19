@@ -1,7 +1,7 @@
 package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "task_role")
 public class TaskRoleEntity extends ExecutableModel {
 
-    public final static Dao<TaskRoleEntity> dao = new Dao<>(TaskRoleEntity.class);
+    public final static ConditionalDao<TaskRoleEntity> dao = new ConditionalDao<>(TaskRoleEntity.class);
 
     private long id;
     private long taskId;

@@ -13,9 +13,9 @@ import java.util.HashMap;
 public abstract class ExecutableModel<T>  implements Serializable,Executable{
 
 
-
     public static Session getSession() {
-        return AbstractSession.currentSession();
+        Session session =AbstractSession.currentSession();
+        return session;
     }
 
 

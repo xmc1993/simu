@@ -1,6 +1,6 @@
 package cn.superid.webapp.forms;
 
-import cn.superid.jpa.orm.Dao;
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.model.AffairEntity;
 
@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Table(name="user")
 public class ResultUserInfo extends ExecutableModel{
 
-    public final static Dao<ResultUserInfo> dao = new Dao<>(ResultUserInfo.class);
+    public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
     private Long id;
     private String superid;
     private int state;

@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.utils.TimeUtil;
 
 import java.sql.Timestamp;
@@ -7,7 +8,7 @@ import java.sql.Timestamp;
 /**
  * Created by xmc1993 on 16/9/2.
  */
-public class TestEntity {
+public class TestEntity extends ExecutableModel  {
     private long id;
     private long parentId;
     private String name;

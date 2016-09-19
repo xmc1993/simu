@@ -4,7 +4,6 @@ import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.util.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +11,16 @@ import java.util.Map;
  * Created by zp on 2016/7/21.
  */
 public class Dao<T> {
-    private final static String whereStr = " WHERE (1=1) ";
-    private Class<?> clazz;
-    private static short whereLength = (short)(whereStr.length());
-    private static ThreadLocal<StringBuilder> where = new ThreadLocal<StringBuilder>(){
+    protected final static String whereStr = " WHERE (1=1) ";
+    protected Class<?> clazz;
+    protected static short whereLength = (short)(whereStr.length());
+    protected static ThreadLocal<StringBuilder> where = new ThreadLocal<StringBuilder>(){
         @Override
         protected StringBuilder initialValue() {
             return new StringBuilder(whereStr);
         }
     };
-    private static ThreadLocal<ParameterBindings> parameterBindings = new ThreadLocal<ParameterBindings>(){
+    protected static ThreadLocal<ParameterBindings> parameterBindings = new ThreadLocal<ParameterBindings>(){
         @Override
         protected ParameterBindings initialValue() {
             return new ParameterBindings();
@@ -382,135 +381,6 @@ public class Dao<T> {
     }
 
 
-
-    public Dao<T> and(String column,String op,Object value){
-        where.get().append(" and ");
-        where.get().append(column);
-        where.get().append(op);
-        where.get().append("?");
-        parameterBindings.get().addIndexBinding(value);
-        return this;
-    }
-
-    public Dao<T> eq(String column,Object value){
-        return and(column,"=",value);
-    }
-
-    public Dao<T> lk(String colum,Object value){return and(colum," LIKE ",value);}
-
-    public Dao<T> idEqual(Object value){
-        return and("id","=",value);
-    }
-
-    public Dao<T> id(Object value){
-        return and("id","=",value);
-    }
-
-    public Dao<T> state(Object value){
-        return and("state","=",value);
-    }
-
-    public Dao<T> partitionId(Object value){return
-            and(getSession().getEntityMetaOfClass(this.clazz).getPatitionColumn().columnName,"=",value);
-    }
-
-
-
-
-    public Dao<T> gt(String column,Object value){
-        return and(column,">",value);
-    }
-
-    public Dao<T> lt(String column,Object value){
-        return and(column,"<",value);
-    }
-
-    public Dao<T> ne(String column,Object value){
-        return and(column,"<>",value);
-    }
-
-    public Dao<T> le(String column,Object value){
-        return and(column,"<=",value);
-    }
-
-    public Dao<T> ge(String column,Object value){
-        return and(column,">=",value);
-    }
-
-
-
-
-    public Dao<T> in(String column,Object value){
-        return and(column," in ","("+value+")");
-    }
-
-    public Dao<T> notIn(String column,Object value){
-        return and(column," not in ","("+value+")");
-    }
-
-    public Dao<T> limit(int limit){
-        where.get().append(" limit ");
-        parameterBindings.get().addIndexBinding(limit);
-        return this;
-    }
-
-    public Dao<T> asc(String col){
-        where.get().append(" ORDER BY ");
-        where.get().append(col);
-        where.get().append(" ASC ");
-        return this;
-    }
-
-
-    public Dao<T> desc(String col){
-        where.get().append(" ORDER BY ");
-        where.get().append(col);
-        where.get().append(" desc ");
-        return this;
-    }
-
-
-    public  Dao<T> orderBy(String orderBy){
-        where.get().append(" ORDER BY ");
-        where.get().append(orderBy);
-        return  this;
-    }
-
-    public  Dao<T> groupBy(String groupBy){
-        where.get().append(" GROUP BY ");
-        where.get().append(groupBy);
-        return  this;
-    }
-
-    public Dao<T> offset(int offset){
-        where.get().append(" offset ");
-        parameterBindings.get().addIndexBinding(offset);
-        return this;
-    }
-
-    public Dao<T> or(List<Expr> exprs){
-        if(exprs==null||exprs.size()==0){
-            return this;
-        }
-        Expr[] exprs1 = (Expr[])exprs.toArray();
-        return this.or(exprs1);
-    }
-
-    public Dao<T> or(Expr... exprs){
-        where.get().append(" and (");
-        boolean init =true;
-        for(Expr expr:exprs){
-            if(init){
-                init = false;
-            }else{
-                where.get().append(" or ");
-            }
-            where.get().append(expr.getSql());
-            parameterBindings.get().addIndexBinding(expr.getRight());
-        }
-        where.get().append(")");
-        return this;
-    }
 
 
 }

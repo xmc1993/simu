@@ -1,4 +1,5 @@
 import cn.superid.webapp.model.TestEntity;
+import cn.superid.webapp.utils.Timer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,12 +60,32 @@ public class TestSerializeCapability {
 
     @Test
     public void testHashSerialize(){
-        for(int i = 0; i < 100; i++){
-//            BoundValueOperations<String, String> ops = stringRedisTemplate.boundValueOps("dd");
+        TestEntity testEntity=new TestEntity();
+        testEntity = new TestEntity();
+        testEntity.setId(345L);
+        testEntity.setDescription("test");
+        testEntity.setCreateRoleId(123L);
+        testEntity.setAllianceId(456L);
+        testEntity.setIsFree(1);
+        testEntity.setIsVideo(0);
 
-
+        Timer timer = new Timer();
+        for(int i = 0; i < 1000; i++) {
+            BeanUtilsHashMapper beanUtilsHashMapper = new BeanUtilsHashMapper(TestEntity.class);
+            stringHashMap =beanUtilsHashMapper.toHash(testEntity);
         }
+        timer.end();
+
+        Timer timer1=new Timer();
+        for(int i = 0; i < 1000; i++) {
+            stringHashMap = testEntity.hashMap();
+        }
+        timer1.end();
+
+
     }
+
+
 
 
 

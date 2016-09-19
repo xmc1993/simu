@@ -55,9 +55,8 @@ public class TestByteUtil extends TestCase {
         System.out.println(memoryMeter.measureDeep(hashMap));
 
         byte[] serialize = SerializeUtil.serialize(user);
+        System.out.println(serialize.length);
         System.out.println(memoryMeter.measureDeep(serialize));
-
-
 
     }
 
