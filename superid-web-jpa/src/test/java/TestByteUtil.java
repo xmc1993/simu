@@ -1,10 +1,12 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
 import cn.superid.jpa.util.SerializeUtil;
+import cn.superid.jpa.util.StringUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import model.User;
 import org.github.jamm.MemoryMeter;
 
+import java.sql.Time;
 import java.util.HashMap;
 
 
@@ -40,6 +42,10 @@ public class TestByteUtil extends TestCase {
     }
 
 
+    /**
+     * -javaagent:/Users/xiaofengxu/.m2/repository/com/github/jbellis/jamm/0.2.6/jamm-0.2.6.jar
+     * @throws Exception
+     */
 
     public void testSize() throws Exception{
         MemoryMeter memoryMeter = new MemoryMeter();
@@ -53,11 +59,31 @@ public class TestByteUtil extends TestCase {
 
         HashMap<String, byte[]> hashMap = user.generateHashByteMap();
         System.out.println(memoryMeter.measureDeep(hashMap));
+        System.out.println(memoryMeter.measureDeep(SerializeUtil.serialize(hashMap)));
+
 
         byte[] serialize = SerializeUtil.serialize(user);
         System.out.println(serialize.length);
         System.out.println(memoryMeter.measureDeep(serialize));
+        System.out.println(memoryMeter.measure(serialize));
 
+
+    }
+
+    public void testUtil(){
+        Timer timer = new Timer();
+        String test = "allianceMember.id";
+        System.out.print(StringUtil.underscoreName1(test));
+//        for(int i=0;i<100000;i++){
+//            StringUtil.underscoreName1(test);
+//        }
+//        timer.end();
+//
+//        Timer timer1 = new Timer();
+//        for(int i=0;i<100000;i++){
+//            StringUtil.underscoreName1(test);
+//        }
+//        timer1.end();
     }
 
 }
