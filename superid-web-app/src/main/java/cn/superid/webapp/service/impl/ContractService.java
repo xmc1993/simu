@@ -420,6 +420,12 @@ public class ContractService implements IContractService {
 
     }
 
+    @Override
+    public boolean addRole(long operatorId, long roleId, long contractId, long allianceId) {
+
+        return false;
+    }
+
     private void recorcSimpleLog(long contractId,String content){
         ContractLogEntity log = new ContractLogEntity();
         log.setContractId(contractId);

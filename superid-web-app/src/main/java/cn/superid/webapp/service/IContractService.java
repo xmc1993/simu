@@ -141,4 +141,14 @@ public interface IContractService {
      */
     public boolean editTemplate(long operationRoleId ,long id ,long affairId ,String title ,String content ,String thumbContent);
 
+    /**
+     *
+     * @param operatorId
+     * @param roleId
+     * @param contractId
+     * @param allianceId
+     * @return
+     */
+    public boolean addRole(long operatorId ,long roleId,long contractId , long allianceId);
+
 }
