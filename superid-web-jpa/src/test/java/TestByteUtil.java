@@ -70,10 +70,14 @@ public class TestByteUtil extends TestCase {
 
     }
 
-    public void testUtil(){
+    public void testUtil() throws Exception{
         Timer timer = new Timer();
         String test = "allianceMember.id";
-        System.out.print(StringUtil.underscoreName1(test));
+        System.out.print(StringUtil.underscoreName(test));
+        byte[] bytes = test.getBytes("UTF-8");
+        System.out.println(bytes.length);
+        System.out.println(test.length());
+
 //        for(int i=0;i<100000;i++){
 //            StringUtil.underscoreName1(test);
 //        }

@@ -2,6 +2,7 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.annotation.PartitionId;
+import cn.superid.jpa.util.ByteUtil;
 import cn.superid.jpa.util.StringUtil;
 
 import javax.persistence.Transient;
@@ -29,6 +30,7 @@ public class ModelMeta {
         public boolean isPartition = false;
         public String fieldName;
         public String columnName;
+        public byte[] binary;
         public Class<?> fieldType;
         public boolean nullable;
         public FieldAccessor fieldAccessor;
@@ -56,7 +58,7 @@ public class ModelMeta {
 
             columnMeta.fieldName = field.getName();
             columnMeta.fieldType = field.getType();
-
+            columnMeta.binary= ByteUtil.getBytes(columnMeta.fieldName);
 
             javax.persistence.Column columnAnno = fieldAccessor.getPropertyAnnotation(javax.persistence.Column.class);
             if (columnAnno == null) {

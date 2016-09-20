@@ -3,10 +3,7 @@ package cn.superid.jpa.core;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ByteUtil;
-import cn.superid.jpa.util.FromByteUtilMapper;
 import com.google.common.collect.ImmutableMap;
-
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,18 +242,15 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public HashMap<String, byte[]> generateHashByteMapFromEntity(Object entity) {
+    public HashMap<byte[], byte[]> generateHashByteMapFromEntity(Object entity) {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
-        HashMap<String, byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
+        HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-            try {
-                hashMap.put(modelColumnMeta.fieldName, ByteUtil.basicType2Bytes(fieldAccessor.getProperty(entity)));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            hashMap.put(modelColumnMeta.binary, ByteUtil.getBytes(fieldAccessor.getProperty(entity)));
+
         }
         return hashMap;
     }
@@ -273,19 +267,15 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public Object generateHashByteMapFromEntity(HashMap<String, byte[]> hashMap, Object entity) {
+    public Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap, Object entity) {
         Session session = currentSession();
 
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-            try {
-                fieldAccessor.setProperty(entity, new FromByteUtilMapper(fieldAccessor.getPropertyType()).bytes2BasicType(hashMap.get(modelColumnMeta.fieldName)));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
+            fieldAccessor.setProperty(entity, ByteUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
 
-        return null;
+        }
+        return entity;
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.security.access.method.P;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -17,7 +18,7 @@ public class ByteUtil {
     public static final Integer FLOAT_BYTES = 4;
     public static final Integer SHORT_BYTES = 2;
 
-    public static byte[] basicType2Bytes(Object o) throws UnsupportedEncodingException {
+    public static byte[] getBytes(Object o) {
         if(o == null){
             return new byte[0];
         }
@@ -40,6 +41,36 @@ public class ByteUtil {
             return stringToBytes((String) o);
         }else if(clazz == Date.class){
             return stringToBytes((String) o);
+        }else if(clazz== Timestamp.class){
+            return timestampToBytes((Timestamp) o);
+        }
+        else {
+            throw new RuntimeException("Error: The parameter" + clazz + "is not basic type!");
+        }
+    }
+
+
+    public static Object getValue(byte[] bytes,Class<?> clazz) {
+        if(clazz == Long.class || clazz == long.class){
+            return  ByteUtil.bytesToLong(bytes);
+        }else if(clazz == Integer.class || clazz == int.class){
+            return  ByteUtil.bytesToInt(bytes);
+        }else if(clazz == Float.class || clazz == float.class){
+            return  ByteUtil.bytesToFloat(bytes);
+        }else if(clazz == Double.class || clazz == double.class){
+            return  ByteUtil.bytesToDouble(bytes);
+        }else if(clazz == Short.class || clazz == short.class){
+            return ByteUtil.bytesToShort(bytes);
+        }else if(clazz == Boolean.class || clazz == boolean.class){
+            return  ByteUtil.bytesToBoolean(bytes);
+        }else if(clazz == Character.class || clazz == char.class){
+            return  ByteUtil.bytesToChar(bytes);
+        }else if(clazz == String.class){
+            return  ByteUtil.bytesToString(bytes);
+        }else if(clazz == Date.class){
+            return ByteUtil.bytesToDate(bytes);
+        }else if(clazz== Timestamp.class){
+            return bytesToTimestamp(bytes);
         }else {
             throw new RuntimeException("Error: The parameter" + clazz + "is not basic type!");
         }
@@ -51,7 +82,7 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToLong(byte[] bytes) {
+    public static long bytesToLong(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(LONG_BYTES);
         buffer.put(bytes);
         buffer.flip();
@@ -64,7 +95,7 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToInt(byte[] bytes) {
+    public static int bytesToInt(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(INT_BYTES);
         buffer.put(bytes);
         buffer.flip();
@@ -77,7 +108,7 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToChar(byte[] bytes) {
+    public static char bytesToChar(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(CHAR_BYRES);
         buffer.put(bytes);
         buffer.flip();
@@ -90,7 +121,7 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToFloat(byte[] bytes) {
+    public static float bytesToFloat(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(FLOAT_BYTES);
         buffer.put(bytes);
         buffer.flip();
@@ -103,7 +134,7 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToShort(byte[] bytes) {
+    public static short bytesToShort(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(SHORT_BYTES);
         buffer.put(bytes);
         buffer.flip();
@@ -131,27 +162,45 @@ public class ByteUtil {
         return buffer.array();
     }
 
-    public static Object bytesToDouble(byte[] bytes) {
+    public static byte[] timestampToBytes(Timestamp timestamp){
+        return ByteUtil.longToBytes(timestamp.getTime());
+    }
+
+    public static Timestamp bytesToTimestamp(byte[] bytes){
+        return new Timestamp(bytesToLong(bytes));
+    }
+
+    public static double bytesToDouble(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.allocate(DOUBLE_BYTES);
         buffer.put(bytes);
         buffer.flip();
         return buffer.getDouble();
     }
 
-    public static byte[] stringToBytes(String x) throws UnsupportedEncodingException {
-        return x.getBytes("UTF-8");
+    public static byte[] stringToBytes(String x)  {
+        try {
+            return x.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static String bytesToString(byte[] bytes) throws UnsupportedEncodingException {
-        return new String(bytes, "UTF-8");
+    public static String bytesToString(byte[] bytes)  {
+        try {
+            return new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static byte[] dateToBytes(Date x) throws UnsupportedEncodingException {
+    public static byte[] dateToBytes(Date x)  {
         long time = x.getTime();
         return longToBytes(time);
     }
 
-    public static Date bytesToDate(byte[] bytes) throws UnsupportedEncodingException {
+    public static Date bytesToDate(byte[] bytes)  {
         Long o = (Long)bytesToLong(bytes);
         return new Date(o);
     }
