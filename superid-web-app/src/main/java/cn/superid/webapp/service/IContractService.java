@@ -1,5 +1,8 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.forms.ContractInfo;
+import cn.superid.webapp.controller.forms.OwnContractResult;
+import cn.superid.webapp.model.ContractEntity;
 import cn.superid.webapp.model.ContractTemplateEntity;
 import cn.superid.webapp.service.forms.ContractTemplateForm;
 import cn.superid.webapp.service.forms.SignForm;
@@ -143,12 +146,61 @@ public interface IContractService {
 
     /**
      *
-     * @param operatorId
+     * @param operationRoleId
      * @param roleId
      * @param contractId
      * @param allianceId
      * @return
      */
-    public boolean addRole(long operatorId ,long roleId,long contractId , long allianceId);
+    public boolean addRole(long operationRoleId ,long roleId,long contractId , long allianceId);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param roleId
+     * @param contractId
+     * @param allianceId
+     * @return
+     */
+    public boolean removeRole(long operationRoleId ,long roleId,long contractId , long allianceId);
+
+    /**
+     *
+     * @param name 合同名称
+     * @param operationRoleId 发起人
+     * @param roles 共同起草人,以roleId1,roleId2,roleId3的形式传到后端
+     * @param allianceId
+     * @return
+     */
+    public ContractEntity addContract(String name, long operationRoleId, String roles, long allianceId);
+
+    /**
+     *
+     * @param contractId 合同id
+     * @param operationRoleId 修改人
+     * @param content 合同内容
+     * @param allianceId
+     * @return
+     */
+    public ContractEntity editContract(long contractId,long operationRoleId,String content,long allianceId);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param state
+     * @param allianceId
+     * @return
+     */
+    public List<OwnContractResult> checkOwnContracts(long operationRoleId, int state , long allianceId);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param contractId
+     * @param state
+     * @param alliance
+     * @return
+     */
+    public ContractInfo checkContractDetail(long operationRoleId, long contractId, int state,long alliance);
 
 }
