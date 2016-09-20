@@ -127,11 +127,11 @@ public class TestExecute extends TestCase {
         user.save();
         HashMap<String, byte[]> hashMap = user.generateHashByteMap();
 //        Assert.assertTrue(hashMap.get("age").equals(18));
-
-        User user1 = new User();
-        User.getSession().generateHashByteMapFromEntity(hashMap, user1);
-
-        Assert.assertTrue(user1.getAge() == 18);
+//
+//        User user1 = new User();
+//        User.getSession().generateHashByteMapFromEntity(hashMap, user1);
+//
+//        Assert.assertTrue(user1.getAge() == 18);
 
     }
 

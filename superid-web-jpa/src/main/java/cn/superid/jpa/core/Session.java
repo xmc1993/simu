@@ -96,11 +96,11 @@ public interface Session {
 
     HashMap<String, Object> generateHashMapFromEntity(Object entity,boolean skipNull);
 
-    HashMap<String, byte[]> generateHashByteMapFromEntity(Object entity);
+    HashMap<byte[], byte[]> generateHashByteMapFromEntity(Object entity);
 
     Object generateHashMapFromEntity(HashMap<String, Object> hashMap,Object entity);
 
-    Object generateHashByteMapFromEntity(HashMap<String, byte[]> hashMap,Object entity);
+    Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap,Object entity);
 
 
 
