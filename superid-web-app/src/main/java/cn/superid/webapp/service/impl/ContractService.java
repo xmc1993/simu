@@ -1,22 +1,27 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.utils.StringUtil;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.service.IContractService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.forms.ContractTemplateForm;
 import cn.superid.webapp.service.forms.SignForm;
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.management.relation.RoleResult;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by jizhenya on 16/9/18.
  */
+@Service
 public class ContractService implements IContractService {
 
     @Autowired
@@ -372,9 +377,47 @@ public class ContractService implements IContractService {
     }
 
     @Override
-    public List<ContractTemplateEntity> listTemplate(long operationRoleId , long allianceId) {
+    public List<ContractTemplateForm> listTemplate(long operationRoleId , long allianceId) {
+        RoleEntity role = RoleEntity.dao.findById(operationRoleId, allianceId);
+        if(role == null ){
+            return null;
+        }
+        List<Object> list = ContractTemplateEntity.dao.join(AffairEntity.class).on("affair_id","id").eq("alliance_id",allianceId).selectListByJoin(ContractTemplateForm.class,"a.id","b.name as affair_name","a.title","a.thumb_content");
+        if(list == null){
+            return null;
+        }
+        List<ContractTemplateForm> result = new ArrayList<>();
+        for(Object o:list){
+            result.add((ContractTemplateForm)o);
+        }
 
-        return null;
+        return result;
+    }
+
+    @Override
+    public String getContentOfTemplate(long id, long affairId) {
+        ContractTemplateEntity contractTemplate = ContractTemplateEntity.dao.findById(id,affairId);
+        if(contractTemplate==null) return null;
+        return contractTemplate.getContent();
+    }
+
+    @Override
+    public boolean editTemplate(long operationRoleId, long id, long affairId, String title, String content, String thumbContent) {
+        ContractTemplateEntity contractTemplate = ContractTemplateEntity.dao.findById(id,affairId);
+        if(contractTemplate==null) return false;
+        if(StringUtil.notEmpty(title)){
+            contractTemplate.setTitle(title);
+        }
+        if(StringUtil.notEmpty(content)){
+            contractTemplate.setContent(content);
+        }
+
+        if(StringUtil.notEmpty(thumbContent)){
+            contractTemplate.setThumbContent(thumbContent);
+        }
+        contractTemplate.update();
+        return true;
+
     }
 
     private void recorcSimpleLog(long contractId,String content){

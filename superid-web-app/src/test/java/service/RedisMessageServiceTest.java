@@ -31,4 +31,6 @@ public class RedisMessageServiceTest {
         redisMessageService.sendJsonMessage("room_message", message);
         System.out.println("---end---");
     }
+
+
 }

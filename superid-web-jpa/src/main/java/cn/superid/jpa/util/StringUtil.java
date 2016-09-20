@@ -76,19 +76,29 @@ public class StringUtil {
      * @return underscored name             
      */
     public static String underscoreName(String name) {
-        StringBuilder result = new StringBuilder();
-        if (name != null && name.length() > 0) {
-            result.append(name.substring(0, 1).toUpperCase());
-            for (int i = 1; i < name.length(); i++) {
-                String s = name.substring(i, i + 1);
-                if (s.equals(s.toUpperCase()) && Character.isLetter(s.charAt(0))) {
-                    result.append("_");
-                }
-                result.append(s.toUpperCase());
+        if(name ==null) {
+            return null;
+        }
+        int length =  name.length()*3/2;
+        char[] rs = new char[length];
+        int i=1;
+        char tmp;
+        rs[0] = Character.toUpperCase(name.charAt(0));
+        for(int j=1;j<name.length();j++){
+            tmp = name.charAt(j);
+            if(tmp>='A'&&tmp<='Z'){
+                rs[i] = '_';
+                i++;
+                rs[i] = tmp;
+                i++;
+            }else{
+                rs[i] =  Character.toUpperCase(tmp);
+                i++;
             }
         }
-        return result.toString();
+        return String.valueOf(rs,0,i);
     }
+
 
     /**
      * eg. "HELLO_WORLD" to "HelloWorld"

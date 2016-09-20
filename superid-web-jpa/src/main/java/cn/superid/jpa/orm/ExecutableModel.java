@@ -89,7 +89,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public HashMap<String,Object> hashMapSkipNull(){ return getSession().generateHashMapFromEntity(this,true);}
 
 
-    public HashMap<String,byte[]> generateHashByteMap(){ return getSession().generateHashByteMapFromEntity(this);}
+    public HashMap<byte[],byte[]> generateHashByteMap(){ return getSession().generateHashByteMapFromEntity(this);}
 
 
 }

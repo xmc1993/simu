@@ -123,6 +123,31 @@ public class Dao<T> {
         return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
     }
 
+    public Object selectOneByJoin(Class target,String... params){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT ");
+        sb.append(StringUtil.joinParams(",",params));
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
+
+        sb.append(builder);
+        sb.append(" limit 1");
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return AbstractSession.currentSession().findOne(target,sql,sqlParams);
+    }
+
     public int count(){
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
@@ -256,6 +281,30 @@ public class Dao<T> {
         builder.delete(whereLength,builder.length());
         parameterBindings.get().clear();
         return (List<T>) AbstractSession.currentSession().findList(this.clazz, sql, sqlParams);
+
+    }
+
+    public List<Object> selectListByJoin(Class target,String... params){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should has where conditions");
+        }
+        StringBuilder sb = new StringBuilder(" SELECT ");
+        sb.append(StringUtil.joinParams(",",params));
+        StringBuilder fromBuilder = from.get();
+        if(fromBuilder.length() == fromLength){
+            //相等的话表示没做join
+            sb.append(fromBuilder);
+            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        }else{
+            sb.append(fromBuilder);
+        }
+        sb.append(builder);
+        String sql= sb.toString();
+        Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return  AbstractSession.currentSession().findList(target, sql, sqlParams);
 
     }
 
