@@ -1,7 +1,9 @@
 package cn.superid.webapp.service;
 
 import cn.superid.webapp.controller.forms.ContractInfo;
+import cn.superid.webapp.controller.forms.KindMember;
 import cn.superid.webapp.controller.forms.OwnContractResult;
+import cn.superid.webapp.model.AdditionEntity;
 import cn.superid.webapp.model.ContractEntity;
 import cn.superid.webapp.model.ContractTemplateEntity;
 import cn.superid.webapp.service.forms.ContractTemplateForm;
@@ -202,5 +204,44 @@ public interface IContractService {
      * @return
      */
     public ContractInfo checkContractDetail(long operationRoleId, long contractId, int state,long alliance);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param changeLogId
+     * @param contractId
+     * @param alliance
+     * @return
+     */
+    public String checkHistoryContent(long operationRoleId,long changeLogId,long contractId,long alliance);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param contractId
+     * @return
+     */
+    public AdditionEntity addAddition(long operationRoleId, long contractId, String additionContent);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param contractId
+     * @param allianceId
+     * @return
+     */
+    public List<KindMember> getMemberByKind(long operationRoleId, long contractId, long allianceId);
+
+    /**
+     *
+     * @param operationRoleId
+     * @param additionId
+     * @param additionContent
+     * @param allianceId
+     * @return
+     */
+    public AdditionEntity editAddition(long operationRoleId,long additionId,String additionContent, long allianceId, long contractId);
+
+
 
 }

@@ -782,6 +782,96 @@ public class ContractService implements IContractService {
         return contractInfo;
     }
 
+    @Override
+    public String checkHistoryContent(long operationRoleId, long changeLogId, long contractId, long alliance) {
+        List<Long> contractIds = getContractList(operationRoleId);
+        boolean isFind = false;
+        List<ContractEntity> result = new ArrayList<>();
+        for(Long contract : contractIds){
+            if(contract == contractId) {
+                isFind = true;
+                break;
+            }
+        }
+        if(!isFind) return null;
+
+        ContractLogEntity contractLogEntity = ContractLogEntity.dao.findById(changeLogId,contractId);
+
+        return contractLogEntity.getDetail();
+    }
+
+    @Override
+    public AdditionEntity addAddition(long operationRoleId, long contractId, String additionContent) {
+        AdditionEntity additionEntity = new AdditionEntity();
+        additionEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        additionEntity.setContractId(contractId);
+        additionEntity.setContent(additionContent);
+        //这里不知道要不要设置
+        additionEntity.setSignedRole("[]");
+        additionEntity.setState(1);
+        additionEntity.save();
+
+        ContractLogEntity contractLogEntity = new ContractLogEntity();
+        contractLogEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        contractLogEntity.setContractId(contractId);
+        contractLogEntity.setHasDetail(1);
+        contractLogEntity.setDetail(additionContent);
+        contractLogEntity.setMessage(roleService.getNameByRoleId(operationRoleId) + "发起了补充条款");
+        contractLogEntity.save();
+
+        //第二步,把所有role的addition位置0
+        List<ContractRoleEntity> roleList = ContractRoleEntity.dao.partitionId(contractId).selectList();
+        for(ContractRoleEntity c : roleList){
+            c.setAddition(0);
+            c.setAdditionTime(null);
+            c.update();
+        }
+
+        return additionEntity;
+    }
+
+    @Override
+    public List<KindMember> getMemberByKind(long operationRoleId, long contractId, long allianceId) {
+        List<KindMember> kindMembers = new ArrayList<>();
+        boolean isFind = false;
+        List<ContractRoleEntity> contractRoleEntities = ContractRoleEntity.dao.partitionId(contractId).eq("alliance_id",allianceId).selectList();
+        for(ContractRoleEntity contractRoleEntity : contractRoleEntities){
+            if(contractRoleEntity.getRoleId() == operationRoleId){
+                isFind = true;
+            }
+            KindMember kindMember = new KindMember();
+            kindMember.setName(roleService.getNameByRoleId(operationRoleId));
+            kindMember.setRoleId(contractRoleEntity.getRoleId());
+            kindMember.setKind(contractRoleEntity.getKind());
+            kindMember.setAllianceId(contractRoleEntity.getAllianceId());
+            kindMembers.add(kindMember);
+        }
+        if(!isFind)
+            return null;
+        return kindMembers;
+    }
+
+    @Override
+    public AdditionEntity editAddition(long operationRoleId, long additionId, String additionContent, long allianceId, long contractId) {
+        RoleEntity ope = RoleEntity.dao.findById(operationRoleId,allianceId);
+        AdditionEntity addition = AdditionEntity.dao.findById(additionId,contractId);
+        if(addition != null && addition.getState() == 1){
+            addition.setContent(additionContent);
+            addition.update();
+
+            ContractLogEntity log = new ContractLogEntity();
+            log.setContractId(addition.getContractId());
+            log.setMessage(ope.getTitle()+"修改了附加条款");
+            log.setModifyTime(TimeUtil.getCurrentSqlTime());
+            log.setHasDetail(0);
+            log.save();
+
+            return addition;
+        }
+
+        return null;
+    }
+
 
     private void recorcSimpleLog(long contractId,String content){
         ContractLogEntity log = new ContractLogEntity();
