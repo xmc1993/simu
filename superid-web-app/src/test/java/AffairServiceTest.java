@@ -50,4 +50,6 @@ public class AffairServiceTest {
             e.printStackTrace();
         }
     }
+
+
 }

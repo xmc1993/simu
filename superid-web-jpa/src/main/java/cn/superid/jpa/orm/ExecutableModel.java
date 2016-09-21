@@ -92,4 +92,8 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public HashMap<byte[],byte[]> generateHashByteMap(){ return getSession().generateHashByteMapFromEntity(this);}
 
 
+    public byte[][] generateZipMap(){
+        return getSession().generateZipMap(this);
+    }
+
 }

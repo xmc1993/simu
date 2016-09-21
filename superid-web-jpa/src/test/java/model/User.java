@@ -1,5 +1,6 @@
 package model;
 
+import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "user")
+@Cacheable(key = "us")
 public class User  extends ExecutableModel{
    public static ConditionalDao<User> dao = new ConditionalDao<>(User.class);
     private int id;

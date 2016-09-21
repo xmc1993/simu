@@ -1,6 +1,7 @@
 package cn.superid.jpa.util;
 
-import org.springframework.security.access.method.P;
+
+import io.netty.channel.Channel;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -11,12 +12,12 @@ import java.util.Date;
  * Created by xmc1993 on 16/9/2.
  */
 public class ByteUtil {
-    public static final Integer LONG_BYTES = 8;
-    public static final Integer INT_BYTES = 4;
-    public static final Integer DOUBLE_BYTES = 8;
-    public static final Integer CHAR_BYRES = 2;
-    public static final Integer FLOAT_BYTES = 4;
-    public static final Integer SHORT_BYTES = 2;
+    public static final Integer LONG_BYTES = Long.SIZE;
+    public static final Integer INT_BYTES = Integer.SIZE;
+    public static final Integer DOUBLE_BYTES = Double.SIZE;
+    public static final Integer CHAR_BYRES = Character.SIZE;
+    public static final Integer FLOAT_BYTES = Float.SIZE;
+    public static final Integer SHORT_BYTES = Short.SIZE;
 
     public static byte[] getBytes(Object o) {
         if(o == null){
@@ -76,10 +77,14 @@ public class ByteUtil {
         }
     }
 
-    public static byte[] longToBytes(long x) {
-        ByteBuffer buffer = ByteBuffer.allocate(LONG_BYTES);
-        buffer.putLong(x);
-        return buffer.array();
+
+    public static byte[] longToBytes(long l) {
+        byte[] result = new byte[LONG_BYTES];
+        for (int i = LONG_BYTES-1; i >= 0; i--) {
+            result[i] = (byte)(l & 0xFF);
+            l >>= 8;
+        }
+        return result;
     }
 
     public static long bytesToLong(byte[] bytes) {

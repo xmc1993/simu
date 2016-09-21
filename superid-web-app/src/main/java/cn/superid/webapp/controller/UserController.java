@@ -3,9 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.forms.EditUserBaseInfo;
-import cn.superid.webapp.forms.EditUserDetailForm;
-import cn.superid.webapp.forms.ResultUserInfo;
+import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
@@ -13,7 +11,6 @@ import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
-import cn.superid.webapp.forms.SimpleResponse;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.LogFactory;
@@ -165,7 +162,7 @@ public class UserController {
     @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public SimpleResponse login(String token,String password,String verifyCode){
+    public SimpleResponse login(String token, String password, String verifyCode){
         int limit =3;
          UserEntity userEntity =userService.findByToken(token);
 

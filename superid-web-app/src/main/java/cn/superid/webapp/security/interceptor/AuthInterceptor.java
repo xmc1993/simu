@@ -154,15 +154,17 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
+        String  tmp= request.getParameter("token");
+
+        System.out.println(request.getContentType());
+
         if (getNotLoginFromHandlerMethodWithCache(handlerMethod) != null) {
             return hasPermission;
         }
-
         // isLogin
         if (!auth.isAuthenticated()) {
             return notLogin;
         }
-
 
         String  thisRole = request.getParameter("operationRoleId");
         Long roleId =null;

@@ -27,10 +27,11 @@
           class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
         <property name="extractValueFromSingleKeyModel" value="true"/>
     </bean>
+
     <bean id="contentNegotiationManager"
           class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
-        <property name="ignoreAcceptHeader" value="true"></property>
-        <property name="defaultContentType" value="application/json"></property>
+        <property name="favorPathExtension" value="false" />
+        <property name="defaultContentType" value="application/json" />
     </bean>
     <!-- end json parser -->
 
