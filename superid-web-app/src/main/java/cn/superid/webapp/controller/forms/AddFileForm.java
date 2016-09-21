@@ -9,10 +9,10 @@ public class AddFileForm {
 
     private String fileId;
     private String fileName;
-    private Long folderId;
-    private Long uploader;
-    private Long size;
-    private Long affairId;
+    private long folderId;
+    private long uploader;
+    private long size;
+    private long affairId;
 
     public String getFileId() {
         return fileId;
@@ -30,35 +30,35 @@ public class AddFileForm {
         this.fileName = fileName;
     }
 
-    public Long getFolderId() {
+    public long getFolderId() {
         return folderId;
     }
 
-    public void setFolderId(Long folderId) {
+    public void setFolderId(long folderId) {
         this.folderId = folderId;
     }
 
-    public Long getUploader() {
+    public long getUploader() {
         return uploader;
     }
 
-    public void setUploader(Long uploader) {
+    public void setUploader(long uploader) {
         this.uploader = uploader;
     }
 
-    public Long getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(Long size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public Long getAffairId() {
+    public long getAffairId() {
         return affairId;
     }
 
-    public void setAffairId(Long affairId) {
+    public void setAffairId(long affairId) {
         this.affairId = affairId;
     }
 }
