@@ -310,9 +310,12 @@ public abstract class AbstractSession implements Session {
             }
             result[i++] = modelColumnMeta.binary;
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-//            Object value = fieldAccessor.getProperty(e)
-
-            result[i++] = BinaryUtil.getBytes(fieldAccessor.getProperty(entity),modelColumnMeta.fieldType);
+            Object value = fieldAccessor.getProperty(entity);
+            if(value instanceof byte[]){
+                result[i++]= (byte[]) value;
+            }else{
+                result[i++]= BinaryUtil.getBytes(value,modelColumnMeta.fieldType);
+            }
         }
         return result;
     }
