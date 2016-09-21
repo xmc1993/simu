@@ -82,7 +82,6 @@ public class RoleEntity extends ExecutableModel {
     }
 
     public String getAllocatePermissions() {
-
         return allocatePermissions;
     }
 

@@ -1,22 +1,21 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.utils.StringUtil;
+import cn.superid.webapp.component.SortByState;
+import cn.superid.webapp.controller.forms.*;
+import cn.superid.webapp.enums.ContractRoleKind;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.service.IContractService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.service.forms.ContractTemplateForm;
-import cn.superid.webapp.service.forms.SignForm;
+import cn.superid.webapp.service.forms.*;
 import cn.superid.webapp.utils.TimeUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.management.relation.RoleResult;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jizhenya on 16/9/18.
@@ -420,6 +419,458 @@ public class ContractService implements IContractService {
 
     }
 
+    @Override
+    public boolean addRole(long operationRoleId, long roleId, long contractId, long allianceId) {
+
+        ContractRoleEntity operator = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operationRoleId).selectOne();
+
+        if(operator == null){
+            return false;
+        }
+
+        ContractRoleEntity newRole = new ContractRoleEntity();
+        newRole.setRoleId(roleId);
+        newRole.setAllianceId(operator.getAllianceId());
+        newRole.setContractId(contractId);
+        newRole.setKind(operator.getKind());
+        newRole.setConfirmed(0);
+        newRole.setSignature(0);
+        newRole.setTerminate(0);
+        newRole.setAddition(0);
+        newRole.save();
+
+        //TODO:把人拉进讨论组
+
+        //第三步，增加log
+
+        recorcSimpleLog(contractId, roleService.getNameByRoleId(operationRoleId) + "邀请了"+roleService.getNameByRoleId(roleId)+"加入合同");
+
+
+        return true;
+    }
+
+    @Override
+    public boolean removeRole(long operationRoleId, long roleId, long contractId, long allianceId) {
+
+        ContractRoleEntity operator = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operationRoleId).selectOne();
+        ContractRoleEntity role = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",roleId).selectOne();
+        if(operator == null | role == null | !(operator.getAllianceId() == role.getAllianceId())){
+            return false;
+        }
+        role.delete();
+
+        //TODO:把人从讨论组删除
+
+        //第三步，增加log
+        recorcSimpleLog(contractId, roleService.getNameByRoleId(operationRoleId) + "将"+roleService.getNameByRoleId(roleId)+"移除出合同");
+
+
+        return true;
+    }
+
+    @Override
+    public ContractEntity addContract(String name, long operationRoleId, String roles, long allianceId) {
+
+        //TODO:创建讨论组
+
+        ContractEntity contractEntity = new ContractEntity();
+        contractEntity.setTitle(name);
+        contractEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        contractEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        contractEntity.setState(1);
+        contractEntity.save();
+
+        //以下是成员
+        RoleEntity roleEntity = RoleEntity.dao.findById(operationRoleId,allianceId);
+        ContractRoleEntity contractRoleEntity = new ContractRoleEntity();
+        contractRoleEntity.setAllianceId(roleEntity.getAllianceId());
+        contractRoleEntity.setRoleId(operationRoleId);
+        contractRoleEntity.setKind(ContractRoleKind.YIFANG.toInt());
+        contractRoleEntity.setContractId(contractEntity.getId());
+        //全部未签字状态
+        contractRoleEntity.setConfirmed(1);
+        contractRoleEntity.setConfirmedTime(TimeUtil.getCurrentSqlTime());
+        contractRoleEntity.setAddition(0);
+        contractRoleEntity.setSignature(0);
+        contractRoleEntity.setTerminate(0);
+
+        contractRoleEntity.save();
+
+        //TODO:将成员加入讨论组
+
+
+        List<String> strs = Arrays.asList(roles.split(","));
+        List<Long> roleList = new ArrayList<>();
+        for(String s : strs){
+            roleList.add(Long.parseLong(s));
+        }
+        List<Long> allianceKinds = new ArrayList<>();
+        allianceKinds.add(contractRoleEntity.getAllianceId());
+        int i = 1;
+        for(Long roleId : roleList){
+            roleEntity = RoleEntity.dao.findById(roleId,allianceId);
+            ContractRoleEntity crEntity = new ContractRoleEntity();
+
+            crEntity.setAllianceId(roleEntity.getAllianceId());
+            crEntity.setRoleId(roleId);
+
+            boolean isExist = false;
+            int index = 0;
+            for(int j=0;j<allianceKinds.size();j++){
+                if(crEntity.getAllianceId() == allianceKinds.get(j)){
+                    isExist = true;
+                    index = j;
+                    break;
+                }
+            }
+            if(isExist){
+                crEntity.setKind(ContractRoleKind.YIFANG.toInt()+index);
+            }
+            else{
+                allianceKinds.add(crEntity.getAllianceId());
+                crEntity.setKind(ContractRoleKind.YIFANG.toInt()+i);
+                i++;
+            }
+
+
+            //全部未签字状态
+            crEntity.setSignature(0);
+            crEntity.setAddition(0);
+            crEntity.setConfirmed(0);
+            crEntity.setConfirmedTime(TimeUtil.getCurrentSqlTime());
+            crEntity.setTerminate(0);
+            crEntity.setContractId(contractEntity.getId());
+            crEntity.save();
+        }
+
+
+
+
+        return contractEntity;
+    }
+
+    @Override
+    public ContractEntity editContract(long contractId, long operationRoleId, String content,long allianceId) {
+        ContractEntity contractEntity = ContractEntity.dao.findById(contractId);
+        if(contractEntity == null) return null;
+
+        contractEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        contractEntity.setContent(content);
+        contractEntity.setState(2);
+        contractEntity.update();
+
+        ContractLogEntity contractLogEntity = new ContractLogEntity();
+        contractLogEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        contractLogEntity.setContractId(contractId);
+        contractLogEntity.setHasDetail(1);
+        contractLogEntity.setDetail(content);
+        contractLogEntity.setMessage(RoleEntity.dao.findById(operationRoleId,allianceId).getTitle() + "修改了合同内容");
+        contractLogEntity.save();
+        return contractEntity;
+    }
+
+    @Override
+    public List<OwnContractResult> checkOwnContracts(long operationRoleId, int state, long allianceId) {
+        List<Long> contractIds = getContractList(operationRoleId);
+
+        List<Long> fitContractIds = new ArrayList<>(); //符合传过来的状态的交易id
+        List<OwnContractResult> results = new ArrayList<>();
+
+        if(state == -1){
+            fitContractIds = contractIds;
+        }
+        else {
+            for(Long contractId : contractIds){
+                if(ContractEntity.dao.findById(contractId).getState()==state){
+                    fitContractIds.add(contractId);
+                }
+            }
+        }
+
+        for(Long contractId : fitContractIds){
+            ContractEntity contractEntity = ContractEntity.dao.findById(contractId);
+            OwnContractResult ownContractResult = new OwnContractResult();
+            ownContractResult.setContractId(contractId);
+            ownContractResult.setContractTitle(contractEntity.getTitle());
+            ownContractResult.setState(contractEntity.getState());
+            ownContractResult.setCreateTime(contractEntity.getCreateTime());
+            ownContractResult.setSignatureTime(contractEntity.getSignatureTime());
+
+            ContractInfo contractInfo = checkContractDetail(operationRoleId,contractId,state,allianceId);
+            if(contractInfo == null) return null;
+
+            ownContractResult.setAlliances(contractInfo.getAlliances());
+            results.add(ownContractResult);
+        }
+
+        Collections.sort(results, new SortByState());
+
+        return results;
+    }
+
+    @Override
+    public ContractInfo checkContractDetail(long operationRoleId, long contractId, int state, long alliance) {
+        ContractInfo contractInfo = new ContractInfo();
+        boolean isFind = false;
+
+        //检测是否有权限查看内容
+        List<Long> contractIds = getContractList(operationRoleId);
+        List<ContractEntity> result = new ArrayList<>();
+        for(Long contract : contractIds){
+            if(contract.longValue() == contractId) {
+                isFind = true;
+                break;
+            }
+        }
+        if(!isFind) return null;
+
+        ContractEntity contractEntity = ContractEntity.dao.findById(contractId);
+        if(contractEntity == null)  return null;
+        contractInfo.setId(contractId);
+        contractInfo.setTitle(contractEntity.getTitle());
+        contractInfo.setContent(contractEntity.getContent());
+        contractInfo.setCreateTime(contractEntity.getCreateTime());
+        contractInfo.setSignatureTime(contractEntity.getSignatureTime());
+        contractInfo.setState(contractEntity.getState());
+        contractInfo.setDgId(contractEntity.getDiscussGroupId());
+
+        RoleEntity roleEntity = RoleEntity.dao.findById(operationRoleId,alliance);
+        //alliance部分
+        List<Long> allianceIds = getAllianceList(operationRoleId,contractId);
+        List<AllianceSigned> allianceSigneds = new ArrayList<>();
+        for(Long allianceId : allianceIds){
+            boolean isConfirmed = false;
+            boolean isSigned = false;
+            boolean isTerminate = false;
+
+            AllianceEntity allianceEntity = AllianceEntity.dao.findById(allianceId);
+
+            List<ContractRoleEntity> contractRoleEntities = ContractRoleEntity.dao.partitionId(contractId).eq("alliance_id",allianceId).selectList();
+
+            AllianceSigned allianceSigned = new AllianceSigned();
+            allianceSigned.setAllianceName(allianceEntity.getName());
+            allianceSigned.setAllianceKind(contractRoleEntities.get(0).getKind());
+
+            if(roleEntity.getAllianceId() == allianceId){
+                allianceSigned.setIsInKind(1);
+            }
+            for(ContractRoleEntity contractRoleEntity : contractRoleEntities){
+                allianceSigned.setRoleId(contractRoleEntity.getRoleId());
+                allianceSigned.setRoleName(roleService.getNameByRoleId(contractRoleEntity.getRoleId()));
+                RoleEntity temp = RoleEntity.dao.findById(contractRoleEntity.getRoleId(),contractRoleEntity.getAllianceId());
+                long userId = temp.getUserId();
+                //判断是否是本盟
+                if(contractRoleEntity.getRoleId() == operationRoleId){
+                    allianceSigned.setIsSelf(1);
+                }
+                //查看全部合同
+                if(state == -1){
+                    if(contractRoleEntity.getConfirmed()==1){
+                        allianceSigned.setConfirmed(1);
+                        allianceSigned.setConfirmedTime(contractRoleEntity.getConfirmedTime());
+                        isConfirmed = true;
+                    }
+                    if(contractRoleEntity.getSignature()==1){
+                        allianceSigned.setSignature(1);
+                        allianceSigned.setSignatureTime(contractRoleEntity.getSignatureTime());
+                        isSigned = true;
+                    }
+                    if(contractRoleEntity.getTerminate()==1){
+                        allianceSigned.setTerminate(1);
+                        allianceSigned.setTerminateTime(contractRoleEntity.getTerminateTime());
+                        isTerminate = true;
+                    }
+                }
+                else{
+                    //正在发起的合同
+                    if(state == 1){
+                        if(contractRoleEntity.getConfirmed()==1){
+                            allianceSigned.setConfirmed(1);
+                            allianceSigned.setConfirmedTime(contractRoleEntity.getConfirmedTime());
+                            isConfirmed = true;
+                        }
+                    }
+                    //等待确认的合同
+                    else if(state ==2){
+                        if(contractRoleEntity.getSignature()==1){
+                            allianceSigned.setSignature(1);
+                            allianceSigned.setSignatureTime(contractRoleEntity.getSignatureTime());
+                            isSigned = true;
+                        }
+                    }
+                    //已经生效的合同
+                    else if(state ==3){
+                        if(contractRoleEntity.getTerminate()==1){
+                            allianceSigned.setTerminate(1);
+                            allianceSigned.setTerminateTime(contractRoleEntity.getTerminateTime());
+                            isTerminate = true;
+                        }
+                    }
+                }
+                if(isConfirmed||isSigned||isTerminate){
+                    break;
+                }
+            }
+            allianceSigneds.add(allianceSigned);
+        }
+        Collections.sort(allianceSigneds,new SortByAllianceSignedKind());
+        contractInfo.setAlliances(JSON.toJSONString(allianceSigneds));
+
+        //changeLogs部分
+        List<ContractLogEntity> contractLogEntities = ContractLogEntity.dao.partitionId(contractId).desc("modify_time").selectList();
+        List<ChangeLogResult> changeLogResults = new ArrayList<>();
+        for(ContractLogEntity contractLogEntity : contractLogEntities){
+            ChangeLogResult changeLogResult = new ChangeLogResult();
+            changeLogResult.setContractId(contractLogEntity.getContractId());
+            changeLogResult.setHasDetail(contractLogEntity.getHasDetail());
+            changeLogResult.setId(contractLogEntity.getId());
+            changeLogResult.setMessage(contractLogEntity.getMessage());
+            changeLogResult.setModifyTime(contractLogEntity.getModifyTime());
+            changeLogResults.add(changeLogResult);
+        }
+        contractInfo.setChangeLogs(JSON.toJSONString(changeLogResults));
+
+
+        //addition部分
+        List<AdditionEntity> additions = AdditionEntity.dao.partitionId(contractId).selectList("id","contract_id","content","signed_role","state");
+        List<AdditionResult> additionResults = new ArrayList<>();
+        for(AdditionEntity a :additions){
+            additionResults.add(new AdditionResult(a.getId(),a.getContractId(),a.getContent(),a.getSignedRole(),a.getState()));
+        }
+
+        for(AdditionResult additionResult : additionResults){
+
+            String signedRoleString = additionResult.getSignedRole();
+            List<SignedRole> signedRoles = JSON.parseArray(signedRoleString,SignedRole.class);
+            for(SignedRole signedRole : signedRoles){
+                if(signedRole.getRoleId().equals(operationRoleId)){
+                    additionResult.setIsSelf(1);
+                    break;
+                }
+            }
+        }
+
+        contractInfo.setAdditions(JSON.toJSONString(additionResults));
+
+
+        //members部分
+
+        List<Integer> kinds = getKinds(contractId);
+        List<ContractMemberResult> contractMemberResults = new ArrayList<>();
+        for(int kind : kinds){
+            long allianceId = 0;
+            List<ContractRoleEntity> contractRoleEntities = ContractRoleEntity.dao.partitionId(contractId).eq("kind",kind).selectList();
+            ContractMemberResult contractMemberResult = new ContractMemberResult();
+            List<String> userAndRoles = new ArrayList<>();
+            for(ContractRoleEntity contractRoleEntity : contractRoleEntities){
+
+                userAndRoles.add(roleService.getNameByRoleId(contractRoleEntity.getRoleId()));
+                allianceId = contractRoleEntity.getAllianceId();
+            }
+            contractMemberResult.setName(JSON.toJSONString(userAndRoles));
+            contractMemberResult.setKind(kind);
+            if(roleEntity.getAllianceId() == allianceId){
+                contractMemberResult.setIsInKind(1);
+            }
+            contractMemberResults.add(contractMemberResult);
+        }
+        Collections.sort(contractMemberResults,new SortByMemberKind());
+        contractInfo.setMembers(JSON.toJSONString(contractMemberResults));
+
+        return contractInfo;
+    }
+
+    @Override
+    public String checkHistoryContent(long operationRoleId, long changeLogId, long contractId, long alliance) {
+        List<Long> contractIds = getContractList(operationRoleId);
+        boolean isFind = false;
+        List<ContractEntity> result = new ArrayList<>();
+        for(Long contract : contractIds){
+            if(contract == contractId) {
+                isFind = true;
+                break;
+            }
+        }
+        if(!isFind) return null;
+
+        ContractLogEntity contractLogEntity = ContractLogEntity.dao.findById(changeLogId,contractId);
+
+        return contractLogEntity.getDetail();
+    }
+
+    @Override
+    public AdditionEntity addAddition(long operationRoleId, long contractId, String additionContent) {
+        AdditionEntity additionEntity = new AdditionEntity();
+        additionEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        additionEntity.setContractId(contractId);
+        additionEntity.setContent(additionContent);
+        //这里不知道要不要设置
+        additionEntity.setSignedRole("[]");
+        additionEntity.setState(1);
+        additionEntity.save();
+
+        ContractLogEntity contractLogEntity = new ContractLogEntity();
+        contractLogEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        contractLogEntity.setContractId(contractId);
+        contractLogEntity.setHasDetail(1);
+        contractLogEntity.setDetail(additionContent);
+        contractLogEntity.setMessage(roleService.getNameByRoleId(operationRoleId) + "发起了补充条款");
+        contractLogEntity.save();
+
+        //第二步,把所有role的addition位置0
+        List<ContractRoleEntity> roleList = ContractRoleEntity.dao.partitionId(contractId).selectList();
+        for(ContractRoleEntity c : roleList){
+            c.setAddition(0);
+            c.setAdditionTime(null);
+            c.update();
+        }
+
+        return additionEntity;
+    }
+
+    @Override
+    public List<KindMember> getMemberByKind(long operationRoleId, long contractId, long allianceId) {
+        List<KindMember> kindMembers = new ArrayList<>();
+        boolean isFind = false;
+        List<ContractRoleEntity> contractRoleEntities = ContractRoleEntity.dao.partitionId(contractId).eq("alliance_id",allianceId).selectList();
+        for(ContractRoleEntity contractRoleEntity : contractRoleEntities){
+            if(contractRoleEntity.getRoleId() == operationRoleId){
+                isFind = true;
+            }
+            KindMember kindMember = new KindMember();
+            kindMember.setName(roleService.getNameByRoleId(operationRoleId));
+            kindMember.setRoleId(contractRoleEntity.getRoleId());
+            kindMember.setKind(contractRoleEntity.getKind());
+            kindMember.setAllianceId(contractRoleEntity.getAllianceId());
+            kindMembers.add(kindMember);
+        }
+        if(!isFind)
+            return null;
+        return kindMembers;
+    }
+
+    @Override
+    public AdditionEntity editAddition(long operationRoleId, long additionId, String additionContent, long allianceId, long contractId) {
+        RoleEntity ope = RoleEntity.dao.findById(operationRoleId,allianceId);
+        AdditionEntity addition = AdditionEntity.dao.findById(additionId,contractId);
+        if(addition != null && addition.getState() == 1){
+            addition.setContent(additionContent);
+            addition.update();
+
+            ContractLogEntity log = new ContractLogEntity();
+            log.setContractId(addition.getContractId());
+            log.setMessage(ope.getTitle()+"修改了附加条款");
+            log.setModifyTime(TimeUtil.getCurrentSqlTime());
+            log.setHasDetail(0);
+            log.save();
+
+            return addition;
+        }
+
+        return null;
+    }
+
+
     private void recorcSimpleLog(long contractId,String content){
         ContractLogEntity log = new ContractLogEntity();
         log.setContractId(contractId);
@@ -428,6 +879,38 @@ public class ContractService implements IContractService {
         log.setHasDetail(0);
         log.setDetail("");
         log.save();
+    }
+
+    private List<Long> getContractList(long operationRoleId){
+        List<ContractRoleEntity> contractList = ContractRoleEntity.dao.eq("role_id",operationRoleId).selectList("contract_id");
+        List<Long> contractIds = new ArrayList<>();
+        for(ContractRoleEntity c : contractList){
+            contractIds.add(c.getContractId());
+        }
+        return contractIds;
+    }
+
+    private List<Long> getAllianceList(long operationRoleId,long contractId){
+        List<ContractRoleEntity> contractList = ContractRoleEntity.dao.partitionId(contractId).selectList("alliance_id");
+        List<Long> allianceIds = new ArrayList<>();
+        for(ContractRoleEntity c : contractList){
+            if(!allianceIds.contains(c.getAllianceId())){
+                allianceIds.add(c.getAllianceId());
+            }
+        }
+        return allianceIds;
+
+    }
+
+    private List<Integer> getKinds(long contractId){
+        List<ContractRoleEntity> roles = ContractRoleEntity.dao.partitionId(contractId).selectList();
+        List<Integer> kinds = new ArrayList<>();
+        for(ContractRoleEntity c : roles){
+            if(!kinds.contains(c.getKind())){
+                kinds.add(c.getKind());
+            }
+        }
+        return kinds;
     }
 
 

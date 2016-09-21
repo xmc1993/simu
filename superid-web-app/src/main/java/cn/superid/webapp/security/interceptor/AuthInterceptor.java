@@ -4,12 +4,14 @@ import cn.superid.utils.StringUtil;
 
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.enums.ContentType;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -149,9 +152,36 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         writer.write(jsonObject.toJSONString());
     }
 
+    private String getRequestInputStream(HttpServletRequest request){
+        StringBuilder sb = new StringBuilder();
+        try(BufferedReader reader = request.getReader()) {
+            char[]buff = new char[1024];
+            int len;
+            while((len = reader.read(buff)) != -1) {
+                sb.append(buff,0, len);
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
 
+    private Object getParameterValue(HttpServletRequest request, String key){
+        String contentType = request.getContentType();
+        if(contentType.equals(ContentType.applicationJSON)){
+            //是json就转成JSONObject然后通过key获取值
+            String requestInputStream = getRequestInputStream(request);
+            JSONObject jsonObject = (JSONObject) JSON.parse(requestInputStream);
+            return jsonObject.get(key);
+        }
+        else {
+            //不是json的话就request.getParameter\
+            return request.getParameter(key);
+        }
+    }
 
-    protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+    protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         String  tmp= request.getParameter("token");
@@ -166,10 +196,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return notLogin;
         }
 
-        String  thisRole = request.getParameter("operationRoleId");
+
+        String  thisRole = (String)getParameterValue(request,"operationRoleId");
         Long roleId =null;
         if(thisRole!=null){
-            roleId = Long.parseLong(request.getParameter("operationRoleId"));
+            roleId = (Long) getParameterValue(request,"operationRoleId");
             if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
                 return notPermitted;
             }
@@ -185,8 +216,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
-            Long affairId = Long.parseLong(request.getParameter("affairId"));
-            Long allianceId = Long.parseLong(request.getParameter("allianceId"));
+            Long affairId = (Long) getParameterValue(request,"affairId");
+            Long allianceId = (Long) getParameterValue(request,"allianceId");
             if(affairId==null){
                 return notPermitted;
             }
@@ -200,7 +231,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] alliancePermissions = requiredPermissions.alliance();//检查盟权限
         if(alliancePermissions!=null&&alliancePermissions.length!=0){
-            Long allianceId = Long.parseLong(request.getParameter("allianceId"));
+            Long allianceId = (Long) getParameterValue(request,"allianceId");
             if(allianceId==null){
                 return notPermitted;
             }
