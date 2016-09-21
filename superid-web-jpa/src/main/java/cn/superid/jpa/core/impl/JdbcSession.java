@@ -180,7 +180,7 @@ public class JdbcSession extends AbstractSession {
 
     //TODO 调用缓存，比较大字段有没有被改动，如果没有改动，则无视大字段
     @Override
-    public void update(final Object entity) {
+    public boolean update(final Object entity) {
         try {
             final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
             boolean isSharding = modelMeta.getPatitionColumn()!=null;
@@ -207,7 +207,8 @@ public class JdbcSession extends AbstractSession {
                 preparedStatement.setObject(i, id);
 
                 try {
-                    preparedStatement.executeUpdate();
+                    int result = preparedStatement.executeUpdate();
+                    return result > 0;
                 } finally {
                     preparedStatement.close();
                     close();
@@ -226,6 +227,7 @@ public class JdbcSession extends AbstractSession {
                 Object id = idAccessor.getProperty(entity);
                 batchStatement.setObject(i, id);
                 batchStatement.addBatch();
+                return true;
             }
 
         } catch (SQLException e) {

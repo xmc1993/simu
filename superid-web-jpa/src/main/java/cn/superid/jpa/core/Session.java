@@ -44,7 +44,7 @@ public interface Session {
 
     void save(Object entity);
 
-    void update(Object entity);
+    boolean update(Object entity);
 
     boolean update(Object entity, List<String> columns);
 
