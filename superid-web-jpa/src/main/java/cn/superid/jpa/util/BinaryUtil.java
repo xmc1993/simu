@@ -8,39 +8,67 @@ import java.util.Date;
  */
 public class BinaryUtil {
 
-    public static byte[] getBytes(Object o) {
-        return getBytes(o,o.getClass());
-    }
 
-    public static byte[] getBytes(Object o,Class<?> clazz){
+    public static byte[] getBytes(Object o){
         if(o==null){
             return new byte[0];
         }
         if( o instanceof Long){
             return toBytes((long) o);
-        }else if(  clazz == int.class|| clazz ==Integer.class){
-            return toBytes((int) o);
-        }else if(clazz == float.class || clazz == Float.class){
-            return  toBytes((float) o);
-        }else if(clazz == double.class || clazz == Double.class){
-            return toBytes((double) o);
-        }else if(clazz == Short.class || clazz == short.class){
-            return toBytes((short) o);
-        }else if(clazz == Boolean.class || clazz == boolean.class){
-            return toBytes((boolean) o);
-        }else if(clazz == Character.class || clazz == char.class){
-            return toBytes((char) o);
-        }else if(clazz == String.class){
-            return toBytes((String) o);
-        }else if(clazz == Date.class){
-            return toBytes((Date) o);
-        }else if(clazz== Timestamp.class){
-            return toBytes((Timestamp) o);
-        }else if( o instanceof long[]){
+        }
+        else if( o instanceof Long[]){
             return toBytes((long[]) o);
         }
+        else if(  o instanceof Integer){
+            return toBytes((int) o);
+        }
+        else if( o instanceof Integer[]){
+            return toBytes((int[]) o);
+        }
+        else if(o instanceof Float){
+            return  toBytes((float) o);
+        }
+        else if( o instanceof Float[]){
+            return toBytes((float[]) o);
+        }
+        else if(o instanceof Double){
+            return toBytes((double) o);
+        }
+        else if( o instanceof Double[]){
+            return toBytes((double[]) o);
+        }
+        else if(o instanceof Short){
+            return toBytes((short) o);
+        }
+        else if( o instanceof Short[]){
+            return toBytes((short[]) o);
+        }
+        else if(o instanceof Boolean){
+            return toBytes((boolean) o);
+        }
+        else if( o instanceof Boolean[]){
+            return toBytes((boolean[]) o);
+        }
+        else if(o instanceof Character){
+            return toBytes((char) o);
+        }
+        else if( o instanceof Character[]){
+            return toBytes((char[]) o);
+        }
+        else if(o instanceof String){
+            return toBytes((String) o);
+        }
+        else if( o instanceof String[]){
+            return toBytes((String[]) o);
+        }
+        else if(o instanceof Date){
+            return toBytes((Date) o);
+        }
+        else if(o instanceof Timestamp){
+            return toBytes((Timestamp) o);
+        }
         else {
-            throw new RuntimeException("Error: The parameter" + clazz + "is not basic type!");
+            throw new RuntimeException("Error: The parameter" + o + "is not basic type!");
         }
     }
 
@@ -48,7 +76,8 @@ public class BinaryUtil {
     public static Object getValue(byte[] bytes,Class<?> clazz) {
         if(clazz == Long.class || clazz == long.class){
             return  toLong(bytes);
-        }else if(clazz == Integer.class || clazz == int.class){
+        }
+        else if(clazz == Integer.class || clazz == int.class){
             return  toInt(bytes);
         }else if(clazz == Float.class || clazz == float.class){
             return toFloat(bytes);
@@ -66,7 +95,34 @@ public class BinaryUtil {
             return toDate(bytes);
         }else if(clazz== Timestamp.class){
             return toTimestamp(bytes);
-        }else {
+        }
+
+
+        else if(clazz == Long[].class){
+            return toLongArray(bytes);
+        }
+        else if(clazz == Integer[].class){
+            return toIntArray(bytes);
+        }
+        else if(clazz == Float[].class){
+            return toFloatArray(bytes);
+        }
+        else if(clazz == Double[].class){
+            return toDoubleArray(bytes);
+        }
+        else if(clazz == Short[].class){
+            return toShortArray(bytes);
+        }
+        else if(clazz == Boolean[].class){
+            return toBooleanArray(bytes);
+        }
+        else if(clazz == Character[].class){
+            return toCharArray(bytes);
+        }
+        else if(clazz == String[].class){
+            return toStringArray(bytes);
+        }
+        else {
             throw new RuntimeException("Error: The parameter" + clazz + "is not basic type!");
         }
     }
