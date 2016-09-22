@@ -71,9 +71,9 @@ public class FileController {
     @ApiOperation(value = "添加文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/add_file", method = RequestMethod.POST)
     public SimpleResponse addFile(AddFileForm form) {
-        if(form.getFileId() == null | form.getFileName() == null | form.getSize() == null | form.getUploader() == null | form.getFolderId() == null | form.getAffairId() == null){
-            return SimpleResponse.error("参数错误");
-        }
+//        if(form.getFileId() == null | form.getFileName() == null | form.getSize() == null | form.getUploader() == null | form.getFolderId() == null | form.getAffairId() == null){
+//            return SimpleResponse.error("参数错误");
+//        }
         boolean result = fileService.addFile(form);
 
         return SimpleResponse.ok(result);

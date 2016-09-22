@@ -21,6 +21,7 @@ public class TestRedis {
         user.setAge(19);
         user.setDetails("hasasasasa");
         user.setId(1);
+
         Timer.compair(new Execution() {
             @Override
             public void execute() {

@@ -15,6 +15,7 @@ import java.net.URI;
  * Created by xiaofengxu on 16/9/20.
  */
 public class RawRedis extends Jedis {
+    private static RedisOutputStream redisOutputStream;
 
     public RawRedis() {
     }
@@ -90,6 +91,8 @@ public class RawRedis extends Jedis {
     public void hmset(final byte[][] hash){
 
         try {
+            Client client = this.getClient();
+            client.connect();
             Socket socket =this.getClient().getSocket();
             RedisOutputStream redisOutputStream = new RedisOutputStream(socket.getOutputStream());
             Protocol.sendCommand(redisOutputStream, Protocol.Command.HMSET,hash);
