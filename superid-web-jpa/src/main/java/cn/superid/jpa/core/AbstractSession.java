@@ -243,12 +243,15 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public HashMap<byte[], byte[]> generateHashByteMapFromEntity(Object entity) {
+    public HashMap<byte[], byte[]> generateHashByteMap(Object entity) {
         Session session = currentSession();
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            if(modelColumnMeta.isId){
+                continue;
+            }
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             hashMap.put(modelColumnMeta.binary, BinaryUtil.getBytes(fieldAccessor.getProperty(entity)));
 
@@ -291,12 +294,7 @@ public abstract class AbstractSession implements Session {
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             if(modelColumnMeta.isId){
                 Object id= BinaryUtil.getBytes(meta.getIdAccessor().getProperty(entity));
-                byte[] idByte ;
-                if(id instanceof byte[]){
-                     idByte = (byte[]) id;
-                }else{
-                    idByte = BinaryUtil.getBytes(id);
-                }
+                byte[] idByte = BinaryUtil.getBytes(id);
                 result[0]= new byte[idByte.length+key.length];
                 for(int j=0;j<result[0].length;j++){
                     if(j<key.length){
@@ -305,7 +303,6 @@ public abstract class AbstractSession implements Session {
                         result[0][j] = idByte[j-key.length];
                     }
                 }
-
                 continue;
             }
             result[i++] = modelColumnMeta.binary;
@@ -313,11 +310,7 @@ public abstract class AbstractSession implements Session {
 
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             Object value = fieldAccessor.getProperty(entity);
-            if(value instanceof byte[]){
-                result[i++]= (byte[]) value;
-            }else{
-                result[i++]= BinaryUtil.getBytes(value);
-            }
+            result[i++]= BinaryUtil.getBytes(value);
         }
         return result;
     }

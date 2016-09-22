@@ -32,8 +32,7 @@ public class TestRedis {
             @Override
             public void execute() {
                 user.setId(user.getId()+1);
-                byte[] serialize = SerializeUtil.serialize(user);
-                redis.set(("user:"+user.getId()).getBytes(),serialize);
+                redis.hmset(user.getKey(),user.generateHashByteMap());
             }
         },1000);
     }
