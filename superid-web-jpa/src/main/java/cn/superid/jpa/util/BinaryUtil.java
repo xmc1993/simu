@@ -16,43 +16,43 @@ public class BinaryUtil {
         if( o instanceof Long){
             return toBytes((long) o);
         }
-        else if( o instanceof Long[]){
+        else if( o instanceof Long[] || o instanceof long[]){
             return toBytes((long[]) o);
         }
         else if(  o instanceof Integer){
             return toBytes((int) o);
         }
-        else if( o instanceof Integer[]){
+        else if( o instanceof Integer[] || o instanceof int[]){
             return toBytes((int[]) o);
         }
         else if(o instanceof Float){
             return  toBytes((float) o);
         }
-        else if( o instanceof Float[]){
+        else if( o instanceof Float[] || o instanceof float[]){
             return toBytes((float[]) o);
         }
         else if(o instanceof Double){
             return toBytes((double) o);
         }
-        else if( o instanceof Double[]){
+        else if( o instanceof Double[] || o instanceof double[]){
             return toBytes((double[]) o);
         }
         else if(o instanceof Short){
             return toBytes((short) o);
         }
-        else if( o instanceof Short[]){
+        else if( o instanceof Short[] || o instanceof short[]){
             return toBytes((short[]) o);
         }
         else if(o instanceof Boolean){
             return toBytes((boolean) o);
         }
-        else if( o instanceof Boolean[]){
+        else if( o instanceof Boolean[] || o instanceof boolean[]){
             return toBytes((boolean[]) o);
         }
         else if(o instanceof Character){
             return toBytes((char) o);
         }
-        else if( o instanceof Character[]){
+        else if( o instanceof Character[] || o instanceof char[]){
             return toBytes((char[]) o);
         }
         else if(o instanceof String){
@@ -97,25 +97,25 @@ public class BinaryUtil {
             return toTimestamp(bytes);
         }
 
-        else if(clazz == Long[].class){
+        else if(clazz == Long[].class || clazz == long[].class){
             return toLongArray(bytes);
         }
-        else if(clazz == Integer[].class){
+        else if(clazz == Integer[].class || clazz == int[].class){
             return toIntArray(bytes);
         }
-        else if(clazz == Float[].class){
+        else if(clazz == Float[].class || clazz == float[].class){
             return toFloatArray(bytes);
         }
-        else if(clazz == Double[].class){
+        else if(clazz == Double[].class || clazz == double[].class){
             return toDoubleArray(bytes);
         }
-        else if(clazz == Short[].class){
+        else if(clazz == Short[].class || clazz == short[].class){
             return toShortArray(bytes);
         }
-        else if(clazz == Boolean[].class){
+        else if(clazz == Boolean[].class || clazz == boolean[].class){
             return toBooleanArray(bytes);
         }
-        else if(clazz == Character[].class){
+        else if(clazz == Character[].class || clazz == char[].class){
             return toCharArray(bytes);
         }
         else if(clazz == String[].class){
