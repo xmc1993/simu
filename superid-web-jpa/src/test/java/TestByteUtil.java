@@ -1,11 +1,12 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-import cn.superid.jpa.util.SerializeUtil;
-import cn.superid.jpa.util.StringUtil;
+import cn.superid.jpa.redis.RawRedis;
+import cn.superid.jpa.util.*;
 import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import model.User;
 import org.github.jamm.MemoryMeter;
 
+import javax.validation.constraints.AssertTrue;
 import java.sql.Time;
 import java.util.HashMap;
 
@@ -71,23 +72,28 @@ public class TestByteUtil extends TestCase {
     }
 
     public void testUtil() throws Exception{
-        Timer timer = new Timer();
-        String test = "allianceMember.id";
-        System.out.print(StringUtil.underscoreName(test));
-        byte[] bytes = test.getBytes("UTF-8");
-        System.out.println(bytes.length);
-        System.out.println(test.length());
+        final long test = 1212121L;
+        Object t = test;
+        if(t instanceof Long){
+            System.out.println("true");
+        }
+        RawRedis rawRedis = new RawRedis();
+        byte[] bytes = BinaryUtil.toBytes(test);
+        System.out.println(BinaryUtil.toLong(bytes));
 
-//        for(int i=0;i<100000;i++){
-//            StringUtil.underscoreName1(test);
-//        }
-//        timer.end();
-//
-//        Timer timer1 = new Timer();
-//        for(int i=0;i<100000;i++){
-//            StringUtil.underscoreName1(test);
-//        }
-//        timer1.end();
+
+
+        Timer.compair(new Execution() {
+            @Override
+            public void execute() {
+//                BinaryUtil.toBytes1(test);
+            }
+        }, new Execution() {
+            @Override
+            public void execute() {
+                BinaryUtil.toBytes(test);
+            }
+        },1000000);
     }
 
 }

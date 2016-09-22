@@ -184,10 +184,13 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
+        String  tmp= request.getParameter("token");
+
+        System.out.println(request.getContentType());
+
         if (getNotLoginFromHandlerMethodWithCache(handlerMethod) != null) {
             return hasPermission;
         }
-
         // isLogin
         if (!auth.isAuthenticated()) {
             return notLogin;

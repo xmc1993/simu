@@ -4,6 +4,7 @@ import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.util.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -408,6 +409,44 @@ public class Dao<T> {
         builder.delete(whereLength,builder.length());
         parameterBindings.get().clear();
         return getSession().execute(sql,all);
+    }
+
+    public int setByObject(Object from){
+        StringBuilder builder = where.get();
+        if(builder.length()==whereLength){
+            throw new JdbcRuntimeException("You should have where conditions");
+        }
+        ModelMeta meta = getSession().getEntityMetaOfClass(from.getClass());
+        ParameterBindings pb = new ParameterBindings();
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET ");
+        boolean init =true;
+        for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
+            if(modelColumnMeta.isId){
+                continue;
+            }
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
+            Object value = fieldAccessor.getProperty(from);
+            if(value==null){
+                continue;
+            }
+            if(init){
+                init = false;
+            }else {
+                sb.append(',');
+            }
+            sb.append(modelColumnMeta.columnName);
+            sb.append("=?");
+            pb.addIndexBinding(value);
+        }
+        sb.append(builder);
+        String sql = sb.toString();
+        ParameterBindings all = pb.addAll(parameterBindings.get());
+        builder.delete(whereLength,builder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,all);
+
     }
 
 

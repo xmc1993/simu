@@ -1,3 +1,4 @@
+import cn.superid.jpa.util.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,5 +41,27 @@ public class Timer {
     public long getTime() {
         assert endTime != null && endTime.after(startTime);
         return endTime.getTime() - startTime.getTime();
+    }
+
+    public  void executeRepeate(Function function,int times){
+        for(int i=0;i<times;i++){
+            function.apply(null);
+        }
+    }
+
+
+    public static void  compair(Execution execution1,Execution execution2,int times){
+        Timer timer = new Timer();
+        for(int i=0;i<times;i++){
+            execution1.execute();
+        }
+        timer.end();
+
+        Timer timer1 = new Timer();
+        for(int i=0;i<times;i++){
+            execution2.execute();
+        }
+        timer1.end();
+
     }
 }

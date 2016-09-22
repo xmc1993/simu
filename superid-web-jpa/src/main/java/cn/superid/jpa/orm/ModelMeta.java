@@ -1,10 +1,10 @@
 package cn.superid.jpa.orm;
 
+import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.util.ByteUtil;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
-
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -19,6 +19,7 @@ public class ModelMeta {
     private String deleteSql;
     private String findByIdSql;
     private String findTinyByIdSql;
+    private byte[] key;
     private List<ModelColumnMeta> columnMetas;
     private ModelColumnMeta idColumnMeta;
     private ModelColumnMeta partitionColumn;
@@ -35,6 +36,8 @@ public class ModelMeta {
         public boolean nullable;
         public FieldAccessor fieldAccessor;
     }
+
+    private static List<String> registedKeys = new ArrayList<>();
 
     private List<ModelColumnMeta> getColumnMetas() {
         Field[] fields = modelCls.getDeclaredFields();
@@ -58,7 +61,7 @@ public class ModelMeta {
 
             columnMeta.fieldName = field.getName();
             columnMeta.fieldType = field.getType();
-            columnMeta.binary= ByteUtil.getBytes(columnMeta.fieldName);
+            columnMeta.binary= BinaryUtil.toBytes(columnMeta.fieldName);
 
             javax.persistence.Column columnAnno = fieldAccessor.getPropertyAnnotation(javax.persistence.Column.class);
             if (columnAnno == null) {
@@ -233,6 +236,7 @@ public class ModelMeta {
 
     private ModelMeta(Class<?> modelCls) {
         this.modelCls = modelCls;
+
         javax.persistence.Table table = modelCls.getAnnotation(javax.persistence.Table.class);
         tableName = StringUtil.underscoreName(modelCls.getSimpleName());
         tableSchema = "";
@@ -243,6 +247,19 @@ public class ModelMeta {
             tableSchema = table.schema();
         }
         columnMetas = getColumnMetas();
+
+        Cacheable cacheable = modelCls.getAnnotation(Cacheable.class);
+        if(table!=null){
+            String key =cacheable.key();
+            if(StringUtil.isEmpty(key)){
+                key = tableName;
+            }
+            if(registedKeys.contains(key)){//key不能重复
+                throw new RuntimeException(tableName+" key is Repeated");
+            }
+            registedKeys.add(key);
+            this.key = BinaryUtil.toBytes(key+':');
+        }
     }
 
     public Class<?> getModelCls() {
@@ -301,6 +318,10 @@ public class ModelMeta {
             return null;
         }
         return idColumnMeta.fieldAccessor;
+    }
+
+    public byte[] getKey() {
+        return key;
     }
 
     public ModelColumnMeta getPatitionColumn(){

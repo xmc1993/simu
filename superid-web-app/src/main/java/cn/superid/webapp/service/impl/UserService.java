@@ -217,7 +217,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean editDetailInfo(EditUserDetailForm editUserDetailForm) {
-        int result =  UserEntity.dao.eq("id",currentUserId()).set(editUserDetailForm.hashMapSkipNull());
+        int result =  UserEntity.dao.id(currentUserId()).setByObject(editUserDetailForm);
         return result>0;
     }
 

@@ -102,7 +102,7 @@ public interface Session {
 
     Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap,Object entity);
 
-
+    byte[][] generateZipMap(Object entity);
 
 
 
