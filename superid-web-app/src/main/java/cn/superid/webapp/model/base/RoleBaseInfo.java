@@ -11,7 +11,6 @@ import javax.persistence.Table;
  * Created by jizhenya on 16/9/12.
  */
 @Table(name = "role")
-@Cacheable
 public class RoleBaseInfo  extends ExecutableModel {
     public final static ConditionalDao<RoleBaseInfo> dao = new ConditionalDao<>(RoleBaseInfo.class);
     private long id;

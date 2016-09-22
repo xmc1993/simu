@@ -249,7 +249,7 @@ public class ModelMeta {
         columnMetas = getColumnMetas();
 
         Cacheable cacheable = modelCls.getAnnotation(Cacheable.class);
-        if(table!=null){
+        if(cacheable!=null){
             String key =cacheable.key();
             if(StringUtil.isEmpty(key)){
                 key = tableName;

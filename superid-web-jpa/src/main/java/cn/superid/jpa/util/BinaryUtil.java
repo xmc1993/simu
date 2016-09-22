@@ -18,6 +18,8 @@ public class BinaryUtil {
         }
         else if( o instanceof Long[] || o instanceof long[]){
             return toBytes((long[]) o);
+        }else if (o instanceof byte[] || o instanceof Byte[]){
+            return toBytes((byte[]) o);
         }
         else if(  o instanceof Integer){
             return toBytes((int) o);

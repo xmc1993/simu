@@ -98,7 +98,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
         return getSession().generateZipMap(this);
     }
 
-    public byte[] getKey(){
+    public byte[] generateKey(){
         ModelMeta meta = getSession().getEntityMetaOfClass(this.getClass());
         Object id= BinaryUtil.getBytes(meta.getIdAccessor().getProperty(this));
         byte[] idByte = BinaryUtil.getBytes(id);

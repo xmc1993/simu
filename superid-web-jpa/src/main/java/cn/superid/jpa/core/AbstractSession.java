@@ -3,7 +3,6 @@ package cn.superid.jpa.core;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.BinaryUtil;
-import cn.superid.jpa.util.ByteUtil;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.List;
@@ -277,7 +276,7 @@ public abstract class AbstractSession implements Session {
         ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-            fieldAccessor.setProperty(entity, ByteUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
+            fieldAccessor.setProperty(entity,BinaryUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
 
         }
         return entity;

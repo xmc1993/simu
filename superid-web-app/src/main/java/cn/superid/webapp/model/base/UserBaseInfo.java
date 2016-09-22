@@ -12,7 +12,6 @@ import java.sql.Timestamp;
  * Created by xiaofengxu on 16/9/5.
  */
 @Table(name = "user")
-@Cacheable
 public class UserBaseInfo extends ExecutableModel{
     public final static ConditionalDao<UserBaseInfo> dao = new ConditionalDao<>(UserBaseInfo.class);
     private long id;
