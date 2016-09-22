@@ -97,7 +97,6 @@ public class BinaryUtil {
             return toTimestamp(bytes);
         }
 
-
         else if(clazz == Long[].class){
             return toLongArray(bytes);
         }

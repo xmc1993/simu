@@ -4,7 +4,6 @@ import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.ByteUtil;
-import com.google.code.yanf4j.util.SystemUtils;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.List;
@@ -251,7 +250,7 @@ public abstract class AbstractSession implements Session {
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-            hashMap.put(modelColumnMeta.binary, BinaryUtil.getBytes(fieldAccessor.getProperty(entity),fieldAccessor.getPropertyType()));
+            hashMap.put(modelColumnMeta.binary, BinaryUtil.getBytes(fieldAccessor.getProperty(entity)));
 
         }
         return hashMap;
@@ -296,23 +295,29 @@ public abstract class AbstractSession implements Session {
                 if(id instanceof byte[]){
                      idByte = (byte[]) id;
                 }else{
-                    idByte = BinaryUtil.getBytes(id,modelColumnMeta.fieldType);
+                    idByte = BinaryUtil.getBytes(id);
                 }
                 result[0]= new byte[idByte.length+key.length];
-                for(int j=0;j<result[0].length;i++){
+                for(int j=0;j<result[0].length;j++){
                     if(j<key.length){
                         result[0][j]=key[j];
                     }else {
                         result[0][j] = idByte[j-key.length];
                     }
                 }
+
                 continue;
             }
             result[i++] = modelColumnMeta.binary;
-            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
-//            Object value = fieldAccessor.getProperty(e)
 
-            result[i++] = BinaryUtil.getBytes(fieldAccessor.getProperty(entity),modelColumnMeta.fieldType);
+
+            FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
+            Object value = fieldAccessor.getProperty(entity);
+            if(value instanceof byte[]){
+                result[i++]= (byte[]) value;
+            }else{
+                result[i++]= BinaryUtil.getBytes(value);
+            }
         }
         return result;
     }

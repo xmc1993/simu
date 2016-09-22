@@ -7,6 +7,7 @@ import model.User;
 import org.github.jamm.MemoryMeter;
 
 import javax.validation.constraints.AssertTrue;
+import java.nio.ByteBuffer;
 import java.sql.Time;
 import java.util.HashMap;
 
@@ -60,8 +61,15 @@ public class TestByteUtil extends TestCase {
 
         HashMap<String, byte[]> hashMap = user.generateHashByteMap();
         System.out.println(memoryMeter.measureDeep(hashMap));
-        System.out.println(memoryMeter.measureDeep(SerializeUtil.serialize(hashMap)));
+        byte[][] a = user.generateZipMap();
+        System.out.println(memoryMeter.measureDeep(user.generateZipMap()));
 
+
+        int sum =0;
+        for(int i=0;i<a.length;i++){
+            sum = sum+a[i].length;
+        }
+        System.out.println(sum);
 
         byte[] serialize = SerializeUtil.serialize(user);
         System.out.println(serialize.length);
