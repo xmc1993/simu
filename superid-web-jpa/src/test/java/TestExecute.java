@@ -125,7 +125,6 @@ public class TestExecute extends TestCase {
         user.setName("src/test");
         user.setAge(18);
         user.save();
-        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
 //        Assert.assertTrue(hashMap.get("age").equals(18));
 //
 //        User user1 = new User();

@@ -17,29 +17,10 @@ import java.util.HashMap;
  */
 public class TestByteUtil extends TestCase {
 
-//    @Test
-//    public void testLong2Byte(){
-//        long k = 123L;
-//        byte[] bytes = ByteUtil.basicType2Bytes(k);
-//        long l = (Long) ByteUtil.bytesToLong(bytes);
-//        Assert.assertEquals(k, l);
-//    }
-
-    public static DruidDataSource getDataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUsername("superid");
-        dataSource.setPassword("superid");
-        dataSource.setUrl("jdbc:mysql://rm-bp1943x791y4e3z21.mysql.rds.aliyuncs.com/jpa");
-        dataSource.setInitialSize(5);
-        dataSource.setMinIdle(1);
-        dataSource.setMaxActive(1000);
-        return dataSource;
-    }
 
     static {
-        JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(getDataSource());
 
+        JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(null);
 
     }
 
@@ -59,8 +40,7 @@ public class TestByteUtil extends TestCase {
         user.save();
         System.out.println(memoryMeter.measureDeep(user));
 
-        HashMap<String, byte[]> hashMap = user.generateHashByteMap();
-        System.out.println(memoryMeter.measureDeep(hashMap));
+
         byte[][] a = user.generateZipMap();
         System.out.println(memoryMeter.measureDeep(user.generateZipMap()));
 
@@ -85,9 +65,15 @@ public class TestByteUtil extends TestCase {
         if(t instanceof Long){
             System.out.println("true");
         }
+        long[] tests ={1L,2L,3L};
+        Object a = tests;
+
+        if(a instanceof Long[]||a instanceof long[]){
+            System.out.println("true");
+        }
+
         RawRedis rawRedis = new RawRedis();
         byte[] bytes = BinaryUtil.toBytes(test);
-        System.out.println(BinaryUtil.toLong(bytes));
 
 
 

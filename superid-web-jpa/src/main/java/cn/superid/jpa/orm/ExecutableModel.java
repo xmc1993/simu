@@ -3,12 +3,14 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class ExecutableModel<T>  implements Serializable,Executable{
 
@@ -89,11 +91,27 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public HashMap<String,Object> hashMapSkipNull(){ return getSession().generateHashMapFromEntity(this,true);}
 
 
-    public HashMap<byte[],byte[]> generateHashByteMap(){ return getSession().generateHashByteMapFromEntity(this);}
+    public Map<byte[],byte[]> generateHashByteMap(){ return getSession().generateHashByteMap(this);}
 
 
     public byte[][] generateZipMap(){
         return getSession().generateZipMap(this);
+    }
+
+    public byte[] generateKey(){
+        ModelMeta meta = getSession().getEntityMetaOfClass(this.getClass());
+        Object id= BinaryUtil.getBytes(meta.getIdAccessor().getProperty(this));
+        byte[] idByte = BinaryUtil.getBytes(id);
+        byte[] key = meta.getKey();
+        byte[] result= new byte[idByte.length+key.length];
+        for(int j=0;j<result.length;j++){
+            if(j<key.length){
+                result[j]=key[j];
+            }else {
+                result[j] = idByte[j-key.length];
+            }
+        }
+        return result;
     }
 
 }

@@ -1,6 +1,5 @@
 package cn.superid.webapp.utils.redis;
 
-import cn.superid.jpa.util.ByteUtil;
 import redis.clients.jedis.Jedis;
 
 import java.io.UnsupportedEncodingException;
@@ -23,16 +22,16 @@ public class RedisUtil {
     public static Jedis getJedisClient(){
         return jedisClient;
     }
-
-    public static String hmset(String key, Map<String, byte[]> map) throws UnsupportedEncodingException {
-        Map<byte[], byte[]> res = map2map(map);
-        return jedisClient.hmset(ByteUtil.stringToBytes(key), res);
-    }
+//
+//    public static String hmset(String key, Map<String, byte[]> map) throws UnsupportedEncodingException {
+//        Map<byte[], byte[]> res = map2map(map);
+////        return jedisClient.hmset(ByteUtil.stringToBytes(key), res);
+//    }
 
     public static Map<byte[], byte[]> map2map(Map<String, byte[]> source) throws UnsupportedEncodingException {
         Map<byte[], byte[]> map = new HashMap<>();
         for(Map.Entry<String, byte[]> entry : source.entrySet()){
-            map.put(ByteUtil.stringToBytes(entry.getKey()), entry.getValue());
+//            map.put(ByteUtil.stringToBytes(entry.getKey()), entry.getValue());
         }
 
         return map;
