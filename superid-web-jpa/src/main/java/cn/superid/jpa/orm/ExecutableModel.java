@@ -28,10 +28,10 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
     public void save(Session session) {
-        ModelMeta meta = getSession().getEntityMetaOfClass(this.getClass());
-        if(meta.isCacheable()){
-            RedisUtil.save(this);
-        }
+//        ModelMeta meta = getSession().getEntityMetaOfClass(this.getClass());
+//        if(meta.isCacheable()){
+//            RedisUtil.save(this);
+//        }
         session.save(this);
     }
 
