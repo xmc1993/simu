@@ -35,23 +35,6 @@ public class TestRedis {
         String result= RedisUtil.save(user);
         System.out.println(result);
 
-//        Timer.compair(new Execution() {
-//            @Override
-//            public void execute() {
-//                user.setId(user.getId()+1);
-//                redis.hmset(user.generateKey(),user.generateHashByteMap());
-//
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                user.setId(user.getId()+1);
-//                Jedis jedis=RedisUtil.getJedis();
-//                jedis.hmset(user.generateKey(),user.generateHashByteMap());
-//                jedis.close();
-//
-//            }
-//        },1000);
     }
 
     @Test

@@ -1,15 +1,13 @@
 package cn.superid.jpa.redis;
-
-
-import java.io.IOException;
-import java.net.Socket;
+;
 import java.util.concurrent.locks.ReentrantLock;
 
+import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.orm.ModelMetaFactory;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
-import redis.clients.util.RedisOutputStream;
 
 /**
  * Redis 工具类
@@ -71,6 +69,14 @@ public class RedisUtil {
         return null;
     }
 
+    public static Object findByKey(byte[] key,Class<?> clazz){
+        Jedis jedis = getJedis();
+        if(jedis!=null){
+            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+
+        }
+        return null;
+    }
 
     public String getHost() {
         return host;

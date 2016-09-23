@@ -16,8 +16,6 @@ public interface Session {
     int getIndexParamBaseOrdinal();
 
 
-    ModelMeta getEntityMetaOfClass(Class<?> entityCls);
-
     Transaction getTransaction();
 
     void begin();

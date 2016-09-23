@@ -23,9 +23,9 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
     public ConditionalDao<T>  join (Class<?> table){
-        from.get().append(getSession().getEntityMetaOfClass(this.clazz).getTableName() + " a");
+        from.get().append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName() + " a");
         from.get().append(" join ");
-        from.get().append(getSession().getEntityMetaOfClass(table).getTableName() + " b");
+        from.get().append(ModelMetaFactory.getEntityMetaOfClass(table).getTableName() + " b");
         return this;
     }
 
@@ -54,7 +54,7 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
     public ConditionalDao<T> partitionId(Object value){return
-            and(getSession().getEntityMetaOfClass(this.clazz).getPatitionColumn().columnName,"=",value);
+            and(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getPatitionColumn().columnName,"=",value);
     }
 
 

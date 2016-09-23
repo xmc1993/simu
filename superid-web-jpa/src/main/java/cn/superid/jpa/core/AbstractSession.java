@@ -2,6 +2,7 @@ package cn.superid.jpa.core;
 
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.util.BinaryUtil;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
@@ -110,17 +111,7 @@ public abstract class AbstractSession implements Session {
         return getTransaction().isActive();
     }
 
-    private static final Map<Class<?>, ModelMeta> ENTITY_META_CACHE = new HashMap<Class<?>, ModelMeta>();
 
-    @Override
-    public synchronized ModelMeta getEntityMetaOfClass(Class<?> entityCls) {
-        if (ENTITY_META_CACHE.containsKey(entityCls)) {
-            return ENTITY_META_CACHE.get(entityCls);
-        }
-        ModelMeta modelMeta = ModelMeta.getModelMeta(entityCls);
-        ENTITY_META_CACHE.put(entityCls, modelMeta);
-        return modelMeta;
-    }
 
 
     private static transient SessionFactory defaultSessionFactory = null;
@@ -189,10 +180,9 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public void copyProperties(Object from, Object to, boolean skipNull) {
-        Session session = currentSession();
 
-        ModelMeta fromMeta = session.getEntityMetaOfClass(from.getClass());
-        ModelMeta toMeta = session.getEntityMetaOfClass(to.getClass());
+        ModelMeta fromMeta = ModelMetaFactory.getEntityMetaOfClass(from.getClass());
+        ModelMeta toMeta = ModelMetaFactory.getEntityMetaOfClass(to.getClass());
         for (ModelMeta.ModelColumnMeta fromColumnMeta : fromMeta.getColumnMetaSet()) {
             for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
                 if (fromColumnMeta.isId && skipNull) {
@@ -215,8 +205,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public HashMap<String, Object> generateHashMapFromEntity(Object entity,boolean skipNull) {
-        Session session = currentSession();
-        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<String, Object> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
@@ -236,8 +225,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public HashMap<byte[], byte[]> generateHashByteMap(Object entity) {
-        Session session = currentSession();
-        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
@@ -253,8 +241,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public Object generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
-        Session session = currentSession();
-        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity, hashMap.get(modelColumnMeta.fieldName));
@@ -264,9 +251,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap, Object entity) {
-        Session session = currentSession();
-
-        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity,BinaryUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
@@ -277,8 +262,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public byte[][] generateZipMap(Object entity) {
-        Session session = currentSession();
-        ModelMeta meta = session.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         byte[][] result = new byte[(meta.getColumnMetaSet().size()-1)*2+1][];//因为id不需要存入zipmap
         byte[] key=  meta.getKey();
         int i= 1;
