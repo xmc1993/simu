@@ -16,7 +16,9 @@ public class LogTest {
     @Test
     public void testConsoleLog(){
         Log log = LogFactory.getLog(getClass());
-        log.info("开始");
+        log.error("开始");
 
     }
+
+
 }
