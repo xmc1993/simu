@@ -5,6 +5,7 @@ import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -207,8 +208,7 @@ public class JdbcSession extends AbstractSession {
                 preparedStatement.setObject(i, id);
 
                 try {
-                    int result = preparedStatement.executeUpdate();
-                    return result > 0;
+                    return preparedStatement.executeUpdate()>0;
                 } finally {
                     preparedStatement.close();
                     close();

@@ -18,8 +18,9 @@ public class ModelMeta {
     private String updateSql;
     private String deleteSql;
     private String findByIdSql;
+    private boolean cacheable  =false;
     private String findTinyByIdSql;
-    private byte[] key;
+    private byte[] key =null;
     private List<ModelColumnMeta> columnMetas;
     private ModelColumnMeta idColumnMeta;
     private ModelColumnMeta partitionColumn;
@@ -250,6 +251,7 @@ public class ModelMeta {
 
         Cacheable cacheable = modelCls.getAnnotation(Cacheable.class);
         if(cacheable!=null){
+            this.cacheable = true;
             String key =cacheable.key();
             if(StringUtil.isEmpty(key)){
                 key = tableName;
@@ -318,6 +320,10 @@ public class ModelMeta {
             return null;
         }
         return idColumnMeta.fieldAccessor;
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
     }
 
     public byte[] getKey() {

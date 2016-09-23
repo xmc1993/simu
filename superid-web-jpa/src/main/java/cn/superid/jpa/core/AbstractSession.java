@@ -47,15 +47,8 @@ public abstract class AbstractSession implements Session {
         getTransaction().commit();
     }
 
-    @Override
-    public void startBatch() {
 
-    }
 
-    @Override
-    public void endBatch() {
-
-    }
 
     @Override
     public int[] executeBatch() {

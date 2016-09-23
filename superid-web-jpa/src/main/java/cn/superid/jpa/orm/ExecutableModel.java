@@ -3,6 +3,7 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,10 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
     public void save(Session session) {
+        ModelMeta meta = getSession().getEntityMetaOfClass(this.getClass());
+        if(meta.isCacheable()){
+            RedisUtil.save(this);
+        }
         session.save(this);
     }
 

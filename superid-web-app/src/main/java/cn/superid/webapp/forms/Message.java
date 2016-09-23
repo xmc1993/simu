@@ -6,36 +6,57 @@ import java.io.Serializable;
  * Created by xmc1993 on 16/9/12.
  */
 public class Message implements Serializable{
-    private Integer type;
-    private Integer subType;
-    private String toRole;
+    private int type;
+    private int subType;
+    private long toRoleId;
+    private long fromUserId;
+    private long relatedId;
     private Long affairId;
     private String displayName;
     private Long toUserId;
+    private int state;//0未读,1已读
     private String content;
 
-    public Integer getType() {
+
+    public int getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+
+    public void setType(int type) {
         this.type = type;
     }
 
-    public Integer getSubType() {
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getSubType() {
         return subType;
     }
 
-    public void setSubType(Integer subType) {
+    public void setSubType(int subType) {
         this.subType = subType;
     }
 
-    public String getToRole() {
-        return toRole;
+    public long getToRoleId() {
+        return toRoleId;
     }
 
-    public void setToRole(String toRole) {
-        this.toRole = toRole;
+    public void setToRoleId(long toRoleId) {
+        this.toRoleId = toRoleId;
+    }
+
+    public long getRelatedId() {
+        return relatedId;
+    }
+
+    public void setRelatedId(long relatedId) {
+        this.relatedId = relatedId;
     }
 
     public Long getAffairId() {
@@ -60,6 +81,14 @@ public class Message implements Serializable{
 
     public void setToUserId(Long toUserId) {
         this.toUserId = toUserId;
+    }
+
+    public long getFromUserId() {
+        return fromUserId;
+    }
+
+    public void setFromUserId(long fromUserId) {
+        this.fromUserId = fromUserId;
     }
 
     public String getContent() {
