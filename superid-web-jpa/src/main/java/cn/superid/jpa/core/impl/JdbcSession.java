@@ -5,6 +5,7 @@ import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
+import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
@@ -134,7 +135,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public void save(Object entity) {
         try {
-            final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
             String sql = modelMeta.getInsertSql();
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -183,7 +184,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public boolean update(final Object entity) {
         try {
-            final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
             boolean isSharding = modelMeta.getPatitionColumn()!=null;
             Object partitionId =null;
 
@@ -240,7 +241,7 @@ public class JdbcSession extends AbstractSession {
     public boolean update(Object entity, List<String> columns) {
         try {
 
-            final ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
             if(modelMeta.getPatitionColumn()!=null){
                 throw new JdbcRuntimeException(" This method don't support partition entity:"+modelMeta.getPatitionColumn().columnName);
             }
@@ -286,7 +287,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public void delete(Object entity) {
         try {
-            ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
             FieldAccessor idAccessor = modelMeta.getIdAccessor();
             boolean isSharding = modelMeta.getPatitionColumn()!=null;
             Object partitionId =null;
@@ -415,7 +416,7 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public void refresh(Object entity) {
-        ModelMeta modelMeta = getEntityMetaOfClass(entity.getClass());
+        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         FieldAccessor idAccessor = modelMeta.getIdAccessor();
         Object latestEntity = find(entity.getClass(), idAccessor.getProperty(entity));
         if (latestEntity != null) {
@@ -443,7 +444,7 @@ public class JdbcSession extends AbstractSession {
     public Object find(Class<?> cls, Object id,Object partitionId, boolean tiny) {
         try {
             String sql;
-            ModelMeta modelMeta = getEntityMetaOfClass(cls);
+            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(cls);
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
             ModelMeta.ModelColumnMeta partitionColumn = modelMeta.getPatitionColumn();
             if (tiny) {
@@ -505,7 +506,7 @@ public class JdbcSession extends AbstractSession {
     public List findList(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
-            ResultSetHandler<List<Object>> handler = getListResultSetHandler(getEntityMetaOfClass(cls));
+            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
             return runner.query(getJdbcConnection(), queryString, handler, params);
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -520,7 +521,7 @@ public class JdbcSession extends AbstractSession {
     public Object findOne(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
-            ResultSetHandler<List<Object>> handler = getListResultSetHandler(getEntityMetaOfClass(cls));
+            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
             List<Object> result = runner.query(getJdbcConnection(), queryString, handler, params);
             if (result.size() > 0) {
                 return result.get(0);

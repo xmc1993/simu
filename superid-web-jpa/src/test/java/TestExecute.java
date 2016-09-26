@@ -1,6 +1,7 @@
 
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
@@ -11,6 +12,7 @@ import model.User;
 import org.junit.Assert;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,13 @@ public class TestExecute extends TestCase {
 
     static {
         JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(getDataSource());
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxIdle(100);
+        jedisPoolConfig.setMaxTotal(300);
+        jedisPoolConfig.setTestOnBorrow(true);
+        new RedisUtil(jedisPoolConfig);
     }
+
 
     public void testFindById() {
 //        User user = User.findById()
@@ -325,4 +333,28 @@ public class TestExecute extends TestCase {
 
     }
 
+    @org.junit.Test
+    public void testHmget(){
+       final User user = new User();
+        user.setName("zphahah");
+        user.setAge(19);
+        user.setDetails("hasasasasa");
+        user.save();
+
+        Timer.compair(new Execution() {
+            @Override
+            public void execute() {
+                User.dao.findById(user.getId());
+            }
+        }, new Execution() {
+            @Override
+            public void execute() {
+                User.dao.id(user.getId()).selectOne();
+
+            }
+        },10000);
+
+        User user1 = User.dao.findById(user.getId());
+        Assert.assertTrue(user1.getName().equals(user.getName()));
+    }
 }

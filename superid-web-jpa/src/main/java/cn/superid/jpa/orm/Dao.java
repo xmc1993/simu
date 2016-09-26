@@ -2,9 +2,8 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.*;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +72,14 @@ public class Dao<T> {
 
 
     public T findById(Object id){
+        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        if(modelMeta.isCacheable()){
+            Object cached = RedisUtil.findByKey(id,clazz);
+            if(cached!=null){
+                return (T) cached;
+            }
+        }
+
         return  (T) getSession().find(this.clazz,id);
     }
 
@@ -100,6 +107,8 @@ public class Dao<T> {
     }
 
     public T selectOne(String... params){
+
+
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
@@ -108,9 +117,8 @@ public class Dao<T> {
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = from.get();
         if(fromBuilder.length() == fromLength){
-            //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -135,7 +143,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -159,7 +167,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -181,7 +189,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -203,7 +211,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -229,7 +237,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -244,7 +252,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -272,7 +280,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -296,7 +304,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
@@ -326,7 +334,7 @@ public class Dao<T> {
         }
         ParameterBindings pb = new ParameterBindings();
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(" SET ");
         int i=0;
         for(Object o:params){
@@ -360,7 +368,7 @@ public class Dao<T> {
         }
         ParameterBindings pb = new ParameterBindings();
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(" SET ");
         boolean init =true;
         for(Expr expr:exprs){
@@ -390,7 +398,7 @@ public class Dao<T> {
         }
         ParameterBindings pb = new ParameterBindings();
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(" SET ");
         boolean init =true;
         for(String key:map.keySet()){
@@ -416,10 +424,10 @@ public class Dao<T> {
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should have where conditions");
         }
-        ModelMeta meta = getSession().getEntityMetaOfClass(from.getClass());
+        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(from.getClass());
         ParameterBindings pb = new ParameterBindings();
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(" SET ");
         boolean init =true;
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
@@ -456,7 +464,7 @@ public class Dao<T> {
             throw new JdbcRuntimeException("You should have where conditions");
         }
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(" SET ");
         sb.append(setSql);
         sb.append(builder);
@@ -473,14 +481,17 @@ public class Dao<T> {
 
     }
 
-
+    /**
+     * remove with conditions
+     * @return
+     */
     public  int remove() {
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should have where conditions");
         }
         StringBuilder sb = new StringBuilder(" DELETE FROM ");
-        sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         sb.append(builder);
         String sql = sb.toString();
         Object[] params = parameterBindings.get().getIndexParametersArray();
@@ -495,7 +506,7 @@ public class Dao<T> {
      */
     public long getDRDSAutoId(){
         Session session=getSession();
-        ModelMeta modelMeta= session.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta= ModelMetaFactory.getEntityMetaOfClass(this.clazz);
         StringBuilder stringBuilder=new StringBuilder("select AUTO_SEQ_");
         stringBuilder.append(modelMeta.getTableName());
         stringBuilder.append(".NEXTVAL");
@@ -523,7 +534,7 @@ public class Dao<T> {
         if(fromBuilder.length() == fromLength){
             //相等的话表示没做join
             sb.append(fromBuilder);
-            sb.append(getSession().getEntityMetaOfClass(this.clazz).getTableName());
+            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
             sb.append(fromBuilder);
         }
