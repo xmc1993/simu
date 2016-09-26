@@ -1,9 +1,11 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AnnouncementEntity;
+import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,12 +47,25 @@ public class AnnouncementController {
         if(version < 1){
             version = 1;
         }
+        List<List<Block>> list = new ArrayList<>();
+        List<AnnouncementHistoryEntity> histories = AnnouncementHistoryEntity.dao.partitionId(announcementId).gt("version",version).desc("version").selectList();
+        for(AnnouncementHistoryEntity a : histories){
+            list.add(announcementService.paperToBlockList(a.getContent()));
+        }
 
 
 
 
         return SimpleResponse.ok("yep");
 
+    }
+
+    private List<EditDistanceForm> caulate(List<Block> pbs , List<List<Block>> list){
+        for(List<Block> l : list){
+
+        }
+
+        return null;
     }
 
 
