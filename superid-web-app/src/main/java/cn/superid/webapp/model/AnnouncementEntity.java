@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.utils.TimeUtil;
 
@@ -13,6 +14,8 @@ import java.sql.Timestamp;
  */
 @Table(name = "announcement")
 public class AnnouncementEntity {
+
+    public final static ConditionalDao<AnnouncementEntity> dao = new ConditionalDao<>(AnnouncementEntity.class);
 
     private long id;
     private long affairId;

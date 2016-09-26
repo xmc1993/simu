@@ -4,6 +4,9 @@ import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.Operation;
 import cn.superid.webapp.service.forms.OperationListForm;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -74,6 +77,17 @@ public class AnnouncementService implements IAnnouncementService{
 
 
 
+        return result;
+    }
+
+    public List<Block> paperToBlockList(String content){
+        List<Block> result = new ArrayList<>();
+        JSONObject total = JSON.parseObject(content);
+        JSONArray bs = total.getJSONArray("blocks");
+        for(int i = 0 ; i < bs.size() ; i++){
+            JSONObject one = bs.getJSONObject(i);
+            result.add(new Block(one.getString("key"),one.getString("text"),i));
+        }
         return result;
     }
 }

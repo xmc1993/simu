@@ -1,5 +1,7 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.orm.ConditionalDao;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -10,6 +12,8 @@ import java.sql.Timestamp;
  */
 @Table(name = "announcement_history")
 public class AnnouncementHistoryEntity {
+
+    public final static ConditionalDao<AnnouncementHistoryEntity> dao = new ConditionalDao<>(AnnouncementHistoryEntity.class);
 
     private long id;
     private long announcementId;

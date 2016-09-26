@@ -12,4 +12,6 @@ import java.util.List;
 public interface IAnnouncementService {
 
     public OperationListForm compareTwoPapers(List<Block> present , List<Block> history );
+
+    public List<Block> paperToBlockList(String content);
 }
