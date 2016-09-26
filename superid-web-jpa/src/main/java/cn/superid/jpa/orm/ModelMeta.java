@@ -18,9 +18,13 @@ public class ModelMeta {
     private String updateSql;
     private String deleteSql;
     private String findByIdSql;
+
+
+
     private boolean cacheable  =false;
     private String findTinyByIdSql;
     private byte[] key =null;
+    private byte[][] fields;
     private List<ModelColumnMeta> columnMetas;
     private ModelColumnMeta idColumnMeta;
     private ModelColumnMeta partitionColumn;
@@ -322,10 +326,6 @@ public class ModelMeta {
         return idColumnMeta.fieldAccessor;
     }
 
-    public boolean isCacheable() {
-        return cacheable;
-    }
-
     public byte[] getKey() {
         return key;
     }
@@ -336,5 +336,26 @@ public class ModelMeta {
 
     public String getIdName(){
         return this.idColumnMeta.columnName;
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
+    }
+
+    /**
+     * 获取redis hmget的filed
+     * @return
+     */
+    public  byte[][] getCachedFields(){
+        if(fields==null){
+            fields = new byte[columnMetas.size()-1][];
+            int i=0;
+            for(ModelColumnMeta modelColumnMeta:columnMetas){
+                if(!modelColumnMeta.isId){
+                    fields[i++] = modelColumnMeta.binary;
+                }
+            }
+        }
+        return fields;
     }
 }

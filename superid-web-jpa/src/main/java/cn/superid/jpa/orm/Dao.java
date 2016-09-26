@@ -2,9 +2,8 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.*;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,6 +72,14 @@ public class Dao<T> {
 
 
     public T findById(Object id){
+        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        if(modelMeta.isCacheable()){
+            Object cached = RedisUtil.findByKey(id,clazz);
+            if(cached!=null){
+                return (T) cached;
+            }
+        }
+
         return  (T) getSession().find(this.clazz,id);
     }
 
@@ -100,6 +107,8 @@ public class Dao<T> {
     }
 
     public T selectOne(String... params){
+
+
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){
             throw new JdbcRuntimeException("You should has where conditions");
@@ -108,7 +117,6 @@ public class Dao<T> {
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = from.get();
         if(fromBuilder.length() == fromLength){
-            //相等的话表示没做join
             sb.append(fromBuilder);
             sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }else{
@@ -473,7 +481,10 @@ public class Dao<T> {
 
     }
 
-
+    /**
+     * remove with conditions
+     * @return
+     */
     public  int remove() {
         StringBuilder builder = where.get();
         if(builder.length()==whereLength){

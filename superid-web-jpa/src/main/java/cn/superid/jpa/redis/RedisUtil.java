@@ -1,11 +1,14 @@
 package cn.superid.jpa.redis;
 ;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.ModelMetaFactory;
+import cn.superid.jpa.util.BinaryUtil;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
 
@@ -68,14 +71,105 @@ public class RedisUtil {
         }
         return null;
     }
+//
+//    public static int update(ExecutableModel entity){
+//        Jedis jedis = getJedis();
+//        if(jedis!=null){
+//            jedis.hset
+//
+//        }
+//        return 0;
+//    }
 
-    public static Object findByKey(byte[] key,Class<?> clazz){
+
+    public static long delete(byte[] key){
         Jedis jedis = getJedis();
         if(jedis!=null){
-            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
-
+            long result = jedis.del(key);
+            jedis.close();
+            return result;
         }
-        return null;
+        return 0L;
+    }
+
+
+
+    public static Object findByKey(byte[] key,Class<?> clazz,byte[][] fields){
+        try {
+            Object result = clazz.newInstance();
+            Jedis jedis = getJedis();
+            if(jedis!=null){
+                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+                List<byte[]> list = jedis.hmget(key,fields);
+                jedis.close();
+                if (list==null||list.size()==0){
+                    return null;
+                }
+                int index=0;
+                for(byte[] value:list){
+                    byte[] field = fields[index++];
+                    for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
+                        if(field.length==modelColumnMeta.binary.length){
+                            int i;
+                            for( i=0;i<field.length;i++){
+                                if(field[i]!=modelColumnMeta.binary[i]){
+                                    break;
+                                }
+                            }
+                            if(i==field.length){//属于同一个熟悉
+                                FieldAccessor fieldAccessor=modelColumnMeta.fieldAccessor;
+                                fieldAccessor.setProperty(result, BinaryUtil.getValue(value,modelColumnMeta.fieldType));
+                            }
+                        }
+                    }
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Object findByKey(Object id,Class<?> clazz){
+        try {
+            Object result = clazz.newInstance();
+            Jedis jedis = getJedis();
+            if(jedis!=null){
+                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+                List<byte[]> list = jedis.hmget(generateKey(modelMeta.getKey(),BinaryUtil.getBytes(id)),modelMeta.getCachedFields());
+                jedis.close();
+                if (list==null||list.size()==0){
+                    return null;
+                }
+                int index=0;
+                for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
+                    if(modelColumnMeta.isId){
+                        continue;
+                    }
+                    modelColumnMeta.fieldAccessor.setProperty(result, BinaryUtil.getValue(list.get(index++),modelColumnMeta.fieldType));
+                }
+                modelMeta.getIdAccessor().setProperty(result,id);
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+
+    public static byte[] generateKey(byte[] key,byte[] idByte){
+        byte[] result= new byte[idByte.length+key.length];
+        for(int j=0;j<result.length;j++){
+            if(j<key.length){
+                result[j]=key[j];
+            }else {
+                result[j] = idByte[j-key.length];
+            }
+        }
+        return result;
     }
 
     public String getHost() {
