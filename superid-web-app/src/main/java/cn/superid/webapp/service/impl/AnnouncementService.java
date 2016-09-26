@@ -4,6 +4,7 @@ import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.Operation;
 import cn.superid.webapp.service.forms.OperationListForm;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 /**
  * Created by jizhenya on 16/9/26.
  */
+@Service
 public class AnnouncementService implements IAnnouncementService{
     @Override
     public OperationListForm compareTwoPapers(List<Block> present, List<Block> history) {
