@@ -29,6 +29,7 @@ public class AnnouncementEntity {
     private Timestamp createTime ;
     private Timestamp modifyTime ;
     private String title;
+    private int version;
 
     @Id
     @Column(name = "id")
@@ -126,5 +127,13 @@ public class AnnouncementEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

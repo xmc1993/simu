@@ -40,7 +40,10 @@ public class AnnouncementController {
         String present = announcement.getContent();
         List<Block> pbs = announcementService.paperToBlockList(present);
 
-
+        int version = announcement.getVersion()-offsetTail;
+        if(version < 1){
+            version = 1;
+        }
 
 
 
