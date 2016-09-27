@@ -3,15 +3,13 @@ package cn.superid.webapp.utils.token;
 
 import cn.superid.webapp.utils.redis.RedisUtil;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * Created by xmc1993 on 16/8/25.
  */
-public class TokenUtil {
+public final class TokenUtil {
 
     private TokenUtil(){}
 
@@ -19,9 +17,10 @@ public class TokenUtil {
      * 用户登录时生成TOKEN
      * @param uid
      */
-    public static void setLoginToken(Long uid){
+    public static String setLoginToken(Long uid){
         String token = UUID.randomUUID().toString();
         RedisUtil.getJedisClient().sadd(String.valueOf(uid), token);
+        return token;
     }
 
     /**
