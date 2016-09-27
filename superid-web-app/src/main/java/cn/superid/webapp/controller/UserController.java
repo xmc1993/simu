@@ -264,19 +264,4 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/test_log", method = RequestMethod.GET)
-    @NotLogin
-    public SimpleResponse testLogger(){
-        LOG.error("------------------end end end end --------------------");
-        LOG.warn("------hello world------");
-        LOG.info("-------------test info ----------");
-        return new SimpleResponse(true);
-    }
-
-
-    @RequestMapping(value = "/debug",method = RequestMethod.POST)
-    @NotLogin
-    public SimpleResponse bug(EditUserBaseInfo userBaseInfo){
-        return SimpleResponse.ok("1");
-    }
 }

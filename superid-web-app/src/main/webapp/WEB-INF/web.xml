@@ -8,10 +8,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath*:/META-INF/spring/spring-all.xml</param-value>
     </context-param>
-    <context-param>
-        <param-name>log4jConfigLocation</param-name>
-        <param-value>classpath*:/log4j.properties</param-value>
-    </context-param>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -19,7 +15,10 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
-
+    <listener>
+        <!-- 容器初始化（销毁）时开启（关闭）Log4j -->
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
     <!-- 设置servlet编码开始 -->
     <filter>
         <filter-name>charsetFilter</filter-name>
