@@ -41,6 +41,9 @@ public class Dao<T> {
 
     public Dao(Class cls){
         this.clazz =cls;
+
+
+
     }
 
     public static Session getSession() {

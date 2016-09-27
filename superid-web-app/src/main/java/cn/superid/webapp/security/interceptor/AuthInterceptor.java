@@ -168,11 +168,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     private Object getParameterValue(HttpServletRequest request, String key){
         String contentType = request.getContentType();
-        if(contentType.equals(ContentType.applicationJSON)){
+        if(ContentType.applicationJSON.equals(contentType)){
             //是json就转成JSONObject然后通过key获取值
             String requestInputStream = getRequestInputStream(request);
             JSONObject jsonObject = (JSONObject) JSON.parse(requestInputStream);
             return jsonObject.get(key);
+//            return null;
         }
         else {
             //不是json的话就request.getParameter\
@@ -184,9 +185,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        String  tmp= request.getParameter("token");
-
-        System.out.println(request.getContentType());
 
         if (getNotLoginFromHandlerMethodWithCache(handlerMethod) != null) {
             return hasPermission;
@@ -200,7 +198,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         String  thisRole = (String)getParameterValue(request,"operationRoleId");
         Long roleId =null;
         if(thisRole!=null){
-            roleId = (Long) getParameterValue(request,"operationRoleId");
+            roleId = Long.getLong(thisRole);
             if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
                 return notPermitted;
             }
