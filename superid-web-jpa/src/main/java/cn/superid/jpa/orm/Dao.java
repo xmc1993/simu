@@ -127,6 +127,8 @@ public class Dao<T> {
         return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
     }
 
+
+
     public Object selectOneByJoin(Class target,String... params){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");

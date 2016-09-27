@@ -8,6 +8,7 @@ import cn.superid.jpa.util.StringUtil;
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ModelMeta {
@@ -44,9 +45,13 @@ public class ModelMeta {
 
     private static List<String> registedKeys = new ArrayList<>();
 
+    /**
+     * init column meta and cache it
+     * @return
+     */
     private List<ModelColumnMeta> getColumnMetas() {
         Field[] fields = modelCls.getDeclaredFields();
-        List<ModelColumnMeta> columnMetas = new ArrayList<ModelColumnMeta>(30);
+        List<ModelColumnMeta> columnMetas = new ArrayList<>(30);
         StringBuilder insertSb=new StringBuilder();
         StringBuilder updateSb = new StringBuilder();
         StringBuilder findTinySb= new StringBuilder();
@@ -292,23 +297,7 @@ public class ModelMeta {
         return idColumnMeta;
     }
 
-    public ModelColumnMeta getColumnMetaByFieldName(String fieldName) {
-        for (ModelColumnMeta modelColumnMeta : getColumnMetaSet()) {
-            if (modelColumnMeta.fieldName.equals(fieldName)) {
-                return modelColumnMeta;
-            }
-        }
-        return null;
-    }
 
-    public ModelColumnMeta getColumnMetaBySqlColumnName(String columnName) {
-        for (ModelColumnMeta modelColumnMeta : getColumnMetaSet()) {
-            if (modelColumnMeta.columnName.equalsIgnoreCase(columnName)) {
-                return modelColumnMeta;
-            }
-        }
-        return null;
-    }
 
     public Map<String, String> getColumnToPropertyOverrides() {
         Map<String, String> overrides = new HashMap<String, String>();
@@ -346,8 +335,10 @@ public class ModelMeta {
      * 获取redis hmget的filed
      * @return
      */
+    private ReentrantLock lockFieldsInit =new ReentrantLock();
     public  byte[][] getCachedFields(){
         if(fields==null){
+            lockFieldsInit.lock();
             fields = new byte[columnMetas.size()-1][];
             int i=0;
             for(ModelColumnMeta modelColumnMeta:columnMetas){
@@ -355,6 +346,7 @@ public class ModelMeta {
                     fields[i++] = modelColumnMeta.binary;
                 }
             }
+            lockFieldsInit.unlock();
         }
         return fields;
     }
