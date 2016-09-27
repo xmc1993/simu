@@ -3,6 +3,7 @@ package cn.superid.webapp.security.impl;
 
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
+import cn.superid.webapp.utils.token.TokenUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -14,9 +15,10 @@ import javax.servlet.http.HttpSession;
 public class SpringAuthenticator implements IAuth {
 
     @Override
-    public void authUser(Long userId) {
+    public void authUser(Long userId, String chatToken) {
         HttpSession httpSession = getCurrentHttpSession();
         httpSession.setAttribute("userId", userId);
+        httpSession.setAttribute("chatToken", chatToken);
     }
 
     public void unAuthUser(HttpServletRequest request) {
@@ -31,7 +33,11 @@ public class SpringAuthenticator implements IAuth {
 
     @Override
     public void unAuthUser() {
+        Long userId = (Long)getCurrentHttpSession().getAttribute("userId");
+        String chatToken = (String)getCurrentHttpSession().getAttribute("chatToken");
+        TokenUtil.invaildLoginToken(userId, chatToken);
         getCurrentHttpSession().removeAttribute("userId");
+        getCurrentHttpSession().removeAttribute("chatToken");
         getCurrentHttpSession().invalidate();
     }
 
