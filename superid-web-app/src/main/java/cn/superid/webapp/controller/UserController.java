@@ -4,24 +4,21 @@ import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
-import cn.superid.webapp.model.base.UserBaseInfo;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
-import com.wordnik.swagger.annotations.Api;
+import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.apache.commons.logging.Log;
-
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -159,7 +156,7 @@ public class UserController {
 
 
 
-    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
+    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserDto.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token, String password, String verifyCode){
@@ -187,8 +184,12 @@ public class UserController {
             }
             return SimpleResponse.error("pwd_error");
         }
-        auth.authUser(userEntity.getId());
-        return SimpleResponse.ok(userEntity);
+
+        String chatToken = TokenUtil.setLoginToken(userEntity.getId());
+        UserDto userDto = UserDto.UserEntity2UserDto(userEntity);
+        userDto.setChatToken(chatToken);
+        auth.authUser(userEntity.getId(), chatToken);
+        return SimpleResponse.ok(userDto);
     }
 
     @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名")
