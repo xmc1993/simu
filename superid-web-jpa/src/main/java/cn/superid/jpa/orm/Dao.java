@@ -113,6 +113,8 @@ public class Dao<T> {
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = getFrom();
 
+        sb.append(fromBuilder);
+
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
@@ -128,6 +130,8 @@ public class Dao<T> {
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = getFrom();
 
+        sb.append(fromBuilder);
+
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
@@ -141,6 +145,7 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT count(id) ");
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -153,6 +158,7 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -165,6 +171,7 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -214,6 +221,7 @@ public class Dao<T> {
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -228,6 +236,7 @@ public class Dao<T> {
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
@@ -430,6 +439,7 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT 1 ");
         StringBuilder fromBuilder = getFrom();
+        sb.append(fromBuilder);
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
