@@ -201,7 +201,7 @@ public class MessageService implements IMessageService{
 
         // 范围的边界需要提供完整的PK，若查询的范围不涉及到某一列值的范围，则需要将该列设置为无穷大或者无穷小
         if(relatedId == null){
-            exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID,PrimaryKeyValue.INF_MAX);
+            exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID,PrimaryKeyValue.INF_MIN);
         }
         else{
             exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.fromLong(relatedId));
