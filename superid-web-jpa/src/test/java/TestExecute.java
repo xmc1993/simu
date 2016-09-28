@@ -24,9 +24,10 @@ import java.util.concurrent.Executors;
 /**
  * Created by zp on 2016/7/20.
  */
-@RunWith(InitResource.class)
 public class TestExecute extends TestCase {
-
+    static {
+        new InitResource();
+    }
     public void testFindById() {
 //        User user = User.findById()
     }
@@ -66,6 +67,7 @@ public class TestExecute extends TestCase {
         Assert.assertTrue(list != null);
     }
 
+    @Test
     public void testFindOne() {
         testSave();
         User user = User.dao.findOne("select * from user where name=?", "zp");
@@ -73,6 +75,7 @@ public class TestExecute extends TestCase {
     }
 
     public void testSelectOne() {
+        testSave();
         User user = User.dao.eq("name", "xxf").selectOne("id", "name");
         Assert.assertTrue(user != null);
     }

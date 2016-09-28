@@ -70,7 +70,7 @@ public class AliOssDao {
      * @param fileUrl
      */
     public static void deleteOldFile(String fileUrl){
-        OSSClient client = new OSSClient(endpoint, accessId, accessKey);
+        //OSSClient client = new OSSClient(endpoint, accessId, accessKey);
         try{
             client.deleteObject(bucket,fileUrl);
         } catch (Exception e){
