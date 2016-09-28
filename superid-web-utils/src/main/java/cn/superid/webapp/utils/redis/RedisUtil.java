@@ -10,8 +10,7 @@ import java.util.Map;
  * Created by xmc1993 on 16/8/25.
  */
 public class RedisUtil {
-    public static Jedis jedisClient = new Jedis("192.168.1.100:6378");
-
+    public static Jedis jedisClient = new Jedis("192.168.1.100", 6378);
     private RedisUtil(){
     }
 
