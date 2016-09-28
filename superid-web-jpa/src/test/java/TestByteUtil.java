@@ -1,15 +1,7 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-import cn.superid.jpa.redis.RawRedis;
-import cn.superid.jpa.util.*;
-import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import model.User;
 import org.github.jamm.MemoryMeter;
-
-import javax.validation.constraints.AssertTrue;
-import java.nio.ByteBuffer;
-import java.sql.Time;
-import java.util.HashMap;
 
 
 /**
@@ -57,37 +49,6 @@ public class TestByteUtil extends TestCase {
         System.out.println(memoryMeter.measure(serialize));
 
 
-    }
-
-    public void testUtil() throws Exception{
-        final long test = 1212121L;
-        Object t = test;
-        if(t instanceof Long){
-            System.out.println("true");
-        }
-        long[] tests ={1L,2L,3L};
-        Object a = tests;
-
-        if(a instanceof Long[]||a instanceof long[]){
-            System.out.println("true");
-        }
-
-        RawRedis rawRedis = new RawRedis();
-        byte[] bytes = BinaryUtil.toBytes(test);
-
-
-
-        Timer.compair(new Execution() {
-            @Override
-            public void execute() {
-//                BinaryUtil.toBytes1(test);
-            }
-        }, new Execution() {
-            @Override
-            public void execute() {
-                BinaryUtil.toBytes(test);
-            }
-        },1000000);
     }
 
 }

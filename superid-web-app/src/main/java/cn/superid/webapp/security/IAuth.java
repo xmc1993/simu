@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created by zp on 2016/7/25.
  */
 public interface IAuth {
-    public void authUser(Long userId);
+    public void authUser(Long userId, String chatToken);
 
     public void unAuthUser();
 

@@ -3,25 +3,25 @@ package cn.superid.webapp.utils.token;
 
 import cn.superid.webapp.utils.redis.RedisUtil;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * Created by xmc1993 on 16/8/25.
  */
-public class TokenUtil {
+public final class TokenUtil {
 
     private TokenUtil(){}
+    private static final String PREFIX = "chatToken";
 
     /**
      * 用户登录时生成TOKEN
      * @param uid
      */
-    public static void setLoginToken(Long uid){
+    public static String setLoginToken(Long uid){
         String token = UUID.randomUUID().toString();
-        RedisUtil.getJedisClient().sadd(String.valueOf(uid), token);
+        RedisUtil.getJedisClient().sadd(getKey(uid), token);
+        return token;
     }
 
     /**
@@ -30,7 +30,7 @@ public class TokenUtil {
      * @return
      */
     public static boolean invaildLoginToken(Long uid, String token){
-        return RedisUtil.getJedisClient().srem(String.valueOf(uid), token) != 0;
+        return RedisUtil.getJedisClient().srem(getKey(uid), token) != 0;
     }
 
     /**
@@ -39,8 +39,12 @@ public class TokenUtil {
      * @return
      */
     public static Set<String> getLoginToken(Long uid){
-        return RedisUtil.getJedisClient().smembers(String.valueOf(uid));
+        return RedisUtil.getJedisClient().smembers(getKey(uid));
 
+    }
+
+    private static String getKey(Long uid){
+        return PREFIX + String.valueOf(uid);
     }
 
 }

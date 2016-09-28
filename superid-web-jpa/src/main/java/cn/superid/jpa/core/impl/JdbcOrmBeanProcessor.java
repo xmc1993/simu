@@ -3,6 +3,7 @@ package cn.superid.jpa.core.impl;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.ModelUtils;
 import org.apache.commons.dbutils.BeanProcessor;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -36,8 +37,7 @@ public class JdbcOrmBeanProcessor extends BeanProcessor {
             if (null == columnName || 0 == columnName.length()) {
                 columnName = rsmd.getColumnName(col);
             }
-//            ModelMeta.ModelColumnMeta modelColumnMeta = this.modelMeta.getColumnMetaBySqlColumnName(columnName);
-//            String propertyName = modelColumnMeta != null ? modelColumnMeta.fieldName : null;
+
             String propertyName = this.columnToPropertyOverrides.get(columnName.toLowerCase());
             if (propertyName == null) {
                 propertyName = columnName;
