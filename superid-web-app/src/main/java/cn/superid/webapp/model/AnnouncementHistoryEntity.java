@@ -19,10 +19,11 @@ public class AnnouncementHistoryEntity {
     private long announcementId;
     private String title;
     private long roleId;
-    private String thumbContent;
     private String content;
     private Timestamp createTime ;
     private int version;
+    private String increment;
+    private String decrement;
 
     @Id
     @Column(name = "id")
@@ -58,14 +59,6 @@ public class AnnouncementHistoryEntity {
         this.roleId = roleId;
     }
 
-    public String getThumbContent() {
-        return thumbContent;
-    }
-
-    public void setThumbContent(String thumbContent) {
-        this.thumbContent = thumbContent;
-    }
-
     public String getContent() {
         return content;
     }
@@ -88,5 +81,21 @@ public class AnnouncementHistoryEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public String getIncrement() {
+        return increment;
+    }
+
+    public void setIncrement(String increment) {
+        this.increment = increment;
+    }
+
+    public String getDecrement() {
+        return decrement;
+    }
+
+    public void setDecrement(String decrement) {
+        this.decrement = decrement;
     }
 }

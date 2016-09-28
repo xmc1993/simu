@@ -13,6 +13,8 @@ public class ReplaceForm {
         this.newContent = newContent;
     }
 
+    public ReplaceForm(){}
+
     public int getPosition() {
         return position;
     }

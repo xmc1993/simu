@@ -30,6 +30,7 @@ public class AnnouncementEntity {
     private Timestamp modifyTime ;
     private String title;
     private int version;
+    private String decrement;
 
     @Id
     @Column(name = "id")
@@ -135,5 +136,13 @@ public class AnnouncementEntity {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public String getDecrement() {
+        return decrement;
+    }
+
+    public void setDecrement(String decrement) {
+        this.decrement = decrement;
     }
 }

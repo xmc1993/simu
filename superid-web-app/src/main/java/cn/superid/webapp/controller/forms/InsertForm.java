@@ -8,12 +8,15 @@ import java.util.List;
 public class InsertForm {
 
     private int position;
-    private List<String> content;
+    private List<EasyBlock> blocks;
 
-    public InsertForm(int position, List<String> content) {
+
+    public InsertForm(int position, List<EasyBlock> blocks) {
         this.position = position;
-        this.content = content;
+        this.blocks = blocks;
     }
+
+    public InsertForm(){}
 
     public int getPosition() {
         return position;
@@ -23,11 +26,11 @@ public class InsertForm {
         this.position = position;
     }
 
-    public List<String> getContent() {
-        return content;
+    public List<EasyBlock> getBlocks() {
+        return blocks;
     }
 
-    public void setContent(List<String> content) {
-        this.content = content;
+    public void setBlocks(List<EasyBlock> blocks) {
+        this.blocks = blocks;
     }
 }
