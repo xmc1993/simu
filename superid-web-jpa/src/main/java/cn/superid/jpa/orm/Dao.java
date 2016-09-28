@@ -6,6 +6,7 @@ import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by zp on 2016/7/21.
@@ -37,13 +38,10 @@ public class Dao<T> {
     };
 
 
-    public Dao(){};
+    public Dao(){}
 
     public Dao(Class cls){
         this.clazz =cls;
-
-
-
     }
 
     public static Session getSession() {
@@ -86,7 +84,15 @@ public class Dao<T> {
     }
 
 
+
+
+
+
     public T findTinyById(Object id){
+        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        if(modelMeta.isCacheable()){
+            throw new JdbcRuntimeException("You should not use this method");
+        }
         return (T)getSession().findTiny(this.clazz,id);
     }
 
@@ -115,9 +121,7 @@ public class Dao<T> {
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
         StringBuilder fromBuilder = getFrom();
-
         sb.append(fromBuilder);
-
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();

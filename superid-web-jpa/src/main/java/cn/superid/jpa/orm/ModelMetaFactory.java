@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by xiaofengxu on 16/9/23.
  */
 public class ModelMetaFactory {
-    private static final Map<Class<?>, ModelMeta> ENTITY_META_CACHE = new HashMap<Class<?>, ModelMeta>();
+    private static final Map<Class<?>, ModelMeta> ENTITY_META_CACHE = new HashMap<>(200);
 
     public synchronized static ModelMeta getEntityMetaOfClass(Class<?> entityCls) {
         if (ENTITY_META_CACHE.containsKey(entityCls)) {

@@ -553,9 +553,6 @@
                         </systemProperty>
                     </systemProperties>
                     <classesDirectory>${basedir}/superid-web-app/target/classes</classesDirectory>
-                    <!--<scanTargets>-->
-                    <!--<scanTarget>${basedir}/superid-web-app/src/java</scanTarget>-->
-                    <!--</scanTargets>-->
                     <scanIntervalSeconds>5</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/</contextPath>

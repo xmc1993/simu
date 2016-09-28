@@ -53,6 +53,7 @@ public class RedisUtil {
         try {
             jedis = jedisPool.getResource();
         } catch (Exception e) {
+
             logger.error("Get jedis error : "+e);
         }finally{
             lockJedis.unlock();
@@ -71,26 +72,28 @@ public class RedisUtil {
         }
         return null;
     }
-//
-//    public static int update(ExecutableModel entity){
-//        Jedis jedis = getJedis();
-//        if(jedis!=null){
-//            jedis.hset
-//
-//        }
-//        return 0;
-//    }
 
 
-    public static long delete(byte[] key){
+    public static Long delete(byte[] key){
         Jedis jedis = getJedis();
         if(jedis!=null){
-            long result = jedis.del(key);
+            Long result = jedis.del(key);
             jedis.close();
             return result;
         }
-        return 0L;
+        return null;
     }
+
+    public static Long hset(byte[] key, byte[] field, byte[] value){
+        Jedis jedis = getJedis();
+        if(jedis!=null){
+            Long index = jedis.hset(key,  field,  value);
+            jedis.close();
+            return index;
+        }
+        return null;
+    }
+
 
 
 
@@ -157,14 +160,22 @@ public class RedisUtil {
         }
     }
 
-//
-//    public static String get(String key){
-//        Jedis jedis = getJedis();
-//        if(jedis!=null){
-//            return  jedis.get(key);
-//        }
-//
-//    }
+    public static List<byte[]> findByKey(byte[] key,byte[]... fields){
+        List<byte[]> list =null;
+        try {
+            Jedis jedis = getJedis();
+            if(jedis!=null){
+                list = jedis.hmget(key,fields);
+                jedis.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
 
 
     public static byte[] generateKey(byte[] key,byte[] idByte){
@@ -178,6 +189,8 @@ public class RedisUtil {
         }
         return result;
     }
+
+
 
     public String getHost() {
         return host;

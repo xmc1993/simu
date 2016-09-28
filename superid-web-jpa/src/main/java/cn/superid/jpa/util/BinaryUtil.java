@@ -128,6 +128,8 @@ public class BinaryUtil {
         }
     }
 
+
+
     public static byte[] toBytes(byte data) {
         return new byte[]{data};
     }
@@ -471,6 +473,16 @@ public class BinaryUtil {
             if (k < 0) { j++; k = 7; }
         }
         return bools;
+    }
+
+    public static byte[][] toBytesArray(String[] data){
+        if(data==null) return null;
+        byte[][] bytes = new byte[data.length][];
+        int index=0;
+        for(String s:data){
+            bytes[index++]= toBytes(s);
+        }
+        return bytes;
     }
 
     public static String toString(byte[] data) {

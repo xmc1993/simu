@@ -11,23 +11,23 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 
 public class TestRedis {
-    JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(null);
     static {
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxIdle(100);
-        jedisPoolConfig.setMaxTotal(300);
-        jedisPoolConfig.setTestOnBorrow(true);
-        new RedisUtil(jedisPoolConfig);
+        new InitResource();
     }
     @Test
     public void testHmset(){
         final User user = new User();
         user.setName("zphahah");
-        user.setAge(19);
+        user.setAge(190);
         user.setDetails("hasasasasa");
         user.setId(1);
         String result= RedisUtil.save(user);
-        System.out.println(result);
+        Assert.assertTrue("OK".equals(result));
+
+        int age =(int) User.dao.findFieldByKey(user.getId(),"age",int.class);
+        Assert.assertTrue(age==user.getAge());
+
+
 
     }
 

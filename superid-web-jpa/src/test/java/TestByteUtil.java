@@ -12,8 +12,7 @@ public class TestByteUtil extends TestCase {
 
     static {
 
-        JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(null);
-
+        new InitResource();
     }
 
 
