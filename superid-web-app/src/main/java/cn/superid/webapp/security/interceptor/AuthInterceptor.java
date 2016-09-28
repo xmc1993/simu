@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -55,6 +56,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     private static final Lock serviceMethodNotLoginInfoLock = new ReentrantLock();
     private static final Map<String, Object> serviceMethodRequiredPermissionsMapping = new HashMap<>();
     private static final Lock serviceMethodRequiredPermissionsLock = new ReentrantLock();
+    private static JSONObject jsonObject = new JSONObject();
 
     private static String getHandlerMethodSignature(HandlerMethod handlerMethod) {
         StringBuilder builder = new StringBuilder();
@@ -118,6 +120,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String contentType = request.getContentType();
+        System.out.println(contentType);
+        if(ContentType.applicationJSON.equals(contentType)){
+            //是json就转成JSONObject然后通过key获取值
+            String requestInputStream = getRequestInputStream(request);
+            jsonObject = (JSONObject) JSON.parse(requestInputStream);
+        }else{
+
+        }
         if(!(handler instanceof HandlerMethod)){
             return super.preHandle(request, response, handler);
         }
@@ -197,10 +208,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         }
 
 
-        String  thisRole = (String)getParameterValue(request,"operationRoleId");
+        //String  thisRole = (String)getParameterValue(request,"operationRoleId");
+        String thisRole = request.getParameter("operationRoleId");
         Long roleId =null;
         if(thisRole!=null){
-            roleId = (Long) getParameterValue(request,"operationRoleId");
+            roleId = Long.parseLong(thisRole);
             if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
                 return notPermitted;
             }
@@ -216,8 +228,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
-            Long affairId = (Long) getParameterValue(request,"affairId");
-            Long allianceId = (Long) getParameterValue(request,"allianceId");
+            //Long affairId = (Long) getParameterValue(request,"affairId");
+            //Long allianceId = (Long) getParameterValue(request,"allianceId");
+            Long affairId = Long.parseLong(request.getParameter("affairId")) ;
+            Long allianceId = Long.parseLong(request.getParameter("allianceId")) ;
             if(affairId==null){
                 return notPermitted;
             }
@@ -231,7 +245,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] alliancePermissions = requiredPermissions.alliance();//检查盟权限
         if(alliancePermissions!=null&&alliancePermissions.length!=0){
-            Long allianceId = (Long) getParameterValue(request,"allianceId");
+            //Long allianceId = (Long) getParameterValue(request,"allianceId");
+            Long allianceId = Long.parseLong(request.getParameter("allianceId")) ;
             if(allianceId==null){
                 return notPermitted;
             }
