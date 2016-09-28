@@ -86,6 +86,9 @@ public class AnnouncementController {
         int lower = version-offsetTail;
         List<AnnouncementHistoryEntity> lowHistories = AnnouncementHistoryEntity.dao.partitionId(announcementId).lt("version",version+1).gt("version",lower-1).desc("version").selectList();
         for(AnnouncementHistoryEntity a : lowHistories){
+            if(a.getDecrement().equals("0")){
+                break;
+            }
             EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
             operations.add(e);
         }
