@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import model.Role;
 import model.User;
 import org.junit.Assert;
+import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
 import redis.clients.jedis.JedisPoolConfig;
@@ -24,29 +25,9 @@ import java.util.concurrent.Executors;
  * Created by zp on 2016/7/20.
  */
 public class TestExecute extends TestCase {
-
-    public static DruidDataSource getDataSource() {
-        DruidDataSource dataSource = new DruidDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUsername("superid");
-        dataSource.setPassword("superid");
-        dataSource.setUrl("jdbc:mysql://rm-bp1943x791y4e3z21.mysql.rds.aliyuncs.com/jpa");
-        dataSource.setInitialSize(5);
-        dataSource.setMinIdle(1);
-        dataSource.setMaxActive(1000);
-        return dataSource;
-    }
-
     static {
-        JdbcSessionFactory jdbcSessionFactory = new JdbcSessionFactory(getDataSource());
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxIdle(100);
-        jedisPoolConfig.setMaxTotal(300);
-        jedisPoolConfig.setTestOnBorrow(true);
-        new RedisUtil(jedisPoolConfig);
+        new InitResource();
     }
-
-
     public void testFindById() {
 //        User user = User.findById()
     }
@@ -86,6 +67,7 @@ public class TestExecute extends TestCase {
         Assert.assertTrue(list != null);
     }
 
+    @Test
     public void testFindOne() {
         testSave();
         User user = User.dao.findOne("select * from user where name=?", "zp");
@@ -93,6 +75,7 @@ public class TestExecute extends TestCase {
     }
 
     public void testSelectOne() {
+        testSave();
         User user = User.dao.eq("name", "xxf").selectOne("id", "name");
         Assert.assertTrue(user != null);
     }

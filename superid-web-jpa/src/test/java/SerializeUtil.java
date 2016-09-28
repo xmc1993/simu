@@ -1,5 +1,3 @@
-package cn.superid.jpa.util;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;

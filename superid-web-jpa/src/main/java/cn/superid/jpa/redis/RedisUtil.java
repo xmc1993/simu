@@ -157,7 +157,14 @@ public class RedisUtil {
         }
     }
 
-
+//
+//    public static String get(String key){
+//        Jedis jedis = getJedis();
+//        if(jedis!=null){
+//            return  jedis.get(key);
+//        }
+//
+//    }
 
 
     public static byte[] generateKey(byte[] key,byte[] idByte){
