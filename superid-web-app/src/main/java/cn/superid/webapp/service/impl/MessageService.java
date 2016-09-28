@@ -11,16 +11,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import com.aliyun.openservices.ots.model.condition.RelationalCondition;
-import com.sun.org.apache.regexp.internal.RE;
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by njuTms on 16/9/26.
  */
+@Service
 public class MessageService implements IMessageService{
     private final static String TABLE_NAME = "message";
 
