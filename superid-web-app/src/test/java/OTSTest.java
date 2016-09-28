@@ -1,3 +1,5 @@
+
+import cn.superid.webapp.enums.MessageColumn;
 import cn.superid.webapp.service.IMessageService;
 import com.aliyun.openservices.ots.model.Row;
 import org.junit.Test;
@@ -24,6 +26,8 @@ public class OTSTest {
         map.put("type",2);
         map.put("title","托马斯");
         map.put("content","test");
+        map.put("content","第几条");
+
         long ts = System.currentTimeMillis();
         messageService.insertIntoTable(1L,1L,map);
     }
@@ -34,5 +38,17 @@ public class OTSTest {
         for(Row row : rows){
             System.out.println(row);
         }
+        //List<Row> rows = messageService.getFromTable(1L,2);
+
+        for(Row row : rows){
+            System.out.println(row);
+        }
+
+        //System.out.println(rows.get(rows.size()-1));
+    }
+
+    @Test
+    public void getFromTableByTypeTest(){
+        messageService.getFromTableByColumnName(1L,1L, MessageColumn.TYPE,2);
     }
 }
