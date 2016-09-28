@@ -335,7 +335,7 @@ public class TestExecute extends TestCase {
                 User.dao.id(user.getId()).selectOne();
 
             }
-        },10000);
+        },10);
 
         User user1 = User.dao.findById(user.getId());
         Assert.assertTrue(user1.getName().equals(user.getName()));

@@ -48,6 +48,9 @@ public class ConditionalDao<T> extends Dao<T> {
     public ConditionalDao<T> id(Object value){
         return and("id","=",value);
     }
+    public ConditionalDao<T> key(Object value){
+        return id(value);
+    }
 
     public ConditionalDao<T> state(Object value){
         return and("state","=",value);
