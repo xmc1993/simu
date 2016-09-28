@@ -1,4 +1,3 @@
-import cn.superid.jpa.util.SerializeUtil;
 import cn.superid.webapp.model.TestEntity;
 import cn.superid.webapp.utils.Timer;
 import org.junit.After;
@@ -96,35 +95,6 @@ public class TestSerializeCapability {
 
 
 
-  @Test
-    public void testRedisSave(){
-      TestEntity testEntity=new TestEntity();
-      testEntity.setId(345L);
-      testEntity.setDescription("test");
-      testEntity.setCreateRoleId(123L);
-      testEntity.setAllianceId(456L);
-      testEntity.setIsFree(1);
-      testEntity.setIsVideo(0);
-
-
-      Timer timer = new Timer();
-      for(int i = 0; i < 1000; i++) {
-         binaryClient.hmset(("jredis"+i).getBytes(),testEntity.generateHashByteMap());
-      }
-      for(int i = 0; i < 1000; i++) {
-          binaryClient.hmget(("jredis"+i).getBytes(),"allianceId".getBytes());
-         System.out.println();
-
-      }
-      timer.end();
-
-      Timer timer1=new Timer();
-      for(int i = 0; i < 1000; i++) {
-          jedisClient.set(("jredis"+i).getBytes(), SerializeUtil.serialize(testEntity));
-      }
-      timer1.end();
-
-  }
 
 
 
