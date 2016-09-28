@@ -1,4 +1,3 @@
-import cn.superid.jpa.util.SerializeUtil;
 import cn.superid.webapp.model.TestEntity;
 import cn.superid.webapp.utils.Timer;
 import org.junit.After;
@@ -120,7 +119,7 @@ public class TestSerializeCapability {
 
       Timer timer1=new Timer();
       for(int i = 0; i < 1000; i++) {
-          jedisClient.set(("jredis"+i).getBytes(), SerializeUtil.serialize(testEntity));
+//          jedisClient.set(("jredis"+i).getBytes(), SerializeUtil.serialize(testEntity));
       }
       timer1.end();
 
