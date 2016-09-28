@@ -16,6 +16,9 @@ public class EditDistanceForm {
         this.replace = replace;
     }
 
+    public EditDistanceForm(){}
+
+
     public List<Integer> getDelete() {
         return delete;
     }

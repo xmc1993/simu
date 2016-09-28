@@ -1,9 +1,11 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.forms.EasyBlock;
+import cn.superid.webapp.controller.forms.EditDistanceForm;
+import cn.superid.webapp.controller.forms.InsertForm;
+import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.service.IAnnouncementService;
-import cn.superid.webapp.service.forms.Block;
-import cn.superid.webapp.service.forms.Operation;
-import cn.superid.webapp.service.forms.OperationListForm;
+import cn.superid.webapp.service.forms.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -18,11 +20,11 @@ import java.util.List;
 @Service
 public class AnnouncementService implements IAnnouncementService{
     @Override
-    public OperationListForm compareTwoPapers(List<Block> present, List<Block> history) {
+    public EditDistanceForm compareTwoPapers(List<Block> present, List<Block> history) {
         //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
-        List<Operation> substitute = new ArrayList<>();
-        List<Operation> insert = new ArrayList<>();
-        List<Operation> delete = new ArrayList<>();
+        List<ReplaceForm> substitute = new ArrayList<>();
+        List<InsertForm> insert = new ArrayList<>();
+        List<Integer> delete = new ArrayList<>();
         List<Block> replace = new ArrayList<>();
         for(int i = 0 ; i < present.size() ; i++){
             boolean isExit = false;
@@ -31,7 +33,7 @@ public class AnnouncementService implements IAnnouncementService{
                     replace.add(new Block(present.get(i).getKey(),"",i,j));
                     if(!present.get(i).getContent().equals(history.get(j).getContent())){
                         //如果两个key相同的block的content不相同,则需要替换操作,相同的话则不需要动
-                        substitute.add(new Operation("substitute",i+1,history.get(j).getContent()));
+                        substitute.add(new ReplaceForm(i+1,history.get(j).getContent()));
                     }
                     isExit = true ;
                     break;
@@ -39,44 +41,50 @@ public class AnnouncementService implements IAnnouncementService{
             }
             if(isExit == false){
                 //表示该block在老文章中存在,但在新文章中不存在,应该删除
-                delete.add(new Operation("delete",i+1,""));
+                delete.add(i+1);
             }
         }
 
         if(replace.size() == 0){
             //如果没有重复的block,则在开头把所有的按顺序加上就好
+            List<EasyBlock> list = new ArrayList<>();
             for(Block b : history){
-                insert.add(new Operation("insert",0,b.getContent()));
+                list.add(new EasyBlock(b.getContent(),b.getKey()));
             }
+            insert.add(new InsertForm(0,list));
         }else{
             //第三步,增加没有的block
             for(int i = 0 ; i < replace.size() ; i++){
+                List<EasyBlock> list = new ArrayList<>();
                 if(i == 0){
                     //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后
                     for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
-                        insert.add(new Operation("insert",0,history.get(z).getContent()));
+                        list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
                     }
-                }else if(i == replace.size()-1){
+                    insert.add(new InsertForm(0,list));
+                    list = new ArrayList<>();
+                }
+                if(i == replace.size()-1){
                     //如果是最后一个,则把最后那部分加入到最后
                     if(!(replace.get(i).getNewlocation() == history.size()-1)){
                         //如果之后都没有段落了,则不用插入
                         for(int z = replace.get(i).getNewlocation()+1 ; z < history.size() ; z++ ){
-                            insert.add(new Operation("insert",replace.get(i).getLocation()+1,history.get(z).getContent()));
+                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
                         }
+                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
+                        list = new ArrayList<>();
                     }
-                }else{
+                }
+                if(i > 0 & i < replace.size()-1){
                     //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
                     for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
-                        insert.add(new Operation("insert",replace.get(i).getLocation()+1,history.get(z).getContent()));
+                        list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
                     }
+                    insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
                 }
             }
         }
-
-        OperationListForm result = new OperationListForm(insert,substitute,delete);
-
-
-
+        EditDistanceForm result = new EditDistanceForm(delete,insert,substitute);
         return result;
     }
 
@@ -88,6 +96,75 @@ public class AnnouncementService implements IAnnouncementService{
             JSONObject one = bs.getJSONObject(i);
             result.add(new Block(one.getString("key"),one.getString("text"),i));
         }
+        return result;
+    }
+
+    public String caulatePaper(String content , String operations){
+
+        ContentState total = JSON.parseObject(content,ContentState.class);
+        List<TotalBlock> blocks = total.getBlocks();
+
+        EditDistanceForm ope = JSON.parseObject(operations,EditDistanceForm.class);
+
+        //该方法处理逻辑:先处理替换,再处理删除,但不真正执行,只是记录下要删除的key,防止打乱add的location,然后执行add方法,最后执行delete
+        for(ReplaceForm r : ope.getReplace()){
+            //完成替换
+            blocks.get(r.getPosition()-1).setText(r.getNewContent());
+        }
+        List<TotalBlock> deletes = new ArrayList<>();
+        //得到要删除的key
+        for(Integer i : ope.getDelete()){
+            deletes.add(blocks.get(i-1));
+        }
+
+        List<TotalBlock> adds = new ArrayList<>();
+        //因为插入也会使location变动,所以先记录是跟在谁后面
+        for(InsertForm insert : ope.getInsert()){
+            if(insert.getPosition() == 0){
+                adds.add(null);
+            }else{
+                adds.add(blocks.get(insert.getPosition()-1));
+            }
+
+        }
+
+        //执行insert,因为和上面次序一致,所以可以直接用
+        for(int i = 0 ; i < ope.getInsert().size() ; i++){
+            InsertForm insert = ope.getInsert().get(i);
+            List<TotalBlock> bs = new ArrayList<>();
+            for(EasyBlock e : insert.getBlocks()){
+                TotalBlock t = new TotalBlock(new Object(),0,new ArrayList<>(),new ArrayList<>(),e.getKey(),e.getContent(),"unstyled");
+                bs.add(t);
+            }
+            if(adds.get(i) == null){
+                //表示是在开头插入
+                blocks.addAll(0,bs);
+            }else{
+                int location = blocks.indexOf(adds.get(i))+1;
+                blocks.addAll(location,bs);
+            }
+
+
+        }
+
+        //第三步,执行删除
+        blocks.removeAll(deletes);
+
+        total.setBlocks(blocks);
+
+        return JSONObject.toJSONString(total);
+
+    }
+
+    @Override
+    public List<Block> getBlock(ContentState content) {
+        List<Block> result = new ArrayList<>();
+        int i = 0;
+        for(TotalBlock t : content.getBlocks()){
+            result.add(new Block(t.getKey(),t.getText(),i));
+            i++;
+        }
+
         return result;
     }
 }
