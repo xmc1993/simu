@@ -115,19 +115,16 @@ public class Dao<T> {
     }
 
     public T selectOne(String... params){
-
-
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
     }
 
@@ -137,55 +134,51 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        StringBuilder fromBuilder = getFrom();
+        StringBuilder from = getFrom();
 
-        sb.append(fromBuilder);
+        sb.append(from);
 
         sb.append(builder);
         sb.append(" limit 1");
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return AbstractSession.currentSession().findOne(target,sql,sqlParams);
     }
 
     public int count(){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT count(id) ");
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
     }
 
     public int sum(String param){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
     }
 
     public List<Integer> sumList(String param){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT sum("+param+") ");
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return  AbstractSession.currentSession().findList(Integer.class,sql,sqlParams);
     }
 
@@ -196,7 +189,8 @@ public class Dao<T> {
     public List<T> selectByPagination(Pagination pagination,String... params){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT count(id) ");
-        StringBuilder fromBuilder = getFrom();
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         int total = (int) AbstractSession.currentSession().findOne(Integer.class,sb.toString(),sqlParams);
@@ -205,20 +199,13 @@ public class Dao<T> {
 
         StringBuilder list = new StringBuilder(" SELECT ");
         list.append(StringUtil.joinParams(",",params));
-        if(fromBuilder.length() == fromLength){
-            //相等的话表示没做join
-            sb.append(fromBuilder);
-            sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
-        }else{
-            sb.append(fromBuilder);
-        }
+        list.append(from);
         list.append(builder);
         list.append(" limit ?,? ");
         parameterBindings.get().addIndexBinding(pagination.getOffset());
         parameterBindings.get().addIndexBinding(pagination.getSize());
         Object[] listParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return (List<T>) AbstractSession.currentSession().findList(this.clazz, list.toString(), listParams);
 
     }
@@ -229,13 +216,12 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return (List<T>) AbstractSession.currentSession().findList(this.clazz, sql, sqlParams);
 
     }
@@ -244,13 +230,12 @@ public class Dao<T> {
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
-        StringBuilder fromBuilder = getFrom();
-        sb.append(fromBuilder);
+        StringBuilder from = getFrom();
+        sb.append(from);
         sb.append(builder);
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return  AbstractSession.currentSession().findList(target, sql, sqlParams);
 
     }
@@ -287,8 +272,7 @@ public class Dao<T> {
         sb.append(builder);
         String sql = sb.toString();
         ParameterBindings all = pb.addAll(parameterBindings.get());
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,all);
     }
 
@@ -318,8 +302,7 @@ public class Dao<T> {
         sb.append(builder);
         String sql = sb.toString();
         ParameterBindings all = pb.addAll(parameterBindings.get());
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,all);
     }
 
@@ -343,8 +326,7 @@ public class Dao<T> {
         sb.append(builder);
         String sql = sb.toString();
         ParameterBindings all = pb.addAll(parameterBindings.get());
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,all);
     }
 
@@ -377,8 +359,7 @@ public class Dao<T> {
         sb.append(builder);
         String sql = sb.toString();
         ParameterBindings all = pb.addAll(parameterBindings.get());
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,all);
 
     }
@@ -398,8 +379,7 @@ public class Dao<T> {
         }
         all= setParams.addAll(parameterBindings.get());
 
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,all);
 
     }
@@ -415,8 +395,7 @@ public class Dao<T> {
         sb.append(builder);
         String sql = sb.toString();
         Object[] params = parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return getSession().execute(sql,params);
     }
 
@@ -453,17 +432,17 @@ public class Dao<T> {
         sb.append(" limit 1");
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        builder.delete(whereLength,builder.length());
-        parameterBindings.get().clear();
+        clear();
         return AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams)!=null;
     }
 
     private  StringBuilder getFrom(){
         StringBuilder fromBuilder = from.get();
         if(fromBuilder.length() == fromLength){
+            fromBuilder  = new StringBuilder(fromStr);
             fromBuilder.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
         }
-        return fromBuilder;
+        return  fromBuilder;
     }
 
     private StringBuilder getWhere(){
@@ -472,6 +451,12 @@ public class Dao<T> {
             throw new JdbcRuntimeException("You should has where conditions");
         }
         return builder;
+    }
+
+    private void clear(){
+        from.get().delete(fromLength,from.get().length());
+        where.get().delete(whereLength,where.get().length());
+        parameterBindings.get().clear();
     }
 
 

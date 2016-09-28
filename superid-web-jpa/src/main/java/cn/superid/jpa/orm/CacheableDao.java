@@ -38,7 +38,8 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     @Override
     public ConditionalDao id(Object value) {
         key.set(value);
-        return super.id(value);
+        super.id(value);
+        return this;
     }
 
     @Override
@@ -52,14 +53,32 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         Object id = key.get();
         if(id!=null){
             byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
-            Object cached =RedisUtil.findByKey(redisKey,BinaryUtil.toBytesArray(params));
-            if(cached!=null){
-                return (T)cached;
+            List<byte[]> result =RedisUtil.findByKey(redisKey,BinaryUtil.toBytesArray(params));
+            if(result!=null&&result.size()>0){
+                Object cached = null;
+                try {
+                    cached = this.clazz.newInstance();
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                if(cached!=null){
+                    int i =0;
+                    for(String field:params){
+                        for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
+                            if(modelColumnMeta.fieldName.equals(field)){
+                                modelColumnMeta.fieldAccessor.setProperty(cached,BinaryUtil.getValue(result.get(i++),modelColumnMeta.fieldType));
+                            }
+                        }
+                    }
+                    return (T)cached;
+                }
             }
         }else{
             throw  new RuntimeException("Cacheable model should operation by id");
         }
-        return super.selectOne(params);
+        return (T)super.selectOne(params);
     }
 
     public Object findFieldByKey(Object key,String field,Class<?> clazz){

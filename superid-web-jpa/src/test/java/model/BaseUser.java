@@ -1,8 +1,7 @@
 package model;
 
 import cn.superid.jpa.annotation.Cacheable;
-import cn.superid.jpa.annotation.NotTooSimple;
-import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.CacheableDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Entity;
@@ -10,16 +9,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Created by zp on 2016/7/20.
+ * Created by xiaofengxu on 16/9/28.
  */
 @Entity
 @Table(name = "user")
-public class User  extends ExecutableModel{
-   public static ConditionalDao<User> dao = new ConditionalDao<>(User.class);
+@Cacheable(key = "us")
+public class BaseUser  extends ExecutableModel {
+    public static CacheableDao<BaseUser> dao = new CacheableDao<>(BaseUser.class);
     private int id;
     private String name;
     private int age;
-    private String details;
 
     @Id
     public int getId() {
@@ -44,14 +43,5 @@ public class User  extends ExecutableModel{
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    @NotTooSimple
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
     }
 }
