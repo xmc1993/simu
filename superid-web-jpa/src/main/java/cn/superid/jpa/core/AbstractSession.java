@@ -3,6 +3,7 @@ package cn.superid.jpa.core;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.ModelMetaFactory;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.BinaryUtil;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
@@ -228,6 +229,7 @@ public abstract class AbstractSession implements Session {
         ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
+        hashMap.put(RedisUtil.getHmFeature(),RedisUtil.getHmFeature());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             if(modelColumnMeta.isId){
                 continue;

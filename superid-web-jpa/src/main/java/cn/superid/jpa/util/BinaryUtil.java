@@ -1,5 +1,7 @@
 package cn.superid.jpa.util;
 
+import cn.superid.jpa.redis.RedisUtil;
+
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -481,8 +483,9 @@ public class BinaryUtil {
 
     public static byte[][] toBytesArray(String[] data){
         if(data==null) return null;
-        byte[][] bytes = new byte[data.length][];
-        int index=0;
+        byte[][] bytes = new byte[data.length+1][];
+        bytes[0] = RedisUtil.getHmFeature();
+        int index=1;
         for(String s:data){
             bytes[index++]= toBytes(s);
         }

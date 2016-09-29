@@ -30,6 +30,7 @@ public class RedisUtil {
     private int timeout =2000;
     private int dbIndex =0;
     private String password =null;
+    private static byte[] hmFeature = {'0'};//check is real hashmap not empty or hset one field
 
 
 
@@ -110,41 +111,41 @@ public class RedisUtil {
 
 
 
-    public static Object findByKey(byte[] key,Class<?> clazz,byte[][] fields){
-        try {
-            Object result = clazz.newInstance();
-            Jedis jedis = getJedis();
-            if(jedis!=null){
-                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
-                List<byte[]> list = jedis.hmget(key,fields);
-                jedis.close();
-                if (list==null||list.size()==0){
-                    return null;
-                }
-                int index=0;
-                for(byte[] value:list){
-                    byte[] field = fields[index++];
-                    for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
-                        if(field.length==modelColumnMeta.binary.length){
-                            int i;
-                            for( i=0;i<field.length;i++){
-                                if(field[i]!=modelColumnMeta.binary[i]){
-                                    break;
-                                }
-                            }
-                            if(i==field.length){//属于同一个熟悉
-                                FieldAccessor fieldAccessor=modelColumnMeta.fieldAccessor;
-                                fieldAccessor.setProperty(result, BinaryUtil.getValue(value,modelColumnMeta.fieldType));
-                            }
-                        }
-                    }
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    public static Object findByKey(byte[] key,Class<?> clazz,byte[][] fields){
+//        try {
+//            Object result = clazz.newInstance();
+//            Jedis jedis = getJedis();
+//            if(jedis!=null){
+//                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+//                List<byte[]> list = jedis.hmget(key,fields);
+//                jedis.close();
+//                if (list==null||list.size()==0){
+//                    return null;
+//                }
+//                int index=0;
+//                for(byte[] value:list){
+//                    byte[] field = fields[index++];
+//                    for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
+//                        if(field.length==modelColumnMeta.binary.length){
+//                            int i;
+//                            for( i=0;i<field.length;i++){
+//                                if(field[i]!=modelColumnMeta.binary[i]){
+//                                    break;
+//                                }
+//                            }
+//                            if(i==field.length){//属于同一个熟悉
+//                                FieldAccessor fieldAccessor=modelColumnMeta.fieldAccessor;
+//                                fieldAccessor.setProperty(result, BinaryUtil.getValue(value,modelColumnMeta.fieldType));
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            return result;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
     public static Object findByKey(Object id,Class<?> clazz){
         try {
@@ -154,18 +155,10 @@ public class RedisUtil {
                 ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
                 List<byte[]> list = jedis.hmget(generateKey(modelMeta.getKey(),BinaryUtil.getBytes(id)),modelMeta.getCachedFields());
                 jedis.close();
-                boolean notNull = false;
-                for(byte[] bytes:list){
-                    if(bytes!=null){
-                        notNull = true;
-                        break;
-                    }
-                }
-                if(!notNull){
+                if(!RedisUtil.isPOJO(list)){
                     return null;
                 }
-
-                int index=0;
+                int index=1;
 
                 for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
                     if(modelColumnMeta.isId){
@@ -212,6 +205,20 @@ public class RedisUtil {
         return result;
     }
 
+    public static byte[] getHmFeature(){
+        return hmFeature;
+    }
+
+
+    public static boolean isPOJO(List<byte[]> result){
+        if(result!=null&&result.size()>0){
+            byte[] var = result.get(0);
+            if(var!=null&&var.length>0){
+                return var[0]==hmFeature[0];
+            }
+        }
+        return false;
+    }
 
 
     public String getHost() {
