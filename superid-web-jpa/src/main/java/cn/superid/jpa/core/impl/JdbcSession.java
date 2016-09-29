@@ -440,6 +440,15 @@ public class JdbcSession extends AbstractSession {
     }
 
 
+    /**
+     *
+     * @param cls return Type
+     * @param id
+     * @param partitionId Distributed db partitionId
+     * @param tiny not select Unnecessary big column
+     * @return
+     */
+
     public Object find(Class<?> cls, Object id,Object partitionId, boolean tiny) {
         try {
             String sql;

@@ -25,7 +25,8 @@ public class TestRedis {
         String result =(String) BaseUser.dao.findFieldByKey(user.getId(),"name",String.class);
         Assert.assertTrue(result.equals(user.getName()));
 
-//        BaseUser user1 = BaseUser.dao.id(user.getId()).selectOne("name","age");
+        BaseUser user1 = BaseUser.dao.id(user.getId()).selectOne("name","age");
+        Assert.assertTrue(user1.getAge()==19);
 
     }
 

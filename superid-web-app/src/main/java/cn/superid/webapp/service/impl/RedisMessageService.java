@@ -17,28 +17,28 @@ import java.util.concurrent.Executors;
  */
 @Service
 public class RedisMessageService implements IRedisMessageService {
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private JedisConnectionFactory jedisConnectionFactory;
-
-    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+//    @Autowired
+//    private RedisTemplate<String, Object> redisTemplate;
+//    @Autowired
+//    private JedisConnectionFactory jedisConnectionFactory;
+//
+//    private ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     @Override
     public void sendMessage(String channel, Serializable message) {
-        redisTemplate.convertAndSend(channel, message);
+//        redisTemplate.convertAndSend(channel, message);
     }
 
     @Override
     public void sendJsonMessage(String channel, Message message) {
-        Gson gson = new Gson();
-        final String msg = gson.toJson(message);
-
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                jedisConnectionFactory.getConnection().publish("room_message".getBytes(), msg.getBytes());
-            }
-        });
+//        Gson gson = new Gson();
+//        final String msg = gson.toJson(message);
+//
+//        executor.submit(new Runnable() {
+//            @Override
+//            public void run() {
+//                jedisConnectionFactory.getConnection().publish("room_message".getBytes(), msg.getBytes());
+//            }
+//        });
     }
 }

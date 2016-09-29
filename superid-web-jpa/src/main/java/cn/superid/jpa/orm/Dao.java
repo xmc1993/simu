@@ -72,13 +72,6 @@ public class Dao<T> {
 
 
     public T findById(Object id){
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
-        if(modelMeta.isCacheable()){
-            Object cached = RedisUtil.findByKey(id,clazz);
-            if(cached!=null){
-                return (T) cached;
-            }
-        }
 
         return  (T) getSession().find(this.clazz,id);
     }

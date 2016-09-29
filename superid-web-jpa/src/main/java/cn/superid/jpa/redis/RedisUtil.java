@@ -9,7 +9,9 @@ import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.util.BinaryUtil;
+import cn.superid.jpa.util.StringUtil;
 import org.apache.log4j.Logger;
+import org.apache.log4j.lf5.util.StreamUtils;
 import redis.clients.jedis.*;
 
 /**
@@ -26,8 +28,8 @@ public class RedisUtil {
     private String host ="localhost";
     private int port = 6379;
     private int timeout =2000;
-    private String password=null;
     private int dbIndex =0;
+    private String password =null;
 
 
 
@@ -35,10 +37,21 @@ public class RedisUtil {
      * 初始化Redis连接池
      */
 
-    public RedisUtil(JedisPoolConfig jedisPoolConfig ){
+    public RedisUtil(JedisPoolConfig jedisPoolConfig,String host,int port,int timeout,String password ){
+        this.host = host;
+        this.port = port;
+        this.timeout = timeout;
+        if(StringUtil.isEmpty(password)){
+            password =null;
+        }
+        this.password = password;
         jedisPool = new JedisPool(jedisPoolConfig,host,port,timeout,password);
-
     }
+
+    public RedisUtil(JedisPoolConfig jedisPoolConfig ){
+        jedisPool = new JedisPool(jedisPoolConfig,this.host,this.port,this.timeout,this.password);
+    }
+
 
 
     public static Jedis getJedis() {
@@ -141,10 +154,19 @@ public class RedisUtil {
                 ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
                 List<byte[]> list = jedis.hmget(generateKey(modelMeta.getKey(),BinaryUtil.getBytes(id)),modelMeta.getCachedFields());
                 jedis.close();
-                if (list==null||list.size()==0){
+                boolean notNull = false;
+                for(byte[] bytes:list){
+                    if(bytes!=null){
+                        notNull = true;
+                        break;
+                    }
+                }
+                if(!notNull){
                     return null;
                 }
+
                 int index=0;
+
                 for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
                     if(modelColumnMeta.isId){
                         continue;
@@ -214,11 +236,6 @@ public class RedisUtil {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public int getDbIndex() {

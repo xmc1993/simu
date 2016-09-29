@@ -76,6 +76,10 @@ public class BinaryUtil {
 
 
     public static Object getValue(byte[] bytes,Class<?> clazz) {
+        if(bytes==null||bytes.length==0){
+            return null;
+        }
+
         if(clazz == Long.class || clazz == long.class){
             return  toLong(bytes);
         }

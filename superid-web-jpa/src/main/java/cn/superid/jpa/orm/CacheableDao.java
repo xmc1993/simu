@@ -36,7 +36,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     }
 
     @Override
-    public ConditionalDao id(Object value) {
+    public CacheableDao<T> id(Object value) {
         key.set(value);
         super.id(value);
         return this;
@@ -44,10 +44,17 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
     @Override
     public T findById(Object id) {
-        return super.findById(id);
+        Object cached = RedisUtil.findByKey(id,clazz);
+        if(cached!=null){
+            return (T) cached;
+        }
+        T getFromSQl = super.findById(id);
+        if(getFromSQl!=null){
+            RedisUtil.save((ExecutableModel) getFromSQl);
+        }
+        return getFromSQl;
     }
 
-    @Override
     public T selectOne(String... params) {
         ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
         Object id = key.get();
@@ -227,7 +234,16 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
     @Override
     public T findById(Object id, Object partitionId) {
-        return super.findById(id, partitionId);
+        Object cached = RedisUtil.findByKey(id,clazz);
+        if(cached!=null){
+            return (T) cached;
+        }
+        T getFromSQl = super.findById(id, partitionId);
+        if(getFromSQl!=null){
+            RedisUtil.save((ExecutableModel) getFromSQl);
+        }
+
+        return getFromSQl;
     }
 
     @Override

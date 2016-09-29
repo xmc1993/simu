@@ -1,7 +1,7 @@
 package cn.superid.webapp.model.base;
 
 import cn.superid.jpa.annotation.Cacheable;
-import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.CacheableDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
@@ -11,8 +11,9 @@ import javax.persistence.Table;
  * Created by jizhenya on 16/9/12.
  */
 @Table(name = "role")
+@Cacheable( key = "rl")
 public class RoleBaseInfo  extends ExecutableModel {
-    public final static ConditionalDao<RoleBaseInfo> dao = new ConditionalDao<>(RoleBaseInfo.class);
+    public final static CacheableDao<RoleBaseInfo> dao = new CacheableDao<>(RoleBaseInfo.class);
     private long id;
     private long userId;
     private long allianceId;

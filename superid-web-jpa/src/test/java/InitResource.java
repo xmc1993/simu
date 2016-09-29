@@ -22,6 +22,6 @@ public class InitResource  {
         jedisPoolConfig.setMaxIdle(100);
         jedisPoolConfig.setMaxTotal(300);
         jedisPoolConfig.setTestOnBorrow(true);
-        new RedisUtil(jedisPoolConfig);
+        new RedisUtil(jedisPoolConfig,"192.168.1.100",6378,2000,null);
     }
 }

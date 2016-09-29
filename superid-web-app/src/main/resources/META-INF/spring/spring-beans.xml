@@ -38,34 +38,33 @@
         <property name="testOnBorrow" value="${redis.testOnBorrow}" />
     </bean>
 
-    <!-- spring data redis -->
-    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <property name="usePool" value="true"></property>
-        <property name="hostName" value="${redis.host}" />
-        <property name="port" value="${redis.port}" />
-        <property name="password" value="${redis.pass}" />
-        <property name="timeout" value="${redis.timeout}" />
-        <property name="database" value="${redis.default.db}"/>
-        <constructor-arg index="0" ref="jedisPoolConfig" />
-    </bean>
+    <!--&lt;!&ndash; spring data redis &ndash;&gt;-->
+    <!--<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+        <!--<property name="usePool" value="true"></property>-->
+        <!--<property name="hostName" value="${redis.host}" />-->
+        <!--<property name="port" value="${redis.port}" />-->
+        <!--<property name="password" value="${redis.pass}" />-->
+        <!--<property name="timeout" value="${redis.timeout}" />-->
+        <!--<property name="database" value="${redis.default.db}"/>-->
+        <!--<constructor-arg index="0" ref="jedisPoolConfig" />-->
+    <!--</bean>-->
 
-    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-        <property name="connectionFactory" ref="connectionFactory" />
-    </bean>
+    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">-->
+        <!--<property name="connectionFactory" ref="connectionFactory" />-->
+    <!--</bean>-->
 
-    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
-        <property name="connectionFactory" ref="connectionFactory" />
-    </bean>
+    <!--<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">-->
+        <!--<property name="connectionFactory" ref="connectionFactory" />-->
+    <!--</bean>-->
 
 
 
     <bean id="redisUtil" class="cn.superid.jpa.redis.RedisUtil">
-        <property name="host" value="${redis.host}" />
-        <property name="port" value="${redis.port}" />
-        <property name="password" value="${redis.pass}" />
-        <property name="timeout" value="${redis.timeout}" />
-        <property name="dbIndex" value="${redis.default.db}"/>
         <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg  name="host" value="${redis.host}" />
+        <constructor-arg name="password" value="${redis.pass}"/>
+        <constructor-arg name="port" value="${redis.port}"/>
+        <constructor-arg name="timeout" value="${redis.timeout}"/>
     </bean>
 
     <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
