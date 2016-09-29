@@ -57,12 +57,14 @@ public class AnnouncementService implements IAnnouncementService{
             for(int i = 0 ; i < replace.size() ; i++){
                 List<EasyBlock> list = new ArrayList<>();
                 if(i == 0){
-                    //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后
-                    for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
-                        list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+                    //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后,有的话就插入
+                    if(replace.get(i).getNewlocation() > 1){
+                        for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
+                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+                        }
+                        insert.add(new InsertForm(0,list));
+                        list = new ArrayList<>();
                     }
-                    insert.add(new InsertForm(0,list));
-                    list = new ArrayList<>();
                 }
                 if(i == replace.size()-1){
                     //如果是最后一个,则把最后那部分加入到最后
@@ -77,10 +79,13 @@ public class AnnouncementService implements IAnnouncementService{
                 }
                 if(i > 0 & i < replace.size()-1){
                     //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
-                    for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
-                        list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+                    if(replace.get(i).getNewlocation()+1 < replace.get(i+1).getNewlocation()){
+                        for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
+                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+                        }
+                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
                     }
-                    insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
+
                 }
             }
         }

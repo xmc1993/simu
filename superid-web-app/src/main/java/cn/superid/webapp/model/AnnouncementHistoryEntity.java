@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 
 import javax.persistence.Column;
@@ -35,6 +36,7 @@ public class AnnouncementHistoryEntity {
         this.id = id;
     }
 
+    @PartitionId
     public long getAnnouncementId() {
         return announcementId;
     }

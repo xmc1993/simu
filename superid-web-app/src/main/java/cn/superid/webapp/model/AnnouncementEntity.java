@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.utils.TimeUtil;
@@ -42,6 +43,7 @@ public class AnnouncementEntity {
         this.id = id;
     }
 
+    @PartitionId
     public long getAffairId() {
         return affairId;
     }

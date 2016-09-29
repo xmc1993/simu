@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.enums.ResponseCode;
@@ -33,6 +34,7 @@ public class AnnouncementController {
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
+    @NotLogin
     public SimpleResponse getDetail(@PathVariable Long announcementId , Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
 
         if(announcementId == null | affairId == null){
@@ -86,11 +88,14 @@ public class AnnouncementController {
         int lower = version-offsetTail;
         List<AnnouncementHistoryEntity> lowHistories = AnnouncementHistoryEntity.dao.partitionId(announcementId).lt("version",version+1).gt("version",lower-1).desc("version").selectList();
         for(AnnouncementHistoryEntity a : lowHistories){
+            if(a.getDecrement().equals("0")){
+                break;
+            }
             EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
             operations.add(e);
         }
         if(lower < 1){
-            for(int i = lower ; i > 0 ; i++){
+            for(int i = lower ; i <= 0 ; i++){
                 operations.add(null);
             }
         }

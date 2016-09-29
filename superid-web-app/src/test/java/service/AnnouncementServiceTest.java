@@ -74,16 +74,19 @@ public class AnnouncementServiceTest {
 
     @Test
     public void testCaulatePaper(){
-        String str = AnnouncementEntity.dao.findById(1,1).getContent();
+        AnnouncementEntity a = AnnouncementEntity.dao.findById(1,1);
+        String str = a.getContent();
+        String ss = a.getDecrement();
+
 
         List<Integer> delete = new ArrayList<>();
         delete.add(1);
         List<EasyBlock> content = new ArrayList<>();
-        content.add(new EasyBlock("abc","0"));
-        content.add(new EasyBlock("bca","2"));
+        content.add(new EasyBlock("abc","4"));
+        content.add(new EasyBlock("bca","5"));
         List<EasyBlock> content2 = new ArrayList<>();
-        content2.add(new EasyBlock("abcd","1"));
-        content2.add(new EasyBlock("bcad","2"));
+        content2.add(new EasyBlock("abcd","6"));
+        content2.add(new EasyBlock("bcad","7"));
         List<InsertForm> insert = new ArrayList<>();
         insert.add(new InsertForm(0,content));
         insert.add(new InsertForm(2,content2));
@@ -93,10 +96,11 @@ public class AnnouncementServiceTest {
         String operations = JSONObject.toJSONString(e);
         System.out.println(operations);
 
-        String result = announcementService.caulatePaper(str,operations);
+        String result = announcementService.caulatePaper(str,ss);
+        String result2 = announcementService.caulatePaper(result,operations);
 
-        List<Block> present = announcementService.getBlock(JSON.parseObject(str,ContentState.class));
-        List<Block> history = announcementService.getBlock(JSON.parseObject(result,ContentState.class));
+        List<Block> present = announcementService.getBlock(JSON.parseObject(result,ContentState.class));
+        List<Block> history = announcementService.getBlock(JSON.parseObject(result2,ContentState.class));
         System.out.println(JSONObject.toJSONString(announcementService.compareTwoPapers(history,present)));
 
     }
