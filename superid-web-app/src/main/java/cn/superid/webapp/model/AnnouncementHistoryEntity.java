@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
  * Created by jizhenya on 16/9/26.
  */
 @Table(name = "announcement_history")
-public class AnnouncementHistoryEntity {
+public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public final static ConditionalDao<AnnouncementHistoryEntity> dao = new ConditionalDao<>(AnnouncementHistoryEntity.class);
 

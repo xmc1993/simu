@@ -9,6 +9,7 @@ import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
+import cn.superid.webapp.service.forms.ContentState;
 import com.alibaba.fastjson.JSON;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,6 @@ public class AnnouncementController {
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    @NotLogin
     public SimpleResponse getDetail(@PathVariable Long announcementId , Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
 
         if(announcementId == null | affairId == null){
@@ -100,10 +100,24 @@ public class AnnouncementController {
             }
         }
 
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("baseRawDraftContent", content);
+        Map<String, Object> rsMap = new HashMap<>();rsMap.put("baseRawDraftContent", content);
+
         rsMap.put("history",operations);
         return SimpleResponse.ok(rsMap);
 
     }
+
+    @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/save/{announcementId}", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse save(@PathVariable Long announcementId , ContentState contentState){
+
+
+        return SimpleResponse.ok("");
+
+
+    }
+
+
+
 }

@@ -13,11 +13,15 @@ import java.util.List;
  */
 public interface IAnnouncementService {
 
-    public EditDistanceForm compareTwoPapers(List<Block> present , List<Block> history );
+    public EditDistanceForm compareTwoBlocks(List<Block> present , List<Block> history );
+
+    public EditDistanceForm compareTwoPapers(ContentState present , ContentState history);
 
     public List<Block> paperToBlockList(String content);
 
     public String caulatePaper(String content , String operations);
 
     public List<Block> getBlock(ContentState content);
+
+    public boolean save(ContentState contentState , long announcementId , long affairId);
 }
