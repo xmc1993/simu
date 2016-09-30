@@ -9,11 +9,13 @@ import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
+import cn.superid.webapp.service.forms.ContentState;
 import com.alibaba.fastjson.JSON;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -34,7 +36,6 @@ public class AnnouncementController {
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    @NotLogin
     public SimpleResponse getDetail(@PathVariable Long announcementId , Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
 
         if(announcementId == null | affairId == null){
@@ -100,10 +101,44 @@ public class AnnouncementController {
             }
         }
 
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("baseRawDraftContent", content);
+        Map<String, Object> rsMap = new HashMap<>();rsMap.put("baseRawDraftContent", content);
+
         rsMap.put("history",operations);
         return SimpleResponse.ok(rsMap);
 
     }
+
+    @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/save/{announcementId}", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId){
+
+        if(announcementId == null | affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+
+        boolean result = announcementService.save(contentState,announcementId,affairId);
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/create_announcement", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse createAnnouncement(String title , Long affairId , Long taskId , Long roleId , Integer isTop , Integer publicType , String thumb , ContentState content){
+        return SimpleResponse.ok(announcementService.createAnnouncement(title,affairId,taskId,roleId,isTop,publicType,thumb,content));
+    }
+
+    @ApiOperation(value = "删除公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/delete_announcement", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse deleteAnnouncement(Long announcementId , Long affairId){
+        if(announcementId == null | affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,affairId));
+    }
+
+
+
+
 }

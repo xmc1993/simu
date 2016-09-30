@@ -101,7 +101,7 @@ public class AnnouncementServiceTest {
 
         List<Block> present = announcementService.getBlock(JSON.parseObject(result,ContentState.class));
         List<Block> history = announcementService.getBlock(JSON.parseObject(result2,ContentState.class));
-        System.out.println(JSONObject.toJSONString(announcementService.compareTwoPapers(history,present)));
+        System.out.println(JSONObject.toJSONString(announcementService.compareTwoBlocks(history,present)));
 
     }
 }

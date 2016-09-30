@@ -2,13 +2,14 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
 
 /**
  * Created by xiaofengxu on 16/9/2.
  */
-public class AffairLog {
+public class AffairLog extends ExecutableModel {
     public final static ConditionalDao<AffairLog> dao = new ConditionalDao<>(AffairLog.class);
     private long id;
     private long affairId;

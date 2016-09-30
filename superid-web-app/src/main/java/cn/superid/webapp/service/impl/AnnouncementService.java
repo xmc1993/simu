@@ -4,8 +4,11 @@ import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
+import cn.superid.webapp.model.AnnouncementEntity;
+import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.*;
+import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -20,7 +23,7 @@ import java.util.List;
 @Service
 public class AnnouncementService implements IAnnouncementService{
     @Override
-    public EditDistanceForm compareTwoPapers(List<Block> present, List<Block> history) {
+    public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
         //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
         List<ReplaceForm> substitute = new ArrayList<>();
         List<InsertForm> insert = new ArrayList<>();
@@ -91,6 +94,13 @@ public class AnnouncementService implements IAnnouncementService{
         }
         EditDistanceForm result = new EditDistanceForm(delete,insert,substitute);
         return result;
+    }
+
+    @Override
+    public EditDistanceForm compareTwoPapers(ContentState present, ContentState history) {
+        List<Block> presentBlock = getBlock(present);
+        List<Block> historyBlock = getBlock(history);
+        return compareTwoBlocks(presentBlock,historyBlock);
     }
 
     public List<Block> paperToBlockList(String content){
@@ -171,5 +181,60 @@ public class AnnouncementService implements IAnnouncementService{
         }
 
         return result;
+    }
+
+    @Override
+    public boolean save(ContentState contentState, long announcementId, long affairId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,affairId);
+        if(announcementEntity == null){
+            return false;
+        }
+        //将现在的一条存为历史
+        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity();
+        history.setAnnouncementId(announcementEntity.getId());
+        history.setTitle(announcementEntity.getTitle());
+        history.setRoleId(announcementEntity.getRoleId());
+        history.setVersion(announcementEntity.getVersion());
+        history.setCreateTime(TimeUtil.getCurrentSqlTime());
+        history.setDecrement(announcementEntity.getDecrement());
+        ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
+        history.setIncrement(JSONObject.toJSONString(compareTwoPapers(old,contentState)));
+        history.save();
+
+        //改变原有记录
+        announcementEntity.setVersion(announcementEntity.getVersion()+1);
+        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
+        announcementEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementEntity.update();
+        return true;
+    }
+
+    @Override
+    public boolean createAnnouncement(String title, long affairId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
+        AnnouncementEntity announcementEntity = new AnnouncementEntity();
+        announcementEntity.setTitle(title);
+        announcementEntity.setContent(JSONObject.toJSONString(content));
+        announcementEntity.setAffairId(affairId);
+        announcementEntity.setTaskId(taskId);
+        announcementEntity.setRoleId(roleId);
+        announcementEntity.setThumbContent(thumb);
+        announcementEntity.setIsTop(isTop);
+        announcementEntity.setPublicType(publicType);
+        announcementEntity.setState(1);
+        announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setVersion(1);
+        announcementEntity.setDecrement("0");
+
+        announcementEntity.save();
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteAnnouncement(long announcementId, long affairId) {
+        AnnouncementEntity.dao.id(affairId).partitionId(affairId).set("state",0);
+        return true;
     }
 }

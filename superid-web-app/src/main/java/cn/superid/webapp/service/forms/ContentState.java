@@ -1,12 +1,14 @@
 package cn.superid.webapp.service.forms;
 
 import clojure.lang.Obj;
+import com.wordnik.swagger.annotations.ApiModel;
 
 import java.util.List;
 
 /**
  * Created by jizhenya on 16/9/28.
  */
+@ApiModel
 public class ContentState {
 
     private Object entityMap;
