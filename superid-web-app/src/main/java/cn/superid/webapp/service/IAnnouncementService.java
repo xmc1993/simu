@@ -24,4 +24,8 @@ public interface IAnnouncementService {
     public List<Block> getBlock(ContentState content);
 
     public boolean save(ContentState contentState , long announcementId , long affairId);
+
+    public boolean createAnnouncement(String title , long affairId , long taskId , long roleId , int isTop , int publicType , String thumb , ContentState content);
+
+    public boolean deleteAnnouncement(long announcementId , long affairId);
 }

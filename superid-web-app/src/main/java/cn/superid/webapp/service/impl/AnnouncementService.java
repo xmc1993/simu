@@ -209,4 +209,32 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.update();
         return true;
     }
+
+    @Override
+    public boolean createAnnouncement(String title, long affairId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
+        AnnouncementEntity announcementEntity = new AnnouncementEntity();
+        announcementEntity.setTitle(title);
+        announcementEntity.setContent(JSONObject.toJSONString(content));
+        announcementEntity.setAffairId(affairId);
+        announcementEntity.setTaskId(taskId);
+        announcementEntity.setRoleId(roleId);
+        announcementEntity.setThumbContent(thumb);
+        announcementEntity.setIsTop(isTop);
+        announcementEntity.setPublicType(publicType);
+        announcementEntity.setState(1);
+        announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setVersion(1);
+        announcementEntity.setDecrement("0");
+
+        announcementEntity.save();
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteAnnouncement(long announcementId, long affairId) {
+        AnnouncementEntity.dao.id(affairId).partitionId(affairId).set("state",0);
+        return true;
+    }
 }
