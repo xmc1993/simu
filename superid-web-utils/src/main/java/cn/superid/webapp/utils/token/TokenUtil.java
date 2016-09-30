@@ -1,7 +1,7 @@
 package cn.superid.webapp.utils.token;
 
 
-import cn.superid.webapp.utils.redis.RedisUtil;
+import cn.superid.jpa.redis.RedisUtil;
 
 import java.util.Set;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public final class TokenUtil {
      */
     public static String setLoginToken(Long uid){
         String token = UUID.randomUUID().toString();
-        RedisUtil.getJedisClient().sadd(getKey(uid), token);
+        RedisUtil.getJedis().sadd(getKey(uid), token);
         return token;
     }
 
@@ -30,7 +30,7 @@ public final class TokenUtil {
      * @return
      */
     public static boolean invaildLoginToken(Long uid, String token){
-        return RedisUtil.getJedisClient().srem(getKey(uid), token) != 0;
+        return RedisUtil.getJedis().srem(getKey(uid), token) != 0;
     }
 
     /**
@@ -39,7 +39,7 @@ public final class TokenUtil {
      * @return
      */
     public static Set<String> getLoginToken(Long uid){
-        return RedisUtil.getJedisClient().smembers(getKey(uid));
+        return RedisUtil.getJedis().smembers(getKey(uid));
 
     }
 

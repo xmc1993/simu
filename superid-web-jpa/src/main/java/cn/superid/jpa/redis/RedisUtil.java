@@ -1,18 +1,18 @@
 package cn.superid.jpa.redis;
-;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-
-import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.orm.ExecutableModel;
-import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.apache.log4j.lf5.util.StreamUtils;
-import redis.clients.jedis.*;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+
+;
 
 /**
  * Redis 工具类
@@ -25,8 +25,8 @@ public class RedisUtil {
 
     protected static Logger logger = Logger.getLogger(RedisUtil.class);
     private static JedisPool jedisPool = null;
-    private String host ="localhost";
-    private int port = 6379;
+    private String host ="192.168.1.100";
+    private int port = 6378;
     private int timeout =2000;
     private int dbIndex =0;
     private String password =null;

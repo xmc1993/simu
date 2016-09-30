@@ -19,7 +19,7 @@ public class RedisMessageServiceTest {
     @Test
     public void testPublishMessage(){
         Message message = new Message();
-        redisMessageService.sendMessage("room_message", message);
+//        redisMessageService.sendMessage("room_message", message);
         System.out.println("---end---");
     }
 

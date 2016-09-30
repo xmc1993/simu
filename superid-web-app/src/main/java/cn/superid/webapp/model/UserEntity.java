@@ -7,6 +7,7 @@ import cn.superid.jpa.orm.ExecutableModel;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 /**
@@ -44,6 +45,7 @@ public class UserEntity extends ExecutableModel {
     private int gender;
     private int publicType;
     private String avatar;
+    private String chatToken;
 
     @Id
     @Column(name = "id")
@@ -272,5 +274,14 @@ public class UserEntity extends ExecutableModel {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Transient
+    public String getChatToken() {
+        return chatToken;
+    }
+
+    public void setChatToken(String chatToken) {
+        this.chatToken = chatToken;
     }
 }
