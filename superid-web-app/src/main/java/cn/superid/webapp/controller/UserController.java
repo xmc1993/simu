@@ -156,7 +156,7 @@ public class UserController {
 
 
 
-    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserDto.class, notes = "用户登录")
+    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token, String password, String verifyCode){
@@ -186,10 +186,9 @@ public class UserController {
         }
 
         String chatToken = TokenUtil.setLoginToken(userEntity.getId());
-        UserDto userDto = UserDto.UserEntity2UserDto(userEntity);
-        userDto.setChatToken(chatToken);
+        userEntity.setChatToken(chatToken);
         auth.authUser(userEntity.getId(), chatToken);
-        return SimpleResponse.ok(userDto);
+        return SimpleResponse.ok(userEntity);
     }
 
     @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名")
