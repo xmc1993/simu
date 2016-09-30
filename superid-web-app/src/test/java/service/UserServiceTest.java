@@ -29,8 +29,6 @@ import java.util.Map;
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     private UserEntity addUser(){
         UserEntity userEntity = new UserEntity();

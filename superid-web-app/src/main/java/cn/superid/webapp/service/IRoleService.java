@@ -7,7 +7,7 @@ import cn.superid.webapp.model.RoleEntity;
  */
 public interface IRoleService {
 
-    RoleEntity createRole(String title,long allianceId,long belongAffairId,String permissions,int type);
+    RoleEntity createRole(String title,long allianceId,long userId,long belongAffairId,String permissions,int type);
 
     public String getNameByRoleId(Long roleId);
 

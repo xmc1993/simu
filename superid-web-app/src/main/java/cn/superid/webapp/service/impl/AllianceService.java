@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.StateType;
@@ -45,7 +46,7 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setName(allianceCreateForm.getName()+"的盟");
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
             allianceEntity.setShortName(allianceCreateForm.getShortName());
-            allianceEntity.setState(StateType.Normal);//个人盟不需要验证
+            allianceEntity.setState(StateType.Disabled);//等待验证身份
             allianceEntity.save();
 
         }else{
@@ -58,7 +59,7 @@ public class AllianceService  implements IAllianceService{
 
         }
 
-        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),0, "*", allianceCreateForm.getIsPersonal());//创建一个盟主角色
+        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),allianceCreateForm.getUserId() ,0, "*", allianceCreateForm.getIsPersonal());//创建一个盟主角色
         AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal());
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId",affairEntity.getId());//更新所属事务
@@ -76,11 +77,14 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean inSameAlliance(long userId1, long userId2) {
+//        Integer result = (Integer) RoleEntity.getSession().findOne(Integer.class,
+//                "select 1 from role r where r.user_id = ? and exists( select 1 from role l where l.user_id =? and l.alliance_id = r.alliance_id) limit 1",new ParameterBindings(userId1,userId2));
+//
         return false;
     }
 
     @Override
-    public boolean validName(String name) {
-        return AllianceEntity.dao.eq("name",name).exists();
+    public boolean validName(String code) {
+        return AllianceEntity.dao.eq("shortName",code).exists();
     }
 }

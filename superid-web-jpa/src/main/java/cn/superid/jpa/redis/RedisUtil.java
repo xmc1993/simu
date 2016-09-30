@@ -56,7 +56,6 @@ public class RedisUtil {
 
 
     public static Jedis getJedis() {
-        //断言 ，当前锁是否已经锁住，如果锁住了，就啥也不干，没锁的话就执行下面步骤
         assert ! lockJedis.isHeldByCurrentThread();
         lockJedis.lock();
 
