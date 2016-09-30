@@ -61,7 +61,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         if(id!=null){
             byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
             List<byte[]> result =RedisUtil.findByKey(redisKey,BinaryUtil.toBytesArray(params));
-            if(result!=null&&result.size()>0){
+            if(RedisUtil.isPOJO(result)){
                 Object cached = null;
                 try {
                     cached = this.clazz.newInstance();
@@ -82,6 +82,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
                     return (T)cached;
                 }
             }
+
         }else{
             throw  new RuntimeException("Cacheable model should operation by id");
         }
@@ -92,7 +93,10 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
         List<byte[]> result = RedisUtil.findByKey(RedisUtil.generateKey(modelMeta.getKey(),BinaryUtil.getBytes(key)),BinaryUtil.getBytes(field));
         if(result!=null&&result.size()>0){
-            return BinaryUtil.getValue(result.get(0),clazz);
+            byte[] bytes = result.get(0);
+            if(bytes!=null){
+                return BinaryUtil.getValue(result.get(0),clazz);
+            }
         }
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(field);

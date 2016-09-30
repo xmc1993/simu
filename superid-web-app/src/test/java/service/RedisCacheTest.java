@@ -25,6 +25,7 @@ public class RedisCacheTest {
         UserBaseInfo.dao.findById(104);
 
         UserBaseInfo.dao.id(104).set("username","xxf");
+        UserBaseInfo var = UserBaseInfo.dao.findById(104);
         Assert.assertTrue(UserBaseInfo.dao.findById(104).getUsername().equals("xxf"));
 
         final UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(104L);
@@ -51,36 +52,36 @@ public class RedisCacheTest {
 
 
 
-        Timer.compair(100, new Execution() {
-            @Override
-            public void execute() {
-                UserBaseInfo.dao.findById(104L);
-            }
-        }, new Execution() {
-            @Override
-            public void execute() {
-                RedisUtil.findByKey(104L, UserBaseInfo.class);
-            }
-        }, new Execution() {
-            @Override
-            public void execute() {
-                UserBaseInfo.dao.findFieldByKey(104, "username", String.class);
-            }
-        }, new Execution() {
-            @Override
-            public void execute() {
-                UserBaseInfo.dao.id(104).set("username", "jzy", "avatar", "test");
-            }
-        }, new Execution() {
-            @Override
-            public void execute() {
-                UserBaseInfo userBaseInfo1=UserBaseInfo.dao.findById(104L);
-                userBaseInfo1.setUsername("xxf");
-                userBaseInfo1.setAvatar("test");
-                userBaseInfo1.setBirthday(TimeUtil.getCurrentSqlTime());
-                userBaseInfo1.update();
-            }
-        });
+//        Timer.compair(100, new Execution() {
+//            @Override
+//            public void execute() {
+//                UserBaseInfo.dao.findById(104L);
+//            }
+//        }, new Execution() {
+//            @Override
+//            public void execute() {
+//                RedisUtil.findByKey(104L, UserBaseInfo.class);
+//            }
+//        }, new Execution() {
+//            @Override
+//            public void execute() {
+//                UserBaseInfo.dao.findFieldByKey(104, "username", String.class);
+//            }
+//        }, new Execution() {
+//            @Override
+//            public void execute() {
+//                UserBaseInfo.dao.id(104).set("username", "jzy", "avatar", "test");
+//            }
+//        }, new Execution() {
+//            @Override
+//            public void execute() {
+//                UserBaseInfo userBaseInfo1=UserBaseInfo.dao.findById(104L);
+//                userBaseInfo1.setUsername("xxf");
+//                userBaseInfo1.setAvatar("test");
+//                userBaseInfo1.setBirthday(TimeUtil.getCurrentSqlTime());
+//                userBaseInfo1.update();
+//            }
+//        });
 
     }
 

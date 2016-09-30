@@ -223,10 +223,8 @@ public class UserService implements IUserService {
 
     @Override
     public boolean changePublicType(int publicType) {
-        UserBaseInfo userBaseInfo =UserBaseInfo.dao.findById(currentUserId());
-        userBaseInfo.setPublicType(publicType);
-        userBaseInfo.update();
-        return true;
+
+        return UserBaseInfo.dao.id(currentUserId()).set("publicType",publicType)>0;
     }
 
     @Override
