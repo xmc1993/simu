@@ -226,7 +226,6 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
         announcementEntity.setDecrement("0");
-
         announcementEntity.save();
 
         return true;

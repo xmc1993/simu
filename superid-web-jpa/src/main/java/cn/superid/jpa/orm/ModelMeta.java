@@ -3,6 +3,7 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.annotation.PartitionId;
+import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
@@ -131,6 +132,8 @@ public class ModelMeta {
             initFindByIdSql();
             initFindTinyByIdSql(findTinySb.toString());
             initDeleteSql();
+        }else{
+            throw new JdbcRuntimeException(this.tableName+"need @id annotation");
         }
         return columnMetas;
     }

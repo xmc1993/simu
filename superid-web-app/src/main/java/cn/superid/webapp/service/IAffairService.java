@@ -14,7 +14,8 @@ import org.elasticsearch.index.engine.Engine;
  */
 public interface IAffairService  {
 
-    public String getPermissions(Long allianceId,Long affairId,Long roleId) throws Exception;
+    public String getPermissions(String permissions,long permissionGroupId,long affairId) throws Exception;
+
 
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
 

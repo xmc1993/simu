@@ -25,7 +25,6 @@ public class RoleEntity extends ExecutableModel {
     private String permissions;
     private String allocatePermissions;
     private int type;
-    private int visible;
     private int state;
     private Timestamp createTime;
     private Timestamp modifyTime;
@@ -97,13 +96,6 @@ public class RoleEntity extends ExecutableModel {
         this.type = type;
     }
 
-    public int getVisible() {
-        return visible;
-    }
-
-    public void setVisible(int visible) {
-        this.visible = visible;
-    }
 
     public int getState() {
         return state;

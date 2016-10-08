@@ -1,5 +1,6 @@
 package service;
 
+import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAllianceService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +19,6 @@ public class AllianceServiceTest {
 
     @Test
     public void testIsINSame(){
-        allianceService.inSameAlliance(11,12);
-
+        GlobalValue.currentAffairId();
     }
 }

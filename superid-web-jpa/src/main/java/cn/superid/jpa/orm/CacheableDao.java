@@ -55,6 +55,8 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         return getFromSQl;
     }
 
+
+
     public T selectOne(String... params) {
         ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
         Object id = key.get();
@@ -107,8 +109,30 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         return getSession().findOne(clazz,sb.toString(),key);
     }
 
+    /**
+     * delete disabled object from cache and update state
+     */
+    public int disable(){
+        this.deleteFromCache();
+        StringBuilder whereBuilder = where.get();
+        StringBuilder sb = new StringBuilder(" UPDATE ");
+        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(" SET STATE = 1");
+        sb.append(whereBuilder);
+        String sql = sb.toString();
+        Object[] params = parameterBindings.get().getIndexParametersArray();
+        whereBuilder.delete(whereLength,whereBuilder.length());
+        parameterBindings.get().clear();
+        return getSession().execute(sql,params);
+    }
+
     @Override
     public int remove() {
+        this.deleteFromCache();
+        return super.remove();
+    }
+
+    private void deleteFromCache(){
         ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
         Object id = key.get();
         if(id!=null){
@@ -117,7 +141,6 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         }else{
             throw  new RuntimeException("Cacheable model should operation by id");
         }
-        return super.remove();
     }
 
 

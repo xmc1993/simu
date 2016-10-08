@@ -1,17 +1,16 @@
 package cn.superid.webapp.security.interceptor;
 
-import cn.superid.utils.StringUtil;
 
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
-import cn.superid.webapp.enums.ContentType;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.security.AffairPermissions;
+import cn.superid.webapp.enums.StateType;
+import cn.superid.webapp.model.cache.AffairMemberCache;
+import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +21,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
+import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -156,23 +154,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         writer.write(jsonObject.toJSONString());
     }
 
-    /*
-    private String getRequestInputStream(HttpServletRequest request){
-        StringBuilder sb = new StringBuilder();
-        try(BufferedReader reader = request.getReader()) {
-            char[]buff = new char[1024];
-            int len;
-            while((len = reader.read(buff)) != -1) {
-                sb.append(buff,0, len);
-            }
-            reader.close();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        return sb.toString();
-    }
-    */
     protected int checkPermissions(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 
@@ -181,64 +163,61 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         if (getNotLoginFromHandlerMethodWithCache(handlerMethod) != null) {
             return hasPermission;
         }
-        // isLogin
         if (!auth.isAuthenticated()) {
             return notLogin;
         }
 
 
-        //String  thisRole = (String)getParameterValue(request,"operationRoleId");
+        HttpSession session = request.getSession();
 
-        //String thisRole = jsonObject.getString("operationRoleId");
-        String thisRole = request.getParameter("operationRoleId");
-        Long roleId =null;
-        if(thisRole!=null){
-            roleId = Long.parseLong(thisRole);
-            if(!userService.belong(auth.currentUserId(),roleId)){//如果操作角色不属于当前登录用户
-                return notPermitted;
-            }
-        }
+
         RequiredPermissions requiredPermissions = getRequiredPermissionsFromHandlerMethodWithCache(handlerMethod);
         if (requiredPermissions == null) {
+            session.setAttribute("affairId",0);
+            session.setAttribute("allianceId",0);
+            session.setAttribute("roleId",0);
             return hasPermission; // 不做检查
-        }else{
-            if(roleId==null){
-                return notPermitted;
-            }
         }
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
-            Long affairId = Long.getLong(request.getParameter("affairId"));
-            Long allianceId = Long.getLong(request.getParameter("allianceId"));
-            //Long affairId = (Long) getParameterValue(request,"affairId");
-            //Long allianceId = (Long) getParameterValue(request,"allianceId");
-            //Long affairId = jsonObject.getLong("affairId") ;
-            //Long allianceId = jsonObject.getLong("allianceId") ;
-            //Long affairId = (Long) getParameterValue(request,"affairId");
-            //Long allianceId = (Long) getParameterValue(request,"allianceId");
-            if(affairId==null){
+            Long affairMemberId = Long.parseLong(request.getParameter("affairMemberId"));
+            if(affairMemberId==null){
                 return notPermitted;
             }
-            if(roleId==null){
-                return notPermitted;
+
+            AffairMemberCache affairMemberCache = AffairMemberCache.dao.findById(affairMemberId);
+            if(affairMemberCache==null||affairMemberCache.getState()== StateType.Disabled){
+                return  notPermitted;
             }
-            if(!isPermitted(affairPermissions,affairService.getPermissions(allianceId,affairId,roleId))){
+            long roleId = affairMemberCache.getRoleId();
+            if(!userService.belong(roleId)){
+                return  notPermitted;
+            }
+            long allianceId = affairMemberCache.getAllianceId();
+            long affairId = affairMemberCache.getAffairId();
+
+            session.setAttribute("affairId",affairId);
+            session.setAttribute("allianceId",allianceId);
+            session.setAttribute("roleId",roleId);
+            if(!isPermitted(affairPermissions,affairService.getPermissions(affairMemberCache.getPermissions(),affairMemberCache.getPermissionGroupId(),affairId))){
                 return notPermitted;
             }
         }
 
         int[] alliancePermissions = requiredPermissions.alliance();//检查盟权限
         if(alliancePermissions!=null&&alliancePermissions.length!=0){
-            //Long allianceId = (Long) getParameterValue(request,"allianceId");
-            Long allianceId = Long.getLong(request.getParameter("allianceId"));
-            if(allianceId==null){
-                return notPermitted;
-            }
+            Long roleId = Long.parseLong(request.getParameter("roleId"));
             if(roleId==null){
                 return notPermitted;
             }
-            if(!isPermitted(alliancePermissions,allianceService.getPermissions(allianceId,roleId))){
+            RoleCache roleCache =RoleCache.dao.findById(roleId);
+            if(roleCache==null||roleCache.getState()==StateType.Disabled||!userService.belong(roleId)){
+                return notPermitted;
+            }
+            session.setAttribute("allianceId",roleCache.getAllianceId());
+
+            if(!isPermitted(alliancePermissions,roleCache.getPermissions())){
                 return notPermitted;
             }
         }
@@ -267,7 +246,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 a = a*index+(tmp-'0');
                 i++;
                 index=index*10;
-                System.out.println(a);
                 if(i==currentPermission.length()){
                     break;
                 }

@@ -209,7 +209,7 @@ templates['main'] = template({"1":function(container,depth0,helpers,partials,dat
 
   return "<div class='info' id='api_info'>\n"
     + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.info : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</div>\n<div class='container' id='resources_container'>\n  <div class='authorize-wrapper'></div>\n\n  <ul id='resources'></ul>\n\n  <div class=\"footer\">\n    <h4 style=\"color: #999\">[ <span style=\"font-variant: small-caps\">base url</span>: "
+    + "</div>\n<div class='container' id='resources_container'>\n  <div class='authorize-wrapper'></div>\n\n  <ul id='resources'></ul>\n\n  <div class=\"footer\">\n    <h4 style=\"color: #999\">[ <span style=\"font-variant: small-caps\">cache url</span>: "
     + ((stack1 = (helpers.escape || (depth0 && depth0.escape) || helpers.helperMissing).call(alias1,(depth0 != null ? depth0.basePath : depth0),{"name":"escape","hash":{},"data":data})) != null ? stack1 : "")
     + "\n"
     + ((stack1 = helpers["if"].call(alias1,((stack1 = (depth0 != null ? depth0.info : depth0)) != null ? stack1.version : stack1),{"name":"if","hash":{},"fn":container.program(14, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
@@ -12504,7 +12504,7 @@ module.exports = new Schema({
 // This schema is based on JS-YAML's default safe schema and includes
 // JavaScript-specific types: !!js/undefined, !!js/regexp and !!js/function.
 //
-// Also this schema is used as default base schema at `Schema.create` function.
+// Also this schema is used as default cache schema at `Schema.create` function.
 
 
 'use strict';
@@ -12986,10 +12986,10 @@ function resolveYamlInteger(data) {
     if (index + 1 === max) return true;
     ch = data[++index];
 
-    // base 2, base 8, base 16
+    // cache 2, cache 8, cache 16
 
     if (ch === 'b') {
-      // base 2
+      // cache 2
       index++;
 
       for (; index < max; index++) {
@@ -13003,7 +13003,7 @@ function resolveYamlInteger(data) {
 
 
     if (ch === 'x') {
-      // base 16
+      // cache 16
       index++;
 
       for (; index < max; index++) {
@@ -13015,7 +13015,7 @@ function resolveYamlInteger(data) {
       return hasDigits;
     }
 
-    // base 8
+    // cache 8
     for (; index < max; index++) {
       ch = data[index];
       if (ch === '_') continue;
@@ -13025,7 +13025,7 @@ function resolveYamlInteger(data) {
     return hasDigits;
   }
 
-  // base 10 (except 0) or base 60
+  // cache 10 (except 0) or cache 60
 
   for (; index < max; index++) {
     ch = data[index];
@@ -14203,7 +14203,7 @@ var baseCreate = require('./baseCreate'),
     baseLodash = require('./baseLodash');
 
 /**
- * The base constructor for creating `lodash` wrapper objects.
+ * The cache constructor for creating `lodash` wrapper objects.
  *
  * @private
  * @param {*} value The value to wrap.
@@ -14320,7 +14320,7 @@ var baseCopy = require('./baseCopy'),
     keys = require('../object/keys');
 
 /**
- * The base implementation of `_.assign` without support for argument juggling,
+ * The cache implementation of `_.assign` without support for argument juggling,
  * multiple sources, and `customizer` functions.
  *
  * @private
@@ -14344,7 +14344,7 @@ var baseMatches = require('./baseMatches'),
     property = require('../utility/property');
 
 /**
- * The base implementation of `_.callback` which supports specifying the
+ * The cache implementation of `_.callback` which supports specifying the
  * number of arguments to provide to `func`.
  *
  * @private
@@ -14436,7 +14436,7 @@ var objectProto = Object.prototype;
 var objToString = objectProto.toString;
 
 /**
- * The base implementation of `_.clone` without support for argument juggling
+ * The cache implementation of `_.clone` without support for argument juggling
  * and `this` binding `customizer` functions.
  *
  * @private
@@ -14536,7 +14536,7 @@ module.exports = baseCopy;
 var isObject = require('../lang/isObject');
 
 /**
- * The base implementation of `_.create` without support for assigning
+ * The cache implementation of `_.create` without support for assigning
  * properties to the created object.
  *
  * @private
@@ -14562,7 +14562,7 @@ var baseForOwn = require('./baseForOwn'),
     createBaseEach = require('./createBaseEach');
 
 /**
- * The base implementation of `_.forEach` without support for callback
+ * The cache implementation of `_.forEach` without support for callback
  * shorthands and `this` binding.
  *
  * @private
@@ -14576,7 +14576,7 @@ module.exports = baseEach;
 
 },{"./baseForOwn":76,"./createBaseEach":98}],72:[function(require,module,exports){
 /**
- * The base implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
+ * The cache implementation of `_.find`, `_.findLast`, `_.findKey`, and `_.findLastKey`,
  * without support for callback shorthands and `this` binding, which iterates
  * over `collection` using the provided `eachFunc`.
  *
@@ -14603,7 +14603,7 @@ module.exports = baseFind;
 
 },{}],73:[function(require,module,exports){
 /**
- * The base implementation of `_.findIndex` and `_.findLastIndex` without
+ * The cache implementation of `_.findIndex` and `_.findLastIndex` without
  * support for callback shorthands and `this` binding.
  *
  * @private
@@ -14630,7 +14630,7 @@ module.exports = baseFindIndex;
 var createBaseFor = require('./createBaseFor');
 
 /**
- * The base implementation of `baseForIn` and `baseForOwn` which iterates
+ * The cache implementation of `baseForIn` and `baseForOwn` which iterates
  * over `object` properties returned by `keysFunc` invoking `iteratee` for
  * each property. Iteratee functions may exit iteration early by explicitly
  * returning `false`.
@@ -14650,7 +14650,7 @@ var baseFor = require('./baseFor'),
     keysIn = require('../object/keysIn');
 
 /**
- * The base implementation of `_.forIn` without support for callback
+ * The cache implementation of `_.forIn` without support for callback
  * shorthands and `this` binding.
  *
  * @private
@@ -14669,7 +14669,7 @@ var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
 /**
- * The base implementation of `_.forOwn` without support for callback
+ * The cache implementation of `_.forOwn` without support for callback
  * shorthands and `this` binding.
  *
  * @private
@@ -14687,7 +14687,7 @@ module.exports = baseForOwn;
 var toObject = require('./toObject');
 
 /**
- * The base implementation of `get` without support for string paths
+ * The cache implementation of `get` without support for string paths
  * and default values.
  *
  * @private
@@ -14719,7 +14719,7 @@ module.exports = baseGet;
 var indexOfNaN = require('./indexOfNaN');
 
 /**
- * The base implementation of `_.indexOf` without support for binary searches.
+ * The cache implementation of `_.indexOf` without support for binary searches.
  *
  * @private
  * @param {Array} array The array to search.
@@ -14750,7 +14750,7 @@ var baseIsEqualDeep = require('./baseIsEqualDeep'),
     isObjectLike = require('./isObjectLike');
 
 /**
- * The base implementation of `_.isEqual` without support for `this` binding
+ * The cache implementation of `_.isEqual` without support for `this` binding
  * `customizer` functions.
  *
  * @private
@@ -14884,7 +14884,7 @@ var baseIsEqual = require('./baseIsEqual'),
     toObject = require('./toObject');
 
 /**
- * The base implementation of `_.isMatch` without support for callback
+ * The cache implementation of `_.isMatch` without support for callback
  * shorthands and `this` binding.
  *
  * @private
@@ -14950,7 +14950,7 @@ var baseEach = require('./baseEach'),
     isArrayLike = require('./isArrayLike');
 
 /**
- * The base implementation of `_.map` without support for callback shorthands
+ * The cache implementation of `_.map` without support for callback shorthands
  * and `this` binding.
  *
  * @private
@@ -14976,7 +14976,7 @@ var baseIsMatch = require('./baseIsMatch'),
     toObject = require('./toObject');
 
 /**
- * The base implementation of `_.matches` which does not clone `source`.
+ * The cache implementation of `_.matches` which does not clone `source`.
  *
  * @private
  * @param {Object} source The object of property values to match.
@@ -15015,7 +15015,7 @@ var baseGet = require('./baseGet'),
     toPath = require('./toPath');
 
 /**
- * The base implementation of `_.matchesProperty` which does not clone `srcValue`.
+ * The cache implementation of `_.matchesProperty` which does not clone `srcValue`.
  *
  * @private
  * @param {string} path The path of the property to get.
@@ -15054,7 +15054,7 @@ module.exports = baseMatchesProperty;
 var toObject = require('./toObject');
 
 /**
- * The base implementation of `_.property` without support for deep paths.
+ * The cache implementation of `_.property` without support for deep paths.
  *
  * @private
  * @param {string} key The key of the property to get.
@@ -15094,7 +15094,7 @@ var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
 /**
- * The base implementation of `setData` without support for hot loop detection.
+ * The cache implementation of `setData` without support for hot loop detection.
  *
  * @private
  * @param {Function} func The function to associate metadata with.
@@ -15110,7 +15110,7 @@ module.exports = baseSetData;
 
 },{"../utility/identity":154,"./metaMap":129}],89:[function(require,module,exports){
 /**
- * The base implementation of `_.slice` without an iteratee call guard.
+ * The cache implementation of `_.slice` without an iteratee call guard.
  *
  * @private
  * @param {Array} array The array to slice.
@@ -15159,7 +15159,7 @@ module.exports = baseToString;
 
 },{}],91:[function(require,module,exports){
 /**
- * The base implementation of `_.values` and `_.valuesIn` which creates an
+ * The cache implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
  * of `props`.
  *
@@ -15432,7 +15432,7 @@ var getLength = require('./getLength'),
  * @private
  * @param {Function} eachFunc The function to iterate over a collection.
  * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Function} Returns the new base function.
+ * @returns {Function} Returns the new cache function.
  */
 function createBaseEach(eachFunc, fromRight) {
   return function(collection, iteratee) {
@@ -15458,11 +15458,11 @@ module.exports = createBaseEach;
 var toObject = require('./toObject');
 
 /**
- * Creates a base function for `_.forIn` or `_.forInRight`.
+ * Creates a cache function for `_.forIn` or `_.forInRight`.
  *
  * @private
  * @param {boolean} [fromRight] Specify iterating from right to left.
- * @returns {Function} Returns the new base function.
+ * @returns {Function} Returns the new cache function.
  */
 function createBaseFor(fromRight) {
   return function(object, iteratee, keysFunc) {
@@ -19049,7 +19049,7 @@ function async(makeGenerator) {
             var result;
 
             // Until V8 3.19 / Chromium 29 is released, SpiderMonkey is the only
-            // engine that has a deployed base of browsers that support generators.
+            // engine that has a deployed cache of browsers that support generators.
             // However, SM's generators use the Python-inspired semantics of
             // outdated ES6 drafts.  We would like to support ES6, but we'd also
             // like to make it possible to use generators in deployed browsers, so
@@ -21014,7 +21014,7 @@ exports.get = function(field){
  * Get case-insensitive header `field` value.
  * This is a deprecated internal API. Use `.get(field)` instead.
  *
- * (getHeader is no longer used internally by the superagent code base)
+ * (getHeader is no longer used internally by the superagent code cache)
  *
  * @param {String} field
  * @return {String}

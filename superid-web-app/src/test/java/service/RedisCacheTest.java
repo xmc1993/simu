@@ -1,7 +1,7 @@
 package service;
 
 import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.webapp.model.base.UserBaseInfo;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 
 import cn.superid.webapp.utils.TimeUtil;
 import org.junit.Assert;

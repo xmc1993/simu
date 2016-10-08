@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.AffairState;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
@@ -31,13 +32,9 @@ public class AffairService implements IAffairService {
     @Autowired
     private IUserService userService;
     @Override
-    public String getPermissions(Long allianceId,Long affairId, Long roleId) throws Exception{
-        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).selectOne();
-        if(affairMemberEntity == null){
-            throw new Exception("找不到该事务成员");
-        }
-        if(affairMemberEntity.getPermissions()==""){
-            long permissionGroupId = affairMemberEntity.getPermissionGroupId();
+    public String getPermissions(String permissions,long permissionGroupId,long affairId) throws Exception{
+
+        if(StringUtil.isEmpty(permissions)){
             if((permissionGroupId>0)||(permissionGroupId<6)){
                 Iterator it = AffairPermissionRoleType.roles.keySet().iterator();
                 while(it.hasNext()) {
@@ -56,7 +53,7 @@ public class AffairService implements IAffairService {
 
         }
         else{
-            return affairMemberEntity.getPermissions();
+            return permissions;
         }
     }
 
