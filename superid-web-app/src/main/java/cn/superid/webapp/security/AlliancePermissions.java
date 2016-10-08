@@ -12,28 +12,28 @@ import java.util.List;
 public class AlliancePermissions {
     private static int Default = 0;
 
-    public static int Alliance = Default;
-    public static int ViewAllianceHomepage = 1;
-    public static int EditAllianceInfo = 9;
+    public final static int Alliance = Default;
+    public final static int ViewAllianceHomepage = 1;
+    public final static int EditAllianceInfo = 9;
 
-    public static int Contract = Default;
-    public static int SignContract = 2;
-    public static int ManageContractTemplate = 10;
-    public static int ViewAllContract = 18;
+    public final static int Contract = Default;
+    public final static int SignContract = 2;
+    public final static int ManageContractTemplate = 10;
+    public final static int ViewAllContract = 18;
 
-    public static int Fund = Default;
-    public static int CheckAllFundInfo = 3;
+    public final static int Fund = Default;
+    public final static int CheckAllFundInfo = 3;
 
-    public static int Goods = Default;
-    public static int CheckAllGoodsInfo = 4;
-    public static int ManageGoodsConvertTemplate = 12;
-    public static int ManageBrands = 20;
+    public final static int Goods = Default;
+    public final static int CheckAllGoodsInfo = 4;
+    public final static int ManageGoodsConvertTemplate = 12;
+    public final static int ManageBrands = 20;
 
-    public static int Role = Default;
-    public static int AddAllianceRole = 5;
-    public static int InvalidAllianceRole = 13;
+    public final static int Role = Default;
+    public final static int AddAllianceRole = 5;
+    public final static int InvalidAllianceRole = 13;
 
-    public static int AllocatePermission = 6;
+    public final static int AllocatePermission = 6;
 
     public static String getAllAlliancePermissions(){
         List<IdNameNode> rs=new ArrayList<>();
