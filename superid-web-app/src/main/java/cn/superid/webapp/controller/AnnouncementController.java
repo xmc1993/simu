@@ -1,10 +1,14 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.forms.AnnouncementForm;
+import cn.superid.webapp.controller.forms.AnnouncementListForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
@@ -36,7 +40,7 @@ public class AnnouncementController {
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getDetail(@PathVariable Long announcementId , Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
+    public SimpleResponse getDetail(@PathVariable Long announcementId , @RequestBody Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
 
         if(announcementId == null | affairId == null){
             return SimpleResponse.error("参数不正确");
@@ -100,9 +104,33 @@ public class AnnouncementController {
                 operations.add(null);
             }
         }
+        AnnouncementForm result = new AnnouncementForm();
+        result.setId(announcement.getId());
+        result.setContent(content);
+        result.setCreateTime(announcement.getCreateTime());
+        result.setRoleId(announcement.getRoleId());
+        result.setState(announcement.getState());
+        //组织返回结果
+        if(version == announcement.getVersion()){
 
-        Map<String, Object> rsMap = new HashMap<>();rsMap.put("baseRawDraftContent", content);
+            result.setTitle(announcement.getTitle());
+            result.setModifierId(announcement.getModifierId());
+            result.setIsTop(announcement.getIsTop());
+            result.setPublicType(announcement.getPublicType());
+            result.setModifyTime(announcement.getModifyTime());
+        }else{
+            AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(announcementId).eq("version",version).selectOne();
+            if(h != null){
+                result.setTitle(h.getTitle());
+                result.setModifierId(h.getModifierId());
+                result.setIsTop(-1);
+                result.setPublicType(-1);
+                result.setModifyTime(h.getCreateTime());
+            }
+        }
 
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("announcement", result);
         rsMap.put("history",operations);
         return SimpleResponse.ok(rsMap);
 
@@ -111,13 +139,13 @@ public class AnnouncementController {
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId){
+    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId , Long roleId){
 
         if(announcementId == null | affairId == null){
             return SimpleResponse.error("参数不正确");
         }
 
-        boolean result = announcementService.save(contentState,announcementId,affairId);
+        boolean result = announcementService.save(contentState,announcementId,affairId,roleId);
         return SimpleResponse.ok(result);
     }
 
@@ -137,6 +165,73 @@ public class AnnouncementController {
         }
         return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,affairId));
     }
+
+    @ApiOperation(value = "查看事务底下公告列表(不含task)",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementList(Long affairId ){
+        if(affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).eq("task_id",0).state(1).selectList();
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "查看事务底下公告列表(含task)",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list_contain_task", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementListContainTask(Long affairId){
+        if(affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).state(1).selectList();
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "查看事务及其子事务底下公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list_contain_child", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementListContainChild(Long affairId , Long allianceId){
+        if(affairId == null | allianceId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+        StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b where a.affair_id = b.id and b.path like ? ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(affair.getPath()+"%");
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findList(AnnouncementEntity.class,sql.toString(),p);
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    private List<AnnouncementListForm> transformEntityToForm(List<AnnouncementEntity> announcementEntities){
+        List<AnnouncementListForm> result = new ArrayList<>();
+        if(announcementEntities != null){
+            for(AnnouncementEntity a : announcementEntities){
+                AnnouncementListForm announcementForm = new AnnouncementListForm();
+                announcementForm.setId(a.getId());
+                announcementForm.setModifyTime(a.getModifyTime());
+                announcementForm.setPublicType(a.getPublicType());
+                announcementForm.setModifierId(a.getModifierId());
+                announcementForm.setIsTop(a.getIsTop());
+                announcementForm.setState(a.getState());
+                announcementForm.setThumbContent(a.getThumbContent());
+                announcementForm.setVersion(a.getVersion());
+                announcementForm.setCreateTime(a.getCreateTime());
+                announcementForm.setRoleId(a.getRoleId());
+                announcementForm.setTitle(a.getTitle());
+                result.add(announcementForm);
+            }
+        }
+        return result;
+    }
+
+
 
 
 

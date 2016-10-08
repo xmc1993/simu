@@ -184,7 +184,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean save(ContentState contentState, long announcementId, long affairId) {
+    public boolean save(ContentState contentState, long announcementId, long affairId , long roleId) {
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,affairId);
         if(announcementEntity == null){
             return false;
@@ -192,6 +192,7 @@ public class AnnouncementService implements IAnnouncementService{
         //将现在的一条存为历史
         AnnouncementHistoryEntity history = new AnnouncementHistoryEntity();
         history.setAnnouncementId(announcementEntity.getId());
+        history.setModifierId(announcementEntity.getModifierId());
         history.setTitle(announcementEntity.getTitle());
         history.setRoleId(announcementEntity.getRoleId());
         history.setVersion(announcementEntity.getVersion());
@@ -204,6 +205,7 @@ public class AnnouncementService implements IAnnouncementService{
         //改变原有记录
         announcementEntity.setVersion(announcementEntity.getVersion()+1);
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setModifierId(roleId);
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
         announcementEntity.update();
@@ -218,6 +220,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setAffairId(affairId);
         announcementEntity.setTaskId(taskId);
         announcementEntity.setRoleId(roleId);
+        announcementEntity.setModifierId(roleId);
         announcementEntity.setThumbContent(thumb);
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
