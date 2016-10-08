@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
@@ -36,7 +37,7 @@ public class AnnouncementController {
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getDetail(@PathVariable Long announcementId , Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
+    public SimpleResponse getDetail(@PathVariable Long announcementId , @RequestBody Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
 
         if(announcementId == null | affairId == null){
             return SimpleResponse.error("参数不正确");
@@ -100,9 +101,33 @@ public class AnnouncementController {
                 operations.add(null);
             }
         }
+        AnnouncementForm result = new AnnouncementForm();
+        result.setId(announcement.getId());
+        result.setContent(content);
+        result.setCreateTime(announcement.getCreateTime());
+        result.setRoleId(announcement.getRoleId());
+        result.setState(announcement.getState());
+        //组织返回结果
+        if(version == announcement.getVersion()){
 
-        Map<String, Object> rsMap = new HashMap<>();rsMap.put("baseRawDraftContent", content);
+            result.setTitle(announcement.getTitle());
+            result.setModifierId(announcement.getModifierId());
+            result.setIsTop(announcement.getIsTop());
+            result.setPublicType(announcement.getPublicType());
+            result.setModifyTime(announcement.getModifyTime());
+        }else{
+            AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(announcementId).eq("version",version).selectOne();
+            if(h != null){
+                result.setTitle(h.getTitle());
+                result.setModifierId(h.getModifierId());
+                result.setIsTop(-1);
+                result.setPublicType(-1);
+                result.setModifyTime(h.getCreateTime());
+            }
+        }
 
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("announcement", result);
         rsMap.put("history",operations);
         return SimpleResponse.ok(rsMap);
 
@@ -111,13 +136,13 @@ public class AnnouncementController {
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save/{announcementId}", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId){
+    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId , Long roleId){
 
         if(announcementId == null | affairId == null){
             return SimpleResponse.error("参数不正确");
         }
 
-        boolean result = announcementService.save(contentState,announcementId,affairId);
+        boolean result = announcementService.save(contentState,announcementId,affairId,roleId);
         return SimpleResponse.ok(result);
     }
 
@@ -137,6 +162,8 @@ public class AnnouncementController {
         }
         return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,affairId));
     }
+
+
 
 
 
