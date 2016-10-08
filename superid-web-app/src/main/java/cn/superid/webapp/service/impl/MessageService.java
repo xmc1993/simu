@@ -1,14 +1,18 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.enums.MessageColumn;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IMessageService;
+import cn.superid.webapp.service.IRedisMessageService;
 import cn.superid.webapp.utils.AliOTSDao;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.OTSClient;
 import com.aliyun.openservices.ots.ServiceException;
 import com.aliyun.openservices.ots.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import com.aliyun.openservices.ots.model.condition.RelationalCondition;
 import java.util.Iterator;
@@ -19,6 +23,9 @@ import java.util.List;
  */
 @Service
 public class MessageService implements IMessageService{
+    @Autowired
+    private IRedisMessageService redisMessageService;
+
     private final static String TABLE_NAME = "message";
 
     private final static String TO_USER_ID = "to_user_id";
@@ -106,7 +113,7 @@ public class MessageService implements IMessageService{
 
         //因为要倒序查看,所以需要startKey>endKey
         RangeRowQueryCriteria criteria = new RangeRowQueryCriteria(TABLE_NAME);
-
+        //endTime作为开始
         RowPrimaryKey inclusiveStartKey = setStartKey(toUserId,relatedId,endTime);
 
         RowPrimaryKey exclusiveEndKey = setEndKey(toUserId,relatedId,startTime);
@@ -150,15 +157,14 @@ public class MessageService implements IMessageService{
         param.setFilter(filter);
 
         Iterator<Row> rowIter = client.createRangeIterator(param);
-        int totalRows = 0;
+        List<Row> rows = new ArrayList<>();
+
         while (rowIter.hasNext()) {
             Row row = rowIter.next();
-            totalRows++;
-            System.out.println(row);
+            rows.add(row);
         }
 
-        System.out.println("Total rows read: " + totalRows);
-        return null;
+        return rows;
     }
 
     private RowPrimaryKey setStartKey(Long toUserId, Long relatedId,Long endTime){
@@ -206,6 +212,17 @@ public class MessageService implements IMessageService{
         return exclusiveEndKey;
 
     }
+
+    public void referToSomebody(Long toUserId,Long relatedId,String content){
+        HashMap<String,Object> map = new HashMap<>();
+        //TODO 这里需要哪些列,type,subtype,etc
+        map.put("type",1);
+        map.put("content",content);
+        insertIntoTable(toUserId,relatedId,map);
+        //TODO 调用redis进行推送,不太清楚
+        //redisMessageService.se
+    }
+
 
 
 }

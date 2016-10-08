@@ -8,13 +8,13 @@ import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissions;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AffairController {
     @Autowired
     private IAffairService affairService;
+    @Autowired
+    private IAffairMemberService affairMemberService;
     @Autowired
     private IUserService userService;
     /**
@@ -57,11 +59,11 @@ public class AffairController {
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.GENERATE_PERMISSION_GROUP})
     public SimpleResponse agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId,Long dealRoleId,String dealReason) {
         try {
-            AffairMemberApplicationEntity applicationEntity = affairService.findAffairMemberApplicationById(affairId,applicationId);
+            AffairMemberApplicationEntity applicationEntity = affairMemberService.findAffairMemberApplicationById(affairId,applicationId);
             if(applicationEntity == null) {
                 return new SimpleResponse(100, "Can't find this application");
             }
-            AffairMemberEntity affairMemberEntity = affairService.agreeAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
+            AffairMemberEntity affairMemberEntity = affairMemberService.agreeAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
             return new SimpleResponse(ResponseCode.OK, affairMemberEntity);
         } catch (Exception e) {
            // LOG.error("agree affair member application error", e);
@@ -74,7 +76,7 @@ public class AffairController {
     @RequiredPermissions()
     public SimpleResponse disagreeAffairMemberApplication(Long allianceId,Long affairId, Long applicationId,Long dealRoleId,String dealReason) {
         try {
-            affairService.rejectAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
+            affairMemberService.rejectAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
             return new SimpleResponse(ResponseCode.OK, "已拒绝此申请");
         } catch (Exception e) {
             //LOG.error("disagree affair member application error", e);
@@ -82,6 +84,14 @@ public class AffairController {
         }
     }
 
+    @RequestMapping(value = "/get_all_child_affair",method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAllChildAffair(){
+        return null;
+    }
+
+
+    @ApiOperation(value = "失效一个事务",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)
     @RequiredPermissions()
     public SimpleResponse disableAffair(Long allianceId,Long affairId) {

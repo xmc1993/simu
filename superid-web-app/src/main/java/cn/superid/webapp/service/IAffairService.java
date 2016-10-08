@@ -9,6 +9,8 @@ import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IGetPermissions;
 import org.elasticsearch.index.engine.Engine;
 
+import java.util.List;
+
 /**
  * Created by zp on 2016/7/26.
  */
@@ -19,37 +21,12 @@ public interface IAffairService  {
 
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
 
-    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId) throws Exception;
+
 
     public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
 
+    public List<AffairEntity> getAllChildAffair(long allianceId,long affairId) throws Exception;
 
-    /**
-     * 通过申请的id找到事务的成员
-     * @param applicationId
-     * @return
-     */
-    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long affairId,Long applicationId);
-
-    /**
-     * 同意加入事务的申请
-     * @param applicationId
-     * @param dealRoleId
-     * @param dealReason
-     * @return
-     * @throws Exception
-     */
-    public AffairMemberEntity agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
-
-    /**
-     * 拒绝加入事务的申请
-     * @param applicationId
-     * @param dealRoleId
-     * @param dealReason
-     * @return
-     * @throws Exception
-     */
-    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
 
     /**
      * 失效事务
