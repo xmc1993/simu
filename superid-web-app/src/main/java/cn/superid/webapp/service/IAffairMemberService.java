@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
 
@@ -40,4 +41,33 @@ public interface IAffairMemberService {
      * @throws Exception
      */
     public PermissionGroupEntity addPermissionGroup(Long allianceId,Long affairId,String name,String permissions) throws Exception;
+
+    /**
+     * 通过申请的id找到事务的成员
+     * @param applicationId
+     * @return
+     */
+    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long affairId, Long applicationId);
+
+    /**
+     * 同意加入事务的申请
+     * @param applicationId
+     * @param dealRoleId
+     * @param dealReason
+     * @return
+     * @throws Exception
+     */
+    public AffairMemberEntity agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+
+    /**
+     * 拒绝加入事务的申请
+     * @param applicationId
+     * @param dealRoleId
+     * @param dealReason
+     * @return
+     * @throws Exception
+     */
+    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+
+    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId) throws Exception;
 }
