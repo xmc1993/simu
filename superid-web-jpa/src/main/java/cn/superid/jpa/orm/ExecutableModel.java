@@ -61,6 +61,8 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
         delete(getSession());
     }
 
+
+
     public void delete(Session session) {
         session.delete(this);
     }

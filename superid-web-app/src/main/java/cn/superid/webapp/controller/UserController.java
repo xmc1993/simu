@@ -45,7 +45,7 @@ public class UserController {
      * @param token
      * @return
      */
-    @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = boolean.class, notes = "不允许同一个IP地址频繁访问")
+    @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = String.class, notes = "不允许同一个IP地址频繁访问")
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
@@ -66,7 +66,7 @@ public class UserController {
      * @param token
      * @return
      */
-    @ApiOperation(value = "获取身份验证码", httpMethod = "GET", response = boolean.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @ApiOperation(value = "获取身份验证码", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
     @RequestMapping(value = "/get_verify_code", method = RequestMethod.GET)
     public SimpleResponse getVerifyCode(HttpServletRequest request,String token){
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
@@ -85,7 +85,7 @@ public class UserController {
      * @param token
      * @return
      */
-    @ApiOperation(value = "获取登录验证码", httpMethod = "GET", response = boolean.class, notes = "获取登录验证码")
+    @ApiOperation(value = "获取登录验证码", httpMethod = "GET", response = String.class, notes = "获取登录验证码")
     @NotLogin
     @RequestMapping(value = "/get_login_code", method = RequestMethod.GET)
     public SimpleResponse getLoginVerifyCode(HttpServletRequest request,String token){

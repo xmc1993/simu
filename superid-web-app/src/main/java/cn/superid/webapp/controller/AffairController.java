@@ -4,16 +4,17 @@ import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -32,11 +33,22 @@ public class AffairController {
     /**
      * 增加事务,参数
      */
-    @ApiOperation(value = "添加事务", response = boolean.class, notes = "格式正确而且没有被注册")
+    @ApiOperation(value = "添加事务", response = boolean.class, notes = "凡是事务内所有操作都需要affairMemberId;返回新建的事务id")
     @RequiredPermissions(affair = AffairPermissions.CREATE_AFFAIR)
     @RequestMapping(value = "/create_affair", method = RequestMethod.POST)
-    public SimpleResponse createAffair(CreateAffairForm createAffairForm){
-        return null;
+    public SimpleResponse createAffair(String name,int index,int publicType){
+        CreateAffairForm createAffairForm = new CreateAffairForm();
+        createAffairForm.setPublicType(publicType);
+        createAffairForm.setOperationRoleId(GlobalValue.currentRoleId());
+        createAffairForm.setAffairId(GlobalValue.currentAffairId());
+        createAffairForm.setNumber(index);
+        createAffairForm.setName(name);
+        try {
+           AffairEntity affairEntity= affairService.createAffair(createAffairForm);
+            return SimpleResponse.ok(affairEntity.getId());
+        } catch (Exception e) {
+            return SimpleResponse.exception(e);
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package cn.superid.webapp.model.base;
+package cn.superid.webapp.model.cache;
 
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.orm.CacheableDao;
@@ -12,12 +12,14 @@ import javax.persistence.Table;
  */
 @Table(name = "role")
 @Cacheable( key = "rl")
-public class RoleBaseInfo  extends ExecutableModel {
-    public final static CacheableDao<RoleBaseInfo> dao = new CacheableDao<>(RoleBaseInfo.class);
+public class RoleCache extends ExecutableModel {
+    public final static CacheableDao<RoleCache> dao = new CacheableDao<>(RoleCache.class);
     private long id;
     private long userId;
     private long allianceId;
     private String title;
+    private String permissions;
+    private int state;
 
     @Id
     public long getId() {
@@ -50,5 +52,21 @@ public class RoleBaseInfo  extends ExecutableModel {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

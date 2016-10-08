@@ -1,7 +1,7 @@
 package service;
 
 import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.webapp.model.base.UserBaseInfo;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 
 import cn.superid.webapp.utils.TimeUtil;
 import org.junit.Assert;
@@ -9,8 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import util.Execution;
-import util.Timer;
 
 /**
  * Created by jizhenya on 16/8/26.
@@ -55,33 +53,7 @@ public class RedisCacheTest {
 //        Timer.compair(100, new Execution() {
 //            @Override
 //            public void execute() {
-//                UserBaseInfo.dao.findById(104L);
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                RedisUtil.findByKey(104L, UserBaseInfo.class);
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                UserBaseInfo.dao.findFieldByKey(104, "username", String.class);
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                UserBaseInfo.dao.id(104).set("username", "jzy", "avatar", "test");
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                UserBaseInfo userBaseInfo1=UserBaseInfo.dao.findById(104L);
-//                userBaseInfo1.setUsername("xxf");
-//                userBaseInfo1.setAvatar("test");
-//                userBaseInfo1.setBirthday(TimeUtil.getCurrentSqlTime());
-//                userBaseInfo1.update();
-//            }
-//        });
+//
 
     }
 

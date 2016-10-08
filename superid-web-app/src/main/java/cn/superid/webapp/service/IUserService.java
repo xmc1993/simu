@@ -9,7 +9,7 @@ import cn.superid.webapp.model.UserEntity;
  * Created by zp on 2016/7/26.
  */
 public interface IUserService {
-     boolean belong(Long userId,Long roleId);
+     boolean belong(long roleId);
 
      boolean getVerifyCode(String token,String template);
 

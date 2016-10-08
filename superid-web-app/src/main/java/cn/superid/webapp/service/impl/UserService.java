@@ -1,7 +1,5 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.Dao;
-import cn.superid.jpa.util.Expr;
 import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.StringUtil;
@@ -11,7 +9,8 @@ import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
-import cn.superid.webapp.model.base.UserBaseInfo;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
 import java.io.InputStream;
 import java.util.*;
 
@@ -75,8 +73,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean belong(Long userId, Long roleId) {
-        return true;
+    public boolean belong(long roleId) {
+       return RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
     }
 
 

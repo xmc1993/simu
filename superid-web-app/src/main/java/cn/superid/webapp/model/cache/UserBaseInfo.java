@@ -1,4 +1,4 @@
-package cn.superid.webapp.model.base;
+package cn.superid.webapp.model.cache;
 
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.orm.CacheableDao;

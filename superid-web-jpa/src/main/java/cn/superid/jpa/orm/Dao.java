@@ -2,11 +2,9 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by zp on 2016/7/21.

@@ -20,6 +20,7 @@ public interface IAuth {
 
     public void setSessionAttr(String key,Object v);
 
+
     public Object getSessionAttr(String key);
 
     public HttpServletRequest getRequest();

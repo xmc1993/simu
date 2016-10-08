@@ -58,6 +58,7 @@ public class SpringAuthenticator implements IAuth {
     }
 
 
+
     @Override
     public HttpServletRequest getRequest() {
         if((RequestContextHolder.getRequestAttributes())==null) {

@@ -26,6 +26,7 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
     private int version;
     private String increment;
     private String decrement;
+    private long modifierId;
 
     @Id
     @Column(name = "id")
@@ -100,5 +101,13 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setDecrement(String decrement) {
         this.decrement = decrement;
+    }
+
+    public long getModifierId() {
+        return modifierId;
+    }
+
+    public void setModifierId(long modifierId) {
+        this.modifierId = modifierId;
     }
 }
