@@ -46,15 +46,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     private IAffairService affairService;
 
-    @Autowired
-    private IAllianceService allianceService;
-
-
     private static final Map<String, Object> serviceMethodNotLoginInfoMapping = new HashMap<>();
     private static final Lock serviceMethodNotLoginInfoLock = new ReentrantLock();
     private static final Map<String, Object> serviceMethodRequiredPermissionsMapping = new HashMap<>();
     private static final Lock serviceMethodRequiredPermissionsLock = new ReentrantLock();
-    private static JSONObject jsonObject = new JSONObject();
 
 
     private static String getHandlerMethodSignature(HandlerMethod handlerMethod) {
@@ -173,9 +168,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         RequiredPermissions requiredPermissions = getRequiredPermissionsFromHandlerMethodWithCache(handlerMethod);
         if (requiredPermissions == null) {
-            session.setAttribute("affairId",0);
-            session.setAttribute("allianceId",0);
-            session.setAttribute("roleId",0);
+            session.setAttribute("affairMember",null);
+            session.setAttribute("role",null);
             return hasPermission; // 不做检查
         }
 
@@ -187,19 +181,21 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             }
 
             AffairMemberCache affairMemberCache = AffairMemberCache.dao.findById(affairMemberId);
-            if(affairMemberCache==null||affairMemberCache.getState()== StateType.Disabled){
+            if(affairMemberCache==null||affairMemberCache.getState()== StateType.Disabled||affairMemberCache.getRoleId()==0){
                 return  notPermitted;
             }
             long roleId = affairMemberCache.getRoleId();
-            if(!userService.belong(roleId)){
-                return  notPermitted;
+            RoleCache roleCache =RoleCache.dao.findById(roleId);
+            if(roleCache==null||roleCache.getUserId()!=userService.currentUserId()){
+                return notPermitted;
             }
-            long allianceId = affairMemberCache.getAllianceId();
+
+
             long affairId = affairMemberCache.getAffairId();
 
-            session.setAttribute("affairId",affairId);
-            session.setAttribute("allianceId",allianceId);
-            session.setAttribute("roleId",roleId);
+            session.setAttribute("affairMember",affairMemberCache);
+            session.setAttribute("role",roleCache);
+
             if(!isPermitted(affairPermissions,affairService.getPermissions(affairMemberCache.getPermissions(),affairMemberCache.getPermissionGroupId(),affairId))){
                 return notPermitted;
             }
@@ -212,10 +208,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 return notPermitted;
             }
             RoleCache roleCache =RoleCache.dao.findById(roleId);
-            if(roleCache==null||roleCache.getState()==StateType.Disabled||!userService.belong(roleId)){
+            if(roleCache==null||roleCache.getState()==StateType.Disabled||roleCache.getUserId()!=userService.currentUserId()){
                 return notPermitted;
             }
-            session.setAttribute("allianceId",roleCache.getAllianceId());
+            session.setAttribute("role",roleCache);
 
             if(!isPermitted(alliancePermissions,roleCache.getPermissions())){
                 return notPermitted;

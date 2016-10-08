@@ -1,6 +1,7 @@
 package cn.superid.webapp.security;
 
-import org.springframework.stereotype.Component;
+import cn.superid.webapp.model.cache.AffairMemberCache;
+import cn.superid.webapp.model.cache.RoleCache;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -26,34 +27,35 @@ public class GlobalValue {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
-    public static long currentAllianceId(){
-        long allianceId =  (long)getCurrentHttpSession().getAttribute("allianceId");
-        if(allianceId==0){
-            throw new RuntimeException("can't get allianceId");
+    public static AffairMemberCache currentAffairMember(){
+        AffairMemberCache affairMemberCache =  (AffairMemberCache) getCurrentHttpSession().getAttribute("affairMember");
+        if(affairMemberCache==null){
+            throw new RuntimeException("can't get affairMember");
         }
-        return allianceId;
+        return affairMemberCache;
+    }
+
+
+    public static RoleCache currentRole(){
+        RoleCache roleCache = (RoleCache) getCurrentHttpSession().getAttribute("role");
+        if(roleCache==null){
+            throw new RuntimeException("can't get role");
+        }
+        return roleCache;
+    }
+
+
+    public static long currentAllianceId(){
+        return currentRole().getAllianceId();
 
     }
 
     public static long currentAffairId(){
-        long affairId = (long)getCurrentHttpSession().getAttribute("affairId");
-        if(affairId==0){
-            throw new RuntimeException("can't get affairId");
-
-        }
-        return affairId;
+        return currentAffairMember().getAffairId();
     }
 
     public static long currentRoleId(){
-        long roleId = (long)getCurrentHttpSession().getAttribute("roleId");
-        if(roleId==0){
-            throw new RuntimeException("can't get affairId");
-        }
-        return roleId;
-    }
-
-    public static long currentUserId(){
-        return (long) getCurrentHttpSession().getAttribute("userId");
+        return currentRole().getId();
     }
 
 }
