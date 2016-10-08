@@ -5,6 +5,7 @@ import cn.superid.webapp.forms.Message;
 import cn.superid.webapp.service.IRedisMessageService;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,7 +27,12 @@ public class RedisMessageService implements IRedisMessageService {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                RedisUtil.getJedis().publish(channel.getBytes(), msg.getBytes());
+                Jedis jedis = RedisUtil.getJedis();
+                if(jedis != null) {
+                    jedis.publish(channel.getBytes(), msg.getBytes());
+                    jedis.close();
+                }
+
             }
         });
     }
