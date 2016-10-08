@@ -1,11 +1,14 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
+import cn.superid.webapp.controller.forms.AnnouncementListForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
@@ -161,6 +164,71 @@ public class AnnouncementController {
             return SimpleResponse.error("参数不正确");
         }
         return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,affairId));
+    }
+
+    @ApiOperation(value = "查看事务底下公告列表(不含task)",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementList(Long affairId ){
+        if(affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).eq("task_id",0).state(1).selectList();
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "查看事务底下公告列表(含task)",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list_contain_task", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementListContainTask(Long affairId){
+        if(affairId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).state(1).selectList();
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "查看事务及其子事务底下公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/announcement_list_contain_child", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAnnouncementListContainChild(Long affairId , Long allianceId){
+        if(affairId == null | allianceId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+        StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b where a.affair_id = b.id and b.path like ? ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(affair.getPath()+"%");
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findList(AnnouncementEntity.class,sql.toString(),p);
+        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
+
+        return SimpleResponse.ok(result);
+    }
+
+    private List<AnnouncementListForm> transformEntityToForm(List<AnnouncementEntity> announcementEntities){
+        List<AnnouncementListForm> result = new ArrayList<>();
+        if(announcementEntities != null){
+            for(AnnouncementEntity a : announcementEntities){
+                AnnouncementListForm announcementForm = new AnnouncementListForm();
+                announcementForm.setId(a.getId());
+                announcementForm.setModifyTime(a.getModifyTime());
+                announcementForm.setPublicType(a.getPublicType());
+                announcementForm.setModifierId(a.getModifierId());
+                announcementForm.setIsTop(a.getIsTop());
+                announcementForm.setState(a.getState());
+                announcementForm.setThumbContent(a.getThumbContent());
+                announcementForm.setVersion(a.getVersion());
+                announcementForm.setCreateTime(a.getCreateTime());
+                announcementForm.setRoleId(a.getRoleId());
+                announcementForm.setTitle(a.getTitle());
+                result.add(announcementForm);
+            }
+        }
+        return result;
     }
 
 
