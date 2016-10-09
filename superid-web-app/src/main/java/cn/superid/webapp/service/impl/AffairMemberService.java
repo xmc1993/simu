@@ -6,6 +6,7 @@ import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
+import cn.superid.webapp.security.PermissionType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
@@ -23,11 +24,11 @@ public class AffairMemberService implements IAffairMemberService{
     @Autowired
     private IUserService userService;
     @Override
-    public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId) throws Exception{
-        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).exists();
-        if(isExist){
-            throw new Exception("该成员已在事务中");
-        }
+    public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId) {
+//        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).exists();不需要检查,这个需要在申请时否掉
+//        if(isExist){
+//            throw new Exception("该成员已在事务中");
+//        }
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setAllianceId(allianceId);
         affairMemberEntity.setAffairId(affairId);
@@ -41,7 +42,13 @@ public class AffairMemberService implements IAffairMemberService{
         return affairMemberEntity;
     }
 
-    public boolean allocateAffairMemberPermissionGroup(Long affairId,Long allianceId,Long toRoleId, Long permissionGroupId) throws Exception {
+
+    @Override
+    public AffairMemberEntity addCreator(long allianceId, long affairId, long roleId) {
+        return addMember(allianceId,affairId,roleId,AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
+    }
+
+    public boolean allocateAffairMemberPermissionGroup(Long affairId, Long allianceId, Long toRoleId, Long permissionGroupId) throws Exception {
         AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("roleId", toRoleId).selectOne();
         if (affairMemberEntity == null) {
             throw new Exception("找不到该事务成员");

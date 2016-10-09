@@ -3,12 +3,15 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
+import cn.superid.webapp.model.cache.AffairMemberCache;
 
 /**
  * Created by xiaofengxu on 16/9/2.
  */
 public interface IAffairMemberService {
-    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId) throws Exception;//type为
+    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId);//type为
+
+    AffairMemberEntity addCreator(long allianceId,long affairId,long roleId);
 
     /**
      * 给某个角色设置权限组

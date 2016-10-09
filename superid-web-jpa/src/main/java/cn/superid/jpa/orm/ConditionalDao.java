@@ -1,6 +1,7 @@
 package cn.superid.jpa.orm;
 
 import cn.superid.jpa.util.Expr;
+import cn.superid.jpa.util.StringUtil;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
     public ConditionalDao<T> eq(String column, Object value){
-        return and(column,"=",value);
+        return and(StringUtil.underscoreName(column),"=",value);
     }
 
     public ConditionalDao<T> lk(String colum, Object value){return and(colum," LIKE ",value);}

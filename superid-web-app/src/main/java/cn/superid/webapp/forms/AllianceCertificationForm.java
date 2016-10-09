@@ -1,21 +1,15 @@
-package cn.superid.webapp.model;
+package cn.superid.webapp.forms;
 
-import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.jpa.orm.ExecutableModel;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
- * Created by xiaofengxu on 16/9/30.
+ * Created by xiaofengxu on 16/10/8.
  */
-@Table(name = "alliance_certification")
-public class AllianceCertificationEntity extends ExecutableModel<AllianceCertificationEntity> {
-
-    private long id;
-    private long allianceId;
+@ApiModel
+public class AllianceCertificationForm {
     private String companyName;
     private String companyAddress;
     private String licenseImagePath;
@@ -24,30 +18,9 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
     private String businessScope;
     private Float registerMoney;
     private Timestamp setUpDate;
-    private Integer checkState = 0;
-    private String checkReason = "";
+    @ApiModelProperty(notes = "不需要传")
     private long roleId;
-    private Timestamp createTime;
-    private Timestamp modifyTime;
 
-    public static ConditionalDao<AllianceCertificationEntity> dao = new ConditionalDao<>(AllianceCertificationEntity.class);
-
-    @Id
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getAllianceId() {
-        return allianceId;
-    }
-
-    public void setAllianceId(long allianceId) {
-        this.allianceId = allianceId;
-    }
 
     public String getCompanyName() {
         return companyName;
@@ -113,37 +86,6 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
         this.setUpDate = setUpDate;
     }
 
-    public Integer getCheckState() {
-        return checkState;
-    }
-
-    public void setCheckState(Integer checkState) {
-        this.checkState = checkState;
-    }
-
-    public String getCheckReason() {
-        return checkReason;
-    }
-
-    public void setCheckReason(String checkReason) {
-        this.checkReason = checkReason;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public Timestamp getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Timestamp modifyTime) {
-        this.modifyTime = modifyTime;
-    }
 
     public long getRoleId() {
         return roleId;
