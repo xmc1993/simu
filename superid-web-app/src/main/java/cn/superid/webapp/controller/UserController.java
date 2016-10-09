@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.ValidateCode;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -262,6 +265,27 @@ public class UserController {
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
             return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
         }
+    }
+
+    /**
+     * 响应验证码页面
+     * @return
+     */
+    @RequestMapping(value="/validateCode")
+    public String validateCode(HttpServletRequest request,HttpServletResponse response) throws Exception{
+        // 设置响应的类型格式为图片格式
+        response.setContentType("image/jpeg");
+        //禁止图像缓存。
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        HttpSession session = request.getSession();
+
+        ValidateCode vCode = new ValidateCode(120,40,5,100);
+        session.setAttribute("code", vCode.getCode());
+        vCode.write(response.getOutputStream());
+        return null;
     }
 
 }
