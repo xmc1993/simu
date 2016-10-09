@@ -34,6 +34,7 @@ public class AnnouncementEntity extends ExecutableModel {
     private int version;
     private String decrement;
     private long modifierId;
+    private long allianceId;
 
     @Id
     @Column(name = "id")
@@ -45,7 +46,6 @@ public class AnnouncementEntity extends ExecutableModel {
         this.id = id;
     }
 
-    @PartitionId
     public long getAffairId() {
         return affairId;
     }
@@ -156,5 +156,14 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setModifierId(long modifierId) {
         this.modifierId = modifierId;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 }
