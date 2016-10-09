@@ -4,10 +4,13 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.StateType;
+import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.model.AllianceCertificationEntity;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
@@ -59,7 +62,16 @@ public class AllianceService  implements IAllianceService{
 
         }
 
-        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),allianceCreateForm.getUserId() ,0, "*", allianceCreateForm.getIsPersonal());//创建一个盟主角色
+        RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setTitle(allianceCreateForm.getName());
+        roleEntity.setUserId(allianceCreateForm.getUserId());
+        roleEntity.setAllianceId(allianceEntity.getId());
+        roleEntity.setBelongAffairId(0);
+        roleEntity.setPermissions(AffairPermissionRoleType.OWNER);
+        roleEntity.setAllocatePermissions(AffairPermissionRoleType.OWNER);
+        roleEntity.setType(allianceCreateForm.getIsPersonal());
+        roleEntity.save();
+
         AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal());
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId",affairEntity.getId());//更新所属事务
@@ -86,5 +98,21 @@ public class AllianceService  implements IAllianceService{
     @Override
     public boolean validName(String code) {
         return AllianceEntity.dao.eq("shortName",code).exists();
+    }
+
+    @Override
+    public AllianceCertificationEntity addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
+        AllianceCertificationEntity allianceCertificationEntity = new AllianceCertificationEntity();
+        allianceCertificationEntity.setAllianceId(allianceId);
+        allianceCertificationEntity.copyPropertiesFrom(allianceCertificationForm);
+        allianceCertificationEntity.setRoleId(roleId);
+        allianceCertificationEntity.save();
+        return allianceCertificationEntity;
+    }
+
+    @Override
+    public boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId) {
+        allianceCertificationForm.setRoleId(roleId);
+        return AllianceCertificationEntity.dao.set(allianceCertificationForm)>0;
     }
 }

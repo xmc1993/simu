@@ -85,7 +85,9 @@ public class AffairService implements IAffairService {
         affairEntity.setPath(parentAffair.getPath()+'/'+affairEntity.getPathIndex());
         affairEntity.save();
 
-        this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());
+        this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());//调整事务顺序
+
+        affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
 
         return affairEntity;
     }
@@ -115,7 +117,7 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId",folderId);
         try{
-            affairMemberService.addMember(affairEntity.getAllianceId(),affairEntity.getId(),roleId,"",AffairPermissionRoleType.OWNER_ID);//加入根事务
+            affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),roleId);//加入根事务
         }catch (Exception e){
             e.printStackTrace();
         }

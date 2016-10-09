@@ -77,11 +77,16 @@ public class AffairPermissions {
     public final static int GOODS = 11; //资产
     public final static int CHECK_AFFAIR_GOODS =24; // 查看事务资产
 
+    public static String affairPermissions = null;
 
 
 
 
     public static String  getAllAffairPermissions(){
+
+        if(affairPermissions!=null){
+            return affairPermissions;
+        }
 
         List<IdNameNode> rs=new ArrayList<>();
         IdNameNode childNode ;
@@ -212,7 +217,9 @@ public class AffairPermissions {
         childNode = new IdNameNode(CHECK_AFFAIR_GOODS,"查看事务资产");
         parentNode.getChilds().add(childNode);
 
-        return JSONObject.toJSONString(rs);
+        affairPermissions = JSONObject.toJSONString(rs);
+
+        return affairPermissions;
     }
 
 }

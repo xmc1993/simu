@@ -35,7 +35,12 @@ public class AlliancePermissions {
 
     public final static int AllocatePermission = 6;
 
+    public static String alliancePermissions=null;
     public static String getAllAlliancePermissions(){
+        if (alliancePermissions!=null){
+            return alliancePermissions;
+        }
+
         List<IdNameNode> rs=new ArrayList<>();
         IdNameNode childNode ;
         IdNameNode parentNode;
@@ -79,7 +84,8 @@ public class AlliancePermissions {
 
         parentNode =new IdNameNode(AllocatePermission,"分配权限");
         rs.add(parentNode);
+        alliancePermissions =JSONObject.toJSONString(rs);
 
-        return JSONObject.toJSONString(rs);
+        return alliancePermissions;
     }
 }
