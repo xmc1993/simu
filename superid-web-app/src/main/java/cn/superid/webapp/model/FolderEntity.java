@@ -25,6 +25,7 @@ public class FolderEntity extends ExecutableModel {
     private long uploader;
     private long parentId;
     private int state;
+    private long allianceId;
 
 
 
@@ -78,7 +79,6 @@ public class FolderEntity extends ExecutableModel {
         this.parentId = parentId;
     }
 
-    @PartitionId
     public long getAffairId() {
         return affairId;
     }
@@ -101,5 +101,14 @@ public class FolderEntity extends ExecutableModel {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 }

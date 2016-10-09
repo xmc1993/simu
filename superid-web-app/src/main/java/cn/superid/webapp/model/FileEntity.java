@@ -28,6 +28,7 @@ public class FileEntity extends ExecutableModel {
     private long size;
     private int state; //0为失效,1为有效且为最新版,2表示有效且是历史版本
     private long affairId;
+    private long allianceId;
 
     @Id
     @Column(name = "id")
@@ -111,12 +112,20 @@ public class FileEntity extends ExecutableModel {
         this.state = state;
     }
 
-    @PartitionId
     public long getAffairId() {
         return affairId;
     }
 
     public void setAffairId(long affairId) {
         this.affairId = affairId;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 }
