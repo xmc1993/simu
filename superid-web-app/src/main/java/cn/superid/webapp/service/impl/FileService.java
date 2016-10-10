@@ -26,17 +26,17 @@ public class FileService implements IFileService{
     private IRoleService roleService;
 
     @Override
-    public List<FolderForm> getChildFolder(long folderId,long affairId) {
+    public List<FolderForm> getChildFolder(long folderId,long affairId , long allianceId) {
 
-        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+        FolderEntity folder = FolderEntity.dao.findById(folderId,allianceId);
         if(folder == null){
             return null;
         }
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.partitionId(affairId).state(1).eq("parent_id",folder.getId()).selectList();
+            folders = FolderEntity.dao.partitionId(allianceId).eq("affair_id",affairId).state(1).eq("parent_id",folder.getId()).selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).eq("parent_id",folder.getId()).partitionId(affairId).selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).eq("parent_id",folder.getId()).partitionId(allianceId).selectList();
         }
 
         if(folders == null ){
@@ -46,7 +46,7 @@ public class FileService implements IFileService{
         List<FolderForm> result = new ArrayList<>();
         for(FolderEntity f : folders){
             //计算该目录下所有文件数量
-            int count = FileEntity.dao.partitionId(affairId).lk("path",f.getPath()+"/%").count();
+            int count = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).lk("path",f.getPath()+"/%").count();
 
             result.add(new FolderForm(f.getName(),f.getId(),count));
         }
@@ -55,13 +55,13 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public List<FileForm> getChildFile(long folderId,long affairId) {
-        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+    public List<FileForm> getChildFile(long folderId,long affairId , long allianceId) {
+        FolderEntity folder = FolderEntity.dao.findById(folderId,allianceId);
 
         if(folder == null){
             return null;
         }
-        List<FileEntity> files = FileEntity.dao.partitionId(affairId).eq("folder_id",folderId).state(1).selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("folder_id",folderId).state(1).selectList();
         if(files == null){
             return null;
         }
@@ -78,18 +78,18 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public boolean addFolder(long folderId, String name, long operationRoleId,long affairId,long taskId) {
+    public boolean addFolder(long folderId, String name, long operationRoleId,long affairId,long taskId , long allianceId) {
         FolderEntity folder = new FolderEntity();
-        FolderEntity parent = FolderEntity.dao.findById(folderId,affairId);
+        FolderEntity parent = FolderEntity.dao.findById(folderId,allianceId);
         folder.setName(name);
         int count = 0 ;
 
         if(taskId == 0){
-            count = FolderEntity.dao.partitionId(affairId).eq("parent_id",folderId).count();
+            count = FolderEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("parent_id",folderId).count();
 
         }else{
             //如果task不为空,表示是在任务中查看文件,则要过滤affair中其他任务文件
-            count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(affairId).count();
+            count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(allianceId).count();
         }
         folder.setPath(parent.getPath()+"/"+(count+1));
         folder.setAffairId(affairId);
@@ -98,6 +98,7 @@ public class FileService implements IFileService{
         folder.setUploader(operationRoleId);
         folder.setState(1);
         folder.setParentId(folderId);
+        folder.setAllianceId(allianceId);
         folder.save();
 
 
@@ -106,8 +107,8 @@ public class FileService implements IFileService{
 
     @Override
     @Transactional
-    public boolean addFile(AddFileForm form) {
-        FolderEntity folder = FolderEntity.dao.findById(form.getFolderId(),form.getAffairId());
+    public boolean addFile(AddFileForm form , long affairId , long allianceId) {
+        FolderEntity folder = FolderEntity.dao.findById(form.getFolderId(),allianceId);
         if(folder == null){
             return false;
         }
@@ -121,15 +122,16 @@ public class FileService implements IFileService{
         file.setUploader(form.getUploader());
         file.setSize(form.getSize());
         file.setName(form.getFileName());
-        file.setAffairId(form.getAffairId());
+        file.setAffairId(affairId);
+        file.setAllianceId(allianceId);
 
         //计算path
 
-        int count = FileEntity.dao.partitionId(form.getFolderId()).count();
+        int count = FileEntity.dao.partitionId(allianceId).eq("folder_id",form.getFolderId()).count();
         file.setPath(folder.getPath()+"/"+(count+1));
 
         //第三步,计算history_id
-        FileEntity latest = FileEntity.dao.partitionId(form.getAffairId()).eq("folder_id",form.getFolderId()).state(1).eq("name",form.getFileName()).selectOne();
+        FileEntity latest = FileEntity.dao.partitionId(allianceId).eq("folder_id",form.getFolderId()).state(1).eq("name",form.getFileName()).selectOne();
         if(latest != null){
             if(latest.getHistoryId().equals("")){
                 file.setHistoryId(latest.getId()+"");
@@ -148,8 +150,8 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public boolean removeFile(long id,long affairId) {
-        FileEntity file = FileEntity.dao.findById(id,affairId);
+    public boolean removeFile(long id,long allianceId) {
+        FileEntity file = FileEntity.dao.findById(id,allianceId);
         if(file == null | file.getState() == 0){
             return false;
         }
@@ -160,9 +162,9 @@ public class FileService implements IFileService{
 
     @Override
     @Transactional
-    public boolean removeFolder(long affairId, long folderId) {
+    public boolean removeFolder(long allianceId, long folderId , long affairId) {
         //第一步,本文件夹状态为置为失效
-        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+        FolderEntity folder = FolderEntity.dao.findById(folderId,allianceId);
         if(folder == null | folder.getState() == 0){
             return false;
         }
@@ -173,9 +175,9 @@ public class FileService implements IFileService{
         //第二步,子文件夹状态为置为失效
         List<FolderEntity> folders = null;
         if(folder.getTaskId() == 0L ){
-            folders = FolderEntity.dao.partitionId(affairId).state(1).lk("path",folder.getPath()+"/%").selectList();
+            folders = FolderEntity.dao.partitionId(allianceId).eq("affair_id",affairId).state(1).lk("path",folder.getPath()+"/%").selectList();
         }else{
-            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"/%").partitionId(affairId).selectList();
+            folders = FolderEntity.dao.eq("task_id",folder.getTaskId()).state(1).lk("path",folder.getPath()+"/%").partitionId(allianceId).selectList();
         }
 
         if(folders != null & folders.size() > 0){
@@ -187,7 +189,7 @@ public class FileService implements IFileService{
 
 
         //第三步,文件状态为置为失效
-        List<FileEntity> files = FileEntity.dao.partitionId(affairId).lk("path",folder.getPath()+"/%").selectList();
+        List<FileEntity> files = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).lk("path",folder.getPath()+"/%").selectList();
         if(files == null){
             return false;
         }
@@ -202,8 +204,8 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public boolean renameFolder(long affairId, long folderId, String name) {
-        FolderEntity folder = FolderEntity.dao.findById(folderId,affairId);
+    public boolean renameFolder(long folderId,String name , long allianceId) {
+        FolderEntity folder = FolderEntity.dao.findById(folderId,allianceId);
         if(folder == null){
             return false;
         }
@@ -214,15 +216,15 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public List<FileForm> getHistoryFile(long fileId, long affairId) {
-        FileEntity file = FileEntity.dao.findById(fileId,affairId);
+    public List<FileForm> getHistoryFile(long fileId, long allianceId) {
+        FileEntity file = FileEntity.dao.findById(fileId,allianceId);
         if(file == null){
             return null;
         }
         String[] ids = file.getHistoryId().split(",");
         List<FileForm> result = new ArrayList<>();
         for(int i = 0 ; i < ids.length ; i++){
-            FileEntity f = FileEntity.dao.findById(Integer.parseInt(ids[i]),affairId);
+            FileEntity f = FileEntity.dao.findById(Integer.parseInt(ids[i]),allianceId);
             if(f != null){
                 result.add(new FileForm(f.getId(),f.getFileId(),f.getName(),roleService.getNameByRoleId(f.getUploader()),f.getUploader(),f.getCreateTime(),f.getSize(),false));
             }
@@ -231,43 +233,55 @@ public class FileService implements IFileService{
     }
 
     @Override
-    public long createRootFolder(long allianceId,long affairId, long taskId, long folderId,long role) {
+    public long createRootFolderForAffair(long allianceId,long affairId,long role) {
         AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
         long id = 0;
         if(affair == null){
             return 0;
         }
-        if(taskId == 0){
-            //表示创建事务的根文件夹
-            FolderEntity folder = new FolderEntity();
-            folder.setName(affair.getName()+"的根文件夹");
-            folder.setPath("1");
-            folder.setAffairId(affairId);
-            folder.setTaskId(0);
-            folder.setCreateTime(TimeUtil.getCurrentSqlTime());
-            folder.setUploader(role);
-            folder.setParentId(0);
-            folder.setState(1);
-            folder.save();
-            id = folder.getId();
-        }else{
-            FolderEntity parent = FolderEntity.dao.findById(folderId,affairId);
-            if(parent == null){
-                return 0;
-            }
-            FolderEntity folder = new FolderEntity();
-            folder.setName(affair.getName()+"的根文件夹");
-            int count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(affairId).count();
-            folder.setPath(parent.getPath()+"/"+(count+1));
-            folder.setAffairId(affairId);
-            folder.setTaskId(taskId);
-            folder.setCreateTime(TimeUtil.getCurrentSqlTime());
-            folder.setUploader(role);
-            folder.setParentId(folderId);
-            folder.setState(1);
-            folder.save();
-            id = folder.getId();
+        //表示创建事务的根文件夹
+        FolderEntity folder = new FolderEntity();
+        folder.setName(affair.getName()+"的根文件夹");
+        folder.setPath("1");
+        folder.setAffairId(affairId);
+        folder.setTaskId(0);
+        folder.setCreateTime(TimeUtil.getCurrentSqlTime());
+        folder.setUploader(role);
+        folder.setParentId(0);
+        folder.setState(1);
+        folder.setAllianceId(allianceId);
+        folder.save();
+        id = folder.getId();
+
+
+        return id;
+    }
+
+    @Override
+    public long createRootFolderForTask(long allianceId,long affairId, long taskId, long folderId,long role) {
+        AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+        long id = 0;
+        if(affair == null){
+            return 0;
         }
+        FolderEntity parent = FolderEntity.dao.findById(folderId,allianceId);
+        if(parent == null){
+            return 0;
+        }
+        FolderEntity folder = new FolderEntity();
+        folder.setName(affair.getName()+"的根文件夹");
+        int count = FolderEntity.dao.eq("task_id",taskId).eq("parent_id",folderId).partitionId(allianceId).count();
+        folder.setPath(parent.getPath()+"/"+(count+1));
+        folder.setAffairId(affairId);
+        folder.setTaskId(taskId);
+        folder.setCreateTime(TimeUtil.getCurrentSqlTime());
+        folder.setUploader(role);
+        folder.setParentId(folderId);
+        folder.setState(1);
+        folder.setAllianceId(allianceId);
+        folder.save();
+        id = folder.getId();
+
 
         return id;
     }

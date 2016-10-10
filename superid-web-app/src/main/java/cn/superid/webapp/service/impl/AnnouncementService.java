@@ -184,8 +184,8 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean save(ContentState contentState, long announcementId, long affairId , long roleId) {
-        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,affairId);
+    public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcementEntity == null){
             return false;
         }
@@ -213,7 +213,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean createAnnouncement(String title, long affairId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
+    public boolean createAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
         AnnouncementEntity announcementEntity = new AnnouncementEntity();
         announcementEntity.setTitle(title);
         announcementEntity.setContent(JSONObject.toJSONString(content));
@@ -229,14 +229,15 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
         announcementEntity.setDecrement("0");
+        announcementEntity.setAllianceId(allianceId);
         announcementEntity.save();
 
         return true;
     }
 
     @Override
-    public boolean deleteAnnouncement(long announcementId, long affairId) {
-        AnnouncementEntity.dao.id(affairId).partitionId(affairId).set("state",0);
+    public boolean deleteAnnouncement(long announcementId, long allianceId) {
+        AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state",0);
         return true;
     }
 }

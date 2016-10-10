@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IFileService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.FileForm;
@@ -40,12 +41,12 @@ public class FileController {
 
     @ApiOperation(value = "得到该文件下所有直系子文件夹和文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/get_child", method = RequestMethod.POST)
-    public SimpleResponse getChild(Long folderId,Long affairId) {
-        if(folderId == null | affairId == null){
+    public SimpleResponse getChild(Long folderId) {
+        if(folderId == null ){
             return SimpleResponse.error("参数错误");
         }
-        List<FolderForm> folders = fileService.getChildFolder(folderId,affairId);
-        List<FileForm> files = fileService.getChildFile(folderId,affairId);
+        List<FolderForm> folders = fileService.getChildFolder(folderId, GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
+        List<FileForm> files = fileService.getChildFile(folderId,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
         if(folders == null | files == null){
             return SimpleResponse.error("id不合法");
         }
@@ -58,11 +59,11 @@ public class FileController {
 
     @ApiOperation(value = "添加文件夹", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/add_folder", method = RequestMethod.POST)
-    public SimpleResponse addFolder(Long folderId,String name,Long operationRoleId,Long affairId,Long taskId) {
-        if(folderId == null | name == null | operationRoleId == null){
+    public SimpleResponse addFolder(Long folderId,String name,Long taskId) {
+        if(folderId == null | name == null ){
             return SimpleResponse.error("参数错误");
         }
-        boolean result = fileService.addFolder(folderId,name,operationRoleId,affairId,taskId);
+        boolean result = fileService.addFolder(folderId,name,GlobalValue.currentRoleId(),GlobalValue.currentAffairId(),taskId,GlobalValue.currentAllianceId());
 
         return SimpleResponse.ok(result);
 
@@ -71,10 +72,7 @@ public class FileController {
     @ApiOperation(value = "添加文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/add_file", method = RequestMethod.POST)
     public SimpleResponse addFile(AddFileForm form) {
-//        if(form.getFileId() == null | form.getFileName() == null | form.getSize() == null | form.getUploader() == null | form.getFolderId() == null | form.getAffairId() == null){
-//            return SimpleResponse.error("参数错误");
-//        }
-        boolean result = fileService.addFile(form);
+        boolean result = fileService.addFile(form,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
 
         return SimpleResponse.ok(result);
 
@@ -82,12 +80,12 @@ public class FileController {
 
     @ApiOperation(value = "删除文件", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/remove_file", method = RequestMethod.POST)
-    public SimpleResponse removeFile(Long id , Long affairId) {
+    public SimpleResponse removeFile(Long id ) {
 
-        if(id == null | affairId == null){
+        if(id == null ){
             return SimpleResponse.error("参数错误");
         }
-        boolean result = fileService.removeFile(id,affairId);
+        boolean result = fileService.removeFile(id,GlobalValue.currentAllianceId());
 
 
         return SimpleResponse.ok(result);
@@ -95,12 +93,12 @@ public class FileController {
 
     @ApiOperation(value = "删除文件夹", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/remove_folder", method = RequestMethod.POST)
-    public SimpleResponse removeFolder(Long affairId , Long folderId , Long operationRoleId) {
+    public SimpleResponse removeFolder(Long folderId ) {
 
-        if(affairId == null | folderId == null){
+        if( folderId == null){
             return SimpleResponse.error("参数错误");
         }
-        boolean result = fileService.removeFolder(affairId,folderId);
+        boolean result = fileService.removeFolder(GlobalValue.currentAffairId(),folderId , GlobalValue.currentAllianceId());
 
 
         return SimpleResponse.ok(result);
@@ -108,12 +106,12 @@ public class FileController {
 
     @ApiOperation(value = "重命名文件夹", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/rename_folder", method = RequestMethod.POST)
-    public SimpleResponse renameFolder(Long affairId , Long folderId , String name) {
+    public SimpleResponse renameFolder( Long folderId , String name) {
 
-        if(affairId == null | folderId == null | name == null){
+        if(folderId == null | name == null){
             return SimpleResponse.error("参数错误");
         }
-        boolean result = fileService.renameFolder(affairId,folderId,name);
+        boolean result = fileService.renameFolder(folderId,name, GlobalValue.currentAllianceId());
 
 
         return SimpleResponse.ok(result);
@@ -121,12 +119,12 @@ public class FileController {
 
     @ApiOperation(value = "得到某个文件历史版本", response = SimpleResponse.class, notes = "")
     @RequestMapping(value = "/get_history", method = RequestMethod.POST)
-    public SimpleResponse getHistoryFile(Long affairId , Long fileId ) {
+    public SimpleResponse getHistoryFile( Long fileId ) {
 
-        if(affairId == null | fileId == null){
+        if( fileId == null){
             return SimpleResponse.error("参数错误");
         }
-        List<FileForm> result = fileService.getHistoryFile(fileId,affairId);
+        List<FileForm> result = fileService.getHistoryFile(fileId,GlobalValue.currentAllianceId());
 
 
         return SimpleResponse.ok(result);

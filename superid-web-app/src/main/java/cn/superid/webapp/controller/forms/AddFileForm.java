@@ -12,7 +12,6 @@ public class AddFileForm {
     private long folderId;
     private long uploader;
     private long size;
-    private long affairId;
 
     public String getFileId() {
         return fileId;
@@ -52,13 +51,5 @@ public class AddFileForm {
 
     public void setSize(long size) {
         this.size = size;
-    }
-
-    public long getAffairId() {
-        return affairId;
-    }
-
-    public void setAffairId(long affairId) {
-        this.affairId = affairId;
     }
 }

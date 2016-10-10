@@ -11,23 +11,25 @@ import java.util.List;
  */
 public interface IFileService {
 
-    public List<FolderForm> getChildFolder(long folderId,long affairId);
+    public List<FolderForm> getChildFolder(long folderId,long affairId , long allianceId);
 
-    public List<FileForm> getChildFile(long folderId,long affairId);
+    public List<FileForm> getChildFile(long folderId ,long affairId , long allianceId);
 
-    public boolean addFolder(long folderId,String name,long operationRoleId,long affairId,long taskId);
+    public boolean addFolder(long folderId,String name,long operationRoleId,long affairId,long taskId , long allianceId);
 
-    public boolean addFile(AddFileForm addFileForm);
+    public boolean addFile(AddFileForm addFileForm , long affairId , long allianceId);
 
-    public boolean removeFile(long id,long affairId);
+    public boolean removeFile(long id , long allianceId);
 
-    public boolean removeFolder(long affairId,long folderId);
+    public boolean removeFolder(long affairId,long folderId , long allianceId);
 
-    public boolean renameFolder(long affairId,long folderId,String name);
+    public boolean renameFolder(long folderId,String name , long allianceId);
 
-    public List<FileForm> getHistoryFile(long fileId,long affairId);
+    public List<FileForm> getHistoryFile(long fileId , long allianceId);
 
-    public long createRootFolder(long allianceId,long affairId,long taskId,long folderId,long role);
+    public long createRootFolderForTask(long allianceId,long affairId,long taskId,long folderId,long role);
+
+    public long createRootFolderForAffair(long allianceId,long affairId,long role);
 
 
 }

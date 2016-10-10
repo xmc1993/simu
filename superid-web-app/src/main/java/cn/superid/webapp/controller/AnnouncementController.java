@@ -11,6 +11,7 @@ import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
+import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.ContentState;
@@ -38,11 +39,14 @@ public class AnnouncementController {
     private IAnnouncementService announcementService;
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/getDetail/{announcementId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getDetail(@PathVariable Long announcementId , @RequestBody Integer offsetHead , Integer offsetTail , Long affairId , Integer version) {
+    public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version) {
 
-        if(announcementId == null | affairId == null){
+        long allianceId = GlobalValue.currentAllianceId();
+        long affairId = GlobalValue.currentAffairId();
+
+        if(announcementId == null){
             return SimpleResponse.error("参数不正确");
         }
         if(offsetTail == null){offsetTail = 0;}
@@ -50,7 +54,7 @@ public class AnnouncementController {
 
         List<EditDistanceForm> operations = new ArrayList<>();
 
-        AnnouncementEntity announcement = AnnouncementEntity.dao.findById(announcementId,affairId);
+        AnnouncementEntity announcement = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcement == null){
             return SimpleResponse.error("id不正确");
         }
@@ -137,43 +141,40 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/save/{announcementId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse save(@PathVariable Long announcementId , @RequestBody ContentState contentState , Long affairId , Long roleId){
+    public SimpleResponse save(Long announcementId , ContentState contentState){
 
-        if(announcementId == null | affairId == null){
+        if(announcementId == null ){
             return SimpleResponse.error("参数不正确");
         }
 
-        boolean result = announcementService.save(contentState,announcementId,affairId,roleId);
+        boolean result = announcementService.save(contentState,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
         return SimpleResponse.ok(result);
     }
 
     @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/create_announcement", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse createAnnouncement(String title , Long affairId , Long taskId , Long roleId , Integer isTop , Integer publicType , String thumb , ContentState content){
-        return SimpleResponse.ok(announcementService.createAnnouncement(title,affairId,taskId,roleId,isTop,publicType,thumb,content));
+    public SimpleResponse createAnnouncement(String title  , Long taskId , Integer isTop , Integer publicType , String thumb , ContentState content){
+        return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,thumb,content));
     }
 
     @ApiOperation(value = "删除公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/delete_announcement", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse deleteAnnouncement(Long announcementId , Long affairId){
-        if(announcementId == null | affairId == null){
+    public SimpleResponse deleteAnnouncement(Long announcementId){
+        if(announcementId == null ){
             return SimpleResponse.error("参数不正确");
         }
-        return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,affairId));
+        return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,GlobalValue.currentAllianceId()));
     }
 
     @ApiOperation(value = "查看事务底下公告列表(不含task)",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/announcement_list", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getAnnouncementList(Long affairId ){
-        if(affairId == null){
-            return SimpleResponse.error("参数不正确");
-        }
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).eq("task_id",0).state(1).selectList();
+    public SimpleResponse getAnnouncementList(){
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(GlobalValue.currentAllianceId()).eq("affair_id",GlobalValue.currentAffairId()).eq("task_id",0).state(1).selectList();
         List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
 
         return SimpleResponse.ok(result);
@@ -182,11 +183,8 @@ public class AnnouncementController {
     @ApiOperation(value = "查看事务底下公告列表(含task)",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/announcement_list_contain_task", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getAnnouncementListContainTask(Long affairId){
-        if(affairId == null){
-            return SimpleResponse.error("参数不正确");
-        }
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(affairId).state(1).selectList();
+    public SimpleResponse getAnnouncementListContainTask(){
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(GlobalValue.currentAllianceId()).eq("affair_id",GlobalValue.currentAffairId()).state(1).selectList();
         List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
 
         return SimpleResponse.ok(result);
@@ -195,11 +193,8 @@ public class AnnouncementController {
     @ApiOperation(value = "查看事务及其子事务底下公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/announcement_list_contain_child", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getAnnouncementListContainChild(Long affairId , Long allianceId){
-        if(affairId == null | allianceId == null){
-            return SimpleResponse.error("参数不正确");
-        }
-        AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+    public SimpleResponse getAnnouncementListContainChild(){
+        AffairEntity affair = AffairEntity.dao.findById(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
         StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b where a.affair_id = b.id and b.path like ? ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(affair.getPath()+"%");

@@ -113,7 +113,7 @@ public class AffairService implements IAffairService {
         affairEntity.setNumber(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
-        long folderId = fileService.createRootFolder(allianceId,affairEntity.getId(),0,0,roleId);
+        long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId",folderId);
         try{
