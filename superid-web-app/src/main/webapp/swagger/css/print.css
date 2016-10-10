@@ -508,8 +508,8 @@
   clear: both;
 }
 .swagger-section .swagger-ui-wrap .body-textarea {
-  width: 300px;
-  height: 100px;
+  width: 100px;
+  height: 60px;
   border: 1px solid #aaa;
 }
 .swagger-section .swagger-ui-wrap .markdown p code,

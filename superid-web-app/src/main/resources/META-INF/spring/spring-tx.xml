@@ -32,6 +32,7 @@
         <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
         <!-- 关闭abanded连接时输出错误日志 -->
     </bean>
+
     <bean id="jdbcSessionFactory"
           class="cn.superid.jpa.core.impl.JdbcSessionFactory">
         <constructor-arg ref="dataSource"/>

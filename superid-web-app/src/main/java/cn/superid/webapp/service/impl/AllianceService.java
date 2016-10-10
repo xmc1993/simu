@@ -97,7 +97,7 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean validName(String code) {
-        return AllianceEntity.dao.eq("shortName",code).exists();
+        return !AllianceEntity.dao.eq("shortName",code).exists();
     }
 
     @Override

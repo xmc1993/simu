@@ -43,11 +43,6 @@ public class Timer {
         return endTime.getTime() - startTime.getTime();
     }
 
-    public  void executeRepeate(Function function,int times){
-        for(int i=0;i<times;i++){
-            function.apply(null);
-        }
-    }
 
 
     public static void  compair(Execution execution1,Execution execution2,int times){

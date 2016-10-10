@@ -3,6 +3,8 @@ package cn.superid.jpa.core.impl;
 import cn.superid.jpa.core.SessionFactory;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
+import cn.superid.jpa.util.Function;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,4 +1,5 @@
 package cn.superid.jpa.redis;
+import cn.superid.jpa.exceptions.JedisRuntimeException;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.ModelMetaFactory;
@@ -60,14 +61,13 @@ public class RedisUtil {
         lockJedis.lock();
 
         if (jedisPool == null) {
-            throw new RuntimeException("You should init the pool");
+            throw new JedisRuntimeException("You should init the pool");
         }
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
         } catch (Exception e) {
-
-            logger.error("Get jedis error : "+e);
+            throw new JedisRuntimeException("Get jedis error : "+e);
         }finally{
             lockJedis.unlock();
         }

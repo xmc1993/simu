@@ -8,6 +8,7 @@ import cn.superid.webapp.utils.Timer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**

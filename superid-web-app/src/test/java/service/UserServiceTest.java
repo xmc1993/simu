@@ -34,6 +34,18 @@ public class UserServiceTest{
     }
 
     @Test
+    public void testFindUser(){
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("大哥鹏");
+        userEntity.setPassword(PasswordEncryptor.encode("123456"));
+        userEntity.setMobile("15951818231");
+        userEntity.save();
+        UserEntity.dao.findById(userEntity.getId());
+
+    }
+
+
+    @Test
     public void testCreateUser(){
         UserEntity result = addUser();
         Assert.assertFalse(result==null);

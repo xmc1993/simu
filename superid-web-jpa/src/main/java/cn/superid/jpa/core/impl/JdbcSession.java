@@ -6,6 +6,7 @@ import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMetaFactory;
+import cn.superid.jpa.util.Function;
 import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -24,6 +25,7 @@ public class JdbcSession extends AbstractSession {
     private AtomicBoolean activeFlag = new AtomicBoolean(false);
     private transient boolean isInBatch = false;
     private transient PreparedStatement batchStatement;
+
 
 
     public AtomicBoolean getActiveFlag() {
@@ -161,7 +163,6 @@ public class JdbcSession extends AbstractSession {
                             }
                         }
                     }
-
                 } finally {
                     preparedStatement.close();
                     close();
@@ -178,6 +179,8 @@ public class JdbcSession extends AbstractSession {
             throw new JdbcRuntimeException(e);
         }
     }
+
+
 
     //TODO 调用缓存，比较大字段有没有被改动，如果没有改动，则无视大字段
     @Override
@@ -492,6 +495,9 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
+
+
+
     /**
      * 根据id查找model
      *
@@ -602,7 +608,9 @@ public class JdbcSession extends AbstractSession {
         }finally {
             if(preparedStatement!=null){
                 try {
+                    System.out.println(preparedStatement.toString());
                     preparedStatement.close();
+
                 } catch (SQLException e) {
                     throw  new JdbcRuntimeException(e);
                 }
@@ -628,6 +636,7 @@ public class JdbcSession extends AbstractSession {
         }finally {
             if(preparedStatement!=null){
                 try {
+
                     preparedStatement.close();
                 } catch (SQLException e) {
                     throw  new JdbcRuntimeException(e);

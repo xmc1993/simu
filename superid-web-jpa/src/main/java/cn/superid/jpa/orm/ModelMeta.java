@@ -60,6 +60,7 @@ public class ModelMeta {
         boolean init = true;
         boolean initForTiny = true;
         boolean initForUpdate = true;
+
         for (Field field : fields) {
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                 continue;

@@ -53,6 +53,7 @@ public class UserController {
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
     public SimpleResponse getRegisterVerifyCode(HttpServletRequest request, String token){
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
+            LOG.warn(String.format("ip %s, token %s, frequent get register code",request.getRemoteAddr(),token));
             return SimpleResponse.error("frequent_request");
         }
         if(StringUtil.isEmpty(token)){
@@ -73,6 +74,7 @@ public class UserController {
     @RequestMapping(value = "/get_verify_code", method = RequestMethod.GET)
     public SimpleResponse getVerifyCode(HttpServletRequest request,String token){
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
+            LOG.warn(String.format("ip %s, token %s, frequent get verify code",request.getRemoteAddr(),token));
             return SimpleResponse.error("frequent_request");
         }
         if(StringUtil.isEmpty(token)){
@@ -93,6 +95,7 @@ public class UserController {
     @RequestMapping(value = "/get_login_code", method = RequestMethod.GET)
     public SimpleResponse getLoginVerifyCode(HttpServletRequest request,String token){
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
+            LOG.warn(String.format("ip %s, token %s, frequent get login code",request.getRemoteAddr(),token));
             return SimpleResponse.error("frequent_request");
         }
         if(StringUtil.isEmpty(token)){
@@ -162,8 +165,8 @@ public class UserController {
     @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public SimpleResponse login(String token, String password, String verifyCode){
-        int limit =3;
+    public SimpleResponse login(String token, String password, String verifyCode,HttpServletRequest request){
+        int limit =5;
          UserEntity userEntity =userService.findByToken(token);
 
         if(userEntity==null){
@@ -182,6 +185,7 @@ public class UserController {
                 if(userService.checkVerifyCode(verifyCode)){
                     CheckFrequencyUtil.reset(token);
                 }else{
+                    LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
                     return SimpleResponse.error("need_verify_code");
                 }
             }
@@ -284,6 +288,8 @@ public class UserController {
 
         ValidateCode vCode = new ValidateCode(120,40,5,100);
         session.setAttribute("code", vCode.getCode());
+        session.setAttribute("last_token_time",new Date());
+
         vCode.write(response.getOutputStream());
         return null;
     }
