@@ -6,14 +6,15 @@ import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.tasks.RunningTests;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import util.JUnit4ClassRunner;
 
 /**
  * Created by zp on 2016/8/9.
@@ -23,6 +24,8 @@ import org.springframework.test.context.ContextConfiguration;
 public class UserServiceTest{
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IAuth auth;
 
     private UserEntity addUser(){
         UserEntity userEntity = new UserEntity();
@@ -55,7 +58,7 @@ public class UserServiceTest{
     @Test
      public void testEditInfo(){
         UserEntity testUser = addUser();
-        RunningTests.userId =testUser.getId();
+        JUnit4ClassRunner.setSessionAttr("userId",testUser.getId());
         EditUserBaseInfo editUserBaseInfo = new EditUserBaseInfo();
         editUserBaseInfo.setAvatar("test");
         userService.editBaseInfo(editUserBaseInfo);
@@ -69,7 +72,7 @@ public class UserServiceTest{
     @Test
     public void testEditDetailInfo(){
         UserEntity testUser = addUser();
-        RunningTests.userId =testUser.getId();
+        auth.setSessionAttr("userId",testUser.getId());
         EditUserDetailForm editUserDetailForm= new EditUserDetailForm();
         editUserDetailForm.setAddress("南京");
         userService.editDetailInfo(editUserDetailForm);
@@ -82,7 +85,7 @@ public class UserServiceTest{
    @Test
    public void testGetUserInfo(){
        UserEntity testUser = addUser();
-       RunningTests.userId =testUser.getId();
+       auth.setSessionAttr("userId",testUser.getId());
        ResultUserInfo resultUserInfo=userService.getUserInfo(testUser.getId());
        Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
    }
@@ -90,9 +93,9 @@ public class UserServiceTest{
     @Test
     public void testChangePassWord(){
         UserEntity testUser = addUser();
-        RunningTests.userId =testUser.getId();
-        userService.changePwd("123456","111111");
 
+        JUnit4ClassRunner.setSessionAttr("userId",testUser.getId());
+        userService.changePwd("123456","111111");
 
         Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
     }

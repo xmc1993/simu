@@ -13,6 +13,9 @@ import cn.superid.jpa.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.ResultSetHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.List;
@@ -25,6 +28,7 @@ public class JdbcSession extends AbstractSession {
     private AtomicBoolean activeFlag = new AtomicBoolean(false);
     private transient boolean isInBatch = false;
     private transient PreparedStatement batchStatement;
+    public static Log LOG = LogFactory.getLog(JdbcSession.class);
 
 
 
@@ -164,6 +168,7 @@ public class JdbcSession extends AbstractSession {
                         }
                     }
                 } finally {
+                    LOG.debug(preparedStatement.toString());
                     preparedStatement.close();
                     close();
                 }
@@ -213,6 +218,7 @@ public class JdbcSession extends AbstractSession {
                 try {
                     return preparedStatement.executeUpdate()>0;
                 } finally {
+                    LOG.debug(preparedStatement.toString());
                     preparedStatement.close();
                     close();
                 }
@@ -608,9 +614,8 @@ public class JdbcSession extends AbstractSession {
         }finally {
             if(preparedStatement!=null){
                 try {
-                    System.out.println(preparedStatement.toString());
-                    preparedStatement.close();
 
+                    preparedStatement.close();
                 } catch (SQLException e) {
                     throw  new JdbcRuntimeException(e);
                 }

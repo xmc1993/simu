@@ -13,6 +13,7 @@ public class CreateAffairForm {
     private Integer number;
     private long operationRoleId;
     private int publicType;
+    private long allianceId;
 
     public String getName() {
         return name;
@@ -52,5 +53,13 @@ public class CreateAffairForm {
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 }

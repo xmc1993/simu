@@ -41,6 +41,7 @@ public class AffairController {
         createAffairForm.setPublicType(publicType);
         createAffairForm.setOperationRoleId(GlobalValue.currentRoleId());
         createAffairForm.setAffairId(GlobalValue.currentAffairId());
+        createAffairForm.setAllianceId(GlobalValue.currentAllianceId());
         createAffairForm.setNumber(index);
         createAffairForm.setName(name);
         try {

@@ -16,7 +16,6 @@ import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.tasks.RunningTests;
 import cn.superid.webapp.utils.AliSmsDao;
 import cn.superid.webapp.utils.DirectEmailDao;
 import cn.superid.webapp.utils.NumberUtils;
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.Resource;
 import java.io.InputStream;
 import java.util.*;
 
@@ -40,8 +38,6 @@ public class UserService implements IUserService {
     @Autowired
     private IAuth auth;
 
-    @Resource
-    private RunningTests runningTests;
 
     @Autowired
     private IAllianceService allianceService;
@@ -174,9 +170,6 @@ public class UserService implements IUserService {
 
     @Override
     public long currentUserId() {
-        if(runningTests.getRunning()==1){
-            return RunningTests.userId;
-        }
 
         return auth.currentUserId();
     }

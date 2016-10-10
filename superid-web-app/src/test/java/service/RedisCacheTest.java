@@ -49,12 +49,6 @@ public class RedisCacheTest {
         Assert.assertTrue(userBaseInfo2.getUsername().equals("setByObject" )&&userBaseInfo2.getAvatar().equals("test"));
 
 
-
-//        Timer.compair(100, new Execution() {
-//            @Override
-//            public void execute() {
-//
-
     }
 
 

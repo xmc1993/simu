@@ -46,7 +46,7 @@ public class AllianceController {
     public SimpleResponse createAlliance(String name,String code,String affairs) {
 
         if (StringUtil.isEmpty(name)||StringUtil.isEmpty(code)||!allianceService.validName(code)) {
-            return SimpleResponse.error("error_name");
+            return SimpleResponse.error("repeat_code");
         }
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setUserId(userService.currentUserId());
@@ -66,6 +66,7 @@ public class AllianceController {
             createAffairForm.setName(affairName);
             createAffairForm.setAffairId(allianceEntity.getRootAffairId());
             createAffairForm.setNumber(index++);
+            createAffairForm.setAllianceId(allianceEntity.getId());
             createAffairForm.setOperationRoleId(allianceEntity.getOwnerRoleId());
             createAffairForm.setPublicType(PublicType.TO_ALLIANCE);
             try {

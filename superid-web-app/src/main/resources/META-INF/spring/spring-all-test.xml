@@ -11,9 +11,5 @@
     <import resource="spring-beans.xml"/>
     <import resource="spring-tasks.xml"/>
     <bean class="org.springframework.mock.web.MockServletContext"/>
-    <bean class="cn.superid.webapp.tasks.RunningTests">
-        <property name="running" value="1"></property>
-    </bean>
-
 
 </beans>
