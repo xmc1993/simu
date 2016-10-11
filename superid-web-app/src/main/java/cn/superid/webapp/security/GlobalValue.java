@@ -46,6 +46,10 @@ public class GlobalValue {
 
 
     public static long currentAllianceId(){
+        AffairMemberCache affairMemberCache =  (AffairMemberCache) getCurrentHttpSession().getAttribute("affairMember");
+        if(affairMemberCache!=null){
+            return affairMemberCache.getAllianceId();
+        }
         return currentRole().getAllianceId();
 
     }

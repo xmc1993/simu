@@ -49,7 +49,7 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setName(allianceCreateForm.getName()+"的盟");
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
             allianceEntity.setShortName(allianceCreateForm.getShortName());
-            allianceEntity.setState(StateType.Disabled);//等待验证身份
+            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证身份
             allianceEntity.save();
 
         }else{
@@ -57,7 +57,7 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setName(allianceCreateForm.getName());
             allianceEntity.setShortName(allianceCreateForm.getShortName());
             allianceEntity.setIsPersonal(IntBoolean.FALSE);
-            allianceEntity.setState(StateType.Disabled);//等待验证
+            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证
             allianceEntity.save();//在验证成功之后再创建角色
 
         }
