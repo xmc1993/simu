@@ -18,16 +18,19 @@ public class TaskEntity extends ExecutableModel{
     public final static ConditionalDao<TaskEntity> dao = new ConditionalDao<>(TaskEntity.class);
     private long id;
     private long affairId;
+    private long allianceId;
     private String title;
     private int state;
     private String description;
     private int isRemind;
     private Timestamp remindTime;
+    private long creator;
     private int isCircle;
     private String circleDate;
     private Timestamp createTime;
     private Timestamp endTime;
     private long discussGroupId;
+    private long folderId;
 
     @Id
     @Column(name = "id")
@@ -39,7 +42,6 @@ public class TaskEntity extends ExecutableModel{
         this.id = id;
     }
 
-    @PartitionId
     public long getAffairId() {
         return affairId;
     }
@@ -126,5 +128,30 @@ public class TaskEntity extends ExecutableModel{
 
     public void setDiscussGroupId(long discussGroupId) {
         this.discussGroupId = discussGroupId;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
+    public long getCreator() {
+        return creator;
+    }
+
+    public void setCreator(long creator) {
+        this.creator = creator;
+    }
+
+    public long getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(long folderId) {
+        this.folderId = folderId;
     }
 }

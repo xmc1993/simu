@@ -54,7 +54,7 @@ public class AnnouncementServiceTest {
         List<EasyBlock> content2 = new ArrayList<>();
         content2.add(new EasyBlock("abcd","1"));
         content2.add(new EasyBlock("bcad","2"));
-        List<InsertForm> insert = new ArrayList<>();
+        List<InsertForm> insert = new ArrayList <>();
         insert.add(new InsertForm(1,content));
         insert.add(new InsertForm(2,content2));
         List<ReplaceForm> replaceForms = new ArrayList<>();
