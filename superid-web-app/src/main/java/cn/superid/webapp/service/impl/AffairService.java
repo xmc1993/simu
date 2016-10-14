@@ -85,6 +85,10 @@ public class AffairService implements IAffairService {
         affairEntity.setPath(parentAffair.getPath()+'/'+affairEntity.getPathIndex());
         affairEntity.save();
 
+        long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());
+        affairEntity.setFolderId(folderId);
+        AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId",folderId);
+
         this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());//调整事务顺序
 
         affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
