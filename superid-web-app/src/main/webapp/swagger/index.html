@@ -32,12 +32,12 @@
   <!-- <script src='lang/en.js' type='text/javascript'></script> -->
 
   <script type="text/javascript">
-    $(function () {
+    $(function (){
       var url = window.location.search.match(/url=([^&]+)/);
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "http://localhost:9855/api-docs";
+        url = "http://" + window.location.host + "/api-docs";
       }
 
 
