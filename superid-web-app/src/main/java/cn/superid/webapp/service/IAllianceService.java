@@ -23,4 +23,5 @@ public interface IAllianceService {
     boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId);
 
 
+
 }

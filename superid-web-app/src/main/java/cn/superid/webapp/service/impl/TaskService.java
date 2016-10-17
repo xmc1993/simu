@@ -5,6 +5,7 @@ import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.TaskEntity;
 import cn.superid.webapp.model.TaskLogEntity;
 import cn.superid.webapp.model.TaskRoleEntity;
+import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.IFileService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.ITaskService;
@@ -28,6 +29,9 @@ public class TaskService  implements ITaskService{
 
     @Autowired
     private IRoleService roleService;
+
+    @Autowired
+    private IAnnouncementService announcementService;
 
     @Override
     public TaskEntity addTask(long creator, long allianceId, long affairId, AddTaskForm taskForm) {
@@ -109,6 +113,16 @@ public class TaskService  implements ITaskService{
 
     @Override
     public boolean addAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
+        boolean result = announcementService.createAnnouncement(title,affairId,allianceId,taskId,roleId,isTop,publicType,thumb,content);
+        if(result){
+            //生成log
+            StringBuilder message = new StringBuilder();
+            message.append(roleService.getNameByRoleId(roleId));
+            message.append("创建了公告");
+            createLog(taskId,message.toString());
+            return true;
+        }
+
 
         return false;
     }
