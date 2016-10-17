@@ -133,8 +133,6 @@ public class ModelMeta {
             initFindByIdSql();
             initFindTinyByIdSql(findTinySb.toString());
             initDeleteSql();
-        }else if(columnMetas.size()>1){
-            throw new JdbcRuntimeException(this.tableName+" need @id annotation");
         }
         return columnMetas;
     }

@@ -82,7 +82,7 @@ public class AffairService implements IAffairService {
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
         affairEntity.setNumber(createAffairForm.getNumber());
-        affairEntity.setPath(parentAffair.getPath()+'/'+affairEntity.getPathIndex());
+        affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.save();
 
         this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());//调整事务顺序
