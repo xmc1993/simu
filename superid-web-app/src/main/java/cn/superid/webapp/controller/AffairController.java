@@ -27,8 +27,6 @@ public class AffairController {
     @Autowired
     private IAffairService affairService;
     @Autowired
-    private IAffairMemberService affairMemberService;
-    @Autowired
     private IUserService userService;
     /**
      * 增加事务,参数
@@ -52,45 +50,38 @@ public class AffairController {
         }
     }
 
-    /**
-     *申请的id放在url传过来,再将处理人的角色id传过来
-     */
-    @ApiOperation(value = "同意进入事务申请",response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
-    @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.GENERATE_PERMISSION_GROUP})
-    public SimpleResponse agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId,Long dealRoleId,String dealReason) {
-        try {
-            AffairMemberApplicationEntity applicationEntity = affairMemberService.findAffairMemberApplicationById(affairId,applicationId);
-            if(applicationEntity == null) {
-                return new SimpleResponse(100, "Can't find this application");
+
+    @RequestMapping(value = "/get_direct_child_affair",method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getAllDirectChildAffair(){
+        try{
+            return SimpleResponse.ok(affairService.getAllDirectChildAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
+        }
+    }
+
+    @ApiOperation(value = "在失效或者移动等对事务的操作之前,检查该事务是否有特殊情况需要处理",response = String.class,notes = "0表示没毛病,1表示有子事务,2表示有交易")
+    @RequestMapping(value = "/generate_affair",method = RequestMethod.POST)
+    public SimpleResponse beforeGenerateAffair(long allianceId,long affairId){
+        int condition ;
+        try{
+            condition = affairService.canGenerateAffair(allianceId,affairId);
+            switch (condition){
+                case 0:
+                    return SimpleResponse.ok("没毛病");
+                case 1:
+                    return SimpleResponse.error("该事务拥有子事务");
+                case 2:
+                    return SimpleResponse.error("该事务下有正在进行的交易");
+                default:
+                    return SimpleResponse.error("大概还有我不知道的事");
             }
-            AffairMemberEntity affairMemberEntity = affairMemberService.agreeAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
-            return new SimpleResponse(ResponseCode.OK, affairMemberEntity);
-        } catch (Exception e) {
-           // LOG.error("agree affair member application error", e);
-            return new SimpleResponse(100, e.getMessage());
+
+        }catch (Exception e){
+            return SimpleResponse.exception(e);
         }
     }
-
-    @ApiOperation(value = "拒绝进入事务申请",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse disagreeAffairMemberApplication(Long allianceId,Long affairId, Long applicationId,Long dealRoleId,String dealReason) {
-        try {
-            affairMemberService.rejectAffairMemberApplication(allianceId,affairId,applicationId, dealRoleId,dealReason);
-            return new SimpleResponse(ResponseCode.OK, "已拒绝此申请");
-        } catch (Exception e) {
-            //LOG.error("disagree affair member application error", e);
-            return new SimpleResponse(100, e.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "/get_all_child_affair",method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getAllChildAffair(){
-        return null;
-    }
-
 
     @ApiOperation(value = "失效一个事务",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)
@@ -99,12 +90,11 @@ public class AffairController {
         boolean success;
         try {
             success = affairService.disableAffair(allianceId,affairId);
+            if(success) return SimpleResponse.ok("yep");
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
-        if (success) {
-            return SimpleResponse.ok("yep");
-        }
+
         return SimpleResponse.error("因为某些奇怪的原因失败了");
     }
 

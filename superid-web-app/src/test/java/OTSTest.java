@@ -23,23 +23,24 @@ public class OTSTest {
     @Test
     public void insertTest(){
         HashMap<String,Object> map = new HashMap<>();
-        map.put("type",2);
-        map.put("title","托马斯");
+        map.put("type",1);
+        map.put("sub_type",1);
+        map.put("title","2");
         map.put("content","test");
-        map.put("content","第几条");
 
-        long ts = System.currentTimeMillis();
-        messageService.insertIntoTable(1L,1L,map);
+        long st = System.currentTimeMillis();
+        messageService.insertIntoTable(1L,3L,1L,map);
+        long et = System.currentTimeMillis();
+        System.out.println("时间"+(et-st)/1000);
     }
 
     @Test
     public void getTest(){
-        List<Row> rows = messageService.getFromTable(1L);
-        for(Row row : rows){
-            System.out.println(row);
-        }
-        //List<Row> rows = messageService.getFromTable(1L,2);
-
+        //List<Row> rows = messageService.getFromTable(1L);
+        long st = System.currentTimeMillis();
+        List<Row> rows = messageService.getFromTable(1L,1L);
+        long et = System.currentTimeMillis();
+        System.out.println("时间"+(et-st));
         for(Row row : rows){
             System.out.println(row);
         }
@@ -49,6 +50,14 @@ public class OTSTest {
 
     @Test
     public void getFromTableByTypeTest(){
-        messageService.getFromTableByColumnName(1L,1L, MessageColumn.TYPE,2);
+        for(int i = 0;i<10;i++){
+            long st = System.currentTimeMillis();
+            List<Row> rows = messageService.getFromTableByColumnName(1L,null,null, MessageColumn.TYPE,1);
+            long et = System.currentTimeMillis();
+            System.out.println("时间"+(et-st));
+        }
+
+
+
     }
 }

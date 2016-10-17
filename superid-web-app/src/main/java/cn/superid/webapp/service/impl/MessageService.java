@@ -31,24 +31,29 @@ public class MessageService implements IMessageService{
     private final static String TO_USER_ID = "to_user_id";
     private final static String RELATED_ID = "related_id";
     private final static String CREATE_TIME = "create_time";
+    private final static String AFFAIR_ID = "affair_id";
 
     private final static Direction direction = Direction.BACKWARD;
     private OTSClient client = AliOTSDao.otsClient;
 
     @Override
-    public void insertIntoTable(Long toUserId, Long relatedId, HashMap<String, Object> params) {
-        insertIntoTable(toUserId,relatedId,System.currentTimeMillis(),params);
+    public void insertIntoTable(Long toUserId, Long affairId,Long relatedId, HashMap<String, Object> params) {
+        insertIntoTable(toUserId,affairId,relatedId,System.currentTimeMillis(),params);
     }
 
     @Override
-    public void insertIntoTable(Long toUserId, Long relatedId, Long create_time, HashMap<String, Object> params)
+    public void insertIntoTable(Long toUserId, Long affairId,Long relatedId, Long create_time, HashMap<String, Object> params)
             throws ServiceException, ClientException {
         if(toUserId == null){
             throw new ServiceException("无通知用户");
         }
+        if(affairId == null){
+            throw new ServiceException("无归属事务");
+        }
         RowPutChange rowChange = new RowPutChange(TABLE_NAME);
         RowPrimaryKey primaryKey = new RowPrimaryKey();
         primaryKey.addPrimaryKeyColumn(TO_USER_ID, PrimaryKeyValue.fromLong(toUserId));
+        primaryKey.addPrimaryKeyColumn(AFFAIR_ID,PrimaryKeyValue.fromLong(affairId));
         primaryKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.fromLong(relatedId));
         primaryKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.fromLong(create_time));
         rowChange.setPrimaryKey(primaryKey);
@@ -77,34 +82,38 @@ public class MessageService implements IMessageService{
     }
 
     @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId) {
-        return getFromTable(toUserId,relatedId,null,null,null);
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId) {
+        return getFromTable(toUserId,affairId,relatedId,null,null,null);
     }
 
     @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId,Integer limit) {
-        return getFromTable(toUserId,relatedId,null,null,limit);
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId, Integer limit) {
+        return getFromTable(toUserId,affairId,relatedId,null,null,limit);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Long affairId) {
+        return getFromTable(toUserId,affairId,null,null,null,null);
     }
 
     @Override
     public List<Row> getFromTable(Long toUserId) {
-        return getFromTable(toUserId,null,null,null);
+        return getFromTable(toUserId,null,null,null,null,null);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Integer limit) {
+        return getFromTable(toUserId,null,null,null,null,limit);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId, Long startTime, Long endTime) throws ServiceException, ClientException {
+        return getFromTable(toUserId,affairId,relatedId,startTime,endTime,null);
     }
 
 
     @Override
-    public List<Row> getFromTable(Long toUserId,Integer limit) {
-        return getFromTable(toUserId,null,null,null,limit);
-    }
-
-
-    @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId, Long startTime, Long endTime){
-        return getFromTable(toUserId,null,null,null,null);
-    }
-
-    @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId, Long startTime, Long endTime,Integer limit)
+    public List<Row> getFromTable(Long toUserId,Long affairId, Long relatedId, Long startTime, Long endTime,Integer limit)
             throws ServiceException, ClientException {
         if(toUserId == null){
             throw new ServiceException("无通知用户");
@@ -114,9 +123,9 @@ public class MessageService implements IMessageService{
         //因为要倒序查看,所以需要startKey>endKey
         RangeRowQueryCriteria criteria = new RangeRowQueryCriteria(TABLE_NAME);
         //endTime作为开始
-        RowPrimaryKey inclusiveStartKey = setStartKey(toUserId,relatedId,endTime);
+        RowPrimaryKey inclusiveStartKey = setStartKey(toUserId,affairId,relatedId,endTime);
 
-        RowPrimaryKey exclusiveEndKey = setEndKey(toUserId,relatedId,startTime);
+        RowPrimaryKey exclusiveEndKey = setEndKey(toUserId,affairId,relatedId,startTime);
 
 
         criteria.setInclusiveStartPrimaryKey(inclusiveStartKey);
@@ -140,15 +149,15 @@ public class MessageService implements IMessageService{
     }
 
     @Override
-    public List<Row> getFromTableByColumnName(Long toUserId, Long relatedId, MessageColumn messageColumn,Integer columnValue)
+    public List<Row> getFromTableByColumnName(Long toUserId,Long affairId, Long relatedId, MessageColumn messageColumn,Integer columnValue)
             throws ServiceException, ClientException {
         if(toUserId == null){
             throw new ServiceException("无通知用户");
         }
         RangeIteratorParameter param = new RangeIteratorParameter(TABLE_NAME);
-        RowPrimaryKey startPk = setStartKey(toUserId,relatedId,null);
+        RowPrimaryKey startPk = setStartKey(toUserId,affairId,relatedId,null);
 
-        RowPrimaryKey endPk = setEndKey(toUserId,relatedId,null);
+        RowPrimaryKey endPk = setEndKey(toUserId,affairId,relatedId,null);
 
         param.setInclusiveStartPrimaryKey(startPk);
         param.setExclusiveEndPrimaryKey(endPk);
@@ -167,10 +176,17 @@ public class MessageService implements IMessageService{
         return rows;
     }
 
-    private RowPrimaryKey setStartKey(Long toUserId, Long relatedId,Long endTime){
+    private RowPrimaryKey setStartKey(Long toUserId, Long affairId,Long relatedId,Long endTime){
         RowPrimaryKey inclusiveStartKey = new RowPrimaryKey();
         inclusiveStartKey.addPrimaryKeyColumn(TO_USER_ID,
                 PrimaryKeyValue.fromLong(toUserId));
+
+        if(affairId == null){
+            inclusiveStartKey.addPrimaryKeyColumn(AFFAIR_ID,PrimaryKeyValue.INF_MAX);
+        }else {
+            inclusiveStartKey.addPrimaryKeyColumn(AFFAIR_ID,PrimaryKeyValue.fromLong(affairId));
+        }
+
         //因为要倒序查看,所以需要startKey>endKey
         //起始时间
         if(endTime == null){
@@ -189,11 +205,19 @@ public class MessageService implements IMessageService{
         return inclusiveStartKey;
     }
 
-    private RowPrimaryKey setEndKey(Long toUserId, Long relatedId, Long startTime){
+    private RowPrimaryKey setEndKey(Long toUserId, Long affairId,Long relatedId, Long startTime){
         RowPrimaryKey exclusiveEndKey = new RowPrimaryKey();
         exclusiveEndKey.addPrimaryKeyColumn(TO_USER_ID,
                 PrimaryKeyValue.fromLong(toUserId));
+
+        if(affairId == null){
+            exclusiveEndKey.addPrimaryKeyColumn(AFFAIR_ID,PrimaryKeyValue.INF_MIN);
+        }else {
+            exclusiveEndKey.addPrimaryKeyColumn(AFFAIR_ID,PrimaryKeyValue.fromLong(affairId));
+        }
+
         //结束时间
+
 
         if(startTime == null){
             exclusiveEndKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.INF_MIN);
@@ -213,12 +237,12 @@ public class MessageService implements IMessageService{
 
     }
 
-    public void referToSomebody(Long toUserId,Long relatedId,String content){
+    public void referToSomebody(Long toUserId,Long affairId,Long relatedId,String content){
         HashMap<String,Object> map = new HashMap<>();
         //TODO 这里需要哪些列,type,subtype,etc
         map.put("type",1);
         map.put("content",content);
-        insertIntoTable(toUserId,relatedId,map);
+        insertIntoTable(toUserId,affairId,relatedId,map);
         //TODO 调用redis进行推送,不太清楚
         //redisMessageService.se
     }
