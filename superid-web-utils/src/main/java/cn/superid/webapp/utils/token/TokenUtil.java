@@ -44,7 +44,9 @@ public final class TokenUtil {
     public static boolean invaildLoginToken(Long uid, String token) {
         Jedis jedis = RedisUtil.getJedis();
         if (jedis != null) {
-            return jedis.srem(getKey(uid), token) != 0;
+            boolean res = jedis.srem(getKey(uid), token) != 0;
+            jedis.close();
+            return res;
         }
         return false;
     }
@@ -58,7 +60,9 @@ public final class TokenUtil {
     public static Set<String> getLoginToken(Long uid) {
         Jedis jedis = RedisUtil.getJedis();
         if (jedis != null) {
-            return jedis.smembers(getKey(uid));
+            Set<String> res = jedis.smembers(getKey(uid));
+            jedis.close();
+            return res;
         }
         return null;
     }
