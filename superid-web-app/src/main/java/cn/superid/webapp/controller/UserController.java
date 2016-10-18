@@ -105,7 +105,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "用户注册", httpMethod = "POST", response = SimpleResponse.class, notes = "用户注册")
+    @ApiOperation(value = "用户注册", httpMethod = "POST", response = SimpleResponse.class, notes = "用户注册,手机号码需要加国家区号")
     @NotLogin
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SimpleResponse register(String token,String password,String username,String verifyCode){
