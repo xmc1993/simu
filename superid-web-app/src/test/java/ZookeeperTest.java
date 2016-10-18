@@ -15,5 +15,6 @@ public class ZookeeperTest {
         zookeeper.connect();
         zookeeper.watchBackendNodeChange();
         zookeeper.watchConnectorNodeChange();
+        zookeeper.close();
     }
 }
