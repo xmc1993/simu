@@ -11,6 +11,7 @@ import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
@@ -70,8 +71,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean belong(long roleId) {
-//       return RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
-        return false;
+       return RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
     }
 
 
