@@ -71,7 +71,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean belong(long roleId) {
-       return RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
+       return (Long)RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
     }
 
 
