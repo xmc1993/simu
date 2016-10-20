@@ -64,6 +64,7 @@ public class AllianceService  implements IAllianceService{
         }
 
         String shortName = generateCode(allianceEntity.getId());
+        allianceEntity.setShortName(shortName);
         AllianceEntity.dao.findById(allianceEntity.getId()).setShortName(shortName);
 
         RoleEntity roleEntity = new RoleEntity();
