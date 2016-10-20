@@ -46,7 +46,7 @@ public class AllianceController {
     public SimpleResponse createAlliance(String name,String affairs) {
 
         if (StringUtil.isEmpty(name)) {
-            return SimpleResponse.error("repeat_code");
+            return SimpleResponse.error("name cannot be null");
         }
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setUserId(userService.currentUserId());
