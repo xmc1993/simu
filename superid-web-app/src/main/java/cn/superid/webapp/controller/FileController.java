@@ -2,18 +2,30 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IFileService;
+import cn.superid.webapp.service.IPictureService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.FileForm;
 import cn.superid.webapp.service.forms.FolderForm;
 import cn.superid.webapp.utils.AliOssDao;
+import cn.superid.webapp.utils.TimeUtil;
+import com.aliyun.oss.model.PutObjectResult;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +42,9 @@ public class FileController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IPictureService pictureService;
 
     @ApiOperation(value = "获取上传token", response = SimpleResponse.class, notes = "格式正确而且没有被注册")
     @RequestMapping(value = "/get_token", method = RequestMethod.GET)
@@ -128,6 +143,43 @@ public class FileController {
 
 
         return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "缩放头像", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/condense_picture", method = RequestMethod.POST)
+    public SimpleResponse condensePicture(@RequestParam("picture") CommonsMultipartFile picture) {
+
+        String url = "http://simucy.oss-cn-shanghai.aliyuncs.com/";
+
+
+        try{
+            String big = "user/"+userService.currentUserId()+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+            String small = "user/"+userService.currentUserId()+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+            File f1 = File.createTempFile("temp", picture.getContentType().replace("/","."));
+            picture.transferTo(f1);
+            AliOssDao.uploadFile(f1,big);
+            BufferedImage sourceImage = ImageIO.read(new FileInputStream(f1));
+            double width = sourceImage.getWidth();
+            double height = sourceImage.getHeight();
+
+            ByteArrayOutputStream resizeOut = new ByteArrayOutputStream();
+
+            pictureService.resizePicture(new FileInputStream(f1),resizeOut,100,(int)(100*height/width));
+            File tmpFile = File.createTempFile("tem2", picture.getContentType().replace("/","."));
+            IOUtils.write(resizeOut.toByteArray(), new FileOutputStream(tmpFile));
+            PutObjectResult p = AliOssDao.uploadFile(tmpFile,small);
+            if(p != null){
+                url = url + small;
+                UserBaseInfo.dao.id(userService.currentUserId()).set("avatar",url);
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+            return SimpleResponse.error("发生错误");
+        }
+
+        return SimpleResponse.ok(url);
+
     }
 
 
