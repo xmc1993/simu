@@ -85,6 +85,30 @@ public class UserController {
     }
 
     /**
+     * 获取身份验证码
+     * @param request
+     * @param token
+     * @return
+     */
+    @ApiOperation(value = "获取身份验证码,目前用于充值密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @RequestMapping(value = "/get_reset_code", method = RequestMethod.GET)
+    public SimpleResponse getResetCode(HttpServletRequest request,String token){
+        if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
+            LOG.warn(String.format("ip %s, token %s, frequent get verify code",request.getRemoteAddr(),token));
+            return SimpleResponse.error("frequent_request");
+        }
+        if(StringUtil.isEmpty(token)){
+            return new SimpleResponse(ResponseCode.BadRequest,null);
+        }else {
+            if(userService.validToken(token)){//没有注册的号码
+                return SimpleResponse.error("not_exists");
+            }
+            auth.setSessionAttr("token",token);
+            return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, AliSmsDao.checkIdentityCode));
+        }
+    }
+
+    /**
      * 获取登录验证码
      * @param request
      * @param token
@@ -140,6 +164,15 @@ public class UserController {
         }
         auth.setSessionAttr("verified_time",new Date());
         return SimpleResponse.ok("success");
+    }
+
+    @ApiOperation(value = "重置密码", httpMethod = "POST", response = SimpleResponse.class, notes = "重置密码")
+    @RequestMapping(value = "/reset_pwd", method = RequestMethod.POST)
+    public SimpleResponse resetPwd(String verifyCode,String newPwd){
+        if(!userService.checkVerifyCode(verifyCode)){
+            return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+        }
+        return new SimpleResponse(userService.resetPwd(newPwd,(String) auth.getSessionAttr("token")));
     }
 
     @ApiOperation(value = "修改手机或者邮箱号码",response = SimpleResponse.class)
@@ -275,7 +308,8 @@ public class UserController {
      * 响应验证码页面
      * @return
      */
-    @RequestMapping(value="/validateCode")
+    @ApiOperation(value = "获取图片验证码")
+    @RequestMapping(value="/validateCode",method = RequestMethod.GET)
     public String validateCode(HttpServletRequest request,HttpServletResponse response) throws Exception{
         // 设置响应的类型格式为图片格式
         response.setContentType("image/jpeg");
@@ -283,7 +317,6 @@ public class UserController {
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Cache-Control", "no-cache");
         response.setDateHeader("Expires", 0);
-
         HttpSession session = request.getSession();
 
         ValidateCode vCode = new ValidateCode(120,40,5,100);

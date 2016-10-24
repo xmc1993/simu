@@ -20,6 +20,7 @@ public class AffairPermissionRoleType {
             AffairPermissions.GENERATE_PERMISSION_GROUP,AffairPermissions.ADD_PERMISSION_GROUP,AffairPermissions.REMOVE_PERMISSION_GROUP,AffairPermissions.UPDATE_PERMISSION_GROUP,AffairPermissions.SET_DEFAULT_PERMISSION_GROUP,
             AffairPermissions.CHECK_AFFAIR_FUND,
             AffairPermissions.CHECK_AFFAIR_GOODS};
+
     private final static int[] official = {AffairPermissions.CHECK_AFFAIR_HOMEPAGE,
             AffairPermissions.CHECK_ANNOUNCEMENT,AffairPermissions.ADD_ANNOUNCEMENT,AffairPermissions.EDIT_ANNOUNCEMENT,AffairPermissions.APPLY_ANNOUNCEMENT,AffairPermissions.INVALID_ANNOUNCEMENT,
             AffairPermissions.CHECK_TASK_LIST,AffairPermissions.ADD_TASK,AffairPermissions.ADD_TASK_MEMBER,AffairPermissions.REMOVE_TASK_MEMBER,AffairPermissions.EDIT_TASK,AffairPermissions.ADD_TASK_CONTENT,

@@ -154,6 +154,11 @@ public class UserService implements IUserService {
         return !UserEntity.dao.eq("username",username).exists();
     }
 
+    /**
+     * 判断手机号码是否注册
+     * @param token
+     * @return
+     */
     @Override
     public boolean validToken(String token) {
         if(StringUtil.isEmail(token)){
@@ -202,9 +207,19 @@ public class UserService implements IUserService {
             return false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
+        int result =  UserEntity.dao.eq("id",currentUserId()).set("password",newPwd);
+        return result>0;
+    }
+
+    @Override
+    public boolean resetPwd(String newPwd,String token) {
+        UserEntity userEntity = findByToken(token);
+        if(userEntity==null){
+            return  false;
+        }
+        newPwd = PasswordEncryptor.encode(newPwd);
         int result =  UserEntity.dao.eq("id",userEntity.getId()).set("password",newPwd);
         return result>0;
-
     }
 
     @Override

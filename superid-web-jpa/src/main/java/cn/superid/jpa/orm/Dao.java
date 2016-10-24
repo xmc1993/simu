@@ -204,6 +204,10 @@ public class Dao<T> {
 
 
     public List<T> selectList(String... params){
+        return (List<T>) this.selectList(this.clazz, params);
+    }
+
+    public List<?> selectList(Class<?> clazz,String... params){
         StringBuilder builder = getWhere();
         StringBuilder sb = new StringBuilder(" SELECT ");
         sb.append(StringUtil.joinParams(",",params));
@@ -213,8 +217,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (List<T>) AbstractSession.currentSession().findList(this.clazz, sql, sqlParams);
-
+        return (List<Object>) AbstractSession.currentSession().findList(clazz, sql, sqlParams);
     }
 
     public List<Object> selectListByJoin(Class target,String... params){
