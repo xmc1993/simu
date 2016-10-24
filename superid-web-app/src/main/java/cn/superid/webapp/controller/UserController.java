@@ -42,12 +42,20 @@ public class UserController {
     public static Log LOG = LogFactory.getLog(UserController.class);
 
 
+    @ApiOperation(value = "检查服务器状态,并且获取jSessionId", httpMethod = "GET", response = String.class)
+    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    public SimpleResponse ping(){
+        return SimpleResponse.ok("isLogin");
+    }
+
     /**
      * 获取注册验证码,不允许同一个ip地址频繁访问
      * @param request
      * @param token
      * @return
      */
+
+
     @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = String.class, notes = "不允许同一个IP地址频繁访问")
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
@@ -90,6 +98,7 @@ public class UserController {
      * @param token
      * @return
      */
+    @NotLogin
     @ApiOperation(value = "获取身份验证码,目前用于充值密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
     @RequestMapping(value = "/get_reset_code", method = RequestMethod.GET)
     public SimpleResponse getResetCode(HttpServletRequest request,String token){
