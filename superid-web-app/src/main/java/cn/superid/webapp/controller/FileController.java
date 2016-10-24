@@ -149,26 +149,34 @@ public class FileController {
     @RequestMapping(value = "/condense_picture", method = RequestMethod.POST)
     public SimpleResponse condensePicture(@RequestParam("picture") CommonsMultipartFile picture) {
 
+
+        //记录地址
         String url = "http://simucy.oss-cn-shanghai.aliyuncs.com/";
 
 
         try{
+            //设置两个文件名
             String big = "user/"+userService.currentUserId()+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
             String small = "user/"+userService.currentUserId()+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+            //将第一个文件读出来,上传到oss
             File f1 = File.createTempFile("temp", picture.getContentType().replace("/","."));
             picture.transferTo(f1);
             AliOssDao.uploadFile(f1,big);
+
+            //读原图宽高比
             BufferedImage sourceImage = ImageIO.read(new FileInputStream(f1));
             double width = sourceImage.getWidth();
             double height = sourceImage.getHeight();
 
             ByteArrayOutputStream resizeOut = new ByteArrayOutputStream();
 
+            //以宽100来固定宽高比缩放
             pictureService.resizePicture(new FileInputStream(f1),resizeOut,100,(int)(100*height/width));
             File tmpFile = File.createTempFile("tem2", picture.getContentType().replace("/","."));
             IOUtils.write(resizeOut.toByteArray(), new FileOutputStream(tmpFile));
             PutObjectResult p = AliOssDao.uploadFile(tmpFile,small);
             if(p != null){
+                //存储url
                 url = url + small;
                 UserBaseInfo.dao.id(userService.currentUserId()).set("avatar",url);
             }
