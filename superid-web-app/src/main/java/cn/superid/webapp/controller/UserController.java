@@ -167,6 +167,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "重置密码", httpMethod = "POST", response = SimpleResponse.class, notes = "重置密码")
+    @NotLogin
     @RequestMapping(value = "/reset_pwd", method = RequestMethod.POST)
     public SimpleResponse resetPwd(String verifyCode,String newPwd){
         if(!userService.checkVerifyCode(verifyCode)){
