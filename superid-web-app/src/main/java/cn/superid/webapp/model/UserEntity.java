@@ -47,6 +47,9 @@ public class UserEntity extends ExecutableModel {
     private String avatar;
     private String chatToken;
 
+
+    private long homepageAffairId;
+
     @Id
     @Column(name = "id")
     public long getId() {
@@ -276,6 +279,14 @@ public class UserEntity extends ExecutableModel {
         this.avatar = avatar;
     }
 
+    public long getHomepageAffairId() {
+        return homepageAffairId;
+    }
+
+    public void setHomepageAffairId(long homepageAffairId) {
+        this.homepageAffairId = homepageAffairId;
+    }
+
     @Transient
     public String getChatToken() {
         return chatToken;
@@ -284,4 +295,5 @@ public class UserEntity extends ExecutableModel {
     public void setChatToken(String chatToken) {
         this.chatToken = chatToken;
     }
+
 }

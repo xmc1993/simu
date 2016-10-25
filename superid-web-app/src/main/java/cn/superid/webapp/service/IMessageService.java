@@ -14,18 +14,20 @@ import java.util.List;
  */
 public interface IMessageService {
 
-    public void insertIntoTable(Long toUserId,Long relatedId, HashMap<String,Object> params);
-    public void insertIntoTable(Long toUserId,Long relatedId, Long create_time, HashMap<String,Object> params)
+    public void insertIntoTable(Long toUserId,Long affairId,Long relatedId, HashMap<String,Object> params);
+    public void insertIntoTable(Long toUserId,Long affairId,Long relatedId, Long create_time, HashMap<String,Object> params)
             throws ServiceException, ClientException;
     /**
      * 根据相关的通知id进行搜索,比如任务提醒,公告提醒
      * @param toUserId 被通知的人,一般是自己
      * @param relatedId 相关的id
      */
-    public List<Row> getFromTable(Long toUserId, Long relatedId);
+    public List<Row> getFromTable(Long toUserId, Long affairId,Long relatedId);
 
 
-    public List<Row> getFromTable(Long toUserId, Long relatedId,Integer limit);
+    public List<Row> getFromTable(Long toUserId, Long affairId,Long relatedId,Integer limit);
+
+    public List<Row> getFromTable(Long toUserId,Long affairId);
 
 
     /**
@@ -46,11 +48,11 @@ public interface IMessageService {
      * @throws ServiceException
      * @throws ClientException
      */
-    public List<Row> getFromTable(Long toUserId,Long relatedId,Long startTime,Long endTime)
+    public List<Row> getFromTable(Long toUserId,Long affairId,Long relatedId,Long startTime,Long endTime)
             throws ServiceException, ClientException;
 
 
-    public List<Row> getFromTable(Long toUserId,Long relatedId,Long startTime,Long endTime,Integer limit)
+    public List<Row> getFromTable(Long toUserId,Long affairId,Long relatedId,Long startTime,Long endTime,Integer limit)
             throws ServiceException, ClientException;
 
 
@@ -64,7 +66,7 @@ public interface IMessageService {
      * @throws ServiceException
      * @throws ClientException
      */
-    public List<Row> getFromTableByColumnName(Long toUserId, Long relatedId, MessageColumn messageColumn,Integer columnValue)
+    public List<Row> getFromTableByColumnName(Long toUserId, Long affairId,Long relatedId, MessageColumn messageColumn,Integer columnValue)
             throws ServiceException, ClientException;
 
 
