@@ -54,6 +54,10 @@ public class ContractService implements IContractService {
                 c.update();
 
                 //TODO:将成员加入讨论组,待讨论组定下来后进行编写
+                DiscussGroupEntity discussGroup = DiscussGroupEntity.dao.findById(contract.getDiscussGroupId(),allianceId);
+                if(discussGroup != null){
+
+                }
 
             }else if(c.getConfirmed() == 0){
                 isStart = false ;
