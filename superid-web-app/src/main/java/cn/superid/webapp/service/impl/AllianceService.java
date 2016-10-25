@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class AllianceService  implements IAllianceService{
+
+    public static int CODE_LENTH = 8;
+
     @Autowired
     private IRoleService roleService;
 
@@ -48,19 +51,21 @@ public class AllianceService  implements IAllianceService{
             allianceEntity = new AllianceEntity();
             allianceEntity.setName(allianceCreateForm.getName()+"的盟");
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
-            allianceEntity.setShortName(allianceCreateForm.getShortName());
-            allianceEntity.setState(StateType.Disabled);//等待验证身份
+            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证身份
             allianceEntity.save();
 
         }else{
             allianceEntity = new AllianceEntity();
             allianceEntity.setName(allianceCreateForm.getName());
-            allianceEntity.setShortName(allianceCreateForm.getShortName());
             allianceEntity.setIsPersonal(IntBoolean.FALSE);
-            allianceEntity.setState(StateType.Disabled);//等待验证
+            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证
             allianceEntity.save();//在验证成功之后再创建角色
 
         }
+
+        String shortName = generateCode(allianceEntity.getId());
+        allianceEntity.setShortName(shortName);
+        AllianceEntity.dao.findById(allianceEntity.getId()).setShortName(shortName);
 
         RoleEntity roleEntity = new RoleEntity();
         roleEntity.setTitle(allianceCreateForm.getName());
@@ -115,4 +120,16 @@ public class AllianceService  implements IAllianceService{
         allianceCertificationForm.setRoleId(roleId);
         return AllianceCertificationEntity.dao.set(allianceCertificationForm)>0;
     }
+
+    private String generateCode(long allianceId){
+        String result = allianceId+"";
+        int vacancy = CODE_LENTH - result.length();
+        if(vacancy > 0){
+            for(int i = 0 ; i < vacancy ; i++){
+                result = "0"+result;
+            }
+        }
+        return result;
+    }
+
 }

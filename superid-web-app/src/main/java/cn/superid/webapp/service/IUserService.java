@@ -33,6 +33,8 @@ public interface IUserService {
 
      boolean changePwd(String oldPwd,String newPwd);
 
+     boolean resetPwd(String newPwd,String token);
+
      boolean editDetailInfo(EditUserDetailForm editUserDetailForm);
 
      boolean changePublicType(int publicType);

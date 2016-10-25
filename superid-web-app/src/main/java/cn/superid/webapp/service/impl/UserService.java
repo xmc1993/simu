@@ -9,10 +9,10 @@ import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
-import cn.superid.webapp.model.cache.RoleCache;
-import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
@@ -27,7 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by zp on 2016/8/1.
@@ -70,7 +71,7 @@ public class UserService implements IUserService {
 
     @Override
     public boolean belong(long roleId) {
-       return RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
+       return (Long)RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
     }
 
 
@@ -153,6 +154,11 @@ public class UserService implements IUserService {
         return !UserEntity.dao.eq("username",username).exists();
     }
 
+    /**
+     * 判断手机号码是否注册
+     * @param token
+     * @return
+     */
     @Override
     public boolean validToken(String token) {
         if(StringUtil.isEmail(token)){
@@ -201,9 +207,19 @@ public class UserService implements IUserService {
             return false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
+        int result =  UserEntity.dao.eq("id",currentUserId()).set("password",newPwd);
+        return result>0;
+    }
+
+    @Override
+    public boolean resetPwd(String newPwd,String token) {
+        UserEntity userEntity = findByToken(token);
+        if(userEntity==null){
+            return  false;
+        }
+        newPwd = PasswordEncryptor.encode(newPwd);
         int result =  UserEntity.dao.eq("id",userEntity.getId()).set("password",newPwd);
         return result>0;
-
     }
 
     @Override

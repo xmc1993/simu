@@ -7,7 +7,9 @@ import com.aliyun.api.DefaultAliyunClient;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
+import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PolicyConditions;
+import com.aliyun.oss.model.PutObjectResult;
 import com.taobao.api.ApiException;
 import com.taobao.api.ApiRuleException;
 import com.taobao.api.internal.mapping.ApiField;
@@ -17,6 +19,9 @@ import com.taobao.api.internal.util.TaobaoHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,6 +69,20 @@ public class AliOssDao {
         }
         return null;
     }
+
+    public static PutObjectResult uploadFile(File file, String dir){
+        OSSClient ossClient = new OSSClient(endpoint,accessId,accessKey);
+        PutObjectResult putResult = null;
+        try{
+            putResult = ossClient.putObject(bucket,dir,file);
+        }catch(Exception e){
+            LOG.error("上传阿里云OSS服务器异常." + e.getMessage(), e);
+        }
+
+        return putResult;
+
+    }
+
 
     /**
      * @author tms

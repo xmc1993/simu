@@ -7,7 +7,6 @@ import com.wordnik.swagger.annotations.ApiModel;
 
 @ApiModel
 public class AllianceCreateForm {
-    private String shortName;
     private String name;
     private String logoUrl;
     private int isPersonal = IntBoolean.FALSE;
@@ -39,17 +38,6 @@ public class AllianceCreateForm {
     public void setIsPersonal(int isPersonal) {
         this.isPersonal = isPersonal;
     }
-
-
-
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
 
     public long getUserId() {
         return userId;

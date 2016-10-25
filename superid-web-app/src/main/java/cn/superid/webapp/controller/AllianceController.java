@@ -43,15 +43,14 @@ public class AllianceController {
 
     @ApiOperation(value = "创建盟", response = AllianceEntity.class, notes = "code为盟代码,affairs选择的事务,逗号分开")
     @RequestMapping(value = "/create_alliance", method = RequestMethod.POST)
-    public SimpleResponse createAlliance(String name,String code,String affairs) {
+    public SimpleResponse createAlliance(String name,String affairs) {
 
-        if (StringUtil.isEmpty(name)||StringUtil.isEmpty(code)||!allianceService.validName(code)) {
-            return SimpleResponse.error("repeat_code");
+        if (StringUtil.isEmpty(name)) {
+            return SimpleResponse.error("name cannot be null");
         }
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setUserId(userService.currentUserId());
         allianceCreateForm.setIsPersonal(IntBoolean.FALSE);
-        allianceCreateForm.setShortName(code);
         allianceCreateForm.setName(name);
         AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 

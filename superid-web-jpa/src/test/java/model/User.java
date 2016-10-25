@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 public class User  extends ExecutableModel{
-   public static ConditionalDao<User> dao = new ConditionalDao<>(User.class);
+    public static ConditionalDao<User> dao = new ConditionalDao<>(User.class);
     private int id;
     private String name;
     private int age;

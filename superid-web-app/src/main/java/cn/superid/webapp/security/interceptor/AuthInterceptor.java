@@ -228,7 +228,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         if(currentPermission.equals("*")){
             return true;
         }
-        if(permissions==null&&permissions.length==0){
+        if(permissions==null||permissions.length==0){
             return true;
         }
         int i=0;

@@ -81,6 +81,7 @@ public class AnnouncementService implements IAnnouncementService{
                     }
                 }
                 if(i > 0 & i < replace.size()-1){
+
                     //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
                     if(replace.get(i).getNewlocation()+1 < replace.get(i+1).getNewlocation()){
                         for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){

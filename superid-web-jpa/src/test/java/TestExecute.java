@@ -84,6 +84,9 @@ public class TestExecute extends TestCase {
     public void testSelectList() {
         List<User> users = User.dao.eq("name", "zp").asc("age").selectList();
         Assert.assertTrue(users != null);
+        List<Long> ids =(List<Long>) User.dao.eq("name", "zp").asc("age").selectList(Long.class);
+        Assert.assertTrue(ids != null);
+
     }
 
 

@@ -37,13 +37,7 @@
 
     <mvc:annotation-driven>
     </mvc:annotation-driven>
-    <mvc:resources mapping="/swagger/*.html" location="/swagger/"/>
-    <mvc:resources mapping="/swagger/*.js" location="/swagger/"/>
-    <mvc:resources mapping="/swagger/css/*.css" location="/swagger/css/"/>
-    <mvc:resources mapping="/swagger/fonts/*.ttf" location="/swagger/fonts/"/>
-    <mvc:resources mapping="/swagger/images/**" location="/swagger/images/"/>
-    <mvc:resources mapping="/swagger/lang/*.js" location="/swagger/lang/"/>
-    <mvc:resources mapping="/swagger/lib/*.js" location="/swagger/lib/"/>
+    <mvc:resources mapping="/swagger/**" location="/swagger/"/>
     <context:component-scan base-package="cn.superid.webapp">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
         <context:include-filter type="annotation"
@@ -57,15 +51,9 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <mvc:exclude-mapping path="/swagger/*"/>
-            <mvc:exclude-mapping path="/api-docs"/>
-            <mvc:exclude-mapping path="/api-docs/default/*"/>
+            <mvc:exclude-mapping path="/swagger/**"/>
+            <mvc:exclude-mapping path="/api-docs/**"/>
             <mvc:exclude-mapping path="/*.js"/>
-            <mvc:exclude-mapping path="/swagger/css/*"/>
-            <mvc:exclude-mapping path="/swagger/fonts/*"/>
-            <mvc:exclude-mapping path="/swagger/images/*"/>
-            <mvc:exclude-mapping path="/swagger/lang/*"/>
-            <mvc:exclude-mapping path="/swagger/lib/*"/>
             <bean class="cn.superid.webapp.security.interceptor.AuthInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>

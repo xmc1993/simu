@@ -79,6 +79,11 @@
             <version>1.0.14</version>
         </dependency>
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>simpleimage</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
             <groupId>com.mangofactory</groupId>
             <artifactId>swagger-springmvc</artifactId>
             <version>0.9.5</version>
@@ -102,6 +107,11 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.0</version>
         </dependency>
     </dependencies>
 
@@ -143,7 +153,8 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${endorsed.dir}</outputDirectory> <!-- copy endorsed.dir to tomcat lib directory -->
+                            <outputDirectory>${endorsed.dir}
+                            </outputDirectory> <!-- copy endorsed.dir to tomcat lib directory -->
                             <silent>true</silent>
                             <artifactItems>
                                 <artifactItem>
