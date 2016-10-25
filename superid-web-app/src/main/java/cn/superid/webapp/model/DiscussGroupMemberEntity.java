@@ -17,7 +17,6 @@ public class DiscussGroupMemberEntity extends ExecutableModel {
     public final static ConditionalDao<DiscussGroupMemberEntity> dao = new ConditionalDao<>(DiscussGroupMemberEntity.class);
     private long id;
     private long roleId;
-    private long userId;
     private int state;
     private long groupId;
     private Timestamp createTime;
@@ -39,14 +38,6 @@ public class DiscussGroupMemberEntity extends ExecutableModel {
 
     public void setRoleId(long roleId) {
         this.roleId = roleId;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public int getState() {
