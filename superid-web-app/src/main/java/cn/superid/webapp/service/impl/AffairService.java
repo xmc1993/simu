@@ -1,5 +1,7 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.AffairSpecialCondition;
@@ -136,6 +138,12 @@ public class AffairService implements IAffairService {
     }
 
     @Override
+    public List<AffairEntity> getAffairByState(long allianceId, int state) throws Exception {
+        List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).state(state).selectList();
+        return result;
+    }
+
+    @Override
     public List<AffairEntity> getAllDirectChildAffair(long allianceId, long affairId) throws Exception {
         AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
         if(affairEntity == null)
@@ -151,16 +159,51 @@ public class AffairService implements IAffairService {
     public boolean disableAffair(Long allianceId,Long affairId) throws Exception{
         int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.INVALID);
         if(isUpdate == 0){
-            throw new Exception("找不到该事务"+affairId);
+            return false;
         }
 
+
+        List<TaskEntity> tasks = TaskEntity.dao.partitionId(affairId).or(new Expr("state","=",0),new Expr("state","=",1)).selectList("id","state");
+
         //失效所有子事务
+        List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
+        long id;
+        for(AffairEntity affairEntity : childAffairs){
+            id = affairEntity.getId();
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.INVALID);
+            tasks.addAll(TaskEntity.dao.partitionId(affairEntity.getId()).or(new Expr("state","=",0),new Expr("state","=",1)).selectList("id","state"));
+        }
+
+        //关闭所有任务
+        for(TaskEntity taskEntity : tasks){
+            taskEntity.setState(2);
+            taskEntity.update();
+        }
+
+        //TODO 关闭本事务以及子事务下的交易
 
         /*
         if(affairEntity.getLevel()<1) {
             throw new Exception("根事务不能失效");
         }
         */
+        return true;
+    }
+
+    @Override
+    public boolean validAffair(long allianceId, long affairId) throws Exception {
+        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.VALID);
+        if(isUpdate == 0){
+            return false;
+        }
+
+        List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
+        long id;
+        for(AffairEntity affairEntity : childAffairs){
+            id = affairEntity.getId();
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.VALID);
+        }
+
         return true;
     }
 
@@ -234,6 +277,38 @@ public class AffairService implements IAffairService {
         }
         return false;
     }
+
+    @Override
+    public boolean modifyAffairInfo(long allianceId, long affairId, int attribute, Object value) throws Exception {
+        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
+        switch (attribute){
+            case 1:
+                if(value instanceof Integer){
+                    conditionalDao.set("publicType",value);
+                }
+                else
+                    throw new Exception("类型错误,应该为int类型");
+                break;
+            case 2:
+                if(value instanceof String){
+                    conditionalDao.set("name",value);
+                }
+                else
+                    throw new Exception("类型错误,应该为String类型");
+                break;
+            case 3:
+                if(value instanceof String){
+                    conditionalDao.set("description",value);
+                }
+                else
+                    throw new Exception("类型错误,应该为String类型");
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
 
     /*
     @Override

@@ -63,4 +63,36 @@ public class AffairServiceTest {
 
         }
     }
+
+    @Test
+    public void disableAffairTest(){
+        try {
+            affairService.disableAffair(43L,1070L);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void validAffairTest(){
+        try {
+            affairService.validAffair(43L,1070L);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Test
+    public void modifyAffairInfoTest(){
+        try {
+            //affairService.modifyAffairInfo(43L,1070L,1,1);
+            affairService.modifyAffairInfo(43L,1070L,2,"peng");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 }

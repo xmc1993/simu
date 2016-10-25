@@ -13,6 +13,7 @@ import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,12 +206,13 @@ public class UserController {
 
 
 
-    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录")
+    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录,picCode是图片验证码")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token, String password, String verifyCode,HttpServletRequest request){
+
         int limit =5;
-         UserEntity userEntity =userService.findByToken(token);
+        UserEntity userEntity =userService.findByToken(token);
 
         if(userEntity==null){
             if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
@@ -234,6 +236,9 @@ public class UserController {
             }
             return SimpleResponse.error("pwd_error");
         }
+
+
+
 
         String chatToken = TokenUtil.setLoginToken(userEntity.getId());
         userEntity.setChatToken(chatToken);
@@ -318,8 +323,9 @@ public class UserController {
      * 响应验证码页面
      * @return
      */
-    @ApiOperation(value = "获取图片验证码")
-    @RequestMapping(value="/validateCode",method = RequestMethod.GET)
+    @ApiOperation(value = "获取图片验证码",response = String.class,notes = "不停地访问,访问一次生成一次验证码")
+    @NotLogin
+    @RequestMapping(value="/validate_code",method = RequestMethod.GET)
     public String validateCode(HttpServletRequest request,HttpServletResponse response) throws Exception{
         // 设置响应的类型格式为图片格式
         response.setContentType("image/jpeg");
@@ -329,12 +335,24 @@ public class UserController {
         response.setDateHeader("Expires", 0);
         HttpSession session = request.getSession();
 
-        ValidateCode vCode = new ValidateCode(120,40,5,100);
-        session.setAttribute("code", vCode.getCode());
+        ValidateCode vCode = new ValidateCode(120,40,4,100);
+        session.setAttribute("pic_code", vCode.getCode());
         session.setAttribute("last_token_time",new Date());
 
         vCode.write(response.getOutputStream());
         return null;
     }
 
+    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST)
+    public SimpleResponse validValidateCode(HttpServletRequest request){
+        String code = request.getParameter("pic_code");
+        HttpSession session = request.getSession();
+        String sessionCode = (String) session.getAttribute("pic_code");
+        if (!StringUtils.equalsIgnoreCase(code, sessionCode)) {  //忽略验证码大小写
+            return SimpleResponse.error("验证码不正确");
+        }
+        else {
+            return SimpleResponse.ok("");
+        }
+    }
 }

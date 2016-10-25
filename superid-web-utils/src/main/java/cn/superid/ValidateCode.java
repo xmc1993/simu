@@ -18,7 +18,7 @@ public class ValidateCode {
     // 图片的高度。
     private int height = 40;
     // 验证码字符个数
-    private int codeCount = 5;
+    private int codeCount = 4;
     // 验证码干扰线数
     private int lineCount = 150;
     // 验证码
@@ -106,7 +106,6 @@ public class ValidateCode {
             String strRand = String.valueOf(codeSequence[random.nextInt(codeSequence.length)]);
             degree = new Random().nextInt() % 7;
             fontHeight = height - new Random().nextInt(20)-2;//字体的高度
-            System.out.println(fontHeight);
             font = new Font("Fixedsys", Font.PLAIN, fontHeight);
             g.setFont(font);
             // 产生随机的颜色值，让输出的每个字符的颜色值都将不同。
