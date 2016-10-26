@@ -19,7 +19,6 @@ public class AffairMemberEntity extends ExecutableModel {
     private long affairId;
     private long allianceId;
     private long roleId;
-    private long userId;
     private int state;
     private String permissions;
     private Timestamp createTime;
@@ -60,14 +59,6 @@ public class AffairMemberEntity extends ExecutableModel {
 
     public void setRoleId(long roleId) {
         this.roleId = roleId;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public int getState() {
