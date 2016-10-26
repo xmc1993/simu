@@ -121,6 +121,12 @@ public class AllianceService  implements IAllianceService{
         return AllianceCertificationEntity.dao.set(allianceCertificationForm)>0;
     }
 
+    @Override
+    public long getDefaultRoleIdFromAlliance(long allianceId,long userId) {
+        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id",userId).eq("type",1).selectOne("id").getId();
+        return roleId;
+    }
+
     private String generateCode(long allianceId){
         String result = allianceId+"";
         int vacancy = CODE_LENTH - result.length();

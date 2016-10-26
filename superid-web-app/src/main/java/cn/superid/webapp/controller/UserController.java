@@ -68,6 +68,9 @@ public class UserController {
         if(StringUtil.isEmpty(token)){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
+            if(!userService.validToken(token)){
+                return new SimpleResponse(ResponseCode.BadRequest,"此号码已被注册");
+            }
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, AliSmsDao.registerCode));
         }
     }
@@ -336,7 +339,7 @@ public class UserController {
         HttpSession session = request.getSession();
 
         ValidateCode vCode = new ValidateCode(120,40,4,100);
-        session.setAttribute("pic_code", vCode.getCode());
+        session.setAttribute("code", vCode.getCode());
         session.setAttribute("last_token_time",new Date());
 
         vCode.write(response.getOutputStream());

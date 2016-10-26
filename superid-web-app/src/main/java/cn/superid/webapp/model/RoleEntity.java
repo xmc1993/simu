@@ -24,7 +24,7 @@ public class RoleEntity extends ExecutableModel {
     private String title;
     private String permissions;
     private String allocatePermissions;
-    private int type;
+    private int type;  //1表示这个用户在这个盟里的默认角色
     private int state;
     private Timestamp createTime;
     private Timestamp modifyTime;

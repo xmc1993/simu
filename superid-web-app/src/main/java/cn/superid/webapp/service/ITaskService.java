@@ -5,6 +5,7 @@ import cn.superid.webapp.model.TaskEntity;
 import cn.superid.webapp.service.forms.ContentState;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Created by jizhenya on 16/10/11.
@@ -18,5 +19,7 @@ public interface ITaskService {
     public boolean removeRole(long role , long loser , long taskId);
 
     public boolean addAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , String thumb , ContentState content);
+
+    public List<TaskEntity> getAllValidAffair(long allianceId, long affairId,String... params);
 
 }

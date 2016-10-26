@@ -12,10 +12,7 @@ import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.AffairMemberCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
-import cn.superid.webapp.service.IAffairMemberService;
-import cn.superid.webapp.service.IAffairService;
-import cn.superid.webapp.service.IFileService;
-import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.*;
 import cn.superid.webapp.utils.TimeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,9 @@ public class AffairService implements IAffairService {
     private IFileService fileService;
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private ITaskService taskService;
     @Override
     public String getPermissions(String permissions,long permissionGroupId,long affairId) throws Exception{
 
@@ -139,14 +139,15 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<AffairEntity> getAffairByState(long allianceId, int state) throws Exception {
+        //TODO 参数未定,到时候看前端需要什么数据
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).state(state).selectList();
         return result;
     }
 
     @Override
     public List<AffairEntity> getAllDirectChildAffair(long allianceId, long affairId) throws Exception {
-        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
-        if(affairEntity == null)
+        boolean isExist  = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
+        if(!isExist)
             throw new Exception("找不到该事务");
 
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).eq("parentId",affairId).selectList("id","allianceId","name","level","path");
@@ -163,7 +164,7 @@ public class AffairService implements IAffairService {
         }
 
 
-        List<TaskEntity> tasks = TaskEntity.dao.partitionId(affairId).or(new Expr("state","=",0),new Expr("state","=",1)).selectList("id","state");
+        List<TaskEntity> tasks = taskService.getAllValidAffair(allianceId,affairId,"id");
 
         //失效所有子事务
         List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
@@ -171,13 +172,14 @@ public class AffairService implements IAffairService {
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
             AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.INVALID);
-            tasks.addAll(TaskEntity.dao.partitionId(affairEntity.getId()).or(new Expr("state","=",0),new Expr("state","=",1)).selectList("id","state"));
+            //每个子事务下的task
+            tasks.addAll(taskService.getAllValidAffair(allianceId,id,"id"));
         }
 
         //关闭所有任务
         for(TaskEntity taskEntity : tasks){
-            taskEntity.setState(2);
-            taskEntity.update();
+            id = taskEntity.getId();
+            TaskEntity.dao.partitionId(allianceId).id(id).set("state",0);
         }
 
         //TODO 关闭本事务以及子事务下的交易
