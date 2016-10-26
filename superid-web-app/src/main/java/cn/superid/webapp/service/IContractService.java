@@ -31,7 +31,7 @@ public interface IContractService {
      * @param contractId
      * @return false表示已经被其他人拒绝，合同已不存在，true表示拒绝成功
      */
-    public boolean refuseConfirm(long operationRoleId,long contractId);
+    public boolean refuseConfirm(long operationRoleId,long contractId,long allianceId);
 
     /**
      *
