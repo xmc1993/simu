@@ -21,13 +21,13 @@ public class YunPianSmsDao {
         //URLEncoder.encode("+886980377771",)
         String msg ;
         switch (codeType){
-            case 1:
+            case registerCode:
                 msg = "【SuperId】验证码"+code+"，您正在注册成为SuperId用户，感谢您的支持！";
                 break;
-            case 2:
+            case checkIdentityCode:
                 msg = "【SuperId】验证码"+code+"，您正在进行SuperId身份验证，打死不要告诉别人哦！";
                 break;
-            case 3:
+            case loginCode:
                 msg = "【SuperId】验证码"+code+"，您正在登录${product}，若非本人操作，请勿泄露";
                 break;
             default:
