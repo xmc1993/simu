@@ -6,7 +6,9 @@ import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.IAuth;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import org.junit.Assert;
@@ -26,12 +28,14 @@ public class UserServiceTest{
     private IUserService userService;
     @Autowired
     private IAuth auth;
+    @Autowired
+    private IAffairMemberService affairMemberService;
 
     private UserEntity addUser(){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("大哥鹏");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
-        userEntity.setMobile("15951818231");
+        userEntity.setMobile("15951818892");
         UserEntity result = userService.createUser(userEntity);
         return  result;
     }
@@ -54,6 +58,8 @@ public class UserServiceTest{
         Assert.assertFalse(result==null);
         Assert.assertTrue(result.getPersonalRoleId()!=0);
     }
+
+
 
     @Test
      public void testEditInfo(){

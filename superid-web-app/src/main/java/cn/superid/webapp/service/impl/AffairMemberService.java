@@ -178,7 +178,6 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setPermissions("");
         affairMemberEntity.setRoleId(affairMemberApplicationEntity.getRoleId());
-        affairMemberEntity.setUserId(affairMemberApplicationEntity.getUserId());
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setState(0);
