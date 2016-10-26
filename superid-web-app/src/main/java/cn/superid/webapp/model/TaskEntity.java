@@ -20,7 +20,7 @@ public class TaskEntity extends ExecutableModel{
     private long affairId;
     private long allianceId;
     private String title;
-    private int state;
+    private int state; //0表示非正常关闭,1表示进行中,2表示正常关闭
     private String description;
     private int isRemind;
     private Timestamp remindTime;
