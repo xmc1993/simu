@@ -113,7 +113,7 @@ public class UserController {
         if(StringUtil.isEmpty(token)){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
-            if(userService.validToken(token)){//没有注册的号码
+            if(userService.validTokenForReset(token)){//没有注册的号码
                 return SimpleResponse.error("not_exists");
             }
             auth.setSessionAttr("token",token);

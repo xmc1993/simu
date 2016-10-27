@@ -166,6 +166,16 @@ public class UserService implements IUserService {
         }else if(StringUtil.isMobile(token)){
             return !UserEntity.dao.eq("mobile",token).exists();
         }
+        return false;
+    }
+
+    @Override
+    public boolean validTokenForReset(String token) {
+        if(StringUtil.isEmail(token)){
+            return !UserEntity.dao.eq("email",token).exists();
+        }else if(StringUtil.isMobile(token)){
+            return !UserEntity.dao.eq("mobile",token).exists();
+        }
         return true;
     }
 
