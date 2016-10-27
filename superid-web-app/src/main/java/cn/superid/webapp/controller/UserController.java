@@ -97,13 +97,13 @@ public class UserController {
     }
 
     /**
-     * 获取身份验证码
+     * 获取重置密码验证码
      * @param request
      * @param token
      * @return
      */
     @NotLogin
-    @ApiOperation(value = "获取身份验证码,目前用于充值密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @ApiOperation(value = "获取身份验证码,目前用于重置密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
     @RequestMapping(value = "/get_reset_code", method = RequestMethod.GET)
     public SimpleResponse getResetCode(HttpServletRequest request,String token){
         if(CheckFrequencyUtil.isFrequent(request.getRemoteAddr())){
@@ -142,12 +142,16 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "用户注册", httpMethod = "POST", response = SimpleResponse.class, notes = "用户注册,手机号码需要加国家区号")
+    @ApiOperation(value = "用户注册", httpMethod = "POST", response = SimpleResponse.class, notes = "用户注册,手机号码需要加国家区号,表单传参")
     @NotLogin
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SimpleResponse register(String token,String password,String username,String verifyCode){
         if(!userService.checkVerifyCode(verifyCode)){
             return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+        }
+
+        if(StringUtil.isEmpty(username) | StringUtil.isEmpty(password)){
+            return new SimpleResponse(ResponseCode.BadRequest,"Error username or password");
         }
 
         UserEntity userEntity=new UserEntity();
@@ -169,9 +173,14 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "判断验证码是否正确", httpMethod = "POST", response = SimpleResponse.class, notes = "判断验证码是否正确")
+    @ApiOperation(value = "判断验证码是否正确", httpMethod = "POST", response = SimpleResponse.class, notes = "判断验证码是否正确,表单传参")
     @RequestMapping(value = "/check_token", method = RequestMethod.POST)
     public SimpleResponse checkToken(String verifyCode){
+
+        if(StringUtil.isEmpty(verifyCode)){
+            return new SimpleResponse(ResponseCode.BadRequest,"verifyCode cannot be empty");
+        }
+
         if(!userService.checkVerifyCode(verifyCode)){
             return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
         }
@@ -179,19 +188,25 @@ public class UserController {
         return SimpleResponse.ok("success");
     }
 
-    @ApiOperation(value = "重置密码", httpMethod = "POST", response = SimpleResponse.class, notes = "重置密码")
+    @ApiOperation(value = "重置密码", httpMethod = "POST", response = SimpleResponse.class, notes = "重置密码,表单传参")
     @NotLogin
     @RequestMapping(value = "/reset_pwd", method = RequestMethod.POST)
     public SimpleResponse resetPwd(String verifyCode,String newPwd){
+        if(StringUtil.isEmpty(verifyCode) | StringUtil.isEmpty(newPwd)){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         if(!userService.checkVerifyCode(verifyCode)){
             return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
         }
         return new SimpleResponse(userService.resetPwd(newPwd,(String) auth.getSessionAttr("token")));
     }
 
-    @ApiOperation(value = "修改手机或者邮箱号码",response = SimpleResponse.class)
+    @ApiOperation(value = "修改手机或者邮箱号码",response = SimpleResponse.class, notes = "表单传参")
     @RequestMapping(value = "/change_mobile_or_email",method = RequestMethod.POST)
     public SimpleResponse changeMobileOrEmail(String token,String verifyCode){
+        if(StringUtil.isEmpty(verifyCode) | StringUtil.isEmpty(token)){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         Date date =(Date) auth.getSessionAttr("verified_time");
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -209,10 +224,14 @@ public class UserController {
 
 
 
-    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录,picCode是图片验证码")
+    @ApiOperation(value = "用户登录", httpMethod = "POST", response = UserEntity.class, notes = "用户登录,picCode是图片验证码,表单传参")
     @NotLogin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public SimpleResponse login(String token, String password, String verifyCode,HttpServletRequest request){
+
+        if (StringUtil.isEmpty(token) | StringUtil.isEmpty(password)){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
 
         int limit =5;
         UserEntity userEntity =userService.findByToken(token);
@@ -239,20 +258,19 @@ public class UserController {
             }
             return SimpleResponse.error("pwd_error");
         }
-
-
-
-
         String chatToken = TokenUtil.setLoginToken(userEntity.getId());
         userEntity.setChatToken(chatToken);
         auth.authUser(userEntity.getId(), chatToken);
         return SimpleResponse.ok(userEntity);
     }
 
-    @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名")
+    @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名,表单传参")
     @NotLogin
     @RequestMapping(value = "/valid_username", method = RequestMethod.POST)
     public  SimpleResponse validUsername(String username){
+        if(StringUtil.isEmpty(username)){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         return SimpleResponse.ok(userService.validUsername(username));
     }
 
@@ -261,7 +279,7 @@ public class UserController {
      * @param token
      * @return
      */
-    @ApiOperation(value = "验证手机邮箱是否合法", response = boolean.class, notes = "格式正确而且没有被注册")
+    @ApiOperation(value = "验证手机邮箱是否合法", response = boolean.class, notes = "格式正确而且没有被注册,表单传参")
     @NotLogin
     @RequestMapping(value = "/valid_token", method = RequestMethod.POST)
     public  SimpleResponse validToken(String token){
@@ -281,9 +299,12 @@ public class UserController {
     /**
      * 修改用户信息
      */
-    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户信息")
+    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户 json传参")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
     public  SimpleResponse editBase(@RequestBody EditUserBaseInfo userBaseInfo){
+        if(userBaseInfo == null){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
     }
 
@@ -291,17 +312,23 @@ public class UserController {
     /**
      * 修改密码
      */
-    @ApiOperation(value = "修改密码", response = String.class)
+    @ApiOperation(value = "修改密码", response = String.class, notes = "表单传参")
     @RequestMapping(value = "/change_pwd", method = RequestMethod.POST)
     public  SimpleResponse changePwd(String oldPwd,String newPwd){
+        if(StringUtil.isEmpty(oldPwd) | StringUtil.isEmpty(newPwd)){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         return new SimpleResponse(userService.changePwd(oldPwd,newPwd));
     }
 
 
 
-    @ApiOperation(value = "编辑详细信息", response = String.class)
+    @ApiOperation(value = "编辑详细信息", response = String.class, notes = "json传参")
     @RequestMapping(value = "/edit_detail", method = RequestMethod.POST)
     public  SimpleResponse editDetail(@RequestBody EditUserDetailForm editUserDetailForm){
+        if(editUserDetailForm == null){
+            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+        }
         return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
     }
 
@@ -311,7 +338,7 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId")
+    @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(Long userId){
         if(userId==null||userId==userService.currentUserId()){
@@ -346,7 +373,7 @@ public class UserController {
         return null;
     }
 
-    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST)
+    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST )
     public SimpleResponse validValidateCode(HttpServletRequest request){
         String code = request.getParameter("pic_code");
         HttpSession session = request.getSession();

@@ -477,6 +477,8 @@ public class ContractService implements IContractService {
         role.delete();
 
         //TODO:把人从讨论组删除
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        DiscussGroupMemberEntity.dao.eq("roleId",roleId).eq("groupId",contract.getDiscussGroupId()).selectOne().delete();
 
 
 
