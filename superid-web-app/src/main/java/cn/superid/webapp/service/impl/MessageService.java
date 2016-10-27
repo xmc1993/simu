@@ -1,20 +1,23 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.enums.MessageColumn;
-import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.proto.Message;
 import cn.superid.webapp.service.IMessageService;
 import cn.superid.webapp.service.IRedisMessageService;
+import cn.superid.webapp.tcp.TcpConnectorsPool;
 import cn.superid.webapp.utils.AliOTSDao;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.OTSClient;
 import com.aliyun.openservices.ots.ServiceException;
 import com.aliyun.openservices.ots.model.*;
+import com.aliyun.openservices.ots.model.condition.RelationalCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import com.aliyun.openservices.ots.model.condition.RelationalCondition;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,8 +35,31 @@ public class MessageService implements IMessageService{
     private final static String RELATED_ID = "related_id";
     private final static String CREATE_TIME = "create_time";
 
+
     private final static Direction direction = Direction.BACKWARD;
     private OTSClient client = AliOTSDao.otsClient;
+
+    @Override
+    public boolean sendNotice(Message.NoticeMsg noticeMsg){
+        String host = "192.168.1.100";
+        int port = 6666;
+        Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
+        if(socket == null){
+            socket = TcpConnectorsPool.newTcpConnector(host, port);
+        }
+        if (socket == null){
+            return false;
+        }
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            noticeMsg.writeTo(outputStream);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 
     @Override
     public void insertIntoTable(Long toUserId, Long relatedId, HashMap<String, Object> params) {
