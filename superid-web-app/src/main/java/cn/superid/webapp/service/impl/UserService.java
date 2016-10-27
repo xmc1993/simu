@@ -166,7 +166,7 @@ public class UserService implements IUserService {
         }else if(StringUtil.isMobile(token)){
             return !UserEntity.dao.eq("mobile",token).exists();
         }
-        return false;
+        return true;
     }
 
     @Override
