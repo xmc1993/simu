@@ -2,6 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
+import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.PublicType;
@@ -16,10 +17,8 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.utils.AliSmsDao;
-import cn.superid.webapp.utils.DirectEmailDao;
-import cn.superid.webapp.utils.NumberUtils;
-import cn.superid.webapp.utils.PasswordEncryptor;
+import cn.superid.webapp.utils.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +97,11 @@ public class UserService implements IUserService {
                 String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", code);
                 return DirectEmailDao.sendEmail("SuperId邮箱验证",emailText,token);
             }else{
-                return AliSmsDao.sendSMSMessageToMobileWithTemplate(token,template, MapUtil.hashmap("code",code));
+                if(MobileUtil.isChinaMobile(token)){
+                    return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token),template, MapUtil.hashmap("code",code));
+                }else {
+                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token,code,template);
+                }
             }
         }
         return false;
@@ -116,7 +119,7 @@ public class UserService implements IUserService {
             if (calendar.getTime().before(new Date())) {//超过15分钟
                 return false;
             }
-            if(code.equals(cachedCode)){
+            if(StringUtils.equalsIgnoreCase(code, cachedCode)){
                 return true;
             }
         }
@@ -163,8 +166,16 @@ public class UserService implements IUserService {
     public boolean validToken(String token) {
         if(StringUtil.isEmail(token)){
             return !UserEntity.dao.eq("email",token).exists();
-        }else if(StringUtil.isMobile(token)){
-            return !UserEntity.dao.eq("mobile",token).exists();
+        }else{
+            String[] strs = token.split("\\s+");
+            if(StringUtil.isMobile(token)){
+                if(strs.length==1){
+                    return !UserEntity.dao.eq("mobile",token).exists();
+                }else {
+                    return !UserEntity.dao.eq("mobile",strs[1]).exists();
+                }
+
+            }
         }
         return false;
     }

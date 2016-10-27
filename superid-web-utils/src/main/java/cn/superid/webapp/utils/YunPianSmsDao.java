@@ -11,23 +11,20 @@ public class YunPianSmsDao {
     public static YunpianRestClient client;
     private static String apiKey = "4defc0878d19d7bd80d6a44c02aff836";
 
-    public static final int registerCode= 1; //验证码${code}，您正在注册成为${product}用户，感谢您的支持！
-    public static final int checkIdentityCode = 2; // 身份验证验证码模板,验证码${code}，您正在进行${product}身份验证，打死不要告诉别人哦！
-    public static final int loginCode = 3;//验证码${code}，您正在登录${product}，若非本人操作，请勿泄露
 
-    public static boolean sendSMSMessageToForeignMobile(String mobile, String code,int codeType) {
+    public static boolean sendSMSMessageToForeignMobile(String mobile, String code,String codeType) {
         client = new YunpianRestClient(apiKey);
         SmsOperator smsOperator = client.getSmsOperator();
         //URLEncoder.encode("+886980377771",)
         String msg ;
         switch (codeType){
-            case registerCode:
+            case SmsType.registerCode:
                 msg = "【SuperId】验证码"+code+"，您正在注册成为SuperId用户，感谢您的支持！";
                 break;
-            case checkIdentityCode:
+            case SmsType.checkIdentityCode:
                 msg = "【SuperId】验证码"+code+"，您正在进行SuperId身份验证，打死不要告诉别人哦！";
                 break;
-            case loginCode:
+            case SmsType.loginCode:
                 msg = "【SuperId】验证码"+code+"，您正在登录${product}，若非本人操作，请勿泄露";
                 break;
             default:

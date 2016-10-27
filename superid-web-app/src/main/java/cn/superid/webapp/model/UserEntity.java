@@ -47,7 +47,7 @@ public class UserEntity extends ExecutableModel {
     private String avatar;
     private String chatToken;
 
-    private String country_code; //区号
+    private String countryCode; //区号
     private long homepageAffairId;
 
     @Id
@@ -279,12 +279,12 @@ public class UserEntity extends ExecutableModel {
         this.avatar = avatar;
     }
 
-    public String getCountry_code() {
-        return country_code;
+    public String getCountryCode() {
+        return countryCode;
     }
 
-    public void setCountry_code(String country_code) {
-        this.country_code = country_code;
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public long getHomepageAffairId() {

@@ -95,6 +95,11 @@ public class CheckFrequencyUtil {
         cachedValue.setCount(1);
     }
 
+    public static int getCounts(String key){
+        ValueAttr cachedValue = cache.get(key);
+        return cachedValue.getCount();
+    }
+
     private static boolean checkFrequent(String key,ValueAttr valueAttr){
         ValueAttr cachedValue = cache.get(key);
         if(cachedValue==null){
