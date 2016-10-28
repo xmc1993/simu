@@ -28,7 +28,7 @@ import java.util.List;
  * Created by njuTms on 16/9/26.
  */
 @Service
-public class MessageService implements IMessageService{
+public class MessageService implements IMessageService {
     @Autowired
     private IRedisMessageService redisMessageService;
 
@@ -37,6 +37,7 @@ public class MessageService implements IMessageService{
     private final static String TO_USER_ID = "to_user_id";
     private final static String RELATED_ID = "related_id";
     private final static String CREATE_TIME = "create_time";
+    private final static String AFFAIR_ID = "affair_id";
 
 
     private final static Direction direction = Direction.BACKWARD;
@@ -49,16 +50,16 @@ public class MessageService implements IMessageService{
         String host = infos[0];
         int port = Integer.valueOf(infos[1]);
         Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
-        if(socket == null){
+        if (socket == null) {
             socket = TcpConnectorsPool.newTcpConnector(host, port);
         }
-        if (socket == null){
+        if (socket == null) {
             return false;
         }
         try {
             OutputStream outputStream = socket.getOutputStream();
             noticeMsg.writeTo(outputStream);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -68,31 +69,38 @@ public class MessageService implements IMessageService{
 
     @Override
     public void insertIntoTable(Long toUserId, Long relatedId, HashMap<String, Object> params) {
-        insertIntoTable(toUserId,relatedId,System.currentTimeMillis(),params);
+        insertIntoTable(toUserId, relatedId, System.currentTimeMillis(), params);
+    }
+
+    public void insertIntoTable(Long toUserId, Long affairId, Long relatedId, HashMap<String, Object> params) {
+        insertIntoTable(toUserId, affairId, relatedId, System.currentTimeMillis(), params);
+
     }
 
     @Override
-    public void insertIntoTable(Long toUserId, Long relatedId, Long create_time, HashMap<String, Object> params)
+    public void insertIntoTable(Long toUserId, Long affairId, Long relatedId, Long create_time, HashMap<String, Object> params)
             throws ServiceException, ClientException {
-        if(toUserId == null){
+        if (toUserId == null) {
             throw new ServiceException("无通知用户");
+        }
+        if (affairId == null) {
+            throw new ServiceException("无归属事务");
         }
         RowPutChange rowChange = new RowPutChange(TABLE_NAME);
         RowPrimaryKey primaryKey = new RowPrimaryKey();
         primaryKey.addPrimaryKeyColumn(TO_USER_ID, PrimaryKeyValue.fromLong(toUserId));
+        primaryKey.addPrimaryKeyColumn(AFFAIR_ID, PrimaryKeyValue.fromLong(affairId));
         primaryKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.fromLong(relatedId));
-        primaryKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.fromLong(create_time));
+        primaryKey.addPrimaryKeyColumn(CREATE_TIME, PrimaryKeyValue.fromLong(create_time));
         rowChange.setPrimaryKey(primaryKey);
-        for(String key : params.keySet()){
+        for (String key : params.keySet()) {
             Object o = params.get(key);
-            if(o instanceof Integer){
-                rowChange.addAttributeColumn(key, ColumnValue.fromLong((long) ((int)o)));
-            }
-            else if(o instanceof Long){
+            if (o instanceof Integer) {
+                rowChange.addAttributeColumn(key, ColumnValue.fromLong((long) ((int) o)));
+            } else if (o instanceof Long) {
                 rowChange.addAttributeColumn(key, ColumnValue.fromLong((long) o));
-            }
-            else if(o instanceof String){
-                rowChange.addAttributeColumn(key,ColumnValue.fromString((String) o));
+            } else if (o instanceof String) {
+                rowChange.addAttributeColumn(key, ColumnValue.fromString((String) o));
             }
         }
         rowChange.setCondition(new Condition(RowExistenceExpectation.EXPECT_NOT_EXIST));
@@ -108,36 +116,40 @@ public class MessageService implements IMessageService{
     }
 
     @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId) {
-        return getFromTable(toUserId,relatedId,null,null,null);
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId) {
+        return getFromTable(toUserId, affairId, relatedId, null, null, null);
     }
 
     @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId,Integer limit) {
-        return getFromTable(toUserId,relatedId,null,null,limit);
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId, Integer limit) {
+        return getFromTable(toUserId, affairId, relatedId, null, null, limit);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Long affairId) {
+        return getFromTable(toUserId, affairId, null, null, null, null);
     }
 
     @Override
     public List<Row> getFromTable(Long toUserId) {
-        return getFromTable(toUserId,null,null,null);
+        return getFromTable(toUserId, null, null, null, null, null);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Integer limit) {
+        return getFromTable(toUserId, null, null, null, null, limit);
+    }
+
+    @Override
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId, Long startTime, Long endTime) throws ServiceException, ClientException {
+        return getFromTable(toUserId, affairId, relatedId, startTime, endTime, null);
     }
 
 
     @Override
-    public List<Row> getFromTable(Long toUserId,Integer limit) {
-        return getFromTable(toUserId,null,null,null,limit);
-    }
-
-
-    @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId, Long startTime, Long endTime){
-        return getFromTable(toUserId,null,null,null,null);
-    }
-
-    @Override
-    public List<Row> getFromTable(Long toUserId, Long relatedId, Long startTime, Long endTime,Integer limit)
+    public List<Row> getFromTable(Long toUserId, Long affairId, Long relatedId, Long startTime, Long endTime, Integer limit)
             throws ServiceException, ClientException {
-        if(toUserId == null){
+        if (toUserId == null) {
             throw new ServiceException("无通知用户");
         }
 
@@ -145,14 +157,14 @@ public class MessageService implements IMessageService{
         //因为要倒序查看,所以需要startKey>endKey
         RangeRowQueryCriteria criteria = new RangeRowQueryCriteria(TABLE_NAME);
         //endTime作为开始
-        RowPrimaryKey inclusiveStartKey = setStartKey(toUserId,relatedId,endTime);
+        RowPrimaryKey inclusiveStartKey = setStartKey(toUserId, affairId, relatedId, endTime);
 
-        RowPrimaryKey exclusiveEndKey = setEndKey(toUserId,relatedId,startTime);
+        RowPrimaryKey exclusiveEndKey = setEndKey(toUserId, affairId, relatedId, startTime);
 
 
         criteria.setInclusiveStartPrimaryKey(inclusiveStartKey);
         criteria.setExclusiveEndPrimaryKey(exclusiveEndKey);
-        if((!(limit == null))&&(limit.intValue()>0)){
+        if ((!(limit == null)) && (limit.intValue() > 0)) {
             criteria.setLimit(limit);
         }
         criteria.setDirection(direction);
@@ -171,15 +183,15 @@ public class MessageService implements IMessageService{
     }
 
     @Override
-    public List<Row> getFromTableByColumnName(Long toUserId, Long relatedId, MessageColumn messageColumn,Integer columnValue)
+    public List<Row> getFromTableByColumnName(Long toUserId, Long affairId, Long relatedId, MessageColumn messageColumn, Integer columnValue)
             throws ServiceException, ClientException {
-        if(toUserId == null){
+        if (toUserId == null) {
             throw new ServiceException("无通知用户");
         }
         RangeIteratorParameter param = new RangeIteratorParameter(TABLE_NAME);
-        RowPrimaryKey startPk = setStartKey(toUserId,relatedId,null);
+        RowPrimaryKey startPk = setStartKey(toUserId, affairId, relatedId, null);
 
-        RowPrimaryKey endPk = setEndKey(toUserId,relatedId,null);
+        RowPrimaryKey endPk = setEndKey(toUserId, affairId, relatedId, null);
 
         param.setInclusiveStartPrimaryKey(startPk);
         param.setExclusiveEndPrimaryKey(endPk);
@@ -198,62 +210,72 @@ public class MessageService implements IMessageService{
         return rows;
     }
 
-    private RowPrimaryKey setStartKey(Long toUserId, Long relatedId,Long endTime){
+    private RowPrimaryKey setStartKey(Long toUserId, Long affairId, Long relatedId, Long endTime) {
         RowPrimaryKey inclusiveStartKey = new RowPrimaryKey();
         inclusiveStartKey.addPrimaryKeyColumn(TO_USER_ID,
                 PrimaryKeyValue.fromLong(toUserId));
-        //因为要倒序查看,所以需要startKey>endKey
-        //起始时间
-        if(endTime == null){
-            inclusiveStartKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.INF_MAX);
-        }
-        else {
-            inclusiveStartKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.fromLong(endTime));
+
+        if (affairId == null) {
+            inclusiveStartKey.addPrimaryKeyColumn(AFFAIR_ID, PrimaryKeyValue.INF_MAX);
+        } else {
+            inclusiveStartKey.addPrimaryKeyColumn(AFFAIR_ID, PrimaryKeyValue.fromLong(affairId));
         }
 
-        if(relatedId == null){
-            inclusiveStartKey.addPrimaryKeyColumn(RELATED_ID,PrimaryKeyValue.INF_MAX);
+        //因为要倒序查看,所以需要startKey>endKey
+        //起始时间
+        if (endTime == null) {
+            inclusiveStartKey.addPrimaryKeyColumn(CREATE_TIME, PrimaryKeyValue.INF_MAX);
+        } else {
+            inclusiveStartKey.addPrimaryKeyColumn(CREATE_TIME, PrimaryKeyValue.fromLong(endTime));
         }
-        else{
+
+        if (relatedId == null) {
+            inclusiveStartKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.INF_MAX);
+        } else {
             inclusiveStartKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.fromLong(relatedId));
         }
         return inclusiveStartKey;
     }
 
-    private RowPrimaryKey setEndKey(Long toUserId, Long relatedId, Long startTime){
+    private RowPrimaryKey setEndKey(Long toUserId, Long affairId, Long relatedId, Long startTime) {
         RowPrimaryKey exclusiveEndKey = new RowPrimaryKey();
         exclusiveEndKey.addPrimaryKeyColumn(TO_USER_ID,
                 PrimaryKeyValue.fromLong(toUserId));
+
+        if (affairId == null) {
+            exclusiveEndKey.addPrimaryKeyColumn(AFFAIR_ID, PrimaryKeyValue.INF_MIN);
+        } else {
+            exclusiveEndKey.addPrimaryKeyColumn(AFFAIR_ID, PrimaryKeyValue.fromLong(affairId));
+        }
+
         //结束时间
 
-        if(startTime == null){
-            exclusiveEndKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.INF_MIN);
-        }
-        else {
-            exclusiveEndKey.addPrimaryKeyColumn(CREATE_TIME,PrimaryKeyValue.fromLong(startTime));
+
+        if (startTime == null) {
+            exclusiveEndKey.addPrimaryKeyColumn(CREATE_TIME, PrimaryKeyValue.INF_MIN);
+        } else {
+            exclusiveEndKey.addPrimaryKeyColumn(CREATE_TIME, PrimaryKeyValue.fromLong(startTime));
         }
 
         // 范围的边界需要提供完整的PK，若查询的范围不涉及到某一列值的范围，则需要将该列设置为无穷大或者无穷小
-        if(relatedId == null){
-            exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID,PrimaryKeyValue.INF_MIN);
-        }
-        else{
+        if (relatedId == null) {
+            exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.INF_MIN);
+        } else {
             exclusiveEndKey.addPrimaryKeyColumn(RELATED_ID, PrimaryKeyValue.fromLong(relatedId));
         }
         return exclusiveEndKey;
 
     }
 
-    public void referToSomebody(Long toUserId,Long relatedId,String content){
-        HashMap<String,Object> map = new HashMap<>();
+    public void referToSomebody(Long toUserId, Long affairId, Long relatedId, String content) {
+        HashMap<String, Object> map = new HashMap<>();
         //TODO 这里需要哪些列,type,subtype,etc
-        map.put("type",1);
-        map.put("content",content);
-        insertIntoTable(toUserId,relatedId,map);
+        map.put("type", 1);
+        map.put("content", content);
+        insertIntoTable(toUserId, affairId, relatedId, map);
         //TODO 调用redis进行推送,不太清楚
         //redisMessageService.se
     }
-
 
 
 }

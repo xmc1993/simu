@@ -22,6 +22,7 @@ public interface IAllianceService {
 
     boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId);
 
+    public long getDefaultRoleIdFromAlliance(long allianceId,long userId);
 
 
 }

@@ -1,8 +1,10 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IFileService;
 import cn.superid.webapp.service.IPictureService;
@@ -46,11 +48,21 @@ public class FileController {
     @Autowired
     private IPictureService pictureService;
 
-    @ApiOperation(value = "获取上传token", response = SimpleResponse.class, notes = "格式正确而且没有被注册")
+    @ApiOperation(value = "获取头像上传token", response = SimpleResponse.class, notes = "格式正确而且没有被注册")
     @RequestMapping(value = "/get_token", method = RequestMethod.GET)
     public SimpleResponse getToken() {
         StringBuffer sb =new StringBuffer("user/");
         sb.append(userService.currentUserId());
+        return  SimpleResponse.ok(AliOssDao.generateToken(sb.toString()));
+    }
+
+    @ApiOperation(value = "获取事务文件上传token", response = SimpleResponse.class, notes = "格式正确而且没有被注册")
+//    @RequiredPermissions(affair = AffairPermissions.UPLOAD_FILE)
+    @RequestMapping(value = "/get_file_token", method = RequestMethod.GET)
+    public SimpleResponse getFileToken(Long affairId) {
+        StringBuffer sb =new StringBuffer("affair/");
+//        sb.append(GlobalValue.currentAffairId());
+        sb.append(affairId);
         return  SimpleResponse.ok(AliOssDao.generateToken(sb.toString()));
     }
 

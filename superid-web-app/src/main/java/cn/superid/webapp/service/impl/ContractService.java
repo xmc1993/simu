@@ -56,7 +56,11 @@ public class ContractService implements IContractService {
                 //TODO:将成员加入讨论组,待讨论组定下来后进行编写
                 DiscussGroupEntity discussGroup = DiscussGroupEntity.dao.findById(contract.getDiscussGroupId(),allianceId);
                 if(discussGroup != null){
-
+                    DiscussGroupMemberEntity discussGroupMember = new DiscussGroupMemberEntity();
+                    discussGroupMember.setRoleId(operationRoleId);
+                    discussGroupMember.setState(1);
+                    discussGroupMember.setGroupId(discussGroup.getId());
+                    discussGroupMember.save();
                 }
 
             }else if(c.getConfirmed() == 0){
@@ -77,7 +81,7 @@ public class ContractService implements IContractService {
     }
 
     @Override
-    public boolean refuseConfirm(long operationRoleId, long contractId) {
+    public boolean refuseConfirm(long operationRoleId, long contractId, long allianceId) {
         ContractEntity contract = ContractEntity.dao.findById(contractId);
         ContractRoleEntity refuser = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operationRoleId).selectOne();
         if(contract == null | refuser == null | refuser.getConfirmed() != 0){
@@ -94,6 +98,8 @@ public class ContractService implements IContractService {
         }
 
         //TODO:删除讨论组
+        DiscussGroupEntity.dao.id(contract.getId()).partitionId(allianceId).set("state",0);
+
 
         return true;
     }
@@ -444,6 +450,12 @@ public class ContractService implements IContractService {
         newRole.save();
 
         //TODO:把人拉进讨论组
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        DiscussGroupEntity discussGroup = DiscussGroupEntity.dao.findById(contract.getId(),allianceId);
+        DiscussGroupMemberEntity discussGroupMember = new DiscussGroupMemberEntity();
+        discussGroupMember.setGroupId(discussGroup.getId());
+        discussGroupMember.setState(1);
+        discussGroupMember.save();
 
         //第三步，增加log
 
@@ -454,6 +466,7 @@ public class ContractService implements IContractService {
     }
 
     @Override
+
     public boolean removeRole(long operationRoleId, long roleId, long contractId, long allianceId) {
 
         ContractRoleEntity operator = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operationRoleId).selectOne();
@@ -464,6 +477,10 @@ public class ContractService implements IContractService {
         role.delete();
 
         //TODO:把人从讨论组删除
+        ContractEntity contract = ContractEntity.dao.findById(contractId);
+        DiscussGroupMemberEntity.dao.eq("roleId",roleId).eq("groupId",contract.getDiscussGroupId()).selectOne().delete();
+
+
 
         //第三步，增加log
         recorcSimpleLog(contractId, roleService.getNameByRoleId(operationRoleId) + "将"+roleService.getNameByRoleId(roleId)+"移除出合同");
@@ -501,6 +518,7 @@ public class ContractService implements IContractService {
         contractRoleEntity.save();
 
         //TODO:将成员加入讨论组
+
 
 
         List<String> strs = Arrays.asList(roles.split(","));

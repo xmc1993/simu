@@ -14,6 +14,7 @@ public class AffairPermissions {
     public final static int CREATE_AFFAIR = 13; //创建事务
     public final static int MOVE_AFFAIR = 26 ; //移动事务
     public final static int INVALID_AFFAIR = 39; //失效事务
+    public final static int ACCEPT_MOVED_AFFAIR = 52; //接收别人移动的事务
 
     public final static int AffairInfo=1; //事务信息权限
     public final static int CHECK_AFFAIR_HOMEPAGE = 14; //查看事务主页
@@ -99,6 +100,8 @@ public class AffairPermissions {
         childNode = new IdNameNode(MOVE_AFFAIR,"移动事务");
         parentNode.getChilds().add(childNode);
         childNode = new IdNameNode(INVALID_AFFAIR,"失效事务");
+        parentNode.getChilds().add(childNode);
+        childNode = new IdNameNode(ACCEPT_MOVED_AFFAIR,"接收其他事务");
         parentNode.getChilds().add(childNode);
 
         parentNode =new IdNameNode(AffairInfo,"事务信息");

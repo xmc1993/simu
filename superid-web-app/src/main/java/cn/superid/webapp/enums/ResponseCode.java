@@ -11,4 +11,5 @@ public interface ResponseCode {
      int NotAcceptable =406;
      int CatchException =2500;
      int Error = -1;
+     int NeedVerifyCode = 15;
 }

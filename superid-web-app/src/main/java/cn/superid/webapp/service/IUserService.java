@@ -23,6 +23,8 @@ public interface IUserService {
 
      boolean validToken(String token);
 
+     boolean validTokenForReset(String token);
+
      UserEntity getCurrentUser();
 
      long currentUserId();

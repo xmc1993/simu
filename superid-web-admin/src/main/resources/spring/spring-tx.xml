@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.user}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="driverClassName" value="${jdbc.driverClass}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+        <property name="initialSize" value="${jdbc.initialSize}"/>
+        <property name="maxWait" value="${jdbc.maxWait}"/>
+        <property name="minIdle" value="${jdbc.minIdle}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${jdbc.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${jdbc.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="SELECT 'x'"/>
+        <property name="testWhileIdle" value="${jdbc.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${jdbc.testOnBorrow}"/>
+        <property name="testOnReturn" value="${jdbc.testOnReturn}"/>
+        <property name="maxOpenPreparedStatements"
+                  value="${jdbc.maxOpenPreparedStatements}"/>
+        <property name="removeAbandoned" value="${jdbc.removeAbandoned}"/>
+        <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}"/>
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
+        <!-- 关闭abanded连接时输出错误日志 -->
+    </bean>
+    <bean id="jdbcSessionFactory"
+          class="cn.superid.jpa.core.impl.JdbcSessionFactory">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <!--Transaction Config-->
+    <bean id="transactionManager" class="cn.superid.db.TransactionManager">
+    </bean>
+
+    <!--<bean id="hibernateTransactionManager"-->
+    <!--class="org.springframework.orm.hibernate4.HibernateTransactionManager">-->
+    <!--<property name="sessionFactory" ref="hibernateSessionFactory" />-->
+    <!--</bean>-->
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--<tx:advice id="serviceAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="add*" propagation="REQUIRED" />-->
+            <!--<tx:method name="create*" propagation="REQUIRED" />-->
+            <!--<tx:method name="set*" propagation="REQUIRED" />-->
+            <!--<tx:method name="disable*" propagation="REQUIRED" />-->
+            <!--<tx:method name="accept*" propagation="REQUIRED" />-->
+            <!--<tx:method name="reject*" propagation="REQUIRED" />-->
+            <!--<tx:method name="update*" propagation="REQUIRED" />-->
+            <!--<tx:method name="change*" propagation="REQUIRED" />-->
+            <!--<tx:method name="del*" propagation="REQUIRED" />-->
+            <!--<tx:method name="remove*" propagation="REQUIRED" />-->
+            <!--<tx:method name="apply*" propagation="REQUIRED" />-->
+            <!--<tx:method name="get*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="count*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="find*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="list*" propagation="SUPPORTS" read-only="true" />-->
+            <!--<tx:method name="*" propagation="SUPPORTS" read-only="true" />-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+    <!--<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>-->
+    <!--<aop:aspectj-autoproxy proxy-target-class="true"/>-->
+    <!--<aop:config>-->
+        <!--<aop:pointcut id="allServiceMethod" expression="execution(* cn.superid.webapp.services.*.*(..))"/>-->
+        <!--<aop:advisor advice-ref="serviceAdvice" pointcut-ref="allServiceMethod"/>-->
+    <!--</aop:config>-->
+
+</beans>

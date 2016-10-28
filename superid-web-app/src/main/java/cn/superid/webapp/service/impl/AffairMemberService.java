@@ -49,11 +49,6 @@ public class AffairMemberService implements IAffairMemberService{
     }
 
     public boolean allocateAffairMemberPermissionGroup(Long affairId, Long allianceId, Long toRoleId, Long permissionGroupId) throws Exception {
-        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("roleId", toRoleId).selectOne();
-        if (affairMemberEntity == null) {
-            throw new Exception("找不到该事务成员");
-        }
-
         if (permissionGroupId == null) {
             throw new Exception("请选择权限组");
         }
@@ -71,31 +66,27 @@ public class AffairMemberService implements IAffairMemberService{
             }
         }
          */
-        affairMemberEntity.setPermissionGroupId(permissionGroupId);
-        affairMemberEntity.setPermissions("");
-        affairMemberEntity.update();
-        return true;
+
+        int updateCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("role_id", toRoleId).set("permission_group_id",permissionGroupId,"permissions","");
+        return updateCount>0 ? true : false;
     }
 
     @Override
     public boolean modifyAffairMemberPermissions(Long allianceId, Long affairId, Long toRoleId, String permissions) throws Exception {
-        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("roleId", toRoleId).selectOne();
-        if (affairMemberEntity == null) {
-            throw new Exception("找不到该事务成员");
-        }
+
 
         if (StringUtil.isEmpty(permissions)) {
             throw new Exception("请选择正确的权限");
         }
-        affairMemberEntity.setPermissions(permissions);
-        affairMemberEntity.update();
-        return true;
+
+        int updateCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("role_id", toRoleId).set("permissions",permissions);
+        return updateCount>0 ? true : false;
     }
 
     @Override
     public PermissionGroupEntity addPermissionGroup(Long allianceId,Long affairId, String name, String permissions) throws Exception {
-        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
-        if(affairEntity == null){
+        boolean isExist = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
+        if(!isExist){
             throw new Exception("找不到该事务");
         }
         if (StringUtil.isEmpty(permissions)) {
@@ -112,8 +103,8 @@ public class AffairMemberService implements IAffairMemberService{
 
     @Override
     public String applyForEnterAffair(Long allianceId,Long affairId, Long roleId) throws Exception{
-        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
-        if(affairEntity == null){
+        boolean affairIsFind = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
+        if(!affairIsFind){
             throw new Exception("找不到该事务");
         }
         /*
@@ -169,8 +160,8 @@ public class AffairMemberService implements IAffairMemberService{
         if ((affairMemberApplicationEntity == null)||(affairMemberApplicationEntity.getState() != 0)) {
             throw new Exception("找不到此申请");
         }
-        AffairEntity affairEntity = AffairEntity.dao.findById(affairMemberApplicationEntity.getAffairId(),allianceId);
-        if (affairEntity == null) {
+        boolean isExist  = AffairEntity.dao.id(affairMemberApplicationEntity.getAffairId()).partitionId(allianceId).exists();
+        if (!isExist) {
             throw new Exception("找不到事务" + affairMemberApplicationEntity.getAffairId());
         }
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
@@ -178,7 +169,6 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setPermissions("");
         affairMemberEntity.setRoleId(affairMemberApplicationEntity.getRoleId());
-        affairMemberEntity.setUserId(affairMemberApplicationEntity.getUserId());
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setState(0);
