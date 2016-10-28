@@ -6,14 +6,17 @@ import cn.superid.webapp.service.IMessageService;
 import cn.superid.webapp.service.IRedisMessageService;
 import cn.superid.webapp.tcp.TcpConnectorsPool;
 import cn.superid.webapp.utils.AliOTSDao;
+import cn.superid.webapp.zookeeper.NodeUtil;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.OTSClient;
 import com.aliyun.openservices.ots.ServiceException;
 import com.aliyun.openservices.ots.model.*;
 import com.aliyun.openservices.ots.model.condition.RelationalCondition;
+import org.apache.zookeeper.KeeperException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -40,9 +43,11 @@ public class MessageService implements IMessageService{
     private OTSClient client = AliOTSDao.otsClient;
 
     @Override
-    public boolean sendNotice(Message.NoticeMsg noticeMsg){
-        String host = "192.168.1.100";
-        int port = 6666;
+    public boolean sendNotice(Message.NoticeMsg noticeMsg) throws InterruptedException, IOException, KeeperException {
+        String url = NodeUtil.getNodeByKey(noticeMsg.getAffairId());
+        String[] infos = url.split(":");
+        String host = infos[0];
+        int port = Integer.valueOf(infos[1]);
         Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
         if(socket == null){
             socket = TcpConnectorsPool.newTcpConnector(host, port);

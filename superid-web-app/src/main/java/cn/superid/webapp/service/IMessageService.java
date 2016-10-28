@@ -6,7 +6,9 @@ import cn.superid.webapp.proto.Message;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.ServiceException;
 import com.aliyun.openservices.ots.model.Row;
+import org.apache.zookeeper.KeeperException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  */
 public interface IMessageService {
 
-    boolean sendNotice(Message.NoticeMsg noticeMsg);
+    boolean sendNotice(Message.NoticeMsg noticeMsg) throws InterruptedException, IOException, KeeperException;
 
     void insertIntoTable(Long toUserId, Long relatedId, HashMap<String, Object> params);
 
