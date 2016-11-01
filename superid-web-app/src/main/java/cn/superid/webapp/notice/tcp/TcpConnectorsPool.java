@@ -43,11 +43,10 @@ public final class TcpConnectorsPool {
     public static synchronized Socket newTcpConnector(String host, int port){
         String key = host + ":" + port;
         Socket socket = tcpConnectorsPool.get(key);
-        if(socket.isConnected()){
+        if(socket != null && socket.isConnected()){
             return socket;
-        }else {
-
         }
+
         Socket client;
         try {
             client = new Socket(host, port);
