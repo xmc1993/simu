@@ -1,6 +1,6 @@
 package service;
 
-import cn.superid.webapp.proto.Message.NoticeMsg;
+import cn.superid.webapp.notice.proto.Message.NoticeMsg;
 import cn.superid.webapp.service.IMessageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

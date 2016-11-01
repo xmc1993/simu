@@ -2,7 +2,7 @@ package cn.superid.webapp.service;
 
 
 import cn.superid.webapp.enums.MessageColumn;
-import cn.superid.webapp.proto.Message;
+import cn.superid.webapp.notice.proto.Message;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.ServiceException;
 import com.aliyun.openservices.ots.model.Row;

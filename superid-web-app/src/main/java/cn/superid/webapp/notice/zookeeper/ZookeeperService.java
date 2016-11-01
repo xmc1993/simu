@@ -1,4 +1,4 @@
-package cn.superid.webapp.zookeeper;
+package cn.superid.webapp.notice.zookeeper;
 
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;

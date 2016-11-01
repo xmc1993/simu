@@ -1,4 +1,4 @@
-package cn.superid.webapp.tcp;
+package cn.superid.webapp.notice.tcp;
 
 import java.io.IOException;
 import java.net.Socket;
