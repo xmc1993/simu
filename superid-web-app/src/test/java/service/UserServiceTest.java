@@ -33,9 +33,9 @@ public class UserServiceTest{
 
     private UserEntity addUser(){
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("大哥鹏");
+        userEntity.setUsername("汤茂思");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
-        userEntity.setMobile("15951818892");
+        userEntity.setMobile("15358381990");
         UserEntity result = userService.createUser(userEntity);
         return  result;
     }
