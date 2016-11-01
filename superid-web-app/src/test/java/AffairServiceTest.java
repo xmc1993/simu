@@ -7,6 +7,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by njuTms on 16/9/8.
@@ -94,5 +96,15 @@ public class AffairServiceTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void test(){
+        //String mobile = "+86 15358381990";
+        String mobile = "999912";
+        String[] strs = mobile.split("\\s+");
+        Pattern pattern = Pattern.compile("^\\d+$");
+        Matcher matcher = pattern.matcher(mobile);
+        System.out.println(matcher.matches());
     }
 }

@@ -64,7 +64,7 @@ public class CheckFrequencyUtil {
         }
     }
 
-    private  final static int defaultLimit =10;
+    private  final static int defaultLimit =100;
     private final static int defaultTime = 24*60*60;
 
     private static final Map<String,  ValueAttr> cache = new ConcurrentHashMap<>();
@@ -93,6 +93,11 @@ public class CheckFrequencyUtil {
         ValueAttr cachedValue = cache.get(token);
         cachedValue.setBegin(new Date());
         cachedValue.setCount(1);
+    }
+
+    public static int getCounts(String key){
+        ValueAttr cachedValue = cache.get(key);
+        return cachedValue.getCount();
     }
 
     private static boolean checkFrequent(String key,ValueAttr valueAttr){

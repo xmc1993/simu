@@ -84,8 +84,24 @@ public class StringUtil {
     }
 
     public static boolean isMobile(String str){
-        Pattern pattern=Pattern.compile("^((\\+?86)|(\\(\\+86\\)))?1\\d{10}$");
-        Matcher matcher = pattern.matcher(str);
+        Pattern pattern = null;
+        String[] strs = str.split("\\s+");
+        Matcher matcher;
+        if(strs.length==1){
+            pattern = Pattern.compile("^((\\+?86)|(\\(\\+86\\)))?1\\d{10}$");
+            matcher = pattern.matcher(str);
+        }
+        else {
+            if(strs[0].equals("+86")){
+                pattern = Pattern.compile("^((\\+?86)|(\\(\\+86\\)))?1\\d{10}$");
+            }else {
+                pattern = Pattern.compile("^\\d+$");
+            }
+            matcher = pattern.matcher(strs[1]);
+        }
+
+
         return matcher.matches();
     }
+
 }

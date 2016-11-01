@@ -16,17 +16,14 @@ import java.util.Map;
 
 public class AliSmsDao {
     private static final Logger LOG = LoggerFactory.getLogger(AliSmsDao.class);
-    public static final String registerCode= "SMS_4455521"; //验证码${code}，您正在注册成为${product}用户，感谢您的支持！
-    public static final String checkIdentityCode = "SMS_4455524"; // 身份验证验证码模板,验证码${code}，您正在进行${product}身份验证，打死不要告诉别人哦！
-    public static final String loginCode = "SMS_4455523";//验证码${code}，您正在登录${product}，若非本人操作，请勿泄露
 
 
 
     private static String getSupportTemplateSign(String templateCode) {
         switch (templateCode) {
-            case registerCode: return "注册验证";
-            case  checkIdentityCode: return "身份验证";
-            case loginCode: return "登录验证";
+            case SmsType.registerCode: return "注册验证";
+            case SmsType.checkIdentityCode: return "身份验证";
+            case SmsType.loginCode: return "登录验证";
 
         }
         return "系统通知";
