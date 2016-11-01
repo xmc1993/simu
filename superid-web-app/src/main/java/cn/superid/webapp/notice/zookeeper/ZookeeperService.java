@@ -45,6 +45,13 @@ public class ZookeeperService {
         });
     }
 
+    /**
+     * 返回NodeJs那边所有的活跃的connector的信息
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static JSONObject getConnectorsInfo() throws KeeperException, InterruptedException, IOException {
         if (zooKeeper == null) {
             init();
@@ -53,6 +60,13 @@ public class ZookeeperService {
         return new JSONObject(result);
     }
 
+    /**
+     * 返回NodeJs那边所有的活跃的backend的信息
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static JSONObject getBackendsInfo() throws KeeperException, InterruptedException, IOException {
         if (zooKeeper == null) {
             init();
