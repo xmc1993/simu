@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -97,11 +98,22 @@ public class UserService implements IUserService {
                 String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", code);
                 return DirectEmailDao.sendEmail("SuperId邮箱验证",emailText,token);
             }else{
+                //此处因为要分是注册还是其他获取验证码方式,所以要先看看数据库里有咩有该账号
+                //因为注册是要传区号过来,并且数据库没有该条数据,所以token不需要处理
+                //其他获取方式不需要区号,所以要自己去数据库取出区号来然后去发短信
+                UserEntity userEntity = UserEntity.dao.eq("mobile",token).selectOne("countryCode");
+                String countryCode;
+                if(userEntity != null){
+                    countryCode = userEntity.getCountryCode();
+                    token = countryCode + " " + token;
+                }
+
                 if(MobileUtil.isChinaMobile(token)){
                     return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token),template, MapUtil.hashmap("code",code));
                 }else {
                     return YunPianSmsDao.sendSMSMessageToForeignMobile(token,code,template);
                 }
+
             }
         }
         return false;
