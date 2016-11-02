@@ -1,4 +1,4 @@
-import cn.superid.webapp.zookeeper.ZookeeperService;
+import cn.superid.webapp.notice.zookeeper.ZookeeperService;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;

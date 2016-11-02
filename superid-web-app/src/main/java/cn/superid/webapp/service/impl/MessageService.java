@@ -1,12 +1,12 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.enums.MessageColumn;
-import cn.superid.webapp.proto.Message;
+import cn.superid.webapp.notice.proto.Message;
 import cn.superid.webapp.service.IMessageService;
 import cn.superid.webapp.service.IRedisMessageService;
-import cn.superid.webapp.tcp.TcpConnectorsPool;
+import cn.superid.webapp.notice.tcp.TcpConnectorsPool;
 import cn.superid.webapp.utils.AliOTSDao;
-import cn.superid.webapp.zookeeper.NodeUtil;
+import cn.superid.webapp.notice.zookeeper.NodeUtil;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.OTSClient;
 import com.aliyun.openservices.ots.ServiceException;
