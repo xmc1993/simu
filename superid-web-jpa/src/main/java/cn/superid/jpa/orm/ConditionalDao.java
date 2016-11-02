@@ -82,15 +82,32 @@ public class ConditionalDao<T> extends Dao<T> {
         return and(column,">=",value);
     }
 
-
-
-
-    public ConditionalDao<T> in(String column, Object value){
-        return and(column," in ","("+value+")");
+    public ConditionalDao<T> inOrNotIn(String column, Object[] values,String op){
+        where.get().append(" and ");
+        where.get().append(column);
+        where.get().append(op);
+        where.get().append(" ( ");
+        boolean first = true;
+        for(Object value:values){
+            if(first){
+                where.get().append("?");
+                first = false;
+            }else {
+                where.get().append(",?");
+            }
+            parameterBindings.get().addIndexBinding(value);
+        }
+        where.get().append(") ");
+        return this;
     }
 
-    public ConditionalDao<T> notIn(String column, Object value){
-        return and(column," not in ","("+value+")");
+
+    public ConditionalDao<T> in(String column, Object[] values){
+       return inOrNotIn(column,values," in ");
+    }
+
+    public ConditionalDao<T> notIn(String column, Object[] values){
+        return inOrNotIn(column,values," not in ");
     }
 
     public ConditionalDao<T> limit(int limit){
@@ -156,4 +173,5 @@ public class ConditionalDao<T> extends Dao<T> {
         where.get().append(")");
         return this;
     }
+
 }
