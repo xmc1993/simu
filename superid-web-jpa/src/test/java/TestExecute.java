@@ -89,6 +89,15 @@ public class TestExecute extends TestCase {
 
     }
 
+    public void testOrConditions(){
+        List<User> users1 = User.dao.or(Expr.eq("name","zp"),Expr.eq("name","xxf")).selectList();
+        String[] names ={"zp","xxf"};
+        List<User> users2 = User.dao.in("name",names).selectList();
+
+        Assert.assertTrue(users1.size()==users2.size());
+
+    }
+
 
     public void testRemove() {
         User user = new User();

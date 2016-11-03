@@ -1,9 +1,7 @@
 import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
-import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
@@ -29,6 +27,7 @@ public class GenerateTestData {
     @Test
     public  void generateMembers(){
         long l = 15951819999L;
+        Object o = new Object();
         for(int i=100;i<110;i++){
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("大哥 "+i+" 代目");

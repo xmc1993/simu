@@ -125,6 +125,7 @@ public class FriendsService implements IFriendsService{
 
     public boolean isValidApplication(long fromUserId,long toUserId){
         //查看是否有待处理的或者已经接受的申请,如果有就不能再申请
+
         boolean hasApplied = FriendsApplicationEntity.dao.partitionId(toUserId).eq("fromUserId",fromUserId).or(Expr.eq("state",0),Expr.eq("state",1)).exists();
         //查看是否存在对方向我发起的申请
         boolean hasBeenApplied = FriendsApplicationEntity.dao.partitionId(fromUserId).eq("fromUserId",toUserId).or(Expr.eq("state",0),Expr.eq("state",1)).exists();

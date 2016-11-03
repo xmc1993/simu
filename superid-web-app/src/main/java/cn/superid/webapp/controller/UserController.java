@@ -70,11 +70,11 @@ public class UserController {
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
             if(!userService.validToken(token)){
-                return new SimpleResponse(ResponseCode.BadRequest,"此账号已被注册");
+                return new SimpleResponse(ResponseCode.HasRegistered,"此账号已被注册");
             }
 
             if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
-                return new SimpleResponse(ResponseCode.BadRequest,"该手机号格式不正确");
+                return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
             }
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.registerCode));
         }
@@ -120,7 +120,7 @@ public class UserController {
                 return new SimpleResponse(ResponseCode.BadRequest,null);
             }else {
                 if(userService.validTokenForReset(token)){//没有注册的号码
-                    return SimpleResponse.error("not_exists");
+                    return new SimpleResponse(ResponseCode.NotRegistered,"该账号不存在");
                 }
                 auth.setSessionAttr("token",token);
                 return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.checkIdentityCode));
@@ -157,19 +157,19 @@ public class UserController {
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SimpleResponse register(String token,String password,String username,String verifyCode){
         if(!userService.checkVerifyCode(verifyCode)){
-            return new SimpleResponse(ResponseCode.BadRequest,"验证码错误");
+            return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
         }
 
         if(StringUtil.isEmpty(username) | StringUtil.isEmpty(password)){
-            return new SimpleResponse(ResponseCode.BadRequest,"不正确的用户名或密码");
+            return new SimpleResponse(ResponseCode.ErrorUserNameOrPassword,"不正确的用户名或密码");
         }
 
         if(!userService.validToken(token)){
-            return new SimpleResponse(ResponseCode.BadRequest,"该账号已注册");
+            return new SimpleResponse(ResponseCode.HasRegistered,"该账号已注册");
         }
 
         if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
-            return new SimpleResponse(ResponseCode.BadRequest,"该手机号格式不正确");
+            return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
         }
         UserEntity userEntity=new UserEntity();
         if(StringUtil.isEmail(token)){
@@ -195,10 +195,10 @@ public class UserController {
     //应吴迪所邀,强行加个token
     public SimpleResponse checkToken(String token,String verifyCode){
         if(StringUtil.isEmpty(verifyCode)){
-            return new SimpleResponse(ResponseCode.BadRequest,"验证码不能为空");
+            return new SimpleResponse(ResponseCode.NeedVerifyCode,"验证码不能为空");
         }
         if(!userService.checkVerifyCode(verifyCode)){
-            return new SimpleResponse(ResponseCode.BadRequest,"验证码错误");
+            return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
         }
         auth.setSessionAttr("verified_time",new Date());
         return SimpleResponse.ok("success");
@@ -212,7 +212,7 @@ public class UserController {
             return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
         }
         if(!userService.checkVerifyCode(verifyCode)){
-            return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+            return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码不正确");
         }
         return new SimpleResponse(userService.resetPwd(newPwd,(String) auth.getSessionAttr("token")));
     }
@@ -231,7 +231,7 @@ public class UserController {
             return SimpleResponse.error("not_verified_time");
         }
         if (!userService.checkVerifyCode(verifyCode)){
-            return new SimpleResponse(ResponseCode.BadRequest,"error_verifyCode");
+            return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码不正确");
 
         }
         return new SimpleResponse(userService.changeToken(token));
@@ -250,7 +250,7 @@ public class UserController {
         }
 
         if(userService.validToken(token)){
-            return new SimpleResponse(ResponseCode.BadRequest,"该账号不存在");
+            return new SimpleResponse(ResponseCode.NotRegistered,"该账号不存在");
         }
 
 
@@ -267,7 +267,7 @@ public class UserController {
                     CheckFrequencyUtil.reset(token);
                 }else{
                     LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
-                    return SimpleResponse.error("验证码错误");
+                    return SimpleResponse.error("访问过于频繁");
                 }
 
 
@@ -280,13 +280,13 @@ public class UserController {
 
         if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
             if(userEntity==null){
-                return SimpleResponse.error("不存在该用户");
+                return new SimpleResponse(ResponseCode.NotRegistered,"不存在该用户");
             }
             else {
                 if(userService.checkVerifyCode(verifyCode)){
                     CheckFrequencyUtil.reset(token);
                 }else{
-                    return SimpleResponse.error("验证码错误");
+                    return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
                 }
             }
         }
