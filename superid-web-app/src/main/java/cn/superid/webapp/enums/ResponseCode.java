@@ -17,4 +17,5 @@ public interface ResponseCode {
      int HasRegistered = 18;
      int InvalidMobileFormat = 19;
      int NotRegistered = 20;
+     int Frequency = -2;
 }

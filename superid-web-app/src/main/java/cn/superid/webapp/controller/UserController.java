@@ -267,7 +267,7 @@ public class UserController {
                     CheckFrequencyUtil.reset(token);
                 }else{
                     LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
-                    return SimpleResponse.error("访问过于频繁");
+                    return new SimpleResponse(ResponseCode.Frequency,"访问过于频繁");
                 }
 
 
