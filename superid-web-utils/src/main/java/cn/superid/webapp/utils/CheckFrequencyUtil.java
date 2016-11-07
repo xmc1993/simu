@@ -64,7 +64,7 @@ public class CheckFrequencyUtil {
         }
     }
 
-    private  final static int defaultLimit =100;
+    private  final static int defaultLimit =5;
     private final static int defaultTime = 24*60*60;
 
     private static final Map<String,  ValueAttr> cache = new ConcurrentHashMap<>();
@@ -111,6 +111,7 @@ public class CheckFrequencyUtil {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(cachedValue.getBegin());
             calendar.add(Calendar.SECOND, time);
+
 
             if(calendar.after(date)){//过了规定时间再访问，则重新计数
                 cachedValue.setCount(1);
