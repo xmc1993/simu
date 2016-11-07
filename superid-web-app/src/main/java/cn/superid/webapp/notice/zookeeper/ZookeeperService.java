@@ -16,6 +16,7 @@ public class ZookeeperService {
     private static final int SESSION_TIMEOUT = 20000;
     private static final String CONNECTOR_URL = "/connectors";
     private static final String BACKEND_URL = "/backends";
+    private static final String ZOOKEEPER_URL = "192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184";
 
     private static ZooKeeper zooKeeper;
 
@@ -36,7 +37,7 @@ public class ZookeeperService {
         if (zooKeeper != null) {
             return;
         }
-        zooKeeper = new ZooKeeper("192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184",
+        zooKeeper = new ZooKeeper(ZOOKEEPER_URL,
                 SESSION_TIMEOUT, new Watcher() {
             public void process(WatchedEvent event) {
                 System.out.println("已经触发了" + event.getType() + "事件！");
@@ -44,6 +45,13 @@ public class ZookeeperService {
         });
     }
 
+    /**
+     * 返回NodeJs那边所有的活跃的connector的信息
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static JSONObject getConnectorsInfo() throws KeeperException, InterruptedException, IOException {
         if (zooKeeper == null) {
             init();
@@ -52,6 +60,13 @@ public class ZookeeperService {
         return new JSONObject(result);
     }
 
+    /**
+     * 返回NodeJs那边所有的活跃的backend的信息
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static JSONObject getBackendsInfo() throws KeeperException, InterruptedException, IOException {
         if (zooKeeper == null) {
             init();

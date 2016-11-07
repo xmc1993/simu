@@ -15,7 +15,7 @@ public class ResultUserInfo extends ExecutableModel{
 
     public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
     private Long id;
-    private String superid;
+    private String superId;
     private int state;
     private String videoUrl;
     private String videoImg;
@@ -43,6 +43,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getSuperId() {
+        return superId;
+    }
+
+    public void setSuperId(String superId) {
+        this.superId = superId;
     }
 
     public int getState() {

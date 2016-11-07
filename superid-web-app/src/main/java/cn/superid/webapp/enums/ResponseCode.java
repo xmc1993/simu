@@ -12,4 +12,10 @@ public interface ResponseCode {
      int CatchException =2500;
      int Error = -1;
      int NeedVerifyCode = 15;
+     int ErrorVerifyCode = 16;
+     int ErrorUserNameOrPassword = 17;
+     int HasRegistered = 18;
+     int InvalidMobileFormat = 19;
+     int NotRegistered = 20;
+     int Frequency = -2;
 }
