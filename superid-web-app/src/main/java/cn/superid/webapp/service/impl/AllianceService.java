@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.IntBoolean;
@@ -108,13 +109,19 @@ public class AllianceService  implements IAllianceService{
     }
 
     @Override
-    public AllianceCertificationEntity addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
+    public boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
+        boolean isFind = AllianceCertificationEntity.dao.partitionId(allianceId).eq("roleId",roleId).or(new Expr("checkState","=",0),new Expr("checkState","=",1)).exists();
+        if(isFind){
+            return false;
+        }
         AllianceCertificationEntity allianceCertificationEntity = new AllianceCertificationEntity();
         allianceCertificationEntity.setAllianceId(allianceId);
         allianceCertificationEntity.copyPropertiesFrom(allianceCertificationForm);
         allianceCertificationEntity.setRoleId(roleId);
         allianceCertificationEntity.save();
-        return allianceCertificationEntity;
+
+        AllianceEntity.dao.id(allianceId).set("applyCertificateState",2);
+        return true;
     }
 
     @Override

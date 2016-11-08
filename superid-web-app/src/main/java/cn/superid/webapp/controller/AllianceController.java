@@ -88,7 +88,10 @@ public class AllianceController {
     @RequiredPermissions(alliance = AlliancePermissions.EditAllianceInfo)
     @RequestMapping(value = "/add_certification", method = RequestMethod.POST)
     public SimpleResponse addCertification(@RequestBody AllianceCertificationForm allianceCertificationForm,long roleId){
-        return SimpleResponse.ok(allianceService.addAllianceCertification(allianceCertificationForm,roleId, GlobalValue.currentAllianceId()).getId());
+        if(allianceService.addAllianceCertification(allianceCertificationForm,roleId, GlobalValue.currentAllianceId())){
+            return SimpleResponse.ok("提交成功,请等待验证");
+        }
+        return SimpleResponse.error("提交失败,您已提交过申请");
     }
 
 

@@ -18,7 +18,7 @@ public interface IAllianceService {
 
     boolean validName(String name);
 
-    AllianceCertificationEntity addAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId,long allianceId);
+    boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId,long allianceId);
 
     boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId);
 
