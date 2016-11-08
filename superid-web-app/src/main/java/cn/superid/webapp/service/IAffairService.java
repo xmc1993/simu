@@ -5,6 +5,7 @@ import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.CoverEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IGetPermissions;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
@@ -119,6 +120,14 @@ public interface IAffairService  {
      * @return
      */
     public List<SimpleRoleForm> getAllRoles(long allianceId, long affairId);
+
+    /**
+     *
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
+    public List<CoverEntity> getCovers(long allianceId, long affairId);
 
 
 
