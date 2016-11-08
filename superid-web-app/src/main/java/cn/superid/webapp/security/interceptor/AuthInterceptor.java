@@ -181,7 +181,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             }
 
             AffairMemberCache affairMemberCache = AffairMemberCache.dao.findById(affairMemberId);
-            if(affairMemberCache==null||affairMemberCache.getState()== StateType.Disabled||affairMemberCache.getRoleId()==0){
+            if(affairMemberCache==null||affairMemberCache.getState() != StateType.Normal||affairMemberCache.getRoleId()==0){
                 return  notPermitted;
             }
             long roleId = affairMemberCache.getRoleId();
@@ -208,7 +208,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 return notPermitted;
             }
             RoleCache roleCache =RoleCache.dao.findById(roleId);
-            if(roleCache==null||roleCache.getState()==StateType.Disabled||roleCache.getUserId()!=userService.currentUserId()){
+            System.out.println(roleCache.getUserId()+ " " + userService.currentUserId());
+            if(roleCache==null||roleCache.getState()!=StateType.Normal||roleCache.getUserId()!=userService.currentUserId()){
                 return notPermitted;
             }
             session.setAttribute("role",roleCache);

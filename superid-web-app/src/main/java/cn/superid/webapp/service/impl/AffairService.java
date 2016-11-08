@@ -311,6 +311,18 @@ public class AffairService implements IAffairService {
         return true;
     }
 
+    @Override
+    public boolean modifyAffairInfo(long allianceId, long affairId, Integer publicType, String affairName, String description) throws Exception {
+        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
+        if(publicType != null){
+            conditionalDao.set("publicType",publicType);
+        }
+        if((affairName != null)||(!affairName.equals(""))){
+            conditionalDao.set("affairName",affairName);
+        }
+        return false;
+    }
+
 
     /*
     @Override

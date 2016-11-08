@@ -19,7 +19,7 @@ public class AllianceEntity extends ExecutableModel {
     private String name;
     private long ownerRoleId;
     private int state;
-    private int applyCertificateState;
+    private int applyCertificateState; //0表示正常,1表示没有认证,2表示认证正在等待审核
     private long verifyAffairId;
     private long rootAffairId;
     private String logoUrl;

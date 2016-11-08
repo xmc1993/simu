@@ -26,6 +26,8 @@ public class UserEntity extends ExecutableModel {
     private String videoUrl ="";
     private String videoImg ="";
     private int isVideo;
+    private String nickNames = "";
+    private boolean isAuthenticated;
     private String username ="";
     private Timestamp birthday;
     private int age;
@@ -133,6 +135,22 @@ public class UserEntity extends ExecutableModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNickNames() {
+        return nickNames;
+    }
+
+    public void setNickNames(String nickNames) {
+        this.nickNames = nickNames;
+    }
+
+    public boolean getIsAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setIsAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 
     public int getIsVideo() {
