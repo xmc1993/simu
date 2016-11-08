@@ -153,5 +153,12 @@ public class AffairController {
         return SimpleResponse.ok(rsMap);
     }
 
+    @ApiOperation(value = "查看所有人员",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/get_member", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getMember() {
+        return SimpleResponse.ok(affairService.getAllRoles(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
+    }
+
 
 }

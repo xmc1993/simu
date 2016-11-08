@@ -68,8 +68,6 @@ public class FileController {
 
     @RequestMapping(value = "/get_signature", method = RequestMethod.POST)
     public SimpleResponse getSignature(@RequestBody  CalculateSignForm calculateSignForm) {
-        StringBuffer sb =new StringBuffer("user/");
-        sb.append(userService.currentUserId());
         return  SimpleResponse.ok(AliOssDao.getVideoUploadSignature(calculateSignForm.getVerb(),calculateSignForm.getContentMD5(),
                 calculateSignForm.getContentType(),calculateSignForm.getCanonicalizedOSSHeaders(),
                 calculateSignForm.getCanonicalizedResource()));

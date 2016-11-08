@@ -366,7 +366,8 @@ public class AffairService implements IAffairService {
     @Override
     public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
         //TODO:
-        StringBuilder sql = new StringBuilder("select a.role_id , c.username , b.title , a.permissions , b.belong_affair_id , d.name form affair_member a left join role b left join user c left join affair d on a.role_id = b.id and b.user_id = c.id and b.belong_affair_id = d.id where a.state = 1 and a.affair_id = ? ");
+        StringBuilder sql = new StringBuilder("select a.role_id , c.username , b.title , a.permissions , b.belong_affair_id , d.name form affair_member a left join role b left join user " +
+                "c left join affair d on a.role_id = b.id and b.user_id = c.id and b.belong_affair_id = d.id where a.state = 1 and a.affair_id = ? ");
 
         return null;
     }
