@@ -1,5 +1,6 @@
 package cn.superid.webapp.model;
 
+import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -41,6 +42,7 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
         this.id = id;
     }
 
+    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }
