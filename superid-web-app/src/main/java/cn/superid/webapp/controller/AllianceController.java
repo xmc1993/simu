@@ -99,6 +99,10 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.editAllianceCertification(allianceCertificationForm,roleId));
     }
 
-
+    @ApiOperation(value = "获取一个用户在一个盟里的默认角色,返回值为roleId", response =Long.class)
+    @RequestMapping(value = "/default_role_in_alliance",method = RequestMethod.POST)
+    public SimpleResponse getDefaultRoleIdInAlliance(long allianceId){
+        return SimpleResponse.ok(allianceService.getDefaultRoleIdFromAlliance(allianceId));
+    }
 
 }

@@ -278,6 +278,7 @@ public class UserController {
             return SimpleResponse.error("密码错误");
         }
 
+        /*
         if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
             if(userEntity==null){
                 return new SimpleResponse(ResponseCode.NotRegistered,"不存在该用户");
@@ -290,11 +291,12 @@ public class UserController {
                 }
             }
         }
-
+*/
 
         String chatToken = TokenUtil.setLoginToken(userEntity.getId());
         userEntity.setChatToken(chatToken);
         auth.authUser(userEntity.getId(), chatToken);
+        CheckFrequencyUtil.reset(token);
         return SimpleResponse.ok(userEntity);
     }
 

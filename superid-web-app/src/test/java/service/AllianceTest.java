@@ -33,17 +33,18 @@ public class AllianceTest {
 //    }
 
     @Test
-    public void testCreateAlliance(){
+    public void testCreateAlliance() {
         String code = StringUtil.randomString(6);
-        SimpleResponse simpleResponse=allianceController.createAlliance("SIMU","a,b,c");
+        SimpleResponse simpleResponse = allianceController.createAlliance("SIMU", "a,b,c");
         AllianceEntity allianceEntity = (AllianceEntity) simpleResponse.getData();
 
         Assert.assertTrue(allianceEntity.getName().equals("SIMU"));
 
-        SimpleResponse simpleResponse1=allianceController.createAlliance("repeat","asa,c");
+        SimpleResponse simpleResponse1 = allianceController.createAlliance("repeat", "asa,c");
         Assert.assertTrue(simpleResponse1.getData().equals("repeat_code"));
 
     }
+
 
 
 }

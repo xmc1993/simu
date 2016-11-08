@@ -313,12 +313,23 @@ public class AffairService implements IAffairService {
     }
 
     @Override
+    public boolean modifyAffairInfo(long allianceId, long affairId, Integer publicType, String affairName, String description) throws Exception {
+        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
+        if(publicType != null){
+            conditionalDao.set("publicType",publicType);
+        }
+        if((affairName != null)||(!affairName.equals(""))){
+            conditionalDao.set("affairName",affairName);
+        }
+        return false;
+    }
+
+    @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId,String... params) {
         String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"-%").selectList(params);
         return result;
     }
-
     @Override
     public boolean addCovers(long allianceId, long affairId, String urls) {
         String[] urlList = urls.split(",");
@@ -358,6 +369,5 @@ public class AffairService implements IAffairService {
 
         return null;
     }
-
 
 }

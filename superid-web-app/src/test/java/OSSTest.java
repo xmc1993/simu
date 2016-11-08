@@ -66,4 +66,10 @@ public class OSSTest {
 
         }
     }
+
+    @Test
+    public void testInitial(){
+       // AliOssDao.getVideoUploadSignature("ocean.mp4");
+        AliOssDao.getVideoUploadSignature("PUT",null,null,null,"/simucy/oceans.mp4");
+    }
 }

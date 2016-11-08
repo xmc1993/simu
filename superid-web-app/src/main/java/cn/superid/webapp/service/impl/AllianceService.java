@@ -14,6 +14,7 @@ import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
+import cn.superid.webapp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class AllianceService  implements IAllianceService{
     public static int CODE_LENTH = 8;
 
     @Autowired
-    private IRoleService roleService;
+    private IUserService userService;
 
     @Autowired
     private IAffairService affairService;
@@ -51,14 +52,14 @@ public class AllianceService  implements IAllianceService{
             allianceEntity = new AllianceEntity();
             allianceEntity.setName(allianceCreateForm.getName()+"的盟");
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
-            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证身份
+            allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证身份
             allianceEntity.save();
 
         }else{
             allianceEntity = new AllianceEntity();
             allianceEntity.setName(allianceCreateForm.getName());
             allianceEntity.setIsPersonal(IntBoolean.FALSE);
-            allianceEntity.setApplyCertificateState(StateType.Disabled);//等待验证
+            allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证
             allianceEntity.save();//在验证成功之后再创建角色
 
         }
@@ -74,7 +75,8 @@ public class AllianceService  implements IAllianceService{
         roleEntity.setBelongAffairId(0);
         roleEntity.setPermissions(AffairPermissionRoleType.OWNER);
         roleEntity.setAllocatePermissions(AffairPermissionRoleType.OWNER);
-        roleEntity.setType(allianceCreateForm.getIsPersonal());
+        //创建盟的人在这个盟里的默认角色
+        roleEntity.setType(1);
         roleEntity.save();
 
         AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal());
@@ -122,8 +124,8 @@ public class AllianceService  implements IAllianceService{
     }
 
     @Override
-    public long getDefaultRoleIdFromAlliance(long allianceId,long userId) {
-        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id",userId).eq("type",1).selectOne("id").getId();
+    public long getDefaultRoleIdFromAlliance(long allianceId) {
+        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id",userService.currentUserId()).eq("type",1).selectOne("id").getId();
         return roleId;
     }
 

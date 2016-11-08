@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AddFileForm;
+import cn.superid.webapp.controller.forms.CalculateSignForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissions;
@@ -19,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,6 +58,22 @@ public class FileController {
         return  SimpleResponse.ok(AliOssDao.generateToken(sb.toString()));
     }
 
+    @ApiOperation(value = "断点续传上传token", response = SimpleResponse.class, notes = "= =")
+    @RequestMapping(value = "/get_video_token", method = RequestMethod.GET)
+    public SimpleResponse getVideoToken(String objectKey,String method) {
+        StringBuffer sb =new StringBuffer("user/");
+        sb.append(userService.currentUserId());
+        return  SimpleResponse.ok(AliOssDao.getVideoUploadSignature(objectKey,method));
+    }
+
+    @RequestMapping(value = "/get_signature", method = RequestMethod.POST)
+    public SimpleResponse getSignature(@RequestBody  CalculateSignForm calculateSignForm) {
+        StringBuffer sb =new StringBuffer("user/");
+        sb.append(userService.currentUserId());
+        return  SimpleResponse.ok(AliOssDao.getVideoUploadSignature(calculateSignForm.getVerb(),calculateSignForm.getContentMD5(),
+                calculateSignForm.getContentType(),calculateSignForm.getCanonicalizedOSSHeaders(),
+                calculateSignForm.getCanonicalizedResource()));
+    }
     @ApiOperation(value = "获取事务文件上传token", response = SimpleResponse.class, notes = "格式正确而且没有被注册")
 //    @RequiredPermissions(affair = AffairPermissions.UPLOAD_FILE)
     @RequestMapping(value = "/get_file_token", method = RequestMethod.GET)

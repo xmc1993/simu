@@ -83,6 +83,8 @@ public interface IAffairService  {
      */
     public boolean modifyAffairInfo(long allianceId,long affairId,int attribute,Object value) throws Exception;
 
+    public boolean modifyAffairInfo(long allianceId,long affairId,Integer publicType,String affairName,String description) throws Exception;
+
     /**
      *
      * @param allianceId

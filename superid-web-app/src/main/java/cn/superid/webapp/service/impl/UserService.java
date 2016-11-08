@@ -12,6 +12,7 @@ import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.UserPrivateInfoEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
@@ -100,7 +101,7 @@ public class UserService implements IUserService {
             }else{
                 //此处因为要分是注册还是其他获取验证码方式,所以要先看看数据库里有咩有该账号
                 //因为注册是要传区号过来,并且数据库没有该条数据,所以token不需要处理
-                //其他获取方式不需要区号,所以要自己去数据库取出区号来然后去发短信
+                //其他获取方式不需要区号,所以要自己去数据库取出区号来加上前端传过来的token然后去发短信
                 UserEntity userEntity = UserEntity.dao.eq("mobile",token).selectOne("countryCode");
                 String countryCode;
                 if(userEntity != null){
@@ -276,7 +277,41 @@ public class UserService implements IUserService {
         }
 
         ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
-        resultUserInfo.copyPropertiesFrom(userBaseInfo);
+        UserEntity userEntity = UserEntity.dao.findById(userId);
+        UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
+        resultUserInfo.setNikeNames(userEntity.getNickNames());
+        resultUserInfo.setAvatar(userEntity.getAvatar());
+        resultUserInfo.setSuperId(userEntity.getSuperid());
+        resultUserInfo.setIsAuthenticated(userEntity.getIsAuthenticated());
+        resultUserInfo.setGender(userEntity.getGender());
+        resultUserInfo.setAddress(userEntity.getAddress());
+
+        //TODO 盟和角色没搞
+
+        if(userPrivateInfoEntity.isPersonalTags()){
+            //TODO 标签还没弄
+        }
+
+        if(userPrivateInfoEntity.isActualName()){
+            resultUserInfo.setUsername(userEntity.getUsername());
+        }
+
+        if(userPrivateInfoEntity.isIdentityCard()){
+            resultUserInfo.setIdCard(userEntity.getIdCard());
+        }
+
+        if(userPrivateInfoEntity.isPhoneNumber()){
+            resultUserInfo.setMobile(userEntity.getMobile());
+        }
+
+        if(userPrivateInfoEntity.isMail()){
+            resultUserInfo.setEmail(userEntity.getEmail());
+        }
+
+        if(userPrivateInfoEntity.isBirthday()){
+            resultUserInfo.setBirthday(userEntity.getBirthday());
+        }
+        //resultUserInfo.copyPropertiesFrom(userBaseInfo);
         return resultUserInfo;
     }
 }
