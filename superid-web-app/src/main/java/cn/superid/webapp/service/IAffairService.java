@@ -7,6 +7,7 @@ import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IGetPermissions;
+import cn.superid.webapp.service.forms.SimpleRoleForm;
 import org.elasticsearch.index.engine.Engine;
 
 import java.util.List;
@@ -90,6 +91,34 @@ public interface IAffairService  {
      * @return
      */
     public List<AffairEntity> getAllChildAffairs(long allianceId,long affairId,String... params);
+
+    /**
+     *
+     * @param allianceId
+     * @param affairId
+     * @param urls 用逗号隔开的urls
+     * @return
+     */
+    public boolean addCovers(long allianceId, long affairId, String urls);
+
+    /**
+     *
+     * @param allianceId
+     * @param affairId
+     * @param coverId
+     * @return
+     */
+    public boolean setDefaultCover(long allianceId, long affairId, long coverId);
+
+    /**
+     *
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
+    public List<SimpleRoleForm> getAllRoles(long allianceId, long affairId);
+
+
 
 
 }

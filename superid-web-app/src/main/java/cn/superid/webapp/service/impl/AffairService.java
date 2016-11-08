@@ -13,6 +13,7 @@ import cn.superid.webapp.model.cache.AffairMemberCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
+import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.utils.TimeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -311,30 +312,51 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-
-    /*
-    @Override
-    //递归方法找到所有子事务
-    public List<AffairEntity> getAllChildAffairs(List<AffairEntity> result, long allianceId,long affairId){
-        try {
-            List<AffairEntity> temp = getAllDirectChildAffair(allianceId,affairId);
-            if((temp != null)||(temp.size()!=0)){
-                result.addAll(temp);
-                for(AffairEntity affairEntity : temp){
-                    getAllChildAffairs(result,affairEntity.getAllianceId(),affairEntity.getId());
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return result;
-    }
-*/
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId,String... params) {
         String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"-%").selectList(params);
         return result;
+    }
+
+    @Override
+    public boolean addCovers(long allianceId, long affairId, String urls) {
+        String[] urlList = urls.split(",");
+        boolean isFirst = !CoverEntity.dao.eq("affair_id",affairId).partitionId(allianceId).exists();
+        for(int i = 0 ; i < urlList.length ; i++){
+            CoverEntity coverEntity = new CoverEntity();
+            if(i == 0 && isFirst == true){
+                //是第一,则设为默认封面
+                coverEntity.setIsDefault(1);
+            }else{
+                coverEntity.setIsDefault(0);
+            }
+            coverEntity.setAffairId(affairId);
+            coverEntity.setAllianceId(allianceId);
+            coverEntity.setUrl(urlList[i]);
+            coverEntity.save();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setDefaultCover(long allianceId, long affairId, long coverId) {
+        //先找出之前的默认图片,将其设为非默认
+        CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("is_default",1).set("is_default",0);
+        //改变默认值
+        int result = CoverEntity.dao.id(coverId).partitionId(allianceId).set("is_default",1);
+        if(result == 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
+    public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
+        StringBuilder sql = new StringBuilder("select a.role_id , c.username , b.title , a.permissions , b.belong_affair_id , d.name form affair_member a left join role b left join user c left join affair d on a.role_id = b.id and b.user_id = c.id and b.belong_affair_id = d.id where a.state = 1 and a.affair_id = ? ");
+
+        return null;
     }
 
 
