@@ -376,4 +376,20 @@ public class AffairService implements IAffairService {
         return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
     }
 
+    @Override
+    public List<Integer> affairOverview(long allianceId, long affairId) {
+        List<Integer> result = new ArrayList<>();
+        int member = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        int file = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        //TODO:事务这块待确定
+        int task = 0;
+        result.add(member);
+        result.add(file);
+        result.add(announcement);
+        result.add(task);
+
+        return result;
+    }
+
 }

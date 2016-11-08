@@ -123,6 +123,8 @@ public class AliOssDao {
         System.out.println(expireEndTime);
         respMap.put("host",host);
         respMap.put("signature",signature);
+        respMap.put("expireTime",expireEndTime+"");
+        respMap.put("accessId",accessId);
         return respMap;
     }
 
