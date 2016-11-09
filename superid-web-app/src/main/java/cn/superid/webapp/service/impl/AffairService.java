@@ -404,7 +404,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public List<CoverEntity> getCovers(long allianceId, long affairId) {
+public List<CoverEntity> getCovers(long allianceId, long affairId) {
         return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
     }
 
