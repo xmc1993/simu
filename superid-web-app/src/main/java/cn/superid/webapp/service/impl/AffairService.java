@@ -10,10 +10,13 @@ import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.AffairMemberCache;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
+import cn.superid.webapp.service.vo.GetRoleVO;
 import cn.superid.webapp.utils.TimeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -365,11 +368,39 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
-        //TODO:
-        StringBuilder sql = new StringBuilder("select a.role_id , c.username , b.title , a.permissions , b.belong_affair_id , d.name form affair_member a left join role b left join user " +
-                "c left join affair d on a.role_id = b.id and b.user_id = c.id and b.belong_affair_id = d.id where a.state = 1 and a.affair_id = ? ");
+        List<SimpleRoleForm> result = new ArrayList<>();
+        //第一步,查本盟中的affairmember,防止跨库join
+        StringBuilder sql = new StringBuilder("select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
+                "(select af.role_id , af.permissions from affair_member af where af.state = 1 and af.affair_id = ? and af.alliance_id = ? and af.permission_group_id < 4 ) a " +
+                " join (select bf.title , bf.id , bf.belong_affair_id , bf.user_id from role bf where bf.alliance_id = ? ) b " +
+                " join (select df.id , df.name from affair df where df.alliance_id = ? ) d " +
+                " on a.role_id = b.id and b.belong_affair_id = d.id ");
+        ParameterBindings p1 = new ParameterBindings();
+        p1.addIndexBinding(affairId);
+        p1.addIndexBinding(allianceId);
+        p1.addIndexBinding(allianceId);
+        p1.addIndexBinding(allianceId);
 
-        return null;
+        List<GetRoleVO> selfMember = RoleEntity.dao.getSession().findList(GetRoleVO.class, sql.toString(), p1);
+        for(GetRoleVO g : selfMember){
+            UserBaseInfo user = UserBaseInfo.dao.findById(g.getUserId());
+            SimpleRoleForm s = new SimpleRoleForm(g.getRoleId(),user.getUsername(),g.getTitle(),g.getPermissions(),g.getAffairId(),g.getAffairName());
+            result.add(s);
+        }
+
+
+        //第二步,把非本盟的官方加入
+        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(1).neq("alliance_id",allianceId).selectList();
+        for(AffairMemberEntity a : otherMmeber){
+            RoleCache role = RoleCache.dao.findById(a.getRoleId());
+            UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
+            SimpleRoleForm s = new SimpleRoleForm(a.getRoleId(),user.getUsername(),role.getTitle(),a.getPermissions(),-1,"");
+            result.add(s);
+        }
+
+
+
+        return result;
     }
 
     @Override
