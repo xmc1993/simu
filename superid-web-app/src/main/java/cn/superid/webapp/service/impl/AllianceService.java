@@ -50,8 +50,9 @@ public class AllianceService  implements IAllianceService{
     public AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm) {
         AllianceEntity allianceEntity;
         if(allianceCreateForm.getIsPersonal()== IntBoolean.TRUE){
+            allianceCreateForm.setName(allianceCreateForm.getName()+"的事务");
             allianceEntity = new AllianceEntity();
-            allianceEntity.setName(allianceCreateForm.getName()+"的盟");
+            allianceEntity.setName(allianceCreateForm.getName());
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
             allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证身份
             allianceEntity.save();
