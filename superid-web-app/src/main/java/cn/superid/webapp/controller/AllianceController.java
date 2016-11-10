@@ -88,7 +88,10 @@ public class AllianceController {
     @RequiredPermissions(alliance = AlliancePermissions.EditAllianceInfo)
     @RequestMapping(value = "/add_certification", method = RequestMethod.POST)
     public SimpleResponse addCertification(@RequestBody AllianceCertificationForm allianceCertificationForm,long roleId){
-        return SimpleResponse.ok(allianceService.addAllianceCertification(allianceCertificationForm,roleId, GlobalValue.currentAllianceId()).getId());
+        if(allianceService.addAllianceCertification(allianceCertificationForm,roleId, GlobalValue.currentAllianceId())){
+            return SimpleResponse.ok("提交成功,请等待验证");
+        }
+        return SimpleResponse.error("提交失败,您已提交过申请");
     }
 
 
@@ -99,6 +102,10 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.editAllianceCertification(allianceCertificationForm,roleId));
     }
 
-
+    @ApiOperation(value = "获取一个用户在一个盟里的默认角色,返回值为roleId", response =Long.class)
+    @RequestMapping(value = "/default_role_in_alliance",method = RequestMethod.POST)
+    public SimpleResponse getDefaultRoleIdInAlliance(long allianceId){
+        return SimpleResponse.ok(allianceService.getDefaultRoleIdFromAlliance(allianceId));
+    }
 
 }

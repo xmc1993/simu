@@ -20,7 +20,7 @@ public class AffairMemberEntity extends ExecutableModel {
     private long allianceId;
     private long roleId;
     private int state;
-    private String permissions;
+    private String permissions; //事务内的权限
     private Timestamp createTime;
     private Timestamp modifyTime;
     private long permissionGroupId;

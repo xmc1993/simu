@@ -16,11 +16,14 @@ public class ResultUserInfo extends ExecutableModel{
     public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
     private Long id;
     private String superId;
+    private boolean isAuthenticated;
+    private String avatar;
     private int state;
     private String videoUrl;
     private String videoImg;
     private int isVideo;
     private String username;
+    private String nikeNames;
     private Timestamp birthday;
     private int age;
     private String email;
@@ -53,12 +56,28 @@ public class ResultUserInfo extends ExecutableModel{
         this.superId = superId;
     }
 
+    public boolean getIsAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setIsAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
+    }
+
     public int getState() {
         return state;
     }
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getVideoUrl() {
@@ -91,6 +110,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getNikeNames() {
+        return nikeNames;
+    }
+
+    public void setNikeNames(String nikeNames) {
+        this.nikeNames = nikeNames;
     }
 
     public Timestamp getBirthday() {

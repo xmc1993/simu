@@ -22,7 +22,7 @@ public class RoleEntity extends ExecutableModel {
     private long allianceId;
     private long belongAffairId;
     private String title;
-    private String permissions;
+    private String permissions; //盟内权限
     private String allocatePermissions;
     private int type;  //1表示这个用户在这个盟里的默认角色
     private int state;

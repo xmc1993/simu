@@ -66,7 +66,7 @@ public class FriendsService implements IFriendsService{
     @Override
     public boolean acceptFriendApplication(long friendApplicationId, long dealUserId, String dealReason) {
         //检测传过来的dealUserId是否正确或符合该条申请的目标用户
-        FriendsApplicationEntity friendsApplicationEntity = FriendsApplicationEntity.dao.id(friendApplicationId).partitionId(dealUserId).selectOne("toUserId");
+        FriendsApplicationEntity friendsApplicationEntity = FriendsApplicationEntity.dao.id(friendApplicationId).partitionId(dealUserId).selectOne("toUserId","fromUserId");
         if(friendsApplicationEntity == null){
             return false;
         }
@@ -78,7 +78,7 @@ public class FriendsService implements IFriendsService{
         int isUpdate = FriendsApplicationEntity.dao.id(friendApplicationId).partitionId(dealUserId).set("state",1,"dealReason",dealReason);
         if(isUpdate<1)
             return false;
-        long fromUserId = FriendsApplicationEntity.dao.id(friendApplicationId).partitionId(dealUserId).selectOne("fromUserId").getFromUserId();
+        long fromUserId = friendsApplicationEntity.getFromUserId();
 
         FriendsEntity friendsEntity = new FriendsEntity();
         friendsEntity.setState(0);

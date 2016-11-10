@@ -91,8 +91,10 @@ public class CheckFrequencyUtil {
 
     public static void reset(String token){
         ValueAttr cachedValue = cache.get(token);
-        cachedValue.setBegin(new Date());
-        cachedValue.setCount(1);
+        if(cachedValue != null){
+            cachedValue.setBegin(new Date());
+            cachedValue.setCount(1);
+        }
     }
 
     public static int getCounts(String key){
@@ -112,8 +114,7 @@ public class CheckFrequencyUtil {
             calendar.setTime(cachedValue.getBegin());
             calendar.add(Calendar.SECOND, time);
 
-
-            if(calendar.after(date)){//过了规定时间再访问，则重新计数
+            if(calendar.getTime().before(date)){//过了规定时间再访问，则重新计数
                 cachedValue.setCount(1);
                 cachedValue.setBegin(date);
                 return false;
