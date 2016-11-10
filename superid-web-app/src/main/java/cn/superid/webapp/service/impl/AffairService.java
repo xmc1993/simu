@@ -87,6 +87,7 @@ public class AffairService implements IAffairService {
         //this.adjustOrder(parentAffair.getId(),createAffairForm.getNumber(),parentAllianceId);//调整事务顺序
 
         AffairEntity affairEntity=new AffairEntity();
+        affairEntity.setParentId(parentAffairId);
         affairEntity.setCreateRoleId(createAffairForm.getOperationRoleId());
         affairEntity.setState(AffairState.VALID);
         affairEntity.setType(parentAffair.getType());
