@@ -39,13 +39,13 @@ public class AffairController {
     @ApiOperation(value = "添加事务", response = boolean.class, notes = "凡是事务内所有操作都需要affairMemberId;返回新建的事务id")
     @RequiredPermissions(affair = AffairPermissions.CREATE_AFFAIR)
     @RequestMapping(value = "/create_affair", method = RequestMethod.POST)
-    public SimpleResponse createAffair(String name,int index,int publicType,Long affairMemberId){
+    public SimpleResponse createAffair(String name,int publicType,Long affairMemberId){
         CreateAffairForm createAffairForm = new CreateAffairForm();
         createAffairForm.setPublicType(publicType);
         createAffairForm.setOperationRoleId(GlobalValue.currentRoleId());
         createAffairForm.setAffairId(GlobalValue.currentAffairId());
         createAffairForm.setAllianceId(GlobalValue.currentAllianceId());
-        createAffairForm.setNumber(index);
+        //createAffairForm.setNumber(index);
         createAffairForm.setName(name);
         try {
            AffairEntity affairEntity= affairService.createAffair(createAffairForm);
@@ -66,7 +66,7 @@ public class AffairController {
         }
     }
 
-    @ApiOperation(value = "在失效或者移动等对事务的操作之前,检查该事务是否有特殊情况需要处理",response = String.class,notes = "0表示没毛病,1表示有子事务,2表示有交易")
+    @ApiOperation(value = "在失效或者移动等对事务的操作确认之前,比如点击移动按钮,检查该事务是否有特殊情况需要处理",response = String.class,notes = "0表示没毛病,1表示有子事务,2表示有交易")
     @RequestMapping(value = "/generate_affair",method = RequestMethod.POST)
     public SimpleResponse beforeGenerateAffair(long allianceId,long affairId){
         int condition ;
@@ -88,13 +88,20 @@ public class AffairController {
         }
     }
 
-    @ApiOperation(value = "失效一个事务",response = String.class,notes = "拥有权限")
+    @ApiOperation(value = "移动一个事务,确认移动的时候调用",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/move_affair")
+    public SimpleResponse moveAffair(){
+        return null;
+    }
+
+
+    @ApiOperation(value = "失效一个事务,确认失效的时候调用",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair=AffairPermissions.INVALID_AFFAIR)
-    public SimpleResponse disableAffair(Long allianceId,Long affairId) {
+    public SimpleResponse disableAffair(long affairMemberId) {
         boolean success;
         try {
-            success = affairService.disableAffair(allianceId,affairId);
+            success = affairService.disableAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId());
             if(success) return SimpleResponse.ok("yep");
         } catch (Exception e) {
             return SimpleResponse.exception(e);
@@ -160,5 +167,11 @@ public class AffairController {
         return SimpleResponse.ok(affairService.getAllRoles(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
     }
 
+
+    @ApiOperation(value = "获取事务首页必要的信息",response = String.class,notes = "")
+    @RequestMapping(value = "/affair_info",method = RequestMethod.POST)
+    public SimpleResponse getAffairInfo(){
+        return null;
+    }
 
 }
