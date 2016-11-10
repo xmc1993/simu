@@ -279,7 +279,7 @@ public class UserService implements IUserService {
         ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
         UserEntity userEntity = UserEntity.dao.findById(userId);
         UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-        resultUserInfo.setNikeNames(userEntity.getNickNames());
+        resultUserInfo.setNikeNames(userEntity.getNicknames());
         resultUserInfo.setAvatar(userEntity.getAvatar());
         resultUserInfo.setSuperId(userEntity.getSuperid());
         resultUserInfo.setIsAuthenticated(userEntity.getIsAuthenticated());
