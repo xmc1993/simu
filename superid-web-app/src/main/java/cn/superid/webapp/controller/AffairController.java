@@ -90,7 +90,7 @@ public class AffairController {
 
     @ApiOperation(value = "失效一个事务",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)
-    @RequiredPermissions()
+    @RequiredPermissions(affair=AffairPermissions.INVALID_AFFAIR)
     public SimpleResponse disableAffair(Long allianceId,Long affairId) {
         boolean success;
         try {
