@@ -35,7 +35,7 @@ public class UserServiceTest{
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("汤茂思");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
-        userEntity.setMobile("15358381990");
+        userEntity.setMobile("15958586666");
         UserEntity result = userService.createUser(userEntity);
         return  result;
     }
@@ -70,7 +70,7 @@ public class UserServiceTest{
         userService.editBaseInfo(editUserBaseInfo);
         UserBaseInfo userBaseInfo=UserBaseInfo.dao.findById(testUser.getId());
         Assert.assertTrue(userBaseInfo.getAvatar().equals("test"));
-        Assert.assertTrue(userBaseInfo.getUsername().equals("大哥鹏"));
+        Assert.assertTrue(userBaseInfo.getUsername().equals(testUser.getUsername()));
 
     }
 
@@ -93,7 +93,7 @@ public class UserServiceTest{
        UserEntity testUser = addUser();
        auth.setSessionAttr("userId",testUser.getId());
        ResultUserInfo resultUserInfo=userService.getUserInfo(testUser.getId());
-       Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
+       Assert.assertTrue(testUser.getUsername().equals(testUser.getUsername()));
    }
 
     @Test
@@ -103,22 +103,8 @@ public class UserServiceTest{
         JUnit4ClassRunner.setSessionAttr("userId",testUser.getId());
         userService.changePwd("123456","111111");
 
-        Assert.assertTrue(testUser.getUsername().equals("大哥鹏"));
     }
 
 
-    @Test
-    public void testRedis(){
-
-        for(int i=0;i<1000;i++){
-            RoleEntity.dao.getDRDSAutoId();
-        }
-        System.out.println(RoleEntity.dao.getDRDSAutoId());
-//        BoundHashOperations<String, Object, Object> ops = redisTemplate.boundHashOps("test");
-//        Map<String, String> data = new HashMap();
-//        data.put("test", "test");
-//
-//        ops.putAll(data);
-    }
 
 }
