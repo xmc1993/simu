@@ -137,6 +137,12 @@ public interface IAffairService  {
      */
     public List<Integer> affairOverview(long allianceId, long affairId);
 
+    /**
+     * 不用传参,参数为userId,从currentUser中拿
+     * @return
+     */
+    public List<AffairEntity> getAffairTree();
+
 
 
 

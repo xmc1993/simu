@@ -429,4 +429,9 @@ public List<CoverEntity> getCovers(long allianceId, long affairId) {
         return result;
     }
 
+    @Override
+    public List<AffairEntity> getAffairTree() {
+        return null;
+    }
+
 }

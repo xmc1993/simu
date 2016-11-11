@@ -8,7 +8,9 @@ import cn.superid.webapp.utils.TimeUtil;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Created by njuTms on 16/8/31.
@@ -40,6 +42,9 @@ public class AffairEntity extends ExecutableModel {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
+
+    private List<AffairEntity> children;
+
 
     @Id
     @Column(name = "id")
@@ -234,5 +239,14 @@ public class AffairEntity extends ExecutableModel {
 
     public void setShortname(String shortname) {
         this.shortname = shortname;
+    }
+
+    @Transient
+    public List<AffairEntity> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<AffairEntity> children) {
+        this.children = children;
     }
 }
