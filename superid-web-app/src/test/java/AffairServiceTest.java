@@ -1,3 +1,4 @@
+import cn.superid.jpa.util.Expr;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IAffairService;
 import org.junit.Test;
@@ -99,12 +100,34 @@ public class AffairServiceTest {
     }
 
     @Test
+    public void isChildTest(){
+
+        System.out.println(affairService.isChildAffair(1185L,5573L,5572L));
+    }
+    @Test
     public void test(){
+        /*
         //String mobile = "+86 15358381990";
         String mobile = "999912";
         String[] strs = mobile.split("\\s+");
         Pattern pattern = Pattern.compile("^\\d+$");
         Matcher matcher = pattern.matcher(mobile);
         System.out.println(matcher.matches());
+        */
+        StringBuilder sb = new StringBuilder("");
+        List<Expr> exprs = new ArrayList<>();
+        String path = "/1-1-2";
+        int level = 3;
+        Object[] data = new Object[level];
+        Expr expr;
+        for(int i=0;i<level;i++){
+            sb.setLength(0);
+            sb.append(path.substring(0,2*(i+1)));
+            //expr = new Expr("path","=",sb.toString());
+            //exprs.add(expr);
+            data[i] = sb.toString();
+        }
+        List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",data).selectList("id","path");
+        System.out.println();
     }
 }

@@ -47,13 +47,13 @@ public class AffairPermissionRoleType {
     public final static String VISITOR = intToString(visitor);
 
 
-    public final static long OWNER_ID =1L;
-    public final static long ADMINISTRATOR_ID= 2L;
-    public final static long OFFICIAL_ID = 3L;
-    public final static long GUEST_ID = 4L;
-    public final static long VISITOR_ID = 5L;
+    public final static int OWNER_ID =1;
+    public final static int ADMINISTRATOR_ID= 2;
+    public final static int OFFICIAL_ID = 3;
+    public final static int GUEST_ID = 4;
+    public final static int VISITOR_ID = 5;
 
-    public final static HashMap<Long,String> roles= new HashMap<Long,String>(){
+    public final static HashMap<Integer,String> roles= new HashMap<Integer, String>(){
         {
             put(OWNER_ID,OWNER);
             put(ADMINISTRATOR_ID,ADMINISTRATOR);

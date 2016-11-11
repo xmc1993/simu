@@ -19,7 +19,7 @@ public class AffairMemberCache extends ExecutableModel {
     private long allianceId;
     private long roleId;
     private String permissions;
-    private long permissionGroupId;
+    private int permissionLevel;
     private int state;
 
     @Id
@@ -63,12 +63,12 @@ public class AffairMemberCache extends ExecutableModel {
         this.permissions = permissions;
     }
 
-    public long getPermissionGroupId() {
-        return permissionGroupId;
+    public int getPermissionLevel() {
+        return permissionLevel;
     }
 
-    public void setPermissionGroupId(long permissionGroupId) {
-        this.permissionGroupId = permissionGroupId;
+    public void setPermissionLevel(int permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 
     public int getState() {
