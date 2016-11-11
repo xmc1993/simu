@@ -5,9 +5,11 @@ import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IAffairService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AffairMemberController {
     @Autowired
     private IAffairMemberService affairMemberService;
+    @Autowired
+    private IAffairService affairService;
     /*
     @ApiOperation(value = "添加事务成员",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/add_member",method = RequestMethod.POST)
@@ -76,6 +80,18 @@ public class AffairMemberController {
     @ApiOperation(value = "申请加入事务",response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair",method = RequestMethod.POST)
     public SimpleResponse applyForEnterAffair(long allianceId,long affairId,long affairMemberId,String applyReason){
+        //判断是否是自己事务的责任人
+        if(GlobalValue.currentAffairMember().getPermissionLevel() == AffairPermissionRoleType.OWNER_ID){
+            //判断申请事务是不是自己事务的子事务
+            boolean isChild = affairService.isChildAffair(allianceId,affairId,GlobalValue.currentAffairId());
+            if(isChild){
+                //感觉不需要检查是否已经在目标事务中
+                affairMemberService.addMember(allianceId,affairId,GlobalValue.currentRoleId(),AffairPermissionRoleType.OWNER,AffairPermissionRoleType.OWNER_ID);
+                return SimpleResponse.ok("you have joined this affair!");
+            }
+        }
+
+
         int code = affairMemberService.applyForEnterAffair(allianceId,affairId,GlobalValue.currentRoleId(),applyReason);
         switch (code){
             case ResponseCode.OK:
@@ -91,10 +107,11 @@ public class AffairMemberController {
         }
     }
 
+    @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
     @RequestMapping(value = "/invite_to_enter_affair",method = RequestMethod.POST)
-    public SimpleResponse inviteToEnterAffair(long affairMemberId,long beInvitedRoleId,String inviteReason){
+    public SimpleResponse inviteToEnterAffair(long affairMemberId,long beInvitedRoleId,int memberType,String inviteReason){
         int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),
-                GlobalValue.currentRoleId(),GlobalValue.currentRole().getUserId(),beInvitedRoleId,inviteReason);
+                GlobalValue.currentRoleId(),GlobalValue.currentRole().getUserId(),beInvitedRoleId,memberType,inviteReason);
         return SimpleResponse.ok("");
     }
 }

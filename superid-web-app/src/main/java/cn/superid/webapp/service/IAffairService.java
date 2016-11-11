@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface IAffairService  {
 
-    public String getPermissions(String permissions,long permissionGroupId,long affairId) throws Exception;
+    public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception;
 
 
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
@@ -138,12 +138,18 @@ public interface IAffairService  {
     public List<Integer> affairOverview(long allianceId, long affairId);
 
     /**
+     * 判断一个事务是否是另一个的子事务
+     * @param childAffairId
+     * @param parentAffairId
+     * @return
+     */
+    public boolean isChildAffair(long allianceId,long childAffairId, long parentAffairId);
+
+    /**
      * 不用传参,参数为userId,从currentUser中拿
      * @return
      */
     public List<AffairEntity> getAffairTree();
-
-
 
 
 }

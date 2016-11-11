@@ -15,10 +15,10 @@ public interface IAffairMemberService {
      * @param affairId
      * @param roleId
      * @param permissions
-     * @param permissionGroupId
+     * @param permissionLevel
      * @return
      */
-    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId);//type为
+    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,int permissionLevel);//type为
 
     AffairMemberEntity addCreator(long allianceId,long affairId,long roleId);
 
@@ -31,7 +31,7 @@ public interface IAffairMemberService {
      * @return
      * @throws Exception
      */
-    public boolean allocateAffairMemberPermissionGroup(Long allianceId,Long affairId,Long toRoleId, Long permissionGroupId) throws Exception;
+    //public boolean allocateAffairMemberPermissionGroup(Long allianceId,Long affairId,Long toRoleId, Long permissionGroupId) throws Exception;
 
 
     /**
@@ -43,6 +43,7 @@ public interface IAffairMemberService {
      * @return
      * @throws Exception
      */
+
     public boolean modifyAffairMemberPermissions(Long allianceId,Long affairId,Long toRoleId, String permissions) throws Exception;
 
     /**
@@ -91,9 +92,10 @@ public interface IAffairMemberService {
      * @param affairId
      * @param inviteRoleId
      * @param beInvitedRoleId
+     * @param memberType 盟内默认官方,盟外默认客方
      * @return
      */
-    public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,String inviteReason);
+    public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason);
 
 
 }
