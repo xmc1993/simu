@@ -21,6 +21,7 @@ public class AffairMemberApplicationEntity extends ExecutableModel {
     private long id;
     private long roleId;
     private long userId;
+    private String applyReason;
     private long affairId;
     private long allianceId;
     private long dealRoleId;
@@ -55,6 +56,14 @@ public class AffairMemberApplicationEntity extends ExecutableModel {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getApplyReason() {
+        return applyReason;
+    }
+
+    public void setApplyReason(String applyReason) {
+        this.applyReason = applyReason;
     }
 
     @PartitionId

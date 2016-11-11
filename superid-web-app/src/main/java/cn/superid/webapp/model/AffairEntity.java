@@ -24,7 +24,7 @@ public class AffairEntity extends ExecutableModel {
     private long createRoleId;
     private long allianceId;
     private int publicType;
-    private int type;
+    private int type; //原指个人事务还是盟事务
     private int state;
     private int isFree;
     private String path =""; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
@@ -37,7 +37,7 @@ public class AffairEntity extends ExecutableModel {
     private int guestCreateDg;
     private int isVideo;
     private int number; //记录本事务所在位置,即展示顺序,比如拖动事务所在位置到本来位置的上面
-    private int pathIndex; //暂时无效
+    private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
 
