@@ -39,6 +39,7 @@ public class AffairEntity extends ExecutableModel {
     private int number; //记录本事务所在位置,即展示顺序,比如拖动事务所在位置到本来位置的上面
     private int pathIndex; //暂时无效
     private long folderId;
+    private String shortname;
 
     @Id
     @Column(name = "id")
@@ -225,5 +226,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setFolderId(long folderId) {
         this.folderId = folderId;
+    }
+
+    public String getShortname() {
+        return shortname;
+    }
+
+    public void setShortname(String shortname) {
+        this.shortname = shortname;
     }
 }
