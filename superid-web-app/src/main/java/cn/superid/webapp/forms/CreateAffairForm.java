@@ -14,6 +14,8 @@ public class CreateAffairForm {
     private long operationRoleId;
     private int publicType;
     private long allianceId;
+    private String logo;
+    private String description;
 
     public String getName() {
         return name;
@@ -61,5 +63,21 @@ public class CreateAffairForm {
 
     public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
