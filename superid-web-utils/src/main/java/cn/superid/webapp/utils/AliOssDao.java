@@ -101,7 +101,6 @@ public class AliOssDao {
         respMap.put("accessid", accessId);
         respMap.put("expire",expireEndTime+"");
         respMap.put("dir","/"+objectKey);
-        System.out.println(expireEndTime+" "+signature);
         return respMap;
     }
 
@@ -120,7 +119,6 @@ public class AliOssDao {
         canonicalString.append("\n");
         canonicalString.append(header+resource);
         String signature = ServiceSignature.create().computeSignature(accessKey, canonicalString.toString());
-        System.out.println(expireEndTime);
         respMap.put("host",host);
         respMap.put("signature",signature);
         respMap.put("expireTime",expireEndTime+"");
