@@ -107,11 +107,11 @@ public class ConditionalDao<T> extends Dao<T> {
 
 
     public ConditionalDao<T> in(String column, Object[] values){
-       return inOrNotIn(column,values," in ");
+       return inOrNotIn(StringUtil.underscoreName(column),values," in ");
     }
 
     public ConditionalDao<T> notIn(String column, Object[] values){
-        return inOrNotIn(column,values," not in ");
+        return inOrNotIn(StringUtil.underscoreName(column),values," not in ");
     }
 
     public ConditionalDao<T> limit(int limit){

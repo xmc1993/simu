@@ -112,6 +112,17 @@ public class AffairMemberController {
     public SimpleResponse inviteToEnterAffair(long affairMemberId,long beInvitedRoleId,int memberType,String inviteReason){
         int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(),GlobalValue.currentRole().getUserId(),beInvitedRoleId,memberType,inviteReason);
-        return SimpleResponse.ok("");
+        switch (code){
+            case ResponseCode.AffairNotExist:
+                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+            case ResponseCode.MemberIsExistInAffair:
+                return new SimpleResponse(ResponseCode.MemberIsExistInAffair,"this role is in this affair");
+            case ResponseCode.WaitForDeal:
+                return new SimpleResponse(ResponseCode.WaitForDeal,"you have invited this role before,please wait for deal");
+            case ResponseCode.OK:
+                return SimpleResponse.ok("success!");
+            default:
+                return new SimpleResponse(ResponseCode.Error,"invite fail");
+        }
     }
 }
