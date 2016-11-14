@@ -25,7 +25,7 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
     private long beInvitedRoleId;
     private long beInvitedUserId;
     private String dealReason = "";
-    private long permissionGroup;
+    private int permissionLevel;
     private int state = 0; //0等待处理,1同意,2拒绝
     private Timestamp createTime;
     private Timestamp modifyTime;
@@ -97,12 +97,12 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
         this.dealReason = dealReason;
     }
 
-    public long getPermissionGroup() {
-        return permissionGroup;
+    public int getPermissionLevel() {
+        return permissionLevel;
     }
 
-    public void setPermissionGroup(long permissionGroup) {
-        this.permissionGroup = permissionGroup;
+    public void setPermissionLevel(int permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 
     public int getState() {

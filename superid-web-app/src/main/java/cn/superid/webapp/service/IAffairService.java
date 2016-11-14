@@ -1,6 +1,7 @@
 package cn.superid.webapp.service;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
@@ -12,6 +13,7 @@ import cn.superid.webapp.service.forms.SimpleRoleForm;
 import org.elasticsearch.index.engine.Engine;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zp on 2016/7/26.
@@ -135,7 +137,7 @@ public interface IAffairService  {
      * @param affairId
      * @return 0位是member数,1是文件数,2是公告数,3是任务数
      */
-    public List<Integer> affairOverview(long allianceId, long affairId);
+    public Map<String, Object> affairOverview(long allianceId, long affairId);
 
     /**
      * 判断一个事务是否是另一个的子事务
@@ -144,5 +146,14 @@ public interface IAffairService  {
      * @return
      */
     public boolean isChildAffair(long allianceId,long childAffairId, long parentAffairId);
+
+    /**
+     * 不用传参,参数为userId,从currentUser中拿
+     * @return
+     */
+    public List<AffairEntity> getAffairTree();
+
+
+    public AffairInfo getAffairInfo(long allianceId,long affairId);
 
 }

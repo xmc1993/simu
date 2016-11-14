@@ -42,7 +42,7 @@ public class AffairMemberController {
 
     @ApiOperation(value = "同意进入事务申请",response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.GENERATE_PERMISSION_GROUP})
+    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId,long applicationId,String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(),applicationId, GlobalValue.currentRoleId(),dealReason);
@@ -112,6 +112,17 @@ public class AffairMemberController {
     public SimpleResponse inviteToEnterAffair(long affairMemberId,long beInvitedRoleId,int memberType,String inviteReason){
         int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(),GlobalValue.currentRole().getUserId(),beInvitedRoleId,memberType,inviteReason);
-        return SimpleResponse.ok("");
+        switch (code){
+            case ResponseCode.AffairNotExist:
+                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+            case ResponseCode.MemberIsExistInAffair:
+                return new SimpleResponse(ResponseCode.MemberIsExistInAffair,"this role is in this affair");
+            case ResponseCode.WaitForDeal:
+                return new SimpleResponse(ResponseCode.WaitForDeal,"you have invited this role before,please wait for deal");
+            case ResponseCode.OK:
+                return SimpleResponse.ok("success!");
+            default:
+                return new SimpleResponse(ResponseCode.Error,"invite fail");
+        }
     }
 }

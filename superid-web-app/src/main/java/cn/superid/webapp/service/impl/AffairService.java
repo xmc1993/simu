@@ -1,13 +1,16 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.AffairSpecialCondition;
 import cn.superid.webapp.enums.AffairState;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
+import cn.superid.webapp.model.cache.AffairMemberCache;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -15,14 +18,15 @@ import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.GetRoleVO;
+import cn.superid.webapp.utils.TimeUtil;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by zp on 2016/8/8.
@@ -88,7 +92,6 @@ public class AffairService implements IAffairService {
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
-        affairEntity.setNumber(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.save();
 
@@ -120,7 +123,6 @@ public class AffairService implements IAffairService {
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
-        affairEntity.setNumber(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
@@ -243,7 +245,7 @@ public class AffairService implements IAffairService {
 
 
         //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
-        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("number").getNumber()+1;
+        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
         //获取目标事务的层级,加到待移动的所有事务上
         int targetLevel = targetAffair.getLevel();
@@ -254,7 +256,7 @@ public class AffairService implements IAffairService {
         int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
         int offsetLevel = targetLevel-sourceLevel+1;
         //待移动事务本身的parentId,level,number和path
-        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"number",max_number,"path",targetPath+"-"+max_number);
+        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
 
 
         //需要找到的所有子事务
@@ -400,24 +402,23 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-public List<CoverEntity> getCovers(long allianceId, long affairId) {
+    public List<CoverEntity> getCovers(long allianceId, long affairId) {
         return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
     }
 
     @Override
-    public List<Integer> affairOverview(long allianceId, long affairId) {
-        List<Integer> result = new ArrayList<>();
+    public Map<String, Object> affairOverview(long allianceId, long affairId) {
         int member = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         int file = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         //TODO:事务这块待确定
         int task = 0;
-        result.add(member);
-        result.add(file);
-        result.add(announcement);
-        result.add(task);
-
-        return result;
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("member",member);
+        rsMap.put("file", file);
+        rsMap.put("announcement", announcement);
+        rsMap.put("task", task);
+        return rsMap;
     }
 
     @Override
@@ -440,6 +441,54 @@ public List<CoverEntity> getCovers(long allianceId, long affairId) {
         if(parentPath.equals(prefixPath))
             return true;
         return false;
+    }
+
+    @Override
+    public List<AffairEntity> getAffairTree() {
+        //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务(这边未减少读取数据库次数,将其移入内存处理)
+        UserEntity user = userService.getCurrentUser();
+
+        StringBuilder sql = new StringBuilder("select * from affair where alliance_id in (select alliance_id from role where user_id = ? )");
+        ParameterBindings p =new ParameterBindings();
+        p.addIndexBinding(user.getId());
+        List<AffairEntity> affairEntityList = AffairEntity.dao.findList(sql.toString(),p);
+
+
+
+        return null;
+    }
+
+    @Override
+    public AffairInfo getAffairInfo(long allianceId, long affairId) {
+        AffairInfo affairInfo = new AffairInfo();
+
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
+        affairInfo.setDescription(affairEntity.getDescription());
+        affairInfo.setId(affairEntity.getId());
+        affairInfo.setLogoUrl(affairEntity.getLogoUrl());
+        affairInfo.setName(affairEntity.getName());
+        affairInfo.setShortName(affairEntity.getShortname());
+        affairInfo.setPublicType(affairEntity.getPublicType());
+        affairInfo.setIsPersonal(affairEntity.getType());
+        affairInfo.setIsSticked(affairEntity.getIsSticked());
+        //TODO 还没有标签
+        affairInfo.setTags(null);
+        String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
+        affairInfo.setPermissions(permissions);
+
+        String covers = JSON.toJSONString(getCovers(allianceId,affairId));
+        affairInfo.setCovers(covers);
+
+
+        affairInfo.setOverView(JSON.toJSONString(affairOverview(allianceId,affairId)));
+        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
+        if(homepageAffairId == affairId){
+            affairInfo.setHomepage(true);
+        }
+        else{
+            affairInfo.setHomepage(false);
+        }
+        return affairInfo;
     }
 
 }

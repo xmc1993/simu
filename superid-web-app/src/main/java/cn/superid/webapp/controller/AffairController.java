@@ -1,18 +1,16 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
-import cn.superid.webapp.enums.ResponseCode;
+import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
-import cn.superid.webapp.model.AffairMemberApplicationEntity;
-import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.CoverEntity;
+import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.AffairPermissions;
-import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IUserService;
+import com.alibaba.fastjson.JSON;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -90,7 +88,7 @@ public class AffairController {
     }
 
     @ApiOperation(value = "移动一个事务,确认移动的时候调用",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/move_affair")
+    @RequestMapping(value = "/move_affair",method = RequestMethod.POST)
     public SimpleResponse moveAffair(){
         return null;
     }
@@ -152,12 +150,7 @@ public class AffairController {
     @RequestMapping(value = "/overview_affair", method = RequestMethod.POST)
     @RequiredPermissions()
     public SimpleResponse overviewAffair(Long affairMemberId) {
-        List<Integer> result = affairService.affairOverview(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId());
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("member",result.get(0));
-        rsMap.put("file", result.get(1));
-        rsMap.put("announcement", result.get(2));
-        rsMap.put("task", result.get(3));
+        Map<String, Object> rsMap  = affairService.affairOverview(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId());
         return SimpleResponse.ok(rsMap);
     }
 
@@ -169,10 +162,15 @@ public class AffairController {
     }
 
 
-    @ApiOperation(value = "获取事务首页必要的信息",response = String.class,notes = "")
+    @ApiOperation(value = "获取事务首页必要的信息",response = String.class,notes = "publicType事务公开性:0完全公开 1盟内可见 2成员可见")
     @RequestMapping(value = "/affair_info",method = RequestMethod.POST)
-    public SimpleResponse getAffairInfo(){
-        return null;
+    @RequiredPermissions(affair = AffairPermissions.AffairInfo)
+    public SimpleResponse getAffairInfo(long affairMemberId){
+        long allianceId = GlobalValue.currentAllianceId();
+        long affairId = GlobalValue.currentAffairId();
+        AffairInfo affairInfo = affairService.getAffairInfo(allianceId,affairId);
+        return SimpleResponse.ok(affairInfo);
+
     }
 
 }

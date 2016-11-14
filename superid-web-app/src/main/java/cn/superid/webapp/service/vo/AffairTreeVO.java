@@ -1,23 +1,14 @@
-package cn.superid.webapp.model;
+package cn.superid.webapp.service.vo;
 
-import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.jpa.orm.ExecutableModel;
-import cn.superid.webapp.utils.TimeUtil;
+import cn.superid.webapp.model.AffairEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.sql.Timestamp;
-import java.util.List;
 
 /**
- * Created by njuTms on 16/8/31.
+ * Created by jizhenya on 16/11/14.
  */
-@Table(name = "affair")
-public class AffairEntity extends ExecutableModel {
-    public final static ConditionalDao<AffairEntity> dao = new ConditionalDao<>(AffairEntity.class);
+public class AffairTreeVO {
     private long id;
     private long parentId;
     private String superid;
@@ -42,13 +33,10 @@ public class AffairEntity extends ExecutableModel {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
-    private int isSticked;//是否置顶
-
-    private List<AffairEntity> children;
+    private boolean hasRole;
 
 
-    @Id
-    @Column(name = "id")
+
     public long getId() {
         return id;
     }
@@ -63,6 +51,14 @@ public class AffairEntity extends ExecutableModel {
 
     public void setParentId(long parentId) {
         this.parentId = parentId;
+    }
+
+    public String getSuperid() {
+        return superid;
+    }
+
+    public void setSuperid(String superid) {
+        this.superid = superid;
     }
 
     public String getName() {
@@ -97,7 +93,6 @@ public class AffairEntity extends ExecutableModel {
         this.createRoleId = createRoleId;
     }
 
-    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }
@@ -234,28 +229,11 @@ public class AffairEntity extends ExecutableModel {
         this.shortname = shortname;
     }
 
-    public int getIsSticked() {
-        return isSticked;
+    public boolean isHasRole() {
+        return hasRole;
     }
 
-    public void setIsSticked(int isSticked) {
-        this.isSticked = isSticked;
-    }
-
-    @Transient
-    public List<AffairEntity> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<AffairEntity> children) {
-        this.children = children;
-    }
-
-    public String getSuperid() {
-        return superid;
-    }
-
-    public void setSuperid(String superid) {
-        this.superid = superid;
+    public void setHasRole(boolean hasRole) {
+        this.hasRole = hasRole;
     }
 }

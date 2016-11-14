@@ -35,56 +35,63 @@ public class AlliancePermissions {
 
     public final static int AllocatePermission = 6;
 
-    public static String alliancePermissions=null;
-    public static String getAllAlliancePermissions(){
-        if (alliancePermissions!=null){
+    public static String alliancePermissions = null;
+
+    private AlliancePermissions(){
+
+    }
+
+    public static String getAllAlliancePermissions() {
+        if (alliancePermissions != null) {
             return alliancePermissions;
         }
 
-        List<IdNameNode> rs=new ArrayList<>();
-        IdNameNode childNode ;
-        IdNameNode parentNode;
+        synchronized (AlliancePermissions.class) {//避免多次初始化
+            List<IdNameNode> rs = new ArrayList<>();
+            IdNameNode childNode;
+            IdNameNode parentNode;
 
-        parentNode =new IdNameNode(Alliance,"盟信息");
-        rs.add(parentNode);
-        childNode = new IdNameNode(ViewAllianceHomepage,"查看盟主页");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(EditAllianceInfo,"修改盟信息");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(Alliance, "盟信息");
+            rs.add(parentNode);
+            childNode = new IdNameNode(ViewAllianceHomepage, "查看盟主页");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(EditAllianceInfo, "修改盟信息");
+            parentNode.getChilds().add(childNode);
 
-        parentNode =new IdNameNode(Contract,"合同");
-        rs.add(parentNode);
-        childNode = new IdNameNode(SignContract,"签字权限");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ManageContractTemplate,"管理合同模板");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ViewAllContract,"查看所有合同");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(Contract, "合同");
+            rs.add(parentNode);
+            childNode = new IdNameNode(SignContract, "签字权限");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ManageContractTemplate, "管理合同模板");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ViewAllContract, "查看所有合同");
+            parentNode.getChilds().add(childNode);
 
-        parentNode =new IdNameNode(Fund,"资金");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CheckAllFundInfo,"查看所有资金信息");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(Fund, "资金");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CheckAllFundInfo, "查看所有资金信息");
+            parentNode.getChilds().add(childNode);
 
-        parentNode =new IdNameNode(Goods,"资产");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CheckAllGoodsInfo,"查看所有资产信息");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ManageGoodsConvertTemplate,"管理合成模板");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ManageBrands,"管理商标库");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(Goods, "资产");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CheckAllGoodsInfo, "查看所有资产信息");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ManageGoodsConvertTemplate, "管理合成模板");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ManageBrands, "管理商标库");
+            parentNode.getChilds().add(childNode);
 
-        parentNode =new IdNameNode(Role,"角色");
-        rs.add(parentNode);
-        childNode = new IdNameNode(AddAllianceRole,"添加盟成员");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(InvalidAllianceRole,"失效盟成员");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(Role, "角色");
+            rs.add(parentNode);
+            childNode = new IdNameNode(AddAllianceRole, "添加盟成员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(InvalidAllianceRole, "失效盟成员");
+            parentNode.getChilds().add(childNode);
 
-        parentNode =new IdNameNode(AllocatePermission,"分配权限");
-        rs.add(parentNode);
-        alliancePermissions =JSONObject.toJSONString(rs);
+            parentNode = new IdNameNode(AllocatePermission, "分配权限");
+            rs.add(parentNode);
+            alliancePermissions = JSONObject.toJSONString(rs);
+        }
 
         return alliancePermissions;
     }
