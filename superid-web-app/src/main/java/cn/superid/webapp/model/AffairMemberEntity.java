@@ -20,10 +20,11 @@ public class AffairMemberEntity extends ExecutableModel {
     private long allianceId;
     private long roleId;
     private int state;
-    private String permissions;
+    private String permissions; //事务内的权限
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private long permissionGroupId;
+    private int permissionLevel;
+
 
     @Id
     @Column(name = "id")
@@ -93,11 +94,11 @@ public class AffairMemberEntity extends ExecutableModel {
         this.modifyTime = modifyTime;
     }
 
-    public long getPermissionGroupId() {
-        return permissionGroupId;
+    public int getPermissionLevel() {
+        return permissionLevel;
     }
 
-    public void setPermissionGroupId(long permissionGroupId) {
-        this.permissionGroupId = permissionGroupId;
+    public void setPermissionLevel(int permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 }

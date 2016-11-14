@@ -11,10 +11,20 @@ public interface ResponseCode {
      int NotAcceptable =406;
      int CatchException =2500;
      int Error = -1;
+
+     //User
      int NeedVerifyCode = 15;
      int ErrorVerifyCode = 16;
      int ErrorUserNameOrPassword = 17;
      int HasRegistered = 18;
      int InvalidMobileFormat = 19;
      int NotRegistered = 20;
+     int Frequency = -2;
+
+     //Affair
+     int AffairNotExist = 101;
+     int MemberIsExistInAffair = 102;
+     int WaitForDeal = 103;
+     int ApplicationNotExist = 104;
+     int InvitationNotExist = 105;
 }

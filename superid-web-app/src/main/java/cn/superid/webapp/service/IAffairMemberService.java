@@ -9,7 +9,16 @@ import cn.superid.webapp.model.cache.AffairMemberCache;
  * Created by xiaofengxu on 16/9/2.
  */
 public interface IAffairMemberService {
-    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,long permissionGroupId);//type为
+    /**
+     * 在被邀请人接受邀请或者被申请方接受申请的时候调用
+     * @param allianceId
+     * @param affairId
+     * @param roleId
+     * @param permissions
+     * @param permissionLevel
+     * @return
+     */
+    AffairMemberEntity addMember(Long allianceId,Long affairId,Long roleId,String permissions,int permissionLevel);//type为
 
     AffairMemberEntity addCreator(long allianceId,long affairId,long roleId);
 
@@ -22,7 +31,7 @@ public interface IAffairMemberService {
      * @return
      * @throws Exception
      */
-    public boolean allocateAffairMemberPermissionGroup(Long allianceId,Long affairId,Long toRoleId, Long permissionGroupId) throws Exception;
+    //public boolean allocateAffairMemberPermissionGroup(Long allianceId,Long affairId,Long toRoleId, Long permissionGroupId) throws Exception;
 
 
     /**
@@ -34,6 +43,7 @@ public interface IAffairMemberService {
      * @return
      * @throws Exception
      */
+
     public boolean modifyAffairMemberPermissions(Long allianceId,Long affairId,Long toRoleId, String permissions) throws Exception;
 
     /**
@@ -45,12 +55,17 @@ public interface IAffairMemberService {
      */
     public PermissionGroupEntity addPermissionGroup(Long allianceId,Long affairId,String name,String permissions) throws Exception;
 
+
     /**
-     * 通过申请的id找到事务的成员
-     * @param applicationId
+     * 申请加入一个事务
+     * @param allianceId
+     * @param affairId
+     * @param roleId
+     * @param applyReason
      * @return
      */
-    public AffairMemberApplicationEntity findAffairMemberApplicationById(Long affairId, Long applicationId);
+    public int applyForEnterAffair(Long allianceId,Long affairId,Long roleId,String applyReason) ;
+
 
     /**
      * 同意加入事务的申请
@@ -58,9 +73,8 @@ public interface IAffairMemberService {
      * @param dealRoleId
      * @param dealReason
      * @return
-     * @throws Exception
      */
-    public AffairMemberEntity agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+    public int agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason);
 
     /**
      * 拒绝加入事务的申请
@@ -68,9 +82,20 @@ public interface IAffairMemberService {
      * @param dealRoleId
      * @param dealReason
      * @return
-     * @throws Exception
      */
-    public AffairMemberApplicationEntity rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) throws Exception;
+    public int rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) ;
 
-    public String applyForEnterAffair(Long allianceId,Long affairId,Long roleId) throws Exception;
+
+    /**
+     * 邀请别人加入事务,需要判断是盟内还是盟外
+     * @param allianceId
+     * @param affairId
+     * @param inviteRoleId
+     * @param beInvitedRoleId
+     * @param memberType 盟内默认官方,盟外默认客方
+     * @return
+     */
+    public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason);
+
+
 }

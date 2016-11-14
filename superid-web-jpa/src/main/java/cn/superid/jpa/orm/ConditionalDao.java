@@ -43,6 +43,10 @@ public class ConditionalDao<T> extends Dao<T> {
         return and(StringUtil.underscoreName(column),"=",value);
     }
 
+    public ConditionalDao<T> neq(String column, Object value){
+        return and(StringUtil.underscoreName(column),"<>",value);
+    }
+
     public ConditionalDao<T> lk(String colum, Object value){return and(colum," LIKE ",value);}
 
 

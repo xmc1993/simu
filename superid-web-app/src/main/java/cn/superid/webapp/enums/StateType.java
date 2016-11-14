@@ -5,5 +5,6 @@ package cn.superid.webapp.enums;
  */
 public class StateType {
     public static final  int Normal =0;
-    public static final  int Disabled =1;
+    public static final  int NotCertificated =1;
+    public static final int waitCertificated = 2;
 }

@@ -1,7 +1,6 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.enums.AffairSpecialCondition;
@@ -9,14 +8,15 @@ import cn.superid.webapp.enums.AffairState;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
-import cn.superid.webapp.model.cache.AffairMemberCache;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
-import cn.superid.webapp.utils.TimeUtil;
+import cn.superid.webapp.service.forms.SimpleRoleForm;
+import cn.superid.webapp.service.vo.GetRoleVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,32 +39,26 @@ public class AffairService implements IAffairService {
     @Autowired
     private ITaskService taskService;
     @Override
-    public String getPermissions(String permissions,long permissionGroupId,long affairId) throws Exception{
+    public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception{
 
         if(StringUtil.isEmpty(permissions)){
-            if((permissionGroupId>0)||(permissionGroupId<6)){
+            if((permissionLevel>0)||(permissionLevel<6)){
                 Iterator it = AffairPermissionRoleType.roles.keySet().iterator();
                 while(it.hasNext()) {
-                    Long key = (Long)it.next();
-                    if(key.longValue() == permissionGroupId){
+                    Integer key = (Integer) it.next();
+                    if(key.intValue() == permissionLevel){
                         return AffairPermissionRoleType.roles.get(key);
                     }
                 }
             }
-
-            PermissionGroupEntity permissionGroupEntity = PermissionGroupEntity.dao.partitionId(affairId).findById(permissionGroupId);
-            if(permissionGroupEntity == null){
-                throw new Exception("发生了一些未知错误");
-            }
-            return permissionGroupEntity.getPermissions();
-
+            throw new Exception("error permission");
         }
         else{
             return permissions;
         }
     }
 
-    private void JustIndex(long parentId,int index,long allianceId){
+    private void adjustOrder(long parentId,int index,long allianceId){
         AffairEntity.execute(" update affair set number = number +1 where alliance_id = ? and parent_id = ? and number>= ?",new ParameterBindings(allianceId,parentId,index));//调整index顺序
         //TODO 如果redis缓存,需要更新缓存
     }
@@ -72,23 +66,29 @@ public class AffairService implements IAffairService {
     @Override
     @Transactional
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception{
-
-        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getAffairId(),createAffairForm.getAllianceId());
+        long parentAffairId = createAffairForm.getAffairId();
+        long parentAllianceId = createAffairForm.getAllianceId();
+        AffairEntity parentAffair = AffairEntity.dao.findById(parentAffairId,parentAllianceId);
         if(parentAffair==null){
             throw new Exception("parent affair not found ");
         }
+        int count = AffairEntity.dao.eq("parentId",parentAffairId).partitionId(parentAllianceId).count();//已有数目
 
-        int count = AffairEntity.dao.eq("parentId",parentAffair.getId()).partitionId(parentAffair.getAllianceId()).count();//已有数目
+        //this.adjustOrder(parentAffair.getId(),createAffairForm.getNumber(),parentAllianceId);//调整事务顺序
 
         AffairEntity affairEntity=new AffairEntity();
+        affairEntity.setParentId(parentAffairId);
+        affairEntity.setCreateRoleId(createAffairForm.getOperationRoleId());
         affairEntity.setState(AffairState.VALID);
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
+        affairEntity.setShortname(createAffairForm.getLogo());
+        affairEntity.setDescription(createAffairForm.getDescription());
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
-        affairEntity.setNumber(createAffairForm.getNumber());
+        affairEntity.setNumber(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.save();
 
@@ -96,7 +96,6 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId",folderId);
 
-        this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());//调整事务顺序
 
         affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
 
@@ -194,19 +193,20 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean validAffair(long allianceId, long affairId) throws Exception {
+        /*
         int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.VALID);
         if(isUpdate == 0){
             return false;
         }
-
         List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
         long id;
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
             AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.VALID);
         }
-
-        return true;
+        */
+        String basePath = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path").getPath();
+        return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",AffairState.VALID)>0;
     }
 
     @Override
@@ -217,7 +217,7 @@ public class AffairService implements IAffairService {
         }
         //TODO 检测交易表里有没有affairId是本事务的交易,return 2
 
-        return 0;
+        return AffairSpecialCondition.NO_SPECIAL;
     }
 
     private boolean hasPermission(String permissions,int toFindPermission){
@@ -235,7 +235,7 @@ public class AffairService implements IAffairService {
         if(affairMemberEntity == null){
             //TODO 发给所有有权限接受事务的角色通知
         }
-        String permissions = getPermissions(affairMemberEntity.getPermissions(),affairMemberEntity.getPermissionGroupId(),targetAffairId);
+        String permissions = getPermissions(affairMemberEntity.getPermissions(),affairMemberEntity.getPermissionLevel(),targetAffairId);
         boolean hasMovePermission = hasPermission(permissions, AffairPermissions.MOVE_AFFAIR);
         if(!hasMovePermission){
             //TODO 发给所有有权限接受事务的角色通知
@@ -311,31 +311,135 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-
-    /*
     @Override
-    //递归方法找到所有子事务
-    public List<AffairEntity> getAllChildAffairs(List<AffairEntity> result, long allianceId,long affairId){
-        try {
-            List<AffairEntity> temp = getAllDirectChildAffair(allianceId,affairId);
-            if((temp != null)||(temp.size()!=0)){
-                result.addAll(temp);
-                for(AffairEntity affairEntity : temp){
-                    getAllChildAffairs(result,affairEntity.getAllianceId(),affairEntity.getId());
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+    public boolean modifyAffairInfo(long allianceId, long affairId, Integer publicType, String affairName, String description) throws Exception {
+        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
+        if(publicType != null){
+            conditionalDao.set("publicType",publicType);
         }
-        return result;
+        if((affairName != null)||(!affairName.equals(""))){
+            conditionalDao.set("affairName",affairName);
+        }
+        return false;
     }
-*/
+
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId,String... params) {
         String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"-%").selectList(params);
         return result;
     }
+    @Override
+    public boolean addCovers(long allianceId, long affairId, String urls) {
+        String[] urlList = urls.split(",");
+        boolean isFirst = !CoverEntity.dao.eq("affair_id",affairId).partitionId(allianceId).exists();
+        for(int i = 0 ; i < urlList.length ; i++){
+            CoverEntity coverEntity = new CoverEntity();
+            if(i == 0 && isFirst == true){
+                //是第一,则设为默认封面
+                coverEntity.setIsDefault(1);
+            }else{
+                coverEntity.setIsDefault(0);
+            }
+            coverEntity.setAffairId(affairId);
+            coverEntity.setAllianceId(allianceId);
+            coverEntity.setUrl(urlList[i]);
+            coverEntity.save();
+        }
+        return true;
+    }
 
+    @Override
+    public boolean setDefaultCover(long allianceId, long affairId, long coverId) {
+        //先找出之前的默认图片,将其设为非默认
+        CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("is_default",1).set("is_default",0);
+        //改变默认值
+        int result = CoverEntity.dao.id(coverId).partitionId(allianceId).set("is_default",1);
+        if(result == 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
+    public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
+        List<SimpleRoleForm> result = new ArrayList<>();
+        //第一步,查本盟中的affairmember,防止跨库join
+        StringBuilder sql = new StringBuilder("select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
+                "(select af.role_id , af.permissions from affair_member af where af.state = 1 and af.affair_id = ? and af.alliance_id = ? and af.permission_group_id < 4 ) a " +
+                " join (select bf.title , bf.id , bf.belong_affair_id , bf.user_id from role bf where bf.alliance_id = ? ) b " +
+                " join (select df.id , df.name from affair df where df.alliance_id = ? ) d " +
+                " on a.role_id = b.id and b.belong_affair_id = d.id ");
+        ParameterBindings p1 = new ParameterBindings();
+        p1.addIndexBinding(affairId);
+        p1.addIndexBinding(allianceId);
+        p1.addIndexBinding(allianceId);
+        p1.addIndexBinding(allianceId);
+
+        List<GetRoleVO> selfMember = RoleEntity.dao.getSession().findList(GetRoleVO.class, sql.toString(), p1);
+        for(GetRoleVO g : selfMember){
+            UserBaseInfo user = UserBaseInfo.dao.findById(g.getUserId());
+            SimpleRoleForm s = new SimpleRoleForm(g.getRoleId(),user.getUsername(),g.getTitle(),g.getPermissions(),g.getAffairId(),g.getAffairName());
+            result.add(s);
+        }
+
+
+        //第二步,把非本盟的官方加入
+        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(1).neq("alliance_id",allianceId).selectList();
+        for(AffairMemberEntity a : otherMmeber){
+            RoleCache role = RoleCache.dao.findById(a.getRoleId());
+            UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
+            SimpleRoleForm s = new SimpleRoleForm(a.getRoleId(),user.getUsername(),role.getTitle(),a.getPermissions(),-1,"");
+            result.add(s);
+        }
+
+
+
+        return result;
+    }
+
+    @Override
+public List<CoverEntity> getCovers(long allianceId, long affairId) {
+        return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
+    }
+
+    @Override
+    public List<Integer> affairOverview(long allianceId, long affairId) {
+        List<Integer> result = new ArrayList<>();
+        int member = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        int file = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
+        //TODO:事务这块待确定
+        int task = 0;
+        result.add(member);
+        result.add(file);
+        result.add(announcement);
+        result.add(task);
+
+        return result;
+    }
+
+    @Override
+    public boolean isChildAffair(long allianceId,long childAffairId, long parentAffairId) {
+        AffairEntity childAffairEntity = AffairEntity.dao.id(childAffairId).partitionId(allianceId).selectOne("level","path");
+        if(childAffairEntity == null)
+            return false;
+        //获取待比较两个事务的leve,level相减,然后去掉子事务path的后几位,长度为level之差*2,然后对比两个的path,相同则为父事务
+        AffairEntity parentAffairEntity = AffairEntity.dao.id(parentAffairId).partitionId(allianceId).selectOne("level","path");
+        int parentLevel = parentAffairEntity.getLevel();
+        int childLevel = childAffairEntity.getLevel();
+        //level同级或者比父事务小肯定不是
+        if(childLevel<=parentLevel)
+            return false;
+
+        int levelOffset = childLevel-parentLevel;
+        String parentPath = parentAffairEntity.getPath();
+        String childPath = childAffairEntity.getPath();
+        String prefixPath = childPath.substring(0,childPath.length()-(2*levelOffset));
+        if(parentPath.equals(prefixPath))
+            return true;
+        return false;
+    }
 
 }

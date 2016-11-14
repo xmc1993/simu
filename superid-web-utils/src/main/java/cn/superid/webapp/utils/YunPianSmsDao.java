@@ -31,7 +31,7 @@ public class YunPianSmsDao {
                 return false;
         }
         ResultDO<SendSingleSmsInfo> resultDO= smsOperator.singleSend(mobile,msg);
-        System.out.println(resultDO.getData());
+
         if(resultDO.getData().getCode() == 0){
             return true;
         }

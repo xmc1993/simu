@@ -1,11 +1,13 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.ValidateCode;
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
+import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
@@ -14,6 +16,7 @@ import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.utils.SmsType;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,8 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 
 /**
@@ -267,7 +269,7 @@ public class UserController {
                     CheckFrequencyUtil.reset(token);
                 }else{
                     LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
-                    return SimpleResponse.error("访问过于频繁");
+                    return new SimpleResponse(ResponseCode.Frequency,"访问过于频繁");
                 }
 
 
@@ -278,23 +280,22 @@ public class UserController {
             return SimpleResponse.error("密码错误");
         }
 
-        if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
-            if(userEntity==null){
-                return new SimpleResponse(ResponseCode.NotRegistered,"不存在该用户");
-            }
-            else {
-                if(userService.checkVerifyCode(verifyCode)){
-                    CheckFrequencyUtil.reset(token);
-                }else{
-                    return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
-                }
-            }
-        }
-
 
         String chatToken = TokenUtil.setLoginToken(userEntity.getId());
         userEntity.setChatToken(chatToken);
         auth.authUser(userEntity.getId(), chatToken);
+        CheckFrequencyUtil.reset(token);
+
+        //获取user的所有affairMember
+        StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userEntity.getId());
+        List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
+        Map<Long,Long> members = new HashedMap();
+        for(AffairMemberEntity a : affairMemberEntityList){
+            members.put(a.getAffairId(),a.getId());
+        }
+        userEntity.setMembers(members);
         return SimpleResponse.ok(userEntity);
     }
 

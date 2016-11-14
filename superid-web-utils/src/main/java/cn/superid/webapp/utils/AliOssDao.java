@@ -4,12 +4,15 @@ import com.aliyun.api.AliyunClient;
 import com.aliyun.api.AliyunRequest;
 import com.aliyun.api.AliyunResponse;
 import com.aliyun.api.DefaultAliyunClient;
+import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.common.auth.ServiceSignature;
+import com.aliyun.oss.common.comm.RequestMessage;
 import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.model.MatchMode;
-import com.aliyun.oss.model.ObjectMetadata;
-import com.aliyun.oss.model.PolicyConditions;
-import com.aliyun.oss.model.PutObjectResult;
+import com.aliyun.oss.common.utils.DateUtil;
+import com.aliyun.oss.internal.OSSMultipartOperation;
+import com.aliyun.oss.internal.OSSRequestMessageBuilder;
+import com.aliyun.oss.model.*;
 import com.taobao.api.ApiException;
 import com.taobao.api.ApiRuleException;
 import com.taobao.api.internal.mapping.ApiField;
@@ -19,6 +22,7 @@ import com.taobao.api.internal.util.TaobaoHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -44,7 +48,7 @@ public class AliOssDao {
     private final static OSSClient client = new OSSClient(endpoint, accessId, accessKey);
     public static Map<String, String> generateToken(String dir){
         try {
-            long expireTime = 30;
+            long expireTime = 300;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
             Date expiration = new Date(expireEndTime);
             PolicyConditions policyConds = new PolicyConditions();
@@ -69,6 +73,59 @@ public class AliOssDao {
         }
         return null;
     }
+
+    public static Map<String,String> getVideoUploadSignature(String objectKey,String method){
+        long expireTime = 300;
+        long expireEndTime = System.currentTimeMillis()+expireTime*1000;
+        Map<String, String> respMap = new LinkedHashMap<String, String>();
+        StringBuilder canonicalString = new StringBuilder();
+        canonicalString.append(method + "\n\n\n");
+       // canonicalString.append(DateUtil.formatRfc822Date(new Date()));
+
+        canonicalString.append(expireEndTime);
+        canonicalString.append("\n");
+        switch (method){
+            case "POST":
+                canonicalString.append("/"+bucket+"/"+objectKey+"?uploads");
+                break;
+            case "PUT":
+                canonicalString.append("/"+bucket+"/"+objectKey);
+                break;
+            default:
+                break;
+        }
+
+        String signature = ServiceSignature.create().computeSignature(accessKey, canonicalString.toString());
+        respMap.put("signature",signature);
+        respMap.put("host", host);
+        respMap.put("accessid", accessId);
+        respMap.put("expire",expireEndTime+"");
+        respMap.put("dir","/"+objectKey);
+        return respMap;
+    }
+
+    public static Map<String,String> getVideoUploadSignature(String verb,String md5,String type,String header,String resource){
+        long expireTime = 300;
+        long expireEndTime = System.currentTimeMillis()+expireTime*1000;
+        Map<String, String> respMap = new LinkedHashMap<String, String>();
+        StringBuilder canonicalString = new StringBuilder();
+        md5 = md5 == null ? "" : md5;
+        type = type ==null ? "":type;
+        header = header ==null ? "":header;
+        canonicalString.append(verb + "\n"+md5+"\n"+type+"\n");
+
+        // canonicalString.append(DateUtil.formatRfc822Date(new Date()));
+        canonicalString.append(expireEndTime);
+        canonicalString.append("\n");
+        canonicalString.append(header+resource);
+        String signature = ServiceSignature.create().computeSignature(accessKey, canonicalString.toString());
+        respMap.put("host",host);
+        respMap.put("signature",signature);
+        respMap.put("expireTime",expireEndTime+"");
+        respMap.put("accessId",accessId);
+        return respMap;
+    }
+
 
     public static PutObjectResult uploadFile(File file, String dir){
         OSSClient ossClient = new OSSClient(endpoint,accessId,accessKey);
@@ -432,4 +489,7 @@ public class AliOssDao {
             return this.snapshotJobList;
         }
     }
+
+
+
 }

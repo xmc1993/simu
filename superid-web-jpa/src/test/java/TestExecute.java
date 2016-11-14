@@ -37,8 +37,6 @@ public class TestExecute extends TestCase {
         user.setName("zp");
         user.setAge(18);
         user.save();
-        System.out.println("a");
-
         Assert.assertTrue(User.dao.findById(user.getId()) != null);
         return user;
     }
@@ -67,10 +65,9 @@ public class TestExecute extends TestCase {
         Assert.assertTrue(list != null);
     }
 
-    @Test
     public void testFindOne() {
         testSave();
-        User user = User.dao.findOne("select * from user where name=?", "zp");
+        User user = User.dao.findOne("select * from user where name=? and age =? limit 1 ", "zp",18);
         Assert.assertTrue(user != null);
     }
 
@@ -82,9 +79,9 @@ public class TestExecute extends TestCase {
 
 
     public void testSelectList() {
-        List<User> users = User.dao.eq("name", "zp").asc("age").selectList();
+        List<User> users = User.dao.eq("name", "zp").asc("age").selectList("id","name");
         Assert.assertTrue(users != null);
-        List<Long> ids =(List<Long>) User.dao.eq("name", "zp").asc("age").selectList(Long.class);
+        List<Long> ids =(List<Long>) User.dao.eq("name", "zp").asc("age").selectList(Long.class,"id");
         Assert.assertTrue(ids != null);
 
     }
@@ -93,7 +90,6 @@ public class TestExecute extends TestCase {
         List<User> users1 = User.dao.or(Expr.eq("name","zp"),Expr.eq("name","xxf")).selectList();
         String[] names ={"zp","xxf"};
         List<User> users2 = User.dao.in("name",names).selectList();
-
         Assert.assertTrue(users1.size()==users2.size());
 
     }
@@ -146,11 +142,9 @@ public class TestExecute extends TestCase {
         User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
         Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
 
-        User.dao.eq("name", "xxf").set(new Expr(" age = age + 1 "));
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 39);
 
         User.dao.eq("name", "xxf").set(" age = age + 1 ", null);
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 40);
+        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 39);
 
     }
 
@@ -160,17 +154,6 @@ public class TestExecute extends TestCase {
     }
 
 
-    public void testTiny() {
-        User user = new User();
-        user.setName("jzy");
-        user.setDetails("The MyBatis SQL mapper framework makes it easier to use a relational database with object-oriented applications. MyBatis couples objects with stored procedures or SQL statements" +
-                " using a XML descriptor or annotations." +
-                " Simplicity is the biggest advantage of the MyBatis" +
-                " data mapper over object relational mapping tools.");
-        user.save();
-        User user1 = User.dao.findTinyById(user.getId());
-        Assert.assertTrue(user1.getDetails() == null);
-    }
 
     public void testCopy() {
         UserAddForm userAddForm = new UserAddForm();
@@ -188,6 +171,8 @@ public class TestExecute extends TestCase {
 
     public void testPagination() {
         Pagination pagination = new Pagination();
+        pagination.setPage(1);
+        pagination.setSize(20);
         List<User> users = User.dao.eq("name", "xxf").selectByPagination(pagination);
         Assert.assertFalse(users.size() > pagination.getTotal());
 
@@ -229,7 +214,6 @@ public class TestExecute extends TestCase {
             e.printStackTrace();
         }
         Assert.assertTrue(Role.dao.findById(role.getId(),user.getId()).getTitle().equals("开发人员"));
-
 
         role.delete();
 
