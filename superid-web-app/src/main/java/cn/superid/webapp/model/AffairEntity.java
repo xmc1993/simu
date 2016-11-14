@@ -42,6 +42,7 @@ public class AffairEntity extends ExecutableModel {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
+    private int isSticked;//是否置顶
 
     private List<AffairEntity> children;
 
@@ -231,6 +232,14 @@ public class AffairEntity extends ExecutableModel {
 
     public void setShortname(String shortname) {
         this.shortname = shortname;
+    }
+
+    public int getIsSticked() {
+        return isSticked;
+    }
+
+    public void setIsSticked(int isSticked) {
+        this.isSticked = isSticked;
     }
 
     @Transient

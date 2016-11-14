@@ -42,7 +42,7 @@ public class AffairMemberController {
 
     @ApiOperation(value = "同意进入事务申请",response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.GENERATE_PERMISSION_GROUP})
+    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId,long applicationId,String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(),applicationId, GlobalValue.currentRoleId(),dealReason);
