@@ -12,17 +12,17 @@ import java.util.List;
 public class AffairPermissions {
     public final static int AFFAIR = 0;
     public final static int CREATE_AFFAIR = 13; //创建事务
-    public final static int MOVE_AFFAIR = 26 ; //移动事务
+    public final static int MOVE_AFFAIR = 26; //移动事务
     public final static int INVALID_AFFAIR = 39; //失效事务
     public final static int ACCEPT_MOVED_AFFAIR = 52; //接收别人移动的事务
 
-    public final static int AffairInfo=1; //事务信息权限
+    public final static int AffairInfo = 1; //事务信息权限
     public final static int CHECK_AFFAIR_HOMEPAGE = 14; //查看事务主页
-    public final static int EDIT_AFFAIR_INFO = 27 ; //修改事务信息
+    public final static int EDIT_AFFAIR_INFO = 27; //修改事务信息
     public final static int TRANSFER_OWNER = 40; //转移负责人
     public final static int SET_ADMINISTRATOR = 53; //设置管理员
 
-    public final static int CHILD_AFFAIR = 2 ; //子事务权限
+    public final static int CHILD_AFFAIR = 2; //子事务权限
     public final static int CREATE_CHILD_AFFAIR = 15; //创建子事务
     public final static int GENERATE_CHILD_AFFAIR_PERMISSION = 28; //分配子事务权限
 
@@ -76,151 +76,159 @@ public class AffairPermissions {
     public final static int CHECK_AFFAIR_FUND = 23; // 查看事务资金
 
     public final static int GOODS = 11; //资产
-    public final static int CHECK_AFFAIR_GOODS =24; // 查看事务资产
+    public final static int CHECK_AFFAIR_GOODS = 24; // 查看事务资产
 
     public static String affairPermissions = null;
 
+    private AffairPermissions(){
+
+    }
 
 
+    public static String getAllAffairPermissions() {
 
-    public static String  getAllAffairPermissions(){
-
-        if(affairPermissions!=null){
+        if (affairPermissions != null) {
             return affairPermissions;
         }
 
-        List<IdNameNode> rs=new ArrayList<>();
-        IdNameNode childNode ;
-        IdNameNode parentNode;
+        synchronized (AffairPermissions.class) {//避免多次初始化
+            if (affairPermissions != null) {
+                return affairPermissions;
+            }
 
-        parentNode =new IdNameNode(AFFAIR,"事务");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CREATE_AFFAIR,"创建事务");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(MOVE_AFFAIR,"移动事务");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(INVALID_AFFAIR,"失效事务");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ACCEPT_MOVED_AFFAIR,"接收其他事务");
-        parentNode.getChilds().add(childNode);
+            List<IdNameNode> rs = new ArrayList<>();
+            IdNameNode childNode;
+            IdNameNode parentNode;
 
-        parentNode =new IdNameNode(AffairInfo,"事务信息");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_AFFAIR_HOMEPAGE,"查看事务主页");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(EDIT_AFFAIR_INFO,"修改事务信息");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(TRANSFER_OWNER,"转移负责人");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(SET_ADMINISTRATOR,"设置管理员");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(AFFAIR, "事务");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CREATE_AFFAIR, "创建事务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(MOVE_AFFAIR, "移动事务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(INVALID_AFFAIR, "失效事务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ACCEPT_MOVED_AFFAIR, "接收其他事务");
+            parentNode.getChilds().add(childNode);
 
-
-        parentNode =new IdNameNode(CHILD_AFFAIR,"子事务");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CREATE_CHILD_AFFAIR,"创建子事务");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(GENERATE_CHILD_AFFAIR_PERMISSION,"分配子事务权限");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(AffairInfo, "事务信息");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_AFFAIR_HOMEPAGE, "查看事务主页");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(EDIT_AFFAIR_INFO, "修改事务信息");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(TRANSFER_OWNER, "转移负责人");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(SET_ADMINISTRATOR, "设置管理员");
+            parentNode.getChilds().add(childNode);
 
 
-        parentNode =new IdNameNode(MEMBER,"成员");
-        rs.add(parentNode);
-        childNode = new IdNameNode(ADD_AFFAIR_MEMBER,"添加事务成员");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(INVALID_AFFAIR_MEMBER,"失效事务成员");
-        parentNode.getChilds().add(childNode);
-
-        parentNode =new IdNameNode(ANNOUNCEMENT,"公告");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_ANNOUNCEMENT,"查看公告");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_ANNOUNCEMENT,"发布公告");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(EDIT_ANNOUNCEMENT,"编辑公告");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(APPLY_ANNOUNCEMENT,"回复公告");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(INVALID_ANNOUNCEMENT,"失效公告");
-        parentNode.getChilds().add(childNode);
-
-        parentNode =new IdNameNode(TASK,"任务");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_TASK_LIST,"查看任务列表");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_TASK,"新建任务");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_TASK_MEMBER,"添加成员");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(REMOVE_TASK_MEMBER,"移除成员");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(EDIT_TASK,"编辑任务信息");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_TASK_CONTENT,"添加任务内容");
-        parentNode.getChilds().add(childNode);
-
-        parentNode =new IdNameNode(FILE,"文件");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_FILE,"查看文件");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(UPLOAD_FILE,"上传文件");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(MOVE_FILE,"移动文件");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(DELETE_FILE,"删除文件");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(DOWNLOAD_FILE,"下载文件");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(UPDATE_FILE_VERSION,"更新文件版本");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(MANAGE_FOLDER,"文件夹管理");
-        parentNode.getChilds().add(childNode);
-
-        parentNode =new IdNameNode(TRADE,"交易");
-        rs.add(parentNode);
-        childNode = new IdNameNode(ADD_TRADE,"发起交易");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(CHECK_TRADE_FLOW,"查看交易流水表");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(CHECK_TRADE_TO_AND_FROM,"查看交易往来表");
-        parentNode.getChilds().add(childNode);
-
-        parentNode =new IdNameNode(CONTRACT,"合同");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_CONTRACT,"查看合同");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_CONTRACT,"创建合同");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(EDIT_CONTRACT,"编辑合同");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(CHILD_AFFAIR, "子事务");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CREATE_CHILD_AFFAIR, "创建子事务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(GENERATE_CHILD_AFFAIR_PERMISSION, "分配子事务权限");
+            parentNode.getChilds().add(childNode);
 
 
-        parentNode =new IdNameNode(PERMISSION_GROUP,"权限组");
-        rs.add(parentNode);
-        childNode = new IdNameNode(GENERATE_PERMISSION_GROUP,"分配权限组");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(ADD_PERMISSION_GROUP,"添加权限组");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(REMOVE_PERMISSION_GROUP,"移除权限组");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(UPDATE_PERMISSION_GROUP,"更新权限组");
-        parentNode.getChilds().add(childNode);
-        childNode = new IdNameNode(SET_DEFAULT_PERMISSION_GROUP,"设置默认权限组");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(MEMBER, "成员");
+            rs.add(parentNode);
+            childNode = new IdNameNode(ADD_AFFAIR_MEMBER, "添加事务成员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(INVALID_AFFAIR_MEMBER, "失效事务成员");
+            parentNode.getChilds().add(childNode);
+
+            parentNode = new IdNameNode(ANNOUNCEMENT, "公告");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_ANNOUNCEMENT, "查看公告");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_ANNOUNCEMENT, "发布公告");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(EDIT_ANNOUNCEMENT, "编辑公告");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(APPLY_ANNOUNCEMENT, "回复公告");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(INVALID_ANNOUNCEMENT, "失效公告");
+            parentNode.getChilds().add(childNode);
+
+            parentNode = new IdNameNode(TASK, "任务");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_TASK_LIST, "查看任务列表");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_TASK, "新建任务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_TASK_MEMBER, "添加成员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(REMOVE_TASK_MEMBER, "移除成员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(EDIT_TASK, "编辑任务信息");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_TASK_CONTENT, "添加任务内容");
+            parentNode.getChilds().add(childNode);
+
+            parentNode = new IdNameNode(FILE, "文件");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_FILE, "查看文件");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(UPLOAD_FILE, "上传文件");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(MOVE_FILE, "移动文件");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(DELETE_FILE, "删除文件");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(DOWNLOAD_FILE, "下载文件");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(UPDATE_FILE_VERSION, "更新文件版本");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(MANAGE_FOLDER, "文件夹管理");
+            parentNode.getChilds().add(childNode);
+
+            parentNode = new IdNameNode(TRADE, "交易");
+            rs.add(parentNode);
+            childNode = new IdNameNode(ADD_TRADE, "发起交易");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_TRADE_FLOW, "查看交易流水表");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_TRADE_TO_AND_FROM, "查看交易往来表");
+            parentNode.getChilds().add(childNode);
+
+            parentNode = new IdNameNode(CONTRACT, "合同");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_CONTRACT, "查看合同");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_CONTRACT, "创建合同");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(EDIT_CONTRACT, "编辑合同");
+            parentNode.getChilds().add(childNode);
 
 
-        parentNode =new IdNameNode(FUND,"资金");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_AFFAIR_FUND,"查看事务资金");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(PERMISSION_GROUP, "权限组");
+            rs.add(parentNode);
+            childNode = new IdNameNode(GENERATE_PERMISSION_GROUP, "分配权限组");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ADD_PERMISSION_GROUP, "添加权限组");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(REMOVE_PERMISSION_GROUP, "移除权限组");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(UPDATE_PERMISSION_GROUP, "更新权限组");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(SET_DEFAULT_PERMISSION_GROUP, "设置默认权限组");
+            parentNode.getChilds().add(childNode);
 
 
-        parentNode =new IdNameNode(GOODS,"资产");
-        rs.add(parentNode);
-        childNode = new IdNameNode(CHECK_AFFAIR_GOODS,"查看事务资产");
-        parentNode.getChilds().add(childNode);
+            parentNode = new IdNameNode(FUND, "资金");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_AFFAIR_FUND, "查看事务资金");
+            parentNode.getChilds().add(childNode);
 
-        affairPermissions = JSONObject.toJSONString(rs);
+
+            parentNode = new IdNameNode(GOODS, "资产");
+            rs.add(parentNode);
+            childNode = new IdNameNode(CHECK_AFFAIR_GOODS, "查看事务资产");
+            parentNode.getChilds().add(childNode);
+
+            affairPermissions = JSONObject.toJSONString(rs);
+        }
 
         return affairPermissions;
     }
