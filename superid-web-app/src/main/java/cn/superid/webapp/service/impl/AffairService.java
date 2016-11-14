@@ -446,6 +446,16 @@ public List<CoverEntity> getCovers(long allianceId, long affairId) {
 
     @Override
     public List<AffairEntity> getAffairTree() {
+        //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务(这边未减少读取数据库次数,将其移入内存处理)
+        UserEntity user = userService.getCurrentUser();
+
+        StringBuilder sql = new StringBuilder("select * from affair where alliance_id in (select alliance_id from role where user_id = ? )");
+        ParameterBindings p =new ParameterBindings();
+        p.addIndexBinding(user.getId());
+        List<AffairEntity> affairEntityList = AffairEntity.dao.findList(sql.toString(),p);
+
+
+
         return null;
     }
 
