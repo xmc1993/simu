@@ -20,10 +20,13 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
     private long id;
     private long affairId;
     private long inviteRoleId;
+    private long inviteUserId;
+    private String inviteReason;
     private long beInvitedRoleId;
+    private long beInvitedUserId;
+    private String dealReason = "";
     private long permissionGroup;
-    private int state = 0;
-    private String reason = "";
+    private int state = 0; //0等待处理,1同意,2拒绝
     private Timestamp createTime;
     private Timestamp modifyTime;
 
@@ -54,12 +57,44 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
         this.inviteRoleId = inviteRoleId;
     }
 
+    public long getInviteUserId() {
+        return inviteUserId;
+    }
+
+    public void setInviteUserId(long inviteUserId) {
+        this.inviteUserId = inviteUserId;
+    }
+
+    public String getInviteReason() {
+        return inviteReason;
+    }
+
+    public void setInviteReason(String inviteReason) {
+        this.inviteReason = inviteReason;
+    }
+
     public long getBeInvitedRoleId() {
         return beInvitedRoleId;
     }
 
     public void setBeInvitedRoleId(long beInvitedRoleId) {
         this.beInvitedRoleId = beInvitedRoleId;
+    }
+
+    public long getBeInvitedUserId() {
+        return beInvitedUserId;
+    }
+
+    public void setBeInvitedUserId(long beInvitedUserId) {
+        this.beInvitedUserId = beInvitedUserId;
+    }
+
+    public String getDealReason() {
+        return dealReason;
+    }
+
+    public void setDealReason(String dealReason) {
+        this.dealReason = dealReason;
     }
 
     public long getPermissionGroup() {
@@ -76,14 +111,6 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
 
     public void setState(int state) {
         this.state = state;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 
     public Timestamp getCreateTime() {

@@ -68,7 +68,7 @@ public class AffairService implements IAffairService {
         }
     }
 
-    private void JustIndex(long parentId,int index,long allianceId){
+    private void adjustOrder(long parentId,int index,long allianceId){
         AffairEntity.execute(" update affair set number = number +1 where alliance_id = ? and parent_id = ? and number>= ?",new ParameterBindings(allianceId,parentId,index));//调整index顺序
         //TODO 如果redis缓存,需要更新缓存
     }
@@ -76,23 +76,29 @@ public class AffairService implements IAffairService {
     @Override
     @Transactional
     public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception{
-
-        AffairEntity parentAffair = AffairEntity.dao.findById(createAffairForm.getAffairId(),createAffairForm.getAllianceId());
+        long parentAffairId = createAffairForm.getAffairId();
+        long parentAllianceId = createAffairForm.getAllianceId();
+        AffairEntity parentAffair = AffairEntity.dao.findById(parentAffairId,parentAllianceId);
         if(parentAffair==null){
             throw new Exception("parent affair not found ");
         }
+        int count = AffairEntity.dao.eq("parentId",parentAffairId).partitionId(parentAllianceId).count();//已有数目
 
-        int count = AffairEntity.dao.eq("parentId",parentAffair.getId()).partitionId(parentAffair.getAllianceId()).count();//已有数目
+        //this.adjustOrder(parentAffair.getId(),createAffairForm.getNumber(),parentAllianceId);//调整事务顺序
 
         AffairEntity affairEntity=new AffairEntity();
+        affairEntity.setParentId(parentAffairId);
+        affairEntity.setCreateRoleId(createAffairForm.getOperationRoleId());
         affairEntity.setState(AffairState.VALID);
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
+        affairEntity.setShortname(createAffairForm.getLogo());
+        affairEntity.setDescription(createAffairForm.getDescription());
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
-        affairEntity.setNumber(createAffairForm.getNumber());
+        affairEntity.setNumber(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.save();
 
@@ -100,7 +106,6 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId",folderId);
 
-        this.JustIndex(parentAffair.getId(),createAffairForm.getNumber(),affairEntity.getAllianceId());//调整事务顺序
 
         affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
 
@@ -221,7 +226,7 @@ public class AffairService implements IAffairService {
         }
         //TODO 检测交易表里有没有affairId是本事务的交易,return 2
 
-        return 0;
+        return AffairSpecialCondition.NO_SPECIAL;
     }
 
     private boolean hasPermission(String permissions,int toFindPermission){

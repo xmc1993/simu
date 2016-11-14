@@ -2,6 +2,7 @@ package cn.superid.webapp.model.cache;
 
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.orm.CacheableDao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -11,7 +12,7 @@ import javax.persistence.Table;
  */
 @Table(name = "affair_member")
 @Cacheable( key = "afm")
-public class AffairMemberCache {
+public class AffairMemberCache extends ExecutableModel {
     public final static CacheableDao<AffairMemberCache> dao = new CacheableDao<>(AffairMemberCache.class);
     private long id;
     private long affairId;
