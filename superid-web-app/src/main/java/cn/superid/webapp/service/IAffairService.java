@@ -10,6 +10,7 @@ import cn.superid.webapp.model.CoverEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.IGetPermissions;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
+import cn.superid.webapp.service.vo.AffairTreeVO;
 import org.elasticsearch.index.engine.Engine;
 
 import java.util.List;
@@ -151,7 +152,7 @@ public interface IAffairService  {
      * 不用传参,参数为userId,从currentUser中拿
      * @return
      */
-    public List<AffairEntity> getAffairTree();
+    public List<AffairTreeVO> getAffairTree();
 
 
     public AffairInfo getAffairInfo(long allianceId,long affairId);
