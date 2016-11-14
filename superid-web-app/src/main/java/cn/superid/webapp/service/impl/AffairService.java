@@ -92,7 +92,6 @@ public class AffairService implements IAffairService {
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
-        affairEntity.setNumber(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.save();
 
@@ -124,7 +123,6 @@ public class AffairService implements IAffairService {
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
-        affairEntity.setNumber(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
@@ -247,7 +245,7 @@ public class AffairService implements IAffairService {
 
 
         //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
-        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("number").getNumber()+1;
+        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
         //获取目标事务的层级,加到待移动的所有事务上
         int targetLevel = targetAffair.getLevel();
@@ -258,7 +256,7 @@ public class AffairService implements IAffairService {
         int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
         int offsetLevel = targetLevel-sourceLevel+1;
         //待移动事务本身的parentId,level,number和path
-        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"number",max_number,"path",targetPath+"-"+max_number);
+        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
 
 
         //需要找到的所有子事务

@@ -20,6 +20,7 @@ public class AffairEntity extends ExecutableModel {
     public final static ConditionalDao<AffairEntity> dao = new ConditionalDao<>(AffairEntity.class);
     private long id;
     private long parentId;
+    private String superid;
     private String name ="";
     private String logoUrl="";
     private String description="";
@@ -38,7 +39,6 @@ public class AffairEntity extends ExecutableModel {
     private int guestVisible;
     private int guestCreateDg;
     private int isVideo;
-    private int number; //记录本事务所在位置,即展示顺序,比如拖动事务所在位置到本来位置的上面
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
@@ -209,14 +209,6 @@ public class AffairEntity extends ExecutableModel {
         this.isVideo = isVideo;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public int getPathIndex() {
         return pathIndex;
     }
@@ -248,5 +240,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setChildren(List<AffairEntity> children) {
         this.children = children;
+    }
+
+    public String getSuperid() {
+        return superid;
+    }
+
+    public void setSuperid(String superid) {
+        this.superid = superid;
     }
 }
