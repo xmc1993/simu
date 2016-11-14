@@ -170,6 +170,7 @@ public class AffairController {
         long affairId = GlobalValue.currentAffairId();
         AffairInfo affairInfo = affairService.getAffairInfo(allianceId,affairId);
         return SimpleResponse.ok(affairInfo);
+
     }
 
 

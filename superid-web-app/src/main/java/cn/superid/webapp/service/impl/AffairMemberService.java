@@ -245,6 +245,11 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberInvitationEntity.setInviteUserId(inviteUserId);
         affairMemberInvitationEntity.setInviteReason(inviteReason);
         affairMemberInvitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        if(memberType==0){
+            affairMemberInvitationEntity.setPermissionLevel(AffairPermissionRoleType.OFFICIAL_ID);
+        }else {
+            affairMemberInvitationEntity.setPermissionLevel(AffairPermissionRoleType.GUEST_ID);
+        }
         affairMemberInvitationEntity.save();
 
         //判断被邀请的是否是本盟成员,如果是则无需同意,直接拉入事务
@@ -262,6 +267,8 @@ public class AffairMemberService implements IAffairMemberService{
             if(isOwnerOfParentAffair(allianceId,beInvitedRoleId,currentAffair.getPath(),currentAffair.getLevel())){
                 //如果是,将权限设置为owner
                 affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OWNER_ID);
+                AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
+                        .set("permissionLevel",AffairPermissionRoleType.OWNER_ID);
             }
             else {
                 //如果不是,根据前端选择的权限类型分配给其官方还是客方
