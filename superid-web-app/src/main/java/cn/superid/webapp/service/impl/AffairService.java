@@ -4,6 +4,7 @@ import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.AffairSpecialCondition;
 import cn.superid.webapp.enums.AffairState;
 import cn.superid.webapp.enums.PublicType;
@@ -19,14 +20,13 @@ import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.GetRoleVO;
 import cn.superid.webapp.utils.TimeUtil;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by zp on 2016/8/8.
@@ -402,24 +402,23 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-public List<CoverEntity> getCovers(long allianceId, long affairId) {
+    public List<CoverEntity> getCovers(long allianceId, long affairId) {
         return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
     }
 
     @Override
-    public List<Integer> affairOverview(long allianceId, long affairId) {
-        List<Integer> result = new ArrayList<>();
+    public Map<String, Object> affairOverview(long allianceId, long affairId) {
         int member = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         int file = FileEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id",affairId).count();
         //TODO:事务这块待确定
         int task = 0;
-        result.add(member);
-        result.add(file);
-        result.add(announcement);
-        result.add(task);
-
-        return result;
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("member",member);
+        rsMap.put("file", file);
+        rsMap.put("announcement", announcement);
+        rsMap.put("task", task);
+        return rsMap;
     }
 
     @Override
@@ -447,6 +446,39 @@ public List<CoverEntity> getCovers(long allianceId, long affairId) {
     @Override
     public List<AffairEntity> getAffairTree() {
         return null;
+    }
+
+    @Override
+    public AffairInfo getAffairInfo(long allianceId, long affairId) {
+        AffairInfo affairInfo = new AffairInfo();
+
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
+        affairInfo.setDescription(affairEntity.getDescription());
+        affairInfo.setId(affairEntity.getId());
+        affairInfo.setLogoUrl(affairEntity.getLogoUrl());
+        affairInfo.setName(affairEntity.getName());
+        affairInfo.setShortName(affairEntity.getShortname());
+        affairInfo.setPublicType(affairEntity.getPublicType());
+        affairInfo.setIsPersonal(affairEntity.getType());
+        affairInfo.setIsSticked(affairEntity.getIsSticked());
+        //TODO 还没有标签
+        affairInfo.setTags(null);
+        String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
+        affairInfo.setPermissions(permissions);
+
+        String covers = JSON.toJSONString(getCovers(allianceId,affairId));
+        affairInfo.setCovers(covers);
+
+
+        affairInfo.setOverView(JSON.toJSONString(affairOverview(allianceId,affairId)));
+        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
+        if(homepageAffairId == affairId){
+            affairInfo.setHomepage(true);
+        }
+        else{
+            affairInfo.setHomepage(false);
+        }
+        return affairInfo;
     }
 
 }

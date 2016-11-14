@@ -15,12 +15,12 @@ public class AffairPermissions {
     public final static int MOVE_AFFAIR = 26; //移动事务
     public final static int INVALID_AFFAIR = 39; //失效事务
     public final static int ACCEPT_MOVED_AFFAIR = 52; //接收别人移动的事务
+    public final static int VALID_AFFAIR = 65; //恢复事务
+    public final static int CHECK_SECRET_AFFAIR = 78; //查看保密事务
 
     public final static int AffairInfo = 1; //事务信息权限
     public final static int CHECK_AFFAIR_HOMEPAGE = 14; //查看事务主页
     public final static int EDIT_AFFAIR_INFO = 27; //修改事务信息
-    public final static int TRANSFER_OWNER = 40; //转移负责人
-    public final static int SET_ADMINISTRATOR = 53; //设置管理员
 
     public final static int CHILD_AFFAIR = 2; //子事务权限
     public final static int CREATE_CHILD_AFFAIR = 15; //创建子事务
@@ -28,7 +28,11 @@ public class AffairPermissions {
 
     public final static int MEMBER = 3; //成员
     public final static int ADD_AFFAIR_MEMBER = 16; // 添加事务成员
-    public final static int INVALID_AFFAIR_MEMBER = 29; // 失效事务成员
+    public final static int REMOVE_AFFAIR_MEMBER = 29; // 移除事务成员
+    public final static int TRANSFER_OWNER = 42; //转移负责人
+    public final static int SET_ADMINISTRATOR = 55; //设置管理员
+    public final static int CHECK_AFFAIR_MEMBER = 68; //查看事务成员
+    public final static int ALLOCATE_PERMISSION = 81; //分配权限
 
     public final static int ANNOUNCEMENT = 4; //公告
     public final static int CHECK_ANNOUNCEMENT = 17;//查看公告
@@ -65,13 +69,14 @@ public class AffairPermissions {
     public final static int EDIT_CONTRACT = 47; //编辑合同
 
 
+/*
     public final static int PERMISSION_GROUP = 9; //权限组
     public final static int GENERATE_PERMISSION_GROUP = 22; // 分配权限组
     public final static int ADD_PERMISSION_GROUP = 35; // 添加权限组
     public final static int REMOVE_PERMISSION_GROUP = 48; // 移除权限组
     public final static int UPDATE_PERMISSION_GROUP = 61; // 更新权限组
     public final static int SET_DEFAULT_PERMISSION_GROUP = 74; // 设置默认权限组
-
+*/
     public final static int FUND = 10; //资金
     public final static int CHECK_AFFAIR_FUND = 23; // 查看事务资金
 
@@ -110,16 +115,20 @@ public class AffairPermissions {
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(ACCEPT_MOVED_AFFAIR, "接收其他事务");
             parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(VALID_AFFAIR, "恢复失效事务");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_AFFAIR_MEMBER, "查看事务成员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_SECRET_AFFAIR, "查看保密事务");
+            parentNode.getChilds().add(childNode);
+
+
 
             parentNode = new IdNameNode(AffairInfo, "事务信息");
             rs.add(parentNode);
             childNode = new IdNameNode(CHECK_AFFAIR_HOMEPAGE, "查看事务主页");
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(EDIT_AFFAIR_INFO, "修改事务信息");
-            parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(TRANSFER_OWNER, "转移负责人");
-            parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(SET_ADMINISTRATOR, "设置管理员");
             parentNode.getChilds().add(childNode);
 
 
@@ -135,8 +144,15 @@ public class AffairPermissions {
             rs.add(parentNode);
             childNode = new IdNameNode(ADD_AFFAIR_MEMBER, "添加事务成员");
             parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(INVALID_AFFAIR_MEMBER, "失效事务成员");
+            childNode = new IdNameNode(REMOVE_AFFAIR_MEMBER, "失效事务成员");
             parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(TRANSFER_OWNER, "转移负责人");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(SET_ADMINISTRATOR, "设置管理员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ALLOCATE_PERMISSION, "分配权限");
+            parentNode.getChilds().add(childNode);
+
 
             parentNode = new IdNameNode(ANNOUNCEMENT, "公告");
             rs.add(parentNode);
@@ -201,7 +217,7 @@ public class AffairPermissions {
             childNode = new IdNameNode(EDIT_CONTRACT, "编辑合同");
             parentNode.getChilds().add(childNode);
 
-
+            /*
             parentNode = new IdNameNode(PERMISSION_GROUP, "权限组");
             rs.add(parentNode);
             childNode = new IdNameNode(GENERATE_PERMISSION_GROUP, "分配权限组");
@@ -214,7 +230,7 @@ public class AffairPermissions {
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(SET_DEFAULT_PERMISSION_GROUP, "设置默认权限组");
             parentNode.getChilds().add(childNode);
-
+            */
 
             parentNode = new IdNameNode(FUND, "资金");
             rs.add(parentNode);
