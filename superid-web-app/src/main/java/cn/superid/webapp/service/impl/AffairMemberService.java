@@ -258,8 +258,26 @@ public class AffairMemberService implements IAffairMemberService{
             affairMemberEntity.setRoleId(beInvitedRoleId);
             affairMemberEntity.setState(0);
             //判断被邀请的角色是不是自己的某个父事务的负责人
-
+            AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path","level");
+            if(isOwnerOfParentAffair(allianceId,beInvitedRoleId,currentAffair.getPath(),currentAffair.getLevel())){
+                //如果是,将权限设置为owner
+                affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OWNER_ID);
+            }
+            else {
+                //如果不是,根据前端选择的权限类型分配给其官方还是客方
+                if(memberType==0){
+                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OFFICIAL_ID);
+                }else {
+                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.GUEST_ID);
+                }
+            }
+            affairMemberEntity.save();
+            //TODO 发送消息通知
             //affairMemberEntity.setPermissions(AffairPermissionRoleType.);
+        }
+        //不是本盟成员
+        else {
+            //TODO 发送消息通知
         }
         return ResponseCode.OK;
     }

@@ -92,7 +92,7 @@ public interface IAffairMemberService {
      * @param affairId
      * @param inviteRoleId
      * @param beInvitedRoleId
-     * @param memberType 盟内默认官方,盟外默认客方
+     * @param memberType 盟内默认官方,盟外默认客方,0表示官方,1表示客方
      * @return
      */
     public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason);
