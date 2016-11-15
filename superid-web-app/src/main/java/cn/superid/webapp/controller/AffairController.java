@@ -108,11 +108,11 @@ public class AffairController {
     @ApiOperation(value = "更新封面",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/update_covers", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse updateCovers(String urls , Long affairMemberId ) {
-        if(urls == null){
-            return SimpleResponse.error("url不能为空");
+    public SimpleResponse updateCovers(String coverList , Long affairMemberId ) {
+        if(coverList == null){
+            return SimpleResponse.error("coverList不能为空");
         }
-        boolean result = affairService.updateCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),urls);
+        boolean result = affairService.updateCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),coverList);
         if(result == false){
             return SimpleResponse.error("添加失败");
         }
