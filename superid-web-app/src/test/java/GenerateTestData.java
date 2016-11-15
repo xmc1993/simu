@@ -23,27 +23,29 @@ public class GenerateTestData {
     private IRoleService roleService;
     @Autowired
     private IAffairMemberService affairMemberService;
+    long affairId = 4305L;
+    long allianceId = 1153L;
 
     @Test
     public  void generateMembers(){
 //        UserEntity test = userService.createUser()
-        long l = 15951819999L;
+        long l = 15951829999L;
         for(int i=0;i<20;i++){
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("大哥 "+i+" 代目");
             userEntity.setPassword(PasswordEncryptor.encode("123456"));
             userEntity.setMobile(String.valueOf(l+i));
             UserEntity result = userService.createUser(userEntity);
-            affairMemberService.addMember(32L,36L,result.getPersonalRoleId(),null, AffairPermissionRoleType.GUEST_ID);
+            affairMemberService.addMember(allianceId,affairId,result.getPersonalRoleId(),null, AffairPermissionRoleType.GUEST_ID);
         }
     }
 
     @Test
     public void generateOfficialMembers(){
-        for(long i=1150;i<1159;i++){
+        for(long i=1190;i<1199;i++){
             UserEntity userEntity =UserEntity.dao.findById(i);
-            RoleEntity roleEntity =roleService.createRole("小弟"+i,32L,userEntity.getId(),36L,null, IntBoolean.FALSE);
-            affairMemberService.addMember(32L,36L,roleEntity.getId(),null, AffairPermissionRoleType.OFFICIAL_ID);
+            RoleEntity roleEntity =roleService.createRole("小弟"+i,allianceId,userEntity.getId(),affairId,null, IntBoolean.FALSE);
+            affairMemberService.addMember(allianceId,affairId,roleEntity.getId(),null, AffairPermissionRoleType.OFFICIAL_ID);
         }
     }
 }
