@@ -105,41 +105,18 @@ public class AffairController {
         return SimpleResponse.error("因为某些奇怪的原因失败了");
     }
 
-    @ApiOperation(value = "添加封面",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/add_covers", method = RequestMethod.POST)
+    @ApiOperation(value = "更新封面",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/update_covers", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse addCovers(String urls , Long affairMemberId ) {
+    public SimpleResponse updateCovers(String urls , Long affairMemberId ) {
         if(urls == null){
             return SimpleResponse.error("url不能为空");
         }
-        boolean result = affairService.addCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),urls);
+        boolean result = affairService.updateCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),urls);
         if(result == false){
             return SimpleResponse.error("添加失败");
         }
-        return SimpleResponse.ok(affairService.getCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
-    }
-
-    @ApiOperation(value = "设置默认封面",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/set_default_cover", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse setDefaultCover(Long coverId , Long affairMemberId ) {
-        if(coverId == null){
-            return SimpleResponse.error("coverId不能为空");
-        }
-        boolean result = affairService.setDefaultCover(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),coverId);
-
-        if(result == false){
-            return SimpleResponse.error("设置失败");
-        }
-        return SimpleResponse.ok(affairService.getCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
-
-    }
-
-    @ApiOperation(value = "查看封面",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/get_covers", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getCovers(Long affairMemberId) {
-        return SimpleResponse.ok(affairService.getCovers(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId()));
+        return SimpleResponse.ok("添加成功");
     }
 
     @ApiOperation(value = "事务概览",response = String.class,notes = "拥有权限")

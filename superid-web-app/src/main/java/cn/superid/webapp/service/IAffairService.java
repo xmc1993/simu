@@ -1,17 +1,10 @@
 package cn.superid.webapp.service;
 
-import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
-import cn.superid.webapp.model.AffairMemberApplicationEntity;
-import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.CoverEntity;
-import cn.superid.webapp.security.AffairPermissions;
-import cn.superid.webapp.security.IGetPermissions;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
-import org.elasticsearch.index.engine.Engine;
 
 import java.util.List;
 import java.util.Map;
@@ -105,16 +98,7 @@ public interface IAffairService  {
      * @param urls 用逗号隔开的urls
      * @return
      */
-    public boolean addCovers(long allianceId, long affairId, String urls);
-
-    /**
-     *
-     * @param allianceId
-     * @param affairId
-     * @param coverId
-     * @return
-     */
-    public boolean setDefaultCover(long allianceId, long affairId, long coverId);
+    public boolean updateCovers(long allianceId, long affairId, String urls);
 
     /**
      *
@@ -124,13 +108,7 @@ public interface IAffairService  {
      */
     public List<SimpleRoleForm> getAllRoles(long allianceId, long affairId);
 
-    /**
-     *
-     * @param allianceId
-     * @param affairId
-     * @return
-     */
-    public List<CoverEntity> getCovers(long allianceId, long affairId);
+
 
     /**
      *
