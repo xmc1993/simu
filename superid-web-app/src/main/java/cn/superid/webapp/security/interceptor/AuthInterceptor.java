@@ -195,7 +195,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
             session.setAttribute("affairMember",affairMemberCache);
             session.setAttribute("role",roleCache);
-            System.out.println(affairService.getPermissions(affairMemberCache.getPermissions(),affairMemberCache.getPermissionGroupId(),affairId));
 
             if(!isPermitted(affairPermissions,affairService.getPermissions(affairMemberCache.getPermissions(),affairMemberCache.getPermissionLevel(),affairId))){
                 return notPermitted;
