@@ -107,8 +107,10 @@ public class AffairController {
 
     @ApiOperation(value = "更新封面",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/update_covers", method = RequestMethod.POST)
-    @RequiredPermissions()
+    @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
     public SimpleResponse updateCovers(String coverList , Long affairMemberId ) {
+        long a = GlobalValue.currentAffairId();
+
         if(coverList == null){
             return SimpleResponse.error("coverList不能为空");
         }
