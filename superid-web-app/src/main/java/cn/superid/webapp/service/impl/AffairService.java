@@ -17,6 +17,7 @@ import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
+import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
 import cn.superid.webapp.utils.TimeUtil;
 
@@ -444,18 +445,73 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public List<AffairEntity> getAffairTree() {
-        //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务(这边未减少读取数据库次数,将其移入内存处理)
+    public List<AffairTreeVO> getAffairTree() {
+        //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-
-        StringBuilder sql = new StringBuilder("select * from affair where alliance_id in (select alliance_id from role where user_id = ? )");
+        StringBuilder sb = new StringBuilder("select a.* , b.id as affairMemberId from " +
+                "(select * from affair where alliance_id in (" +
+                "select alliance_id from role where user_id = ? )) a " +
+                "left join (select id,affair_id from affair_member where role_id in (" +
+                "select id from role where user_id = ? )) b " +
+                "on a.id = b.affair_id ");
         ParameterBindings p =new ParameterBindings();
         p.addIndexBinding(user.getId());
-        List<AffairEntity> affairEntityList = AffairEntity.dao.findList(sql.toString(),p);
+        p.addIndexBinding(user.getId());
+        List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class,sb.toString(),p);
 
+        //把所有affairMemberId为null的事务名
 
+        //第二步,取出所有allianceId;
+        StringBuilder sql = new StringBuilder("select distinct alliance_id from role where user_id = ? ");
+        ParameterBindings pb =new ParameterBindings();
+        pb.addIndexBinding(user.getId());
+        List<Long> ids = AffairEntity.getSession().findList(Long.class,sql.toString(),pb);
+
+        List<AffairTreeVO> result = new ArrayList<>();
+        for(Long id : ids){
+            AffairTreeVO a = createTree(getTreeByAlliance(affairList,id));
+            if(a != null){
+                result.add(a);
+            }
+
+        }
+
+        return result;
+    }
+
+    private List<AffairTreeVO> getTreeByAlliance(List<AffairTreeVO> total , long allianceId){
+        List<AffairTreeVO> result = new ArrayList<>();
+        for(AffairTreeVO a : total){
+            if(a.getAllianceId() == allianceId){
+                result.add(a);
+            }
+        }
+        return result;
+    }
+
+    private AffairTreeVO createTree(List<AffairTreeVO> vos){
+        //第一步,把数组根据path长度排序,把叶节点排在最前面
+        Collections.reverse(vos);
+
+        //第二步,将叶节点加入其父亲节点底下
+        for(int i = 0 ; i < vos.size() ; i++){
+            long parentId = vos.get(i).getParentId();
+            if(parentId != 0){
+                for(int j = i ; j < vos.size() ; j++){
+                    //父节点肯定在子节点后面,所以直接从子节点位置开始查
+                    if(vos.get(j).getId() == parentId){
+                        vos.get(j).getChildren().add(vos.get(i));
+                        break;
+                    }
+                }
+            }else{
+                //当parentId为0时,说明到根节点了
+                return vos.get(i);
+            }
+        }
 
         return null;
+
     }
 
     @Override

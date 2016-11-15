@@ -4,11 +4,14 @@ import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.webapp.model.AffairEntity;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by jizhenya on 16/11/14.
  */
-public class AffairTreeVO {
+public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private long id;
     private long parentId;
     private String superid;
@@ -33,7 +36,10 @@ public class AffairTreeVO {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
-    private boolean hasRole;
+    private long affairMemberId;
+    private int isSticked;//是否置顶
+
+    private List<AffairTreeVO> children = new ArrayList<>();
 
 
 
@@ -229,11 +235,37 @@ public class AffairTreeVO {
         this.shortname = shortname;
     }
 
-    public boolean isHasRole() {
-        return hasRole;
+    public int getIsSticked() {
+        return isSticked;
     }
 
-    public void setHasRole(boolean hasRole) {
-        this.hasRole = hasRole;
+    public void setIsSticked(int isSticked) {
+        this.isSticked = isSticked;
+    }
+
+    public long getAffairMemberId() {
+        return affairMemberId;
+    }
+
+    public void setAffairMemberId(long affairMemberId) {
+        this.affairMemberId = affairMemberId;
+    }
+
+    public List<AffairTreeVO> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<AffairTreeVO> children) {
+        this.children = children;
+    }
+
+    @Override
+    public int compareTo(AffairTreeVO a) {
+        if(this.getPath().length()>a.getPath().length()){
+            return 1;
+        }else if(this.getPath().length()<a.getPath().length()){
+            return -1;
+        }
+        return 0;
     }
 }
