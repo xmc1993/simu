@@ -177,8 +177,11 @@ public class AffairController {
     @ApiOperation(value = "得到事务树",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/get_tree", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse getTree() {
-        return SimpleResponse.ok(affairService.getAffairTree());
+    public SimpleResponse getTree(Long allianceId) {
+        if(allianceId == null){
+            return SimpleResponse.error("allianceId不能为空");
+        }
+        return SimpleResponse.ok(affairService.getAffairTree(allianceId));
     }
 
 }

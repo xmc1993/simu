@@ -287,15 +287,7 @@ public class UserController {
         CheckFrequencyUtil.reset(token);
 
         //获取user的所有affairMember
-        StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(userEntity.getId());
-        List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
-        Map<Long,Long> members = new HashedMap();
-        for(AffairMemberEntity a : affairMemberEntityList){
-            members.put(a.getAffairId(),a.getId());
-        }
-        userEntity.setMembers(members);
+        userEntity.setMembers(userService.getAffairMember());
         return SimpleResponse.ok(userEntity);
     }
 
@@ -377,7 +369,9 @@ public class UserController {
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(Long userId){
         if(userId==null||userId==userService.currentUserId()){
-            return SimpleResponse.ok(userService.getCurrentUser());
+            UserEntity user = userService.getCurrentUser();
+            user.setMembers(userService.getAffairMember());
+            return SimpleResponse.ok(user);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
             return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
@@ -419,5 +413,11 @@ public class UserController {
         else {
             return SimpleResponse.ok("");
         }
+    }
+
+    @ApiOperation(value = "得到该用户所有affairMemberId",response = String.class,notes = "")
+    @RequestMapping(value="/get_affairMember",method = RequestMethod.POST)
+    public SimpleResponse getAffairMember(HttpServletRequest request,HttpServletResponse response) throws Exception{
+        return SimpleResponse.ok(userService.getAffairMember());
     }
 }

@@ -5,6 +5,8 @@ import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.UserEntity;
 
+import java.util.Map;
+
 /**
  * Created by zp on 2016/7/26.
  */
@@ -42,4 +44,6 @@ public interface IUserService {
      boolean changePublicType(int publicType);
 
      ResultUserInfo getUserInfo(long userId);
+
+     public Map<Long,Long> getAffairMember();
 }

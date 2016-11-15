@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.MobileUtil;
@@ -10,6 +11,7 @@ import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
+import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
@@ -19,6 +21,7 @@ import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.*;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zp on 2016/8/1.
@@ -312,6 +317,20 @@ public class UserService implements IUserService {
             resultUserInfo.setBirthday(userEntity.getBirthday());
         }
         //resultUserInfo.copyPropertiesFrom(userBaseInfo);
+        resultUserInfo.setMembers(getAffairMember());
         return resultUserInfo;
+    }
+
+    @Override
+    public Map<Long, Long> getAffairMember() {
+        StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(currentUserId());
+        List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
+        Map<Long,Long> members = new HashedMap();
+        for(AffairMemberEntity a : affairMemberEntityList){
+            members.put(a.getAffairId(),a.getId());
+        }
+        return members;
     }
 }

@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by zp on 2016/8/8.
  */
@@ -135,6 +137,15 @@ public class AllianceService  implements IAllianceService{
     public long getDefaultRoleIdFromAlliance(long allianceId) {
         long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id",userService.currentUserId()).eq("type",1).selectOne("id").getId();
         return roleId;
+    }
+
+    @Override
+    public List<AllianceEntity> getAllianceList() {
+        StringBuilder sb = new StringBuilder("select * from alliance where id in (" +
+                "select alliance_id from role where user_id = ? )");
+        ParameterBindings p =new ParameterBindings();
+        p.addIndexBinding(userService.currentUserId());
+        return AllianceEntity.dao.findList(sb.toString(),p);
     }
 
     private String generateCode(long allianceId){

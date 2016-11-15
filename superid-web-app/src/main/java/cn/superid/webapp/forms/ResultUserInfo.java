@@ -5,7 +5,9 @@ import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.model.AffairEntity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.Map;
 
 /**
  * Created by xiaofengxu on 16/9/6.
@@ -39,6 +41,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String description;//描述
     private double faith;
     private int gender;
+    private Map<Long,Long> members;
 
     public Long getId() {
         return id;
@@ -238,5 +241,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setGender(int gender) {
         this.gender = gender;
+    }
+
+    @Transient
+    public Map<Long, Long> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Map<Long, Long> members) {
+        this.members = members;
     }
 }

@@ -108,4 +108,10 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.getDefaultRoleIdFromAlliance(allianceId));
     }
 
+    @ApiOperation(value = "获取一个用户底下所有盟信息", response =Long.class)
+    @RequestMapping(value = "/alliance_list",method = RequestMethod.POST)
+    public SimpleResponse getAllianceList(){
+        return SimpleResponse.ok(allianceService.getAllianceList());
+    }
+
 }

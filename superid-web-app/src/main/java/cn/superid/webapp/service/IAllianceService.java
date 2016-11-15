@@ -5,6 +5,8 @@ import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AllianceCertificationEntity;
 import cn.superid.webapp.model.AllianceEntity;
 
+import java.util.List;
+
 /**
  * Created by zp on 2016/7/26.
  */
@@ -23,6 +25,8 @@ public interface IAllianceService {
     boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm,long roleId);
 
     public long getDefaultRoleIdFromAlliance(long allianceId);
+
+    public List<AllianceEntity> getAllianceList();
 
 
 }
