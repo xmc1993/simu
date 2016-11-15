@@ -1,7 +1,6 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
@@ -10,7 +9,6 @@ import cn.superid.webapp.enums.AffairState;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
-import cn.superid.webapp.model.cache.AffairMemberCache;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -19,11 +17,10 @@ import cn.superid.webapp.service.*;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
-import cn.superid.webapp.utils.TimeUtil;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +80,7 @@ public class AffairService implements IAffairService {
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setParentId(parentAffairId);
-        affairEntity.setCreateRoleId(createAffairForm.getOperationRoleId());
+        affairEntity.setOwnerRoleId(createAffairForm.getOperationRoleId());
         affairEntity.setState(AffairState.VALID);
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
@@ -509,17 +506,19 @@ public class AffairService implements IAffairService {
         affairInfo.setShortName(affairEntity.getShortname());
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
-        affairInfo.setIsSticked(affairEntity.getIsSticked());
+        affairInfo.setIsSticked(affairEntity.getIsStuck());
         //TODO 还没有标签
         affairInfo.setTags(null);
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
-        affairInfo.setPermissions(permissions);
 
-        String covers = JSON.toJSONString(getCovers(allianceId,affairId));
+
+        affairInfo.setPermissions(permissions.split(","));
+
+        Object covers = JSON.toJSON(getCovers(allianceId,affairId));
         affairInfo.setCovers(covers);
 
 
-        affairInfo.setOverView(JSON.toJSONString(affairOverview(allianceId,affairId)));
+        affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId,affairId)));
         long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
         if(homepageAffairId == affairId){
             affairInfo.setHomepage(true);

@@ -1,5 +1,7 @@
 package cn.superid.webapp.controller.forms;
 
+import cn.superid.webapp.model.CoverEntity;
+
 /**
  * Created by njuTms on 16/11/14.
  */
@@ -13,10 +15,11 @@ public class AffairInfo {
     private int isPersonal;
     private String shortName;
     private int isSticked;
-    private String permissions;
+    private String[] permissions;
 
-    private String covers;
-    private String overView;
+    //private String covers;
+    private Object covers;
+    private Object overView;
 
     private String tags;
     public long getId() {
@@ -75,30 +78,30 @@ public class AffairInfo {
         isHomepage = homepage;
     }
 
-    public String getPermissions() {
+    public String[] getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(String permissions) {
+    public void setPermissions(String[] permissions) {
         this.permissions = permissions;
     }
 
-    public String getCovers() {
+
+    public Object getCovers() {
         return covers;
     }
 
-    public void setCovers(String covers) {
+    public void setCovers(Object covers) {
         this.covers = covers;
     }
 
-    public String getOverView() {
+    public Object getOverView() {
         return overView;
     }
 
-    public void setOverView(String overView) {
+    public void setOverView(Object overView) {
         this.overView = overView;
     }
-
 
     public String getShortName() {
         return shortName;

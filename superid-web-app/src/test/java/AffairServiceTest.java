@@ -116,18 +116,20 @@ public class AffairServiceTest {
         */
         StringBuilder sb = new StringBuilder("");
         List<Expr> exprs = new ArrayList<>();
-        String path = "/1-1-2";
-        int level = 3;
-        Object[] data = new Object[level];
-        Expr expr;
-        for(int i=0;i<level;i++){
-            sb.setLength(0);
-            sb.append(path.substring(0,2*(i+1)));
-            //expr = new Expr("path","=",sb.toString());
-            //exprs.add(expr);
-            data[i] = sb.toString();
+        String path = "/1-1-2-11";
+        int level = 4;
+        Object[] paths = new Object[level];
+        String[] indexs = path.split("-");
+        paths[0] = indexs[0];
+        sb.append(indexs[0]);
+        if(indexs.length>1){
+            for(int i=1;i<level;i++){
+                sb.append("-"+indexs[i]);
+                paths[i] = sb.toString();
+            }
         }
-        List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",data).selectList("id","path");
+
+        List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",paths).selectList("id","path");
         System.out.println();
     }
 }

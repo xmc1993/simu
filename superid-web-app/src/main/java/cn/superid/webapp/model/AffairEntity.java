@@ -3,7 +3,6 @@ package cn.superid.webapp.model;
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
-import cn.superid.webapp.utils.TimeUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -24,7 +23,7 @@ public class AffairEntity extends ExecutableModel {
     private String name ="";
     private String logoUrl="";
     private String description="";
-    private long createRoleId;
+    private long ownerRoleId;
     private long allianceId;
     private int publicType;
     private int type; //原指个人事务还是盟事务
@@ -42,7 +41,7 @@ public class AffairEntity extends ExecutableModel {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortname;
-    private int isSticked;//是否置顶
+    private int isStuck;//是否置顶
 
     private List<AffairEntity> children;
 
@@ -89,12 +88,12 @@ public class AffairEntity extends ExecutableModel {
         this.description = description;
     }
 
-    public long getCreateRoleId() {
-        return createRoleId;
+    public long getOwnerRoleId() {
+        return ownerRoleId;
     }
 
-    public void setCreateRoleId(long createRoleId) {
-        this.createRoleId = createRoleId;
+    public void setOwnerRoleId(long ownerRoleId) {
+        this.ownerRoleId = ownerRoleId;
     }
 
     @PartitionId
@@ -234,12 +233,12 @@ public class AffairEntity extends ExecutableModel {
         this.shortname = shortname;
     }
 
-    public int getIsSticked() {
-        return isSticked;
+    public int getIsStuck() {
+        return isStuck;
     }
 
-    public void setIsSticked(int isSticked) {
-        this.isSticked = isSticked;
+    public void setIsStuck(int isStuck) {
+        this.isStuck = isStuck;
     }
 
     @Transient

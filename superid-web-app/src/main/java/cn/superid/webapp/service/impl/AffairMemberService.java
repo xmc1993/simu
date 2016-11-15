@@ -266,12 +266,16 @@ public class AffairMemberService implements IAffairMemberService{
     private boolean isOwnerOfParentAffair(long allianceId,long roleId,String path,int level){
         StringBuilder sb = new StringBuilder("");
         Object[] paths = new Object[level];
-
-        for(int i=0;i<level;i++){
-            sb.setLength(0);
-            sb.append(path.substring(0,2*(i+1)));
-            paths[i] = sb.toString();
+        String[] indexs = path.split("-");
+        paths[0] = indexs[0];
+        sb.append(indexs[0]);
+        if(indexs.length>1){
+            for(int i=1;i<level;i++){
+                sb.append("-"+indexs[i]);
+                paths[i] = sb.toString();
+            }
         }
+
         //获取该事务的所有父事务id
         List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList("id");
         Object[] parentAffairIds = new Object[affairEntities.size()];

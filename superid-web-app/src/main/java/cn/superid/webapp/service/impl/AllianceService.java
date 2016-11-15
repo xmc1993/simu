@@ -16,6 +16,7 @@ import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setName(allianceCreateForm.getName());
             allianceEntity.setIsPersonal(IntBoolean.TRUE);
             allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证身份
+            allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
             allianceEntity.save();
 
         }else{
@@ -64,6 +66,7 @@ public class AllianceService  implements IAllianceService{
             allianceEntity.setName(allianceCreateForm.getName());
             allianceEntity.setIsPersonal(IntBoolean.FALSE);
             allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证
+            allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
             allianceEntity.save();//在验证成功之后再创建角色
 
         }
