@@ -40,89 +40,89 @@ public class AffairMemberController {
     }
 */
 
-    @ApiOperation(value = "同意进入事务申请",response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
+    @ApiOperation(value = "同意进入事务申请", response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
-    public SimpleResponse agreeAffairMemberApplication(long affairMemberId,long applicationId,String dealReason) {
+    public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
-                GlobalValue.currentAffairId(),applicationId, GlobalValue.currentRoleId(),dealReason);
-        switch (code){
+                GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("you agree this application");
             case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
             case ResponseCode.ApplicationNotExist:
-                return new SimpleResponse(ResponseCode.ApplicationNotExist,"this application is not exist");
+                return new SimpleResponse(ResponseCode.ApplicationNotExist, "this application is not exist");
             default:
                 return SimpleResponse.error("fail");
         }
 
     }
 
-    @ApiOperation(value = "拒绝进入事务申请",response = String.class, notes = "拥有权限")
+    @ApiOperation(value = "拒绝进入事务申请", response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse disagreeAffairMemberApplication(long affairMemberId,long applicationId,String dealReason) {
+    public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
-                GlobalValue.currentAffairId(),applicationId, GlobalValue.currentRoleId(),dealReason);
-        switch (code){
+                GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("you reject this application");
             case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
             case ResponseCode.ApplicationNotExist:
-                return new SimpleResponse(ResponseCode.ApplicationNotExist,"this application is not exist");
+                return new SimpleResponse(ResponseCode.ApplicationNotExist, "this application is not exist");
             default:
                 return SimpleResponse.error("fail");
         }
     }
 
-    @ApiOperation(value = "申请加入事务",response = String.class, notes = "")
-    @RequestMapping(value = "/apply_for_enter_affair",method = RequestMethod.POST)
-    public SimpleResponse applyForEnterAffair(long allianceId,long affairId,long affairMemberId,String applyReason){
+    @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
+    @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
+    public SimpleResponse applyForEnterAffair(long allianceId, long affairId, String applyReason) {
         //判断是否是自己事务的责任人
-        if(GlobalValue.currentAffairMember().getPermissionLevel() == AffairPermissionRoleType.OWNER_ID){
+        if (GlobalValue.currentAffairMember().getPermissionLevel() == AffairPermissionRoleType.OWNER_ID) {
             //判断申请事务是不是自己事务的子事务
-            boolean isChild = affairService.isChildAffair(allianceId,affairId,GlobalValue.currentAffairId());
-            if(isChild){
+            boolean isChild = affairService.isChildAffair(allianceId, affairId, GlobalValue.currentAffairId());
+            if (isChild) {
                 //感觉不需要检查是否已经在目标事务中
-                affairMemberService.addMember(allianceId,affairId,GlobalValue.currentRoleId(),AffairPermissionRoleType.OWNER,AffairPermissionRoleType.OWNER_ID);
+                affairMemberService.addMember(allianceId, affairId, GlobalValue.currentRoleId(), AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
                 return SimpleResponse.ok("you have joined this affair!");
             }
         }
 
 
-        int code = affairMemberService.applyForEnterAffair(allianceId,affairId,GlobalValue.currentRoleId(),applyReason);
-        switch (code){
+        int code = affairMemberService.applyForEnterAffair(allianceId, affairId, GlobalValue.currentRoleId(), applyReason);
+        switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("success! please wait for deal");
             case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
             case ResponseCode.MemberIsExistInAffair:
-                return new SimpleResponse(ResponseCode.MemberIsExistInAffair,"you are in this affair");
+                return new SimpleResponse(ResponseCode.MemberIsExistInAffair, "you are in this affair");
             case ResponseCode.WaitForDeal:
-                return new SimpleResponse(ResponseCode.WaitForDeal,"you have applied before,please wait for deal");
+                return new SimpleResponse(ResponseCode.WaitForDeal, "you have applied before,please wait for deal");
             default:
-                return new SimpleResponse(ResponseCode.Error,"apply fail");
+                return new SimpleResponse(ResponseCode.Error, "apply fail");
         }
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
-    @RequestMapping(value = "/invite_to_enter_affair",method = RequestMethod.POST)
-    public SimpleResponse inviteToEnterAffair(long affairMemberId,long beInvitedRoleId,int memberType,String inviteReason){
-        int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),
-                GlobalValue.currentRoleId(),GlobalValue.currentRole().getUserId(),beInvitedRoleId,memberType,inviteReason);
-        switch (code){
+    @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
+    public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
+        int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
+                GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
+        switch (code) {
             case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist,"this affair is not exist");
+                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
             case ResponseCode.MemberIsExistInAffair:
-                return new SimpleResponse(ResponseCode.MemberIsExistInAffair,"this role is in this affair");
+                return new SimpleResponse(ResponseCode.MemberIsExistInAffair, "this role is in this affair");
             case ResponseCode.WaitForDeal:
-                return new SimpleResponse(ResponseCode.WaitForDeal,"you have invited this role before,please wait for deal");
+                return new SimpleResponse(ResponseCode.WaitForDeal, "you have invited this role before,please wait for deal");
             case ResponseCode.OK:
                 return SimpleResponse.ok("success!");
             default:
-                return new SimpleResponse(ResponseCode.Error,"invite fail");
+                return new SimpleResponse(ResponseCode.Error, "invite fail");
         }
     }
 }
