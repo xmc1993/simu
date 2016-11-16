@@ -329,38 +329,13 @@ public class AffairService implements IAffairService {
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"-%").selectList(params);
         return result;
     }
+
     @Override
-    public boolean addCovers(long allianceId, long affairId, String urls) {
-        String[] urlList = urls.split(",");
-        boolean isFirst = !CoverEntity.dao.eq("affair_id",affairId).partitionId(allianceId).exists();
-        for(int i = 0 ; i < urlList.length ; i++){
-            CoverEntity coverEntity = new CoverEntity();
-            if(i == 0 && isFirst == true){
-                //是第一,则设为默认封面
-                coverEntity.setIsDefault(1);
-            }else{
-                coverEntity.setIsDefault(0);
-            }
-            coverEntity.setAffairId(affairId);
-            coverEntity.setAllianceId(allianceId);
-            coverEntity.setUrl(urlList[i]);
-            coverEntity.save();
-        }
+    public boolean updateCovers(long allianceId, long affairId, String urls) {
+        AffairEntity.dao.id(affairId).partitionId(allianceId).set("covers",urls);
         return true;
     }
 
-    @Override
-    public boolean setDefaultCover(long allianceId, long affairId, long coverId) {
-        //先找出之前的默认图片,将其设为非默认
-        CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("is_default",1).set("is_default",0);
-        //改变默认值
-        int result = CoverEntity.dao.id(coverId).partitionId(allianceId).set("is_default",1);
-        if(result == 0){
-            return false;
-        }else{
-            return true;
-        }
-    }
 
     @Override
     public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
@@ -397,11 +372,6 @@ public class AffairService implements IAffairService {
 
 
         return result;
-    }
-
-    @Override
-    public List<CoverEntity> getCovers(long allianceId, long affairId) {
-        return CoverEntity.dao.partitionId(allianceId).eq("affair_id",affairId).selectList();
     }
 
     @Override
@@ -447,10 +417,12 @@ public class AffairService implements IAffairService {
         UserEntity user = userService.getCurrentUser();
         StringBuilder sb = new StringBuilder("select a.* , b.id as affairMemberId from " +
                 "(select * from affair where alliance_id = ? ) a " +
-                "left join (select id,affair_id from affair_member where role_id in (" +
-                "select id from role where user_id = ? )) b " +
+                "left join (select id,affair_id from affair_member where alliance_id = ? role_id in (" +
+                "select id from role where alliance_id = ? and user_id = ? )) b " +
                 "on a.id = b.affair_id ");
         ParameterBindings p =new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(user.getId());
         List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class,sb.toString(),p);
@@ -514,8 +486,7 @@ public class AffairService implements IAffairService {
 
         affairInfo.setPermissions(permissions.split(","));
 
-        Object covers = JSON.toJSON(getCovers(allianceId,affairId));
-        affairInfo.setCovers(covers);
+        affairInfo.setCovers(affairEntity.getCovers());
 
 
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId,affairId)));

@@ -1,7 +1,5 @@
 package cn.superid.webapp.controller.forms;
 
-import cn.superid.webapp.model.CoverEntity;
-
 /**
  * Created by njuTms on 16/11/14.
  */
@@ -17,8 +15,7 @@ public class AffairInfo {
     private int isSticked;
     private String[] permissions;
 
-    //private String covers;
-    private Object covers;
+    private String covers;
     private Object overView;
 
     private String tags;
@@ -87,11 +84,11 @@ public class AffairInfo {
     }
 
 
-    public Object getCovers() {
+    public String getCovers() {
         return covers;
     }
 
-    public void setCovers(Object covers) {
+    public void setCovers(String covers) {
         this.covers = covers;
     }
 

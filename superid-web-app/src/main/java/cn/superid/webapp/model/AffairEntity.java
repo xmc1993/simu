@@ -42,6 +42,7 @@ public class AffairEntity extends ExecutableModel {
     private long folderId;
     private String shortname;
     private int isStuck;//是否置顶
+    private String covers;
 
     private List<AffairEntity> children;
 
@@ -256,5 +257,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setSuperid(String superid) {
         this.superid = superid;
+    }
+
+    public String getCovers() {
+        return covers;
+    }
+
+    public void setCovers(String covers) {
+        this.covers = covers;
     }
 }

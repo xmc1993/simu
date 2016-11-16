@@ -1,11 +1,7 @@
 package cn.superid.webapp.service.vo;
 
-import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.webapp.model.AffairEntity;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
