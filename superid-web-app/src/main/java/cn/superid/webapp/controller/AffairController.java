@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AffairInfo;
+import cn.superid.webapp.enums.AffairMoveState;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
@@ -157,6 +158,37 @@ public class AffairController {
             return SimpleResponse.error("allianceId不能为空");
         }
         return SimpleResponse.ok(affairService.getAffairTree(allianceId));
+    }
+
+    @ApiOperation(value = "移动事务",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/move_affair", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.MOVE_AFFAIR)
+    public SimpleResponse moveAffair(Long affairMemberId , Long targetAffairId ) {
+        if(affairMemberId == null || targetAffairId == null){
+            return SimpleResponse.error("参数不能为空");
+        }
+        try{
+            return SimpleResponse.ok(affairService.moveAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),targetAffairId,GlobalValue.currentRoleId()));
+        }catch(Exception e){
+            return SimpleResponse.ok(AffairMoveState.FAIL);
+        }
+
+    }
+
+    @ApiOperation(value = "处理移动事务",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/handle_move_affair", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.ACCEPT_MOVED_AFFAIR)
+    public SimpleResponse handleMoveAffair(Long allianceId , Long affairId , Long targetAffairId , Long roleId , boolean isAgree) {
+        if(allianceId == null || targetAffairId == null || affairId == null || roleId == null){
+            return SimpleResponse.error("参数不能为空");
+        }
+        boolean result = affairService.handleMoveAffair(allianceId,affairId,targetAffairId,roleId,isAgree);
+        if(result == false){
+            return SimpleResponse.ok(false);
+        }else{
+            return SimpleResponse.ok(true);
+        }
+
     }
 
 }

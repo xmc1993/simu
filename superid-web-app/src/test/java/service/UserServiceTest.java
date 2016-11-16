@@ -44,6 +44,7 @@ public class UserServiceTest{
     public void testFindUser(){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("大哥鹏");
+        userEntity.setId(1888L);
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
         userEntity.setMobile("15951818231");
         userEntity.save();
