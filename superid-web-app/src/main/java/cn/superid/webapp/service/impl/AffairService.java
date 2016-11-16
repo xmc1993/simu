@@ -265,37 +265,6 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-    public boolean modifyAffairInfo(long allianceId, long affairId, int attribute, Object value) throws Exception {
-        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
-        switch (attribute){
-            case 1:
-                if(value instanceof Integer){
-                    conditionalDao.set("publicType",value);
-                }
-                else
-                    throw new Exception("类型错误,应该为int类型");
-                break;
-            case 2:
-                if(value instanceof String){
-                    conditionalDao.set("name",value);
-                }
-                else
-                    throw new Exception("类型错误,应该为String类型");
-                break;
-            case 3:
-                if(value instanceof String){
-                    conditionalDao.set("description",value);
-                }
-                else
-                    throw new Exception("类型错误,应该为String类型");
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
-
-
     public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
         AffairInfoForm affairInfoForm = new AffairInfoForm(modifyAffairInfoForm.getName(),

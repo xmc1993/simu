@@ -5,6 +5,7 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
+import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -286,9 +287,12 @@ public class UserController {
         auth.authUser(userEntity.getId(), chatToken);
         CheckFrequencyUtil.reset(token);
 
+
+        LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
+        userEntity.copyPropertiesTo(loginUserInfoVO);
         //获取user的所有affairMember
-        userEntity.setMembers(userService.getAffairMember());
-        return SimpleResponse.ok(userEntity);
+        loginUserInfoVO.setMembers(userService.getAffairMember());
+        return SimpleResponse.ok(loginUserInfoVO);
     }
 
     @ApiOperation(value = "验证用户名", response = boolean.class, notes = "验证用户名,表单传参")
@@ -368,13 +372,17 @@ public class UserController {
     @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(Long userId){
+        LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
         if(userId==null||userId==userService.currentUserId()){
             UserEntity user = userService.getCurrentUser();
-            user.setMembers(userService.getAffairMember());
-            return SimpleResponse.ok(user);
+
+            user.copyPropertiesTo(loginUserInfoVO);
+            loginUserInfoVO.setMembers(userService.getAffairMember());
+            return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
-            return new SimpleResponse(resultUserInfo==null?-1:0,resultUserInfo);
+            resultUserInfo.copyPropertiesTo(loginUserInfoVO);
+            return new SimpleResponse(loginUserInfoVO==null?-1:0,loginUserInfoVO);
         }
     }
 
