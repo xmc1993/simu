@@ -322,14 +322,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Map<Long, Long> getAffairMember() {
+    public Map<Long, Map<Long , Long>> getAffairMember() {
         StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
-        Map<Long,Long> members = new HashedMap();
+        Map<Long,Map<Long , Long>> members = new HashedMap();
         for(AffairMemberEntity a : affairMemberEntityList){
-            members.put(a.getAffairId(),a.getId());
+            Map<Long,Long> user = new HashedMap();
+            user.put(a.getAffairId(),a.getRoleId());
+            members.put(a.getId(),user);
         }
         return members;
     }

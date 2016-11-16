@@ -41,7 +41,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String description;//描述
     private double faith;
     private int gender;
-    private Map<Long,Long> members;
+    private Map<Long, Map<Long , Long>> members;
 
     public Long getId() {
         return id;
@@ -244,11 +244,11 @@ public class ResultUserInfo extends ExecutableModel{
     }
 
     @Transient
-    public Map<Long, Long> getMembers() {
+    public Map<Long, Map<Long , Long>> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<Long, Long> members) {
+    public void setMembers(Map<Long, Map<Long , Long>> members) {
         this.members = members;
     }
 }
