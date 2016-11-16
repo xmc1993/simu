@@ -80,7 +80,7 @@ public interface IAffairService  {
      * @param modifyAffairInfoForm
      * @return
      */
-    public boolean modifyAffairInfo(long allianceId, long affairId,Integer isHomepage, ModifyAffairInfoForm modifyAffairInfoForm);
+    public boolean modifyAffairInfo(long allianceId, long affairId, ModifyAffairInfoForm modifyAffairInfoForm);
 
     /**
      *
