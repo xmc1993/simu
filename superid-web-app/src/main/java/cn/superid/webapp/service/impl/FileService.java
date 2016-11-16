@@ -1,18 +1,30 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.controller.forms.AddFileForm;
+import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.FileEntity;
 import cn.superid.webapp.model.FolderEntity;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IFileService;
+import cn.superid.webapp.service.IPictureService;
 import cn.superid.webapp.service.IRoleService;
+import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.FileForm;
 import cn.superid.webapp.service.forms.FolderForm;
+import cn.superid.webapp.utils.AliOssDao;
 import cn.superid.webapp.utils.TimeUtil;
+import com.aliyun.oss.model.PutObjectResult;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +36,12 @@ public class FileService implements IFileService{
 
     @Autowired
     private IRoleService roleService;
+
+    @Autowired
+    private IPictureService pictureService;
+
+    @Autowired
+    private IUserService userService;
 
     @Override
     public List<FolderForm> getChildFolder(long folderId,long affairId , long allianceId) {
@@ -255,6 +273,49 @@ public class FileService implements IFileService{
 
 
         return id;
+    }
+
+    @Override
+    public String condense_picture(CommonsMultipartFile picture , String big , String small , long allianceId) {
+        //记录地址
+        String url = "http://simucy.oss-cn-shanghai.aliyuncs.com/";
+
+
+        try{
+            //将第一个文件读出来,上传到oss
+            File f1 = File.createTempFile("temp", picture.getContentType().replace("/","."));
+            picture.transferTo(f1);
+            AliOssDao.uploadFile(f1,big);
+
+            //读原图宽高比
+            BufferedImage sourceImage = ImageIO.read(new FileInputStream(f1));
+            double width = sourceImage.getWidth();
+            double height = sourceImage.getHeight();
+
+            ByteArrayOutputStream resizeOut = new ByteArrayOutputStream();
+
+            //以宽100来固定宽高比缩放
+            pictureService.resizePicture(new FileInputStream(f1),resizeOut,100,(int)(100*height/width));
+            File tmpFile = File.createTempFile("tem2", picture.getContentType().replace("/","."));
+            IOUtils.write(resizeOut.toByteArray(), new FileOutputStream(tmpFile));
+            PutObjectResult p = AliOssDao.uploadFile(tmpFile,small);
+            if(p != null){
+                //存储url
+                url = url + small;
+                if(allianceId != 0){
+                    AllianceEntity.dao.id(allianceId).set("logoUrl",url);
+                }else{
+                    UserBaseInfo.dao.id(userService.currentUserId()).set("avatar",url);
+                }
+
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+            return "fail";
+        }
+
+        return url;
     }
 
     @Override

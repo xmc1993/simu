@@ -109,7 +109,7 @@ public class AllianceController {
     }
 
     @ApiOperation(value = "获取一个用户底下所有盟信息", response =Long.class)
-    @RequestMapping(value = "/alliance_list",method = RequestMethod.POST)
+    @RequestMapping(value = "/alliance_list",method = RequestMethod.GET)
     public SimpleResponse getAllianceList(){
         return SimpleResponse.ok(allianceService.getAllianceList());
     }
