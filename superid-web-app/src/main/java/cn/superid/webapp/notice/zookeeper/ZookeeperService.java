@@ -47,7 +47,7 @@ public class ZookeeperService {
                 }
             });
 
-            //设置监控
+            //设置节点监控
             try {
                 watchConnectorNodeChange();
             } catch (KeeperException e) {
@@ -82,6 +82,7 @@ public class ZookeeperService {
         synchronized (connectorsInfo) {
             if (connectorsInfo != null) return connectorsInfo;
             if (zooKeeper == null) init();
+
             String result = new String(zooKeeper.getData(CONNECTOR_URL, false, null));
             connectorsInfo = new JSONObject(result);
             return connectorsInfo;
