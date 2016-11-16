@@ -67,7 +67,9 @@ public interface IAffairService  {
      */
     public int canGenerateAffair(long allianceId,long affairId) throws Exception;
 
-    public boolean moveAffair(long allianceId,long affairId,long targetAffairId,long roleId) throws Exception;
+    public int moveAffair(long allianceId,long affairId,long targetAffairId,long roleId) throws Exception;
+
+    public boolean handleMoveAffair(long allianceId,long affairId,long targetAffairId,long roleId,boolean isAgree);
 
     /**
      *
@@ -134,5 +136,7 @@ public interface IAffairService  {
 
 
     public AffairInfo getAffairInfo(long allianceId,long affairId);
+
+
 
 }
