@@ -92,7 +92,7 @@ public class AffairServiceTest {
     public void modifyAffairInfoTest(){
         try {
             //affairService.modifyAffairInfo(43L,1070L,1,1);
-            affairService.modifyAffairInfo(43L,1070L,2,"peng");
+            //affairService.modifyAffairInfo(43L,1070L,2,"peng");
         }catch (Exception e){
             e.printStackTrace();
         }
