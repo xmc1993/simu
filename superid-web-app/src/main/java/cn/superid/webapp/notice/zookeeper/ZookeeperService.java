@@ -117,7 +117,7 @@ public class ZookeeperService {
      * @throws KeeperException
      * @throws InterruptedException
      */
-    private static void watchNodeChange(final String nodeUrl) throws KeeperException, InterruptedException {
+    private static void watchNodeChange(final String nodeUrl, final UpdateNodeDataService service) throws KeeperException, InterruptedException {
         zooKeeper.exists(nodeUrl, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
@@ -125,12 +125,8 @@ public class ZookeeperService {
                 Event.EventType type = event.getType();
                 if (type == Event.EventType.NodeDataChanged) {
                     try {
-                        updateConnectorsInfo();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (KeeperException e) {
+                        service.updateCache();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.println("节点" + nodeUrl + "的数据发生变化");
@@ -145,7 +141,12 @@ public class ZookeeperService {
      * @throws InterruptedException
      */
     private static void watchConnectorNodeChange() throws KeeperException, InterruptedException {
-        watchNodeChange(CONNECTOR_URL);
+        watchNodeChange(CONNECTOR_URL, new UpdateNodeDataService() {
+            @Override
+            public void updateCache() throws Exception {
+                updateConnectorsInfo();
+            }
+        });
     }
 
 //
