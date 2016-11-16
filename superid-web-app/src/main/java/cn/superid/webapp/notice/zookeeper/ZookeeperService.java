@@ -30,8 +30,7 @@ public class ZookeeperService {
 //        }
 //    }
 
-    private ZookeeperService() throws IOException, KeeperException, InterruptedException {
-        init();
+    private ZookeeperService() {
     }
 
 
@@ -73,6 +72,7 @@ public class ZookeeperService {
 
     /**
      * 更新connector信息
+     *
      * @throws InterruptedException
      * @throws IOException
      * @throws KeeperException
@@ -138,6 +138,7 @@ public class ZookeeperService {
 
     /**
      * 监控Connectors节点的变化
+     *
      * @throws KeeperException
      * @throws InterruptedException
      */
