@@ -405,7 +405,7 @@ public class AffairService implements IAffairService {
         UserEntity user = userService.getCurrentUser();
         StringBuilder sb = new StringBuilder("select a.* , b.id as affairMemberId from " +
                 "(select * from affair where alliance_id = ? ) a " +
-                "left join (select id,affair_id from affair_member where alliance_id = ? role_id in (" +
+                "left join (select id,affair_id from affair_member where alliance_id = ? and role_id in (" +
                 "select id from role where alliance_id = ? and user_id = ? )) b " +
                 "on a.id = b.affair_id ");
         ParameterBindings p =new ParameterBindings();
