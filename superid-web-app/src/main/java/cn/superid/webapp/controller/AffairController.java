@@ -161,7 +161,7 @@ public class AffairController {
 
 
     @ApiOperation(value = "得到事务树",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/get_tree", method = RequestMethod.POST)
+    @RequestMapping(value = "/get_tree", method = RequestMethod.GET)
     @RequiredPermissions()
     public SimpleResponse getTree(Long allianceId) {
         if(allianceId == null){
