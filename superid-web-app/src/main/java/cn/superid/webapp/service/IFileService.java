@@ -3,6 +3,7 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.controller.forms.AddFileForm;
 import cn.superid.webapp.service.forms.FileForm;
 import cn.superid.webapp.service.forms.FolderForm;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.List;
 
@@ -30,6 +31,8 @@ public interface IFileService {
     public long createRootFolderForTask(long allianceId,long affairId,long taskId,long folderId,long role);
 
     public long createRootFolderForAffair(long allianceId,long affairId,long role);
+
+    public String condense_picture(CommonsMultipartFile picture,String big , String small , long allianceId);
 
 
 }
