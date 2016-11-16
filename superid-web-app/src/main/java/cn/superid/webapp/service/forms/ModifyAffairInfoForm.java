@@ -7,6 +7,8 @@ public class ModifyAffairInfoForm {
     private String name;
     private Integer publicType;
     private String description;
+    private String shortName;
+    private String logoUrls;
 
     public String getName() {
         return name;
@@ -30,5 +32,21 @@ public class ModifyAffairInfoForm {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public String getLogoUrls() {
+        return logoUrls;
+    }
+
+    public void setLogoUrls(String logoUrls) {
+        this.logoUrls = logoUrls;
     }
 }

@@ -40,7 +40,7 @@ public class AffairEntity extends ExecutableModel {
     private int isVideo;
     private int pathIndex; //创建顺序
     private long folderId;
-    private String shortname;
+    private String shortName;
     private int isStuck;//是否置顶
     private String covers;
 
@@ -226,12 +226,12 @@ public class AffairEntity extends ExecutableModel {
         this.folderId = folderId;
     }
 
-    public String getShortname() {
-        return shortname;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     public int getIsStuck() {

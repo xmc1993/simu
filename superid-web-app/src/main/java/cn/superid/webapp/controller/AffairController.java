@@ -86,7 +86,7 @@ public class AffairController {
     }
 
     //TODO 标签待定
-    @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class)
+    @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class,notes = "form里包含需要修改的信息,没有修改的字段可以不传,字段名和返回的affairInfo字段名一致")
     @RequestMapping(value = "/modify_affair_info",method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
     public SimpleResponse modifyAffairInfo(long affairMemberId,Integer isHomepage,ModifyAffairInfoForm modifyAffairInfoForm){

@@ -22,7 +22,6 @@ import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,7 +87,7 @@ public class AffairService implements IAffairService {
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
-        affairEntity.setShortname(createAffairForm.getLogo());
+        affairEntity.setShortName(createAffairForm.getLogo());
         affairEntity.setDescription(createAffairForm.getDescription());
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
@@ -458,10 +457,10 @@ public class AffairService implements IAffairService {
         affairInfo.setId(affairEntity.getId());
         affairInfo.setLogoUrl(affairEntity.getLogoUrl());
         affairInfo.setName(affairEntity.getName());
-        affairInfo.setShortName(affairEntity.getShortname());
+        affairInfo.setShortName(affairEntity.getShortName());
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
-        affairInfo.setIsSticked(affairEntity.getIsStuck());
+        affairInfo.setIsStuck(affairEntity.getIsStuck());
         //TODO 还没有标签
         affairInfo.setTags(null);
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
@@ -475,10 +474,11 @@ public class AffairService implements IAffairService {
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId,affairId)));
         long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
         if(homepageAffairId == affairId){
-            affairInfo.setHomepage(true);
+            affairInfo.setIsHomepage(true);
         }
         else{
-            affairInfo.setHomepage(false);
+            affairInfo.setIsHomepage(false)
+            ;
         }
         return affairInfo;
     }

@@ -12,7 +12,7 @@ public class AffairInfo {
     private boolean isHomepage;
     private int isPersonal;
     private String shortName;
-    private int isSticked;
+    private int isStuck;
     private String[] permissions;
 
     private String covers;
@@ -67,11 +67,11 @@ public class AffairInfo {
         this.logoUrl = logoUrl;
     }
 
-    public boolean isHomepage() {
+    public boolean getIsHomepage() {
         return isHomepage;
     }
 
-    public void setHomepage(boolean homepage) {
+    public void setIsHomepage(boolean homepage) {
         isHomepage = homepage;
     }
 
@@ -108,12 +108,12 @@ public class AffairInfo {
         this.shortName = shortName;
     }
 
-    public int getIsSticked() {
-        return isSticked;
+    public int getIsStuck() {
+        return isStuck;
     }
 
-    public void setIsSticked(int isSticked) {
-        this.isSticked = isSticked;
+    public void setIsStuck(int isStuck) {
+        this.isStuck = isStuck;
     }
 
     public String getTags() {
