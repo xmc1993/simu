@@ -276,6 +276,7 @@ public class AffairMemberService implements IAffairMemberService{
             }
         }
 
+
         //获取该事务的所有父事务id
         List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList("id");
         Object[] parentAffairIds = new Object[affairEntities.size()];

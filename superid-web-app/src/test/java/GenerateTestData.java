@@ -43,9 +43,10 @@ public class GenerateTestData {
     @Test
     public void generateOfficialMembers(){
         for(long i=1190;i<1199;i++){
-            UserEntity userEntity =UserEntity.dao.findById(i);
-            RoleEntity roleEntity =roleService.createRole("小弟"+i,allianceId,userEntity.getId(),affairId,null, IntBoolean.FALSE);
-            affairMemberService.addMember(allianceId,affairId,roleEntity.getId(),null, AffairPermissionRoleType.OFFICIAL_ID);
+
         }
+        UserEntity userEntity =UserEntity.dao.findById(1888L);
+        RoleEntity roleEntity =roleService.createRole("小弟"+1888L,allianceId,userEntity.getId(),affairId,null, IntBoolean.FALSE);
+        affairMemberService.addMember(allianceId,affairId,roleEntity.getId(),null, AffairPermissionRoleType.OFFICIAL_ID);
     }
 }
