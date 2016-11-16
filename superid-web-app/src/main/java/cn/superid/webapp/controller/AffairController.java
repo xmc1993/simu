@@ -10,6 +10,7 @@ import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -84,12 +85,21 @@ public class AffairController {
         }
     }
 
-    @ApiOperation(value = "移动一个事务,确认移动的时候调用",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/move_affair",method = RequestMethod.POST)
-    public SimpleResponse moveAffair(){
-        return null;
-    }
+    //TODO 标签待定
+    @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class)
+    @RequestMapping(value = "/modify_affair_info",method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
+    public SimpleResponse modifyAffairInfo(long affairMemberId,Integer isHomepage,ModifyAffairInfoForm modifyAffairInfoForm){
+        boolean isModified = affairService.modifyAffairInfo(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),isHomepage,
+                modifyAffairInfoForm);
+        if(isModified){
+            return SimpleResponse.ok("edit success");
+        }
+        else {
+            return SimpleResponse.error("fail");
+        }
 
+    }
 
     @ApiOperation(value = "失效一个事务,确认失效的时候调用",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/disable_affair", method = RequestMethod.POST)

@@ -3,6 +3,7 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 
@@ -72,17 +73,14 @@ public interface IAffairService  {
     public boolean handleMoveAffair(long allianceId,long affairId,long targetAffairId,long roleId,boolean isAgree);
 
     /**
-     *
+     * 参数为空则没有修改
      * @param allianceId
      * @param affairId
-     * @param attribute 需要修改的属性,0暂时保留,暂时有1公开性,2事务名称,3事务描述
-     * @param value 对应的值
+     * @param isHomepage
+     * @param modifyAffairInfoForm
      * @return
-     * @throws Exception
      */
-    public boolean modifyAffairInfo(long allianceId,long affairId,int attribute,Object value) throws Exception;
-
-    public boolean modifyAffairInfo(long allianceId,long affairId,Integer publicType,String affairName,String description) throws Exception;
+    public boolean modifyAffairInfo(long allianceId, long affairId,Integer isHomepage, ModifyAffairInfoForm modifyAffairInfoForm);
 
     /**
      *

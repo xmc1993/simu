@@ -7,6 +7,7 @@ import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.AffairMoveState;
 import cn.superid.webapp.enums.AffairSpecialCondition;
 import cn.superid.webapp.enums.AffairState;
+import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
@@ -15,6 +16,7 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
+import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
@@ -263,7 +265,6 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-    @Override
     public boolean modifyAffairInfo(long allianceId, long affairId, int attribute, Object value) throws Exception {
         ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
         switch (attribute){
@@ -294,16 +295,15 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-    @Override
-    public boolean modifyAffairInfo(long allianceId, long affairId, Integer publicType, String affairName, String description) throws Exception {
-        ConditionalDao<AffairEntity> conditionalDao = AffairEntity.dao.partitionId(allianceId).id(affairId);
-        if(publicType != null){
-            conditionalDao.set("publicType",publicType);
+
+    public boolean modifyAffairInfo(long allianceId, long affairId,Integer isHomepage, ModifyAffairInfoForm modifyAffairInfoForm){
+        int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
+
+        if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
+            int userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
+            return ((isUpdate>0)&&(userUpdate>0));
         }
-        if((affairName != null)||(!affairName.equals(""))){
-            conditionalDao.set("affairName",affairName);
-        }
-        return false;
+        return isUpdate>0;
     }
 
     @Override
