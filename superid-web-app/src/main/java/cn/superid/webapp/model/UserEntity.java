@@ -53,7 +53,7 @@ public class UserEntity extends ExecutableModel {
     private String countryCode; //区号
     private long homepageAffairId;
 
-    private Map<Long,Long> members;
+    private Map<Long,Map<Long,Long>> members;
 
 
     @Id
@@ -327,11 +327,11 @@ public class UserEntity extends ExecutableModel {
     }
 
     @Transient
-    public Map<Long, Long> getMembers() {
+    public Map<Long, Map<Long,Long>> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<Long, Long> members) {
+    public void setMembers(Map<Long, Map<Long,Long>> members) {
         this.members = members;
     }
 }
