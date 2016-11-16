@@ -223,7 +223,7 @@ public class AffairService implements IAffairService {
     private boolean hasPermission(String permissions,int toFindPermission){
         String[] permission = permissions.split(",");
         for(String str : permission){
-            if(str.equals(toFindPermission+"")){
+            if(str.equals(String.valueOf(toFindPermission))){
                 return true;
             }
         }
