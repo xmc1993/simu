@@ -3,14 +3,21 @@ package cn.superid.webapp.service.forms;
 /**
  * Created by njuTms on 16/11/16.
  */
-//前端传来的修改事务信息字段,包含是否是首页
-public class ModifyAffairInfoForm {
+//为了使用鹏哥的setByObject方法,必须form字段名和数据表对应,所以前端传来的修改form中的isHomepage必须去除
+public class AffairInfoForm {
     private String name;
     private Integer publicType;
     private String description;
     private String shortName;
     private String logoUrls;
-    private Integer isHomepage;
+
+    public AffairInfoForm(String name, Integer publicType, String description, String shortName, String logoUrls) {
+        this.name = name;
+        this.publicType = publicType;
+        this.description = description;
+        this.shortName = shortName;
+        this.logoUrls = logoUrls;
+    }
 
     public String getName() {
         return name;
@@ -50,13 +57,5 @@ public class ModifyAffairInfoForm {
 
     public void setLogoUrls(String logoUrls) {
         this.logoUrls = logoUrls;
-    }
-
-    public Integer getIsHomepage() {
-        return isHomepage;
-    }
-
-    public void setIsHomepage(Integer isHomepage) {
-        this.isHomepage = isHomepage;
     }
 }

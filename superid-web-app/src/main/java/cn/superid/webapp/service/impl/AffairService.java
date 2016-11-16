@@ -16,6 +16,7 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
+import cn.superid.webapp.service.forms.AffairInfoForm;
 import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
@@ -295,8 +296,13 @@ public class AffairService implements IAffairService {
     }
 
 
-    public boolean modifyAffairInfo(long allianceId, long affairId,Integer isHomepage, ModifyAffairInfoForm modifyAffairInfoForm){
-        int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
+    public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
+        Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
+        AffairInfoForm affairInfoForm = new AffairInfoForm(modifyAffairInfoForm.getName(),
+                modifyAffairInfoForm.getPublicType(),modifyAffairInfoForm.getDescription(),
+                modifyAffairInfoForm.getShortName(),modifyAffairInfoForm.getLogoUrls());
+        //为了使用鹏哥的setByObject方法,必须form字段名和数据表对应,所以前端传来的修改form中的isHomepage必须去除
+        int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(affairInfoForm);
 
         if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
             int userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);

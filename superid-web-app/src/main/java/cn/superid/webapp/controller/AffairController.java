@@ -14,6 +14,7 @@ import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -89,9 +90,8 @@ public class AffairController {
     @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class,notes = "form里包含需要修改的信息,没有修改的字段可以不传,字段名和返回的affairInfo字段名一致")
     @RequestMapping(value = "/modify_affair_info",method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
-    public SimpleResponse modifyAffairInfo(long affairMemberId,Integer isHomepage,ModifyAffairInfoForm modifyAffairInfoForm){
-        boolean isModified = affairService.modifyAffairInfo(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),isHomepage,
-                modifyAffairInfoForm);
+    public SimpleResponse modifyAffairInfo(long affairMemberId,@RequestBody ModifyAffairInfoForm modifyAffairInfoForm){
+        boolean isModified = affairService.modifyAffairInfo(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),modifyAffairInfoForm);
         if(isModified){
             return SimpleResponse.ok("edit success");
         }
