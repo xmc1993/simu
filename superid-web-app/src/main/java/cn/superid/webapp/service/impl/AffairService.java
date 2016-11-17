@@ -103,6 +103,14 @@ public class AffairService implements IAffairService {
 
         affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
 
+        //在affair_user表中记录默认角色
+        AffairUserEntity affairUserEntity = new AffairUserEntity();
+        affairUserEntity.setAffairId(affairEntity.getId());
+        affairUserEntity.setAllianceId(createAffairForm.getAllianceId());
+        affairUserEntity.setRoleId(createAffairForm.getOperationRoleId());
+        affairUserEntity.setUserId(userService.currentUserId());
+        affairUserEntity.save();
+
         return affairEntity;
     }
 
@@ -131,6 +139,14 @@ public class AffairService implements IAffairService {
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId",folderId);
         try{
             affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),roleId);//加入根事务
+
+            //在affair_user表中记录默认角色
+            AffairUserEntity affairUserEntity = new AffairUserEntity();
+            affairUserEntity.setAffairId(affairEntity.getId());
+            affairUserEntity.setAllianceId(allianceId);
+            affairUserEntity.setRoleId(roleId);
+            affairUserEntity.setUserId(userService.currentUserId());
+            affairUserEntity.save();
         }catch (Exception e){
             e.printStackTrace();
         }

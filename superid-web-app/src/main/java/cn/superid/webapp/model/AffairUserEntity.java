@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -12,7 +13,7 @@ import javax.persistence.Table;
  * 这个类用来记录进入某个事务的默认角色
  */
 @Table(name = "affair_user")
-public class AffairUserEntity {
+public class AffairUserEntity extends ExecutableModel {
 
     private long id;
     private long affairId;
