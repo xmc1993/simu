@@ -32,7 +32,7 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortName;
-    private long affairMemberId;
+    private long roleId;
     private int isStuck;//是否置顶
 
     private List<AffairTreeVO> children = new ArrayList<>();
@@ -239,12 +239,12 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.isStuck = isStuck;
     }
 
-    public long getAffairMemberId() {
-        return affairMemberId;
+    public long getRoleId() {
+        return roleId;
     }
 
-    public void setAffairMemberId(long affairMemberId) {
-        this.affairMemberId = affairMemberId;
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
     }
 
     public List<AffairTreeVO> getChildren() {

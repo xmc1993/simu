@@ -201,4 +201,20 @@ public class AffairController {
 
     }
 
+    @ApiOperation(value = "切换事务角色",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/switch_role", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.CHECK_AFFAIR_HOMEPAGE)
+    public SimpleResponse switchRole(Long affairId , Long allianceId , Long newRoleId) {
+        if(allianceId == null || newRoleId == null || affairId == null){
+            return SimpleResponse.error("参数不能为空");
+        }
+        boolean result = affairService.switchRole(affairId,allianceId,newRoleId);
+        if(result == false){
+            return SimpleResponse.ok(false);
+        }else{
+            return SimpleResponse.ok(true);
+        }
+
+    }
+
 }

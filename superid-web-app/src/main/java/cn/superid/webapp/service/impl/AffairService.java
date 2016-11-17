@@ -372,29 +372,17 @@ public class AffairService implements IAffairService {
     public AffairTreeVO getAffairTree(long allianceId) {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-        StringBuilder sb = new StringBuilder("select a.* , b.id as affairMemberId from " +
+        StringBuilder sb = new StringBuilder("select a.* , b.role_id as roleId from " +
                 "(select * from affair where alliance_id = ? ) a " +
-                "left join (select id,affair_id from affair_member where alliance_id = ? and role_id in (" +
-                "select id from role where alliance_id = ? and user_id = ? )) b " +
+                "left join (select role_id,affair_id from affair_user where alliance_id = ? and user_id = ? ) b " +
                 "on a.id = b.affair_id ");
         ParameterBindings p =new ParameterBindings();
-        p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(user.getId());
         List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class,sb.toString(),p);
         //生成树
         AffairTreeVO result = createTree(affairList);
-        return result;
-    }
-
-    private List<AffairTreeVO> getTreeByAlliance(List<AffairTreeVO> total , long allianceId){
-        List<AffairTreeVO> result = new ArrayList<>();
-        for(AffairTreeVO a : total){
-            if(a.getAllianceId() == allianceId){
-                result.add(a);
-            }
-        }
         return result;
     }
 
@@ -456,6 +444,12 @@ public class AffairService implements IAffairService {
             ;
         }
         return affairInfo;
+    }
+
+    @Override
+    public boolean switchRole(long affairId, long allianceId, long newRoleId) {
+        AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).set("roleId",newRoleId);
+        return true;
     }
 
     private int shiftAffair(long allianceId,long affairId,long targetAffairId,long roleId){

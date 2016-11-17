@@ -76,7 +76,6 @@ public interface IAffairService  {
      * 参数为空则没有修改
      * @param allianceId
      * @param affairId
-     * @param isHomepage
      * @param modifyAffairInfoForm
      * @return
      */
@@ -135,6 +134,13 @@ public interface IAffairService  {
 
     public AffairInfo getAffairInfo(long allianceId,long affairId);
 
-
+    /**
+     * 切换角色
+     * @param affairId
+     * @param allianceId
+     * @param newRoleId
+     * @return
+     */
+    public boolean switchRole(long affairId , long allianceId , long newRoleId);
 
 }
