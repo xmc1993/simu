@@ -54,7 +54,7 @@ public class AllianceService  implements IAllianceService{
         allianceEntity.setVerified(StateType.NotCertificated);//等待验证
         allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
 
-        if(allianceCreateForm.getIsPersonal() == IntBoolean.TRUE){
+        if(allianceCreateForm.getIsPersonal() == true){
             allianceEntity.setName(allianceCreateForm.getName()+"的事务");
         }
         else{
@@ -81,7 +81,7 @@ public class AllianceService  implements IAllianceService{
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.save();
 
-        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal());
+        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal()?1:0);
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId",affairEntity.getId());//更新所属事务
 
@@ -89,7 +89,7 @@ public class AllianceService  implements IAllianceService{
         allianceEntity.setRootAffairId(affairEntity.getId());
         AllianceEntity.dao.id(allianceEntity.getId()).set("ownerRoleId",roleEntity.getId(),"rootAffairId",affairEntity.getId());//更新拥有者和根事务
 
-        if(allianceCreateForm.getIsPersonal()==IntBoolean.TRUE){
+        if(allianceCreateForm.getIsPersonal()==true){
             allianceCreateForm.getUserEntity().setPersonalRoleId(roleEntity.getId());
         }
         return allianceEntity;

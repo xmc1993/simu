@@ -22,7 +22,7 @@ public class AllianceEntity extends ExecutableModel {
     private long verifyAffairId;
     private long rootAffairId;
     private String logoUrl;
-    private int isPersonal;
+    private boolean isPersonal;
     private String shortName;
     private Timestamp createTime;
     private Timestamp modifyTime;
@@ -95,11 +95,11 @@ public class AllianceEntity extends ExecutableModel {
         this.logoUrl = logoUrl;
     }
 
-    public int getIsPersonal() {
+    public boolean getIsPersonal() {
         return isPersonal;
     }
 
-    public void setIsPersonal(int isPersonal) {
+    public void setIsPersonal(boolean isPersonal) {
         this.isPersonal = isPersonal;
     }
 
