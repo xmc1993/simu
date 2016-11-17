@@ -1,6 +1,7 @@
 package cn.superid.webapp.controller.VO;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class LoginUserInfoVO {
     private String mobile;
     private String email;
     private int publicType;
-    private Map<Long,Map<Long , Long>> members;
+    private Map<Long,List<Long>> members;
 
     public long getId() {
         return id;
@@ -82,11 +83,11 @@ public class LoginUserInfoVO {
         this.publicType = publicType;
     }
 
-    public Map<Long, Map<Long, Long>> getMembers() {
+    public Map<Long, List<Long>> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<Long, Map<Long, Long>> members) {
+    public void setMembers(Map<Long, List<Long>> members) {
         this.members = members;
     }
 }

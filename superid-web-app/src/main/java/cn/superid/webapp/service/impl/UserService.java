@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zp on 2016/8/1.
@@ -322,15 +319,16 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Map<Long, Map<Long , Long>> getAffairMember() {
+    public Map<Long, List<Long>> getAffairMember() {
         StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
-        Map<Long,Map<Long , Long>> members = new HashedMap();
+        Map<Long,List<Long>> members = new HashedMap();
         for(AffairMemberEntity a : affairMemberEntityList){
-            Map<Long,Long> user = new HashedMap();
-            user.put(a.getAffairId(),a.getRoleId());
+            List<Long> user = new ArrayList<>();
+            user.add(a.getAffairId());
+            user.add(a.getRoleId());
             members.put(a.getId(),user);
         }
         return members;

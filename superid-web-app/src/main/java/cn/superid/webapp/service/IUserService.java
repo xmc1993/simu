@@ -5,6 +5,7 @@ import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.UserEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,5 +46,5 @@ public interface IUserService {
 
      ResultUserInfo getUserInfo(long userId);
 
-     public Map<Long,Map<Long , Long>> getAffairMember();
+     public Map<Long,List<Long>> getAffairMember();
 }
