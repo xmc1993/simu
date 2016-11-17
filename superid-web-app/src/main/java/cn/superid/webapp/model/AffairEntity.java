@@ -33,16 +33,14 @@ public class AffairEntity extends ExecutableModel {
     private int level; //以1开始,记录本事务所在层数
     private Timestamp createTime ;
     private Timestamp modifyTime ;
-    private String videoUrl ="";
-    private String videoImg ="";
     private int guestVisible;
     private int guestCreateDg;
-    private int isVideo;
     private int pathIndex; //创建顺序
     private long folderId;
     private String shortName;
     private int isStuck;//是否置顶
     private String covers;
+    private int guestLimit;
 
     private List<AffairEntity> children;
 
@@ -170,22 +168,6 @@ public class AffairEntity extends ExecutableModel {
         this.modifyTime = modifyTime;
     }
 
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getVideoImg() {
-        return videoImg;
-    }
-
-    public void setVideoImg(String videoImg) {
-        this.videoImg = videoImg;
-    }
-
     public int getGuestVisible() {
         return guestVisible;
     }
@@ -200,14 +182,6 @@ public class AffairEntity extends ExecutableModel {
 
     public void setGuestCreateDg(int guestCreateDg) {
         this.guestCreateDg = guestCreateDg;
-    }
-
-    public int getIsVideo() {
-        return isVideo;
-    }
-
-    public void setIsVideo(int isVideo) {
-        this.isVideo = isVideo;
     }
 
     public int getPathIndex() {
@@ -265,5 +239,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setCovers(String covers) {
         this.covers = covers;
+    }
+
+    public int getGuestLimit() {
+        return guestLimit;
+    }
+
+    public void setGuestLimit(int guestLimit) {
+        this.guestLimit = guestLimit;
     }
 }
