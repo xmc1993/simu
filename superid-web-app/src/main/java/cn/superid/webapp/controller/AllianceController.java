@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.CreateAllianceResultVO;
 import cn.superid.webapp.enums.AllianceType;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.PublicType;
@@ -75,7 +76,9 @@ public class AllianceController {
             }
         }
 
-        return SimpleResponse.ok(allianceEntity);
+        CreateAllianceResultVO createAllianceResultVO = new CreateAllianceResultVO();
+        allianceEntity.copyPropertiesTo(createAllianceResultVO);
+        return SimpleResponse.ok(createAllianceResultVO);
     }
 
     @ApiOperation(value = "验证盟代码不重复", response =Boolean.class)

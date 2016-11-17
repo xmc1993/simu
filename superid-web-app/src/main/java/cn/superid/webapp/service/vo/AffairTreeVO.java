@@ -31,9 +31,9 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private int isVideo;
     private int pathIndex; //创建顺序
     private long folderId;
-    private String shortname;
+    private String shortName;
     private long affairMemberId;
-    private int isSticked;//是否置顶
+    private int isStuck;//是否置顶
 
     private List<AffairTreeVO> children = new ArrayList<>();
 
@@ -223,20 +223,20 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.folderId = folderId;
     }
 
-    public String getShortname() {
-        return shortname;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
-    public int getIsSticked() {
-        return isSticked;
+    public int getIsStuck() {
+        return isStuck;
     }
 
-    public void setIsSticked(int isSticked) {
-        this.isSticked = isSticked;
+    public void setIsStuck(int isStuck) {
+        this.isStuck = isStuck;
     }
 
     public long getAffairMemberId() {

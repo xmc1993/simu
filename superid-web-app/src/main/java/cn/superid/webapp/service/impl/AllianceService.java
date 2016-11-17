@@ -14,13 +14,10 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
-import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -51,32 +48,29 @@ public class AllianceService  implements IAllianceService{
     @Override
 //    @Transactional
     public AllianceEntity createAlliance(AllianceCreateForm allianceCreateForm) {
-        AllianceEntity allianceEntity;
-        if(allianceCreateForm.getIsPersonal()== IntBoolean.TRUE){
-            allianceCreateForm.setName(allianceCreateForm.getName()+"的事务");
-            allianceEntity = new AllianceEntity();
-            allianceEntity.setName(allianceCreateForm.getName());
-            allianceEntity.setIsPersonal(IntBoolean.TRUE);
-            allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证身份
-            allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-            allianceEntity.save();
+        AllianceEntity allianceEntity = new AllianceEntity();
 
-        }else{
-            allianceEntity = new AllianceEntity();
-            allianceEntity.setName(allianceCreateForm.getName());
-            allianceEntity.setIsPersonal(IntBoolean.FALSE);
-            allianceEntity.setApplyCertificateState(StateType.NotCertificated);//等待验证
-            allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-            allianceEntity.save();//在验证成功之后再创建角色
+        allianceEntity.setIsPersonal(allianceCreateForm.getIsPersonal());
+        allianceEntity.setVerified(StateType.NotCertificated);//等待验证
+        allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
 
+        if(allianceCreateForm.getIsPersonal() == IntBoolean.TRUE){
+            allianceEntity.setName(allianceCreateForm.getName()+"的事务");
         }
+        else{
+            allianceEntity.setName(allianceCreateForm.getName());
+        }
+        allianceEntity.save();
 
         String shortName = generateCode(allianceEntity.getId());
         allianceEntity.setShortName(shortName);
-        AllianceEntity.dao.findById(allianceEntity.getId()).setShortName(shortName);
+        //这样应该更新不了吧= =
+        //AllianceEntity.dao.findById(allianceEntity.getId()).setShortName(shortName);
+        AllianceEntity.dao.id(allianceEntity.getId()).set("shortName",shortName);
 
         RoleEntity roleEntity = new RoleEntity();
-        roleEntity.setTitle(allianceCreateForm.getName());
+        //需求说是直接叫盟主
+        roleEntity.setTitle("盟主");
         roleEntity.setUserId(allianceCreateForm.getUserId());
         roleEntity.setAllianceId(allianceEntity.getId());
         roleEntity.setBelongAffairId(0);
@@ -84,6 +78,7 @@ public class AllianceService  implements IAllianceService{
         roleEntity.setAllocatePermissions(AffairPermissionRoleType.OWNER);
         //创建盟的人在这个盟里的默认角色
         roleEntity.setType(1);
+        roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.save();
 
         AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal());
