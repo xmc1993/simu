@@ -51,7 +51,7 @@ public class AllianceController {
         }
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setUserId(userService.currentUserId());
-        allianceCreateForm.setIsPersonal(IntBoolean.FALSE);
+        allianceCreateForm.setIsPersonal(false);
         allianceCreateForm.setName(name);
         AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 
