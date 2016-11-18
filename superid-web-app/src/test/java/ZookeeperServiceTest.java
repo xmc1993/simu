@@ -21,6 +21,7 @@ public class ZookeeperServiceTest {
 
     }
 
+
     @Test
     public void testZookeeperClient() throws IOException, KeeperException, InterruptedException {
         ZooKeeper zooKeeper  = new ZooKeeper("192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184",

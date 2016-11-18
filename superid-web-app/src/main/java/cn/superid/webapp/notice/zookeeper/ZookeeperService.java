@@ -12,13 +12,13 @@ import java.io.IOException;
  * Created by xmc1993 on 16/10/17.
  */
 public class ZookeeperService {
-
+    private static final JSONObject EMPTY_JSON = new JSONObject();
     private static final int SESSION_TIMEOUT = 20000;
     private static final String CONNECTOR_URL = "/connectors";
     private static final String BACKEND_URL = "/backends";
     private static final String ZOOKEEPER_URL = "192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184";
-    private static JSONObject connectorsInfo = null;
-    private static JSONObject backEndsInfo = null;
+    private static JSONObject connectorsInfo = EMPTY_JSON;
+    private static JSONObject backEndsInfo = EMPTY_JSON;
 
     private static ZooKeeper zooKeeper;
 
@@ -66,7 +66,7 @@ public class ZookeeperService {
      * @throws IOException
      */
     public static JSONObject getConnectorsInfo() throws KeeperException, InterruptedException, IOException {
-        if (connectorsInfo != null) return connectorsInfo;
+        if (connectorsInfo != EMPTY_JSON) return connectorsInfo;
         return updateConnectorsInfo();
     }
 
@@ -80,9 +80,7 @@ public class ZookeeperService {
     private static JSONObject updateConnectorsInfo() throws InterruptedException, IOException, KeeperException {
 
         synchronized (connectorsInfo) {
-            if (connectorsInfo != null) return connectorsInfo;
             if (zooKeeper == null) init();
-
             String result = new String(zooKeeper.getData(CONNECTOR_URL, false, null));
             connectorsInfo = new JSONObject(result);
             return connectorsInfo;
@@ -99,10 +97,10 @@ public class ZookeeperService {
      */
 
     public static JSONObject getBackEndsInfo() throws KeeperException, InterruptedException, IOException {
-        if (backEndsInfo != null) return backEndsInfo;
+        if (backEndsInfo != EMPTY_JSON) return backEndsInfo;
 
         synchronized (backEndsInfo) {
-            if (backEndsInfo != null) return backEndsInfo;
+            if (backEndsInfo != EMPTY_JSON) return backEndsInfo;
 
             if (zooKeeper == null) init();
             backEndsInfo = new JSONObject(new String(zooKeeper.getData(BACKEND_URL, false, null)));
