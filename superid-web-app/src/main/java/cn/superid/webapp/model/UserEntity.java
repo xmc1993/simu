@@ -53,7 +53,6 @@ public class UserEntity extends ExecutableModel {
     private String countryCode; //区号
     private long homepageAffairId;
 
-    private Map<Long,Long> members;
 
 
     @Id
@@ -326,12 +325,4 @@ public class UserEntity extends ExecutableModel {
         this.chatToken = chatToken;
     }
 
-    @Transient
-    public Map<Long, Long> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Map<Long, Long> members) {
-        this.members = members;
-    }
 }

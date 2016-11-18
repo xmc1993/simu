@@ -14,6 +14,7 @@ import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -86,12 +87,11 @@ public class AffairController {
     }
 
     //TODO 标签待定
-    @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class)
+    @ApiOperation(value = "修改事务信息,将修改的字段传过来即可,affairMemberId必需",response = String.class,notes = "form里包含需要修改的信息,没有修改的字段可以不传,字段名和返回的affairInfo字段名一致")
     @RequestMapping(value = "/modify_affair_info",method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
-    public SimpleResponse modifyAffairInfo(long affairMemberId,Integer isHomepage,ModifyAffairInfoForm modifyAffairInfoForm){
-        boolean isModified = affairService.modifyAffairInfo(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),isHomepage,
-                modifyAffairInfoForm);
+    public SimpleResponse modifyAffairInfo(long affairMemberId,@RequestBody ModifyAffairInfoForm modifyAffairInfoForm){
+        boolean isModified = affairService.modifyAffairInfo(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),modifyAffairInfoForm);
         if(isModified){
             return SimpleResponse.ok("edit success");
         }
@@ -161,7 +161,7 @@ public class AffairController {
 
 
     @ApiOperation(value = "得到事务树",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/get_tree", method = RequestMethod.GET)
+    @RequestMapping(value = "/get_tree", method = RequestMethod.POST)
     @RequiredPermissions()
     public SimpleResponse getTree(Long allianceId) {
         if(allianceId == null){
@@ -170,7 +170,7 @@ public class AffairController {
         return SimpleResponse.ok(affairService.getAffairTree(allianceId));
     }
 
-    @ApiOperation(value = "移动事务",response = String.class,notes = "拥有权限")
+    @ApiOperation(value = "移动事务",response = String.class,notes = "拥有权限,返回值中,0表示失败,1表示正在等待审核,2表示成功")
     @RequestMapping(value = "/move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.MOVE_AFFAIR)
     public SimpleResponse moveAffair(Long affairMemberId , Long targetAffairId ) {
@@ -193,6 +193,22 @@ public class AffairController {
             return SimpleResponse.error("参数不能为空");
         }
         boolean result = affairService.handleMoveAffair(allianceId,affairId,targetAffairId,roleId,isAgree);
+        if(result == false){
+            return SimpleResponse.ok(false);
+        }else{
+            return SimpleResponse.ok(true);
+        }
+
+    }
+
+    @ApiOperation(value = "切换事务角色",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/switch_role", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.CHECK_AFFAIR_HOMEPAGE)
+    public SimpleResponse switchRole(Long affairId , Long allianceId , Long newRoleId) {
+        if(allianceId == null || newRoleId == null || affairId == null){
+            return SimpleResponse.error("参数不能为空");
+        }
+        boolean result = affairService.switchRole(affairId,allianceId,newRoleId);
         if(result == false){
             return SimpleResponse.ok(false);
         }else{

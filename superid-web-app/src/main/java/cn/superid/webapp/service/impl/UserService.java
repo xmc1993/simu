@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zp on 2016/8/1.
@@ -151,7 +148,7 @@ public class UserService implements IUserService {
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setName(userEntity.getUsername());
         allianceCreateForm.setUserId(userEntity.getId());
-        allianceCreateForm.setIsPersonal(IntBoolean.TRUE);
+        allianceCreateForm.setIsPersonal(true);
         allianceCreateForm.setUserEntity(userEntity);
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
         UserEntity.dao.id(allianceCreateForm.getUserEntity().getId()).set("personalRoleId",userEntity.getPersonalRoleId());//更新personalRoleId
@@ -322,14 +319,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Map<Long, Long> getAffairMember() {
+    public Map<Long, List<Long>> getAffairMember() {
         StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
-        Map<Long,Long> members = new HashedMap();
+        Map<Long,List<Long>> members = new HashedMap();
         for(AffairMemberEntity a : affairMemberEntityList){
-            members.put(a.getAffairId(),a.getId());
+            List<Long> user = new ArrayList<>();
+            user.add(a.getAffairId());
+            user.add(a.getRoleId());
+            members.put(a.getId(),user);
         }
         return members;
     }

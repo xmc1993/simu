@@ -9,31 +9,16 @@ import java.util.List;
  */
 public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private long id;
-    private long parentId;
     private String superid;
     private String name ="";
-    private String logoUrl="";
-    private String description="";
-    private long createRoleId;
     private long allianceId;
     private int publicType;
-    private int type; //原指个人事务还是盟事务
-    private int state;
-    private int isFree;
-    private String path =""; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
-    private int level; //以1开始,记录本事务所在层数
-    private Timestamp createTime ;
-    private Timestamp modifyTime ;
-    private String videoUrl ="";
-    private String videoImg ="";
-    private int guestVisible;
-    private int guestCreateDg;
-    private int isVideo;
-    private int pathIndex; //创建顺序
-    private long folderId;
-    private String shortname;
-    private long affairMemberId;
-    private int isSticked;//是否置顶
+    private String shortName;
+    private long roleId;
+    private boolean isStuck;//是否置顶
+    private String path;
+    private long parentId;
+    private boolean isIndex;//是否主页事务
 
     private List<AffairTreeVO> children = new ArrayList<>();
 
@@ -45,14 +30,6 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(long parentId) {
-        this.parentId = parentId;
     }
 
     public String getSuperid() {
@@ -71,30 +48,6 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.name = name;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public long getCreateRoleId() {
-        return createRoleId;
-    }
-
-    public void setCreateRoleId(long createRoleId) {
-        this.createRoleId = createRoleId;
-    }
-
     public long getAllianceId() {
         return allianceId;
     }
@@ -111,28 +64,36 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.publicType = publicType;
     }
 
-    public int getType() {
-        return type;
+    public String getShortName() {
+        return shortName;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
-    public int getState() {
-        return state;
+    public boolean getIsStuck() {
+        return isStuck;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setIsStuck(boolean isStuck) {
+        this.isStuck = isStuck;
     }
 
-    public int getIsFree() {
-        return isFree;
+    public long getRoleId() {
+        return roleId;
     }
 
-    public void setIsFree(int isFree) {
-        this.isFree = isFree;
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
+    }
+
+    public List<AffairTreeVO> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<AffairTreeVO> children) {
+        this.children = children;
     }
 
     public String getPath() {
@@ -143,116 +104,20 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.path = path;
     }
 
-    public int getLevel() {
-        return level;
+    public long getParentId() {
+        return parentId;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setParentId(long parentId) {
+        this.parentId = parentId;
     }
 
-    public Timestamp getCreateTime() {
-        return createTime;
+    public boolean getIsIndex() {
+        return isIndex;
     }
 
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public Timestamp getModifyTime() {
-        return modifyTime;
-    }
-
-    public void setModifyTime(Timestamp modifyTime) {
-        this.modifyTime = modifyTime;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.videoUrl = videoUrl;
-    }
-
-    public String getVideoImg() {
-        return videoImg;
-    }
-
-    public void setVideoImg(String videoImg) {
-        this.videoImg = videoImg;
-    }
-
-    public int getGuestVisible() {
-        return guestVisible;
-    }
-
-    public void setGuestVisible(int guestVisible) {
-        this.guestVisible = guestVisible;
-    }
-
-    public int getGuestCreateDg() {
-        return guestCreateDg;
-    }
-
-    public void setGuestCreateDg(int guestCreateDg) {
-        this.guestCreateDg = guestCreateDg;
-    }
-
-    public int getIsVideo() {
-        return isVideo;
-    }
-
-    public void setIsVideo(int isVideo) {
-        this.isVideo = isVideo;
-    }
-
-    public int getPathIndex() {
-        return pathIndex;
-    }
-
-    public void setPathIndex(int pathIndex) {
-        this.pathIndex = pathIndex;
-    }
-
-    public long getFolderId() {
-        return folderId;
-    }
-
-    public void setFolderId(long folderId) {
-        this.folderId = folderId;
-    }
-
-    public String getShortname() {
-        return shortname;
-    }
-
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
-    }
-
-    public int getIsSticked() {
-        return isSticked;
-    }
-
-    public void setIsSticked(int isSticked) {
-        this.isSticked = isSticked;
-    }
-
-    public long getAffairMemberId() {
-        return affairMemberId;
-    }
-
-    public void setAffairMemberId(long affairMemberId) {
-        this.affairMemberId = affairMemberId;
-    }
-
-    public List<AffairTreeVO> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<AffairTreeVO> children) {
-        this.children = children;
+    public void setIsIndex(boolean isIndex) {
+        this.isIndex = isIndex;
     }
 
     @Override

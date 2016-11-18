@@ -76,11 +76,10 @@ public interface IAffairService  {
      * 参数为空则没有修改
      * @param allianceId
      * @param affairId
-     * @param isHomepage
      * @param modifyAffairInfoForm
      * @return
      */
-    public boolean modifyAffairInfo(long allianceId, long affairId,Integer isHomepage, ModifyAffairInfoForm modifyAffairInfoForm);
+    public boolean modifyAffairInfo(long allianceId, long affairId, ModifyAffairInfoForm modifyAffairInfoForm);
 
     /**
      *
@@ -114,7 +113,7 @@ public interface IAffairService  {
      *
      * @param allianceId
      * @param affairId
-     * @return 0位是member数,1是文件数,2是公告数,3是任务数
+     * @return
      */
     public Map<String, Object> affairOverview(long allianceId, long affairId);
 
@@ -135,6 +134,13 @@ public interface IAffairService  {
 
     public AffairInfo getAffairInfo(long allianceId,long affairId);
 
-
+    /**
+     * 切换角色
+     * @param affairId
+     * @param allianceId
+     * @param newRoleId
+     * @return
+     */
+    public boolean switchRole(long affairId , long allianceId , long newRoleId);
 
 }

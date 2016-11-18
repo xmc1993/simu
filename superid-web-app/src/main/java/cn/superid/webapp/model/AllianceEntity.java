@@ -1,6 +1,5 @@
 package cn.superid.webapp.model;
 
-import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -19,11 +18,11 @@ public class AllianceEntity extends ExecutableModel {
     private String name;
     private long ownerRoleId;
     private int state;
-    private int applyCertificateState; //0表示正常,1表示没有认证,2表示认证正在等待审核
+    private int verified; //0表示正常,1表示没有认证,2表示认证正在等待审核
     private long verifyAffairId;
     private long rootAffairId;
     private String logoUrl;
-    private int isPersonal;
+    private boolean isPersonal;
     private String shortName;
     private Timestamp createTime;
     private Timestamp modifyTime;
@@ -64,12 +63,12 @@ public class AllianceEntity extends ExecutableModel {
         this.state = state;
     }
 
-    public int getApplyCertificateState() {
-        return applyCertificateState;
+    public int getVerified() {
+        return verified;
     }
 
-    public void setApplyCertificateState(int applyCertificateState) {
-        this.applyCertificateState = applyCertificateState;
+    public void setVerified(int verified) {
+        this.verified = verified;
     }
 
     public long getVerifyAffairId() {
@@ -96,11 +95,11 @@ public class AllianceEntity extends ExecutableModel {
         this.logoUrl = logoUrl;
     }
 
-    public int getIsPersonal() {
+    public boolean getIsPersonal() {
         return isPersonal;
     }
 
-    public void setIsPersonal(int isPersonal) {
+    public void setIsPersonal(boolean isPersonal) {
         this.isPersonal = isPersonal;
     }
 
