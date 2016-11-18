@@ -41,6 +41,7 @@ public class AffairEntity extends ExecutableModel {
     private int isStuck;//是否置顶
     private String covers;
     private int guestLimit;
+    private int guestNumber;
 
     private List<AffairEntity> children;
 
@@ -247,5 +248,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setGuestLimit(int guestLimit) {
         this.guestLimit = guestLimit;
+    }
+
+    public int getGuestNumber() {
+        return guestNumber;
+    }
+
+    public void setGuestNumber(int guestNumber) {
+        this.guestNumber = guestNumber;
     }
 }

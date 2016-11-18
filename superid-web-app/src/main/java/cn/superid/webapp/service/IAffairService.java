@@ -113,7 +113,7 @@ public interface IAffairService  {
      *
      * @param allianceId
      * @param affairId
-     * @return 0位是member数,1是文件数,2是公告数,3是任务数
+     * @return
      */
     public Map<String, Object> affairOverview(long allianceId, long affairId);
 
