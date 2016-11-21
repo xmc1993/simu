@@ -40,9 +40,9 @@ public class AffairService implements IAffairService {
     private IFileService fileService;
     @Autowired
     private IUserService userService;
-
     @Autowired
     private ITaskService taskService;
+
     @Override
     public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception{
 
@@ -78,8 +78,6 @@ public class AffairService implements IAffairService {
             throw new Exception("parent affair not found ");
         }
         int count = AffairEntity.dao.eq("parentId",parentAffairId).partitionId(parentAllianceId).count();//已有数目
-
-        //this.adjustOrder(parentAffair.getId(),createAffairForm.getNumber(),parentAllianceId);//调整事务顺序
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setParentId(parentAffairId);
@@ -165,9 +163,9 @@ public class AffairService implements IAffairService {
     @Override
     public List<AffairEntity> getAllDirectChildAffair(long allianceId, long affairId) throws Exception {
         boolean isExist  = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
-        if(!isExist)
+        if(!isExist){
             throw new Exception("找不到该事务");
-
+        }
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).eq("parentId",affairId).selectList("id","allianceId","name","level","path");
 
         return result;
@@ -180,7 +178,6 @@ public class AffairService implements IAffairService {
         if(isUpdate == 0){
             return false;
         }
-
 
         List<TaskEntity> tasks = taskService.getAllValidAffair(allianceId,affairId,"id");
 
@@ -234,8 +231,8 @@ public class AffairService implements IAffairService {
         if(hasChild){
             return AffairSpecialCondition.HAS_CHILD;
         }
-        //TODO 检测交易表里有没有affairId是本事务的交易,return 2
 
+        //TODO 检测交易表里有没有affairId是本事务的交易,return 2
         return AffairSpecialCondition.NO_SPECIAL;
     }
 
