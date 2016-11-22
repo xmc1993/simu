@@ -17,7 +17,7 @@ public class LoginUserInfoVO {
     private String mobile;
     private String email;
     private int publicType;
-    private Map<Long,List<Long>> members;
+    private Map<Long,List<Object>> members;
 
     public long getId() {
         return id;
@@ -83,11 +83,11 @@ public class LoginUserInfoVO {
         this.publicType = publicType;
     }
 
-    public Map<Long, List<Long>> getMembers() {
+    public Map<Long, List<Object>> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<Long, List<Long>> members) {
+    public void setMembers(Map<Long, List<Object>> members) {
         this.members = members;
     }
 }

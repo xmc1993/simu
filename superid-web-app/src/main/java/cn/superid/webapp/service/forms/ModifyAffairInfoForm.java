@@ -12,6 +12,7 @@ public class ModifyAffairInfoForm {
     private String logoUrls;
     private Integer isHomepage;
     private int guestLimit;
+    private boolean isStuck;
 
     public String getName() {
         return name;
@@ -67,5 +68,13 @@ public class ModifyAffairInfoForm {
 
     public void setGuestLimit(int guestLimit) {
         this.guestLimit = guestLimit;
+    }
+
+    public boolean getIsStuck() {
+        return isStuck;
+    }
+
+    public void setIsStuck(boolean isStuck) {
+        this.isStuck = isStuck;
     }
 }

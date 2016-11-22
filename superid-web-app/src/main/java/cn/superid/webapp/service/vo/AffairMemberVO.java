@@ -1,20 +1,18 @@
-package cn.superid.webapp.model;
+package cn.superid.webapp.service.vo;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.model.AffairMemberEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
- * Created by njuTms on 16/8/31.
+ * Created by jizhenya on 16/11/22.
  */
-@Table(name = "affair_member")
-public class AffairMemberEntity extends ExecutableModel {
-    public final static ConditionalDao<AffairMemberEntity> dao = new ConditionalDao<>(AffairMemberEntity.class);
+public class AffairMemberVO {
+
     private long id;
     private long affairId;
     private long allianceId;
@@ -24,10 +22,10 @@ public class AffairMemberEntity extends ExecutableModel {
     private Timestamp createTime;
     private Timestamp modifyTime;
     private int permissionLevel;
+    private String title;
 
 
-    @Id
-    @Column(name = "id")
+
     public long getId() {
         return id;
     }
@@ -36,7 +34,6 @@ public class AffairMemberEntity extends ExecutableModel {
         this.id = id;
     }
 
-    @PartitionId
     public long getAllianceId() {
         return allianceId;
     }
@@ -102,4 +99,11 @@ public class AffairMemberEntity extends ExecutableModel {
         this.permissionLevel = permissionLevel;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

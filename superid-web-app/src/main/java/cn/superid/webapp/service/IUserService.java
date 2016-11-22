@@ -46,5 +46,5 @@ public interface IUserService {
 
      ResultUserInfo getUserInfo(long userId);
 
-     public Map<Long,List<Long>> getAffairMember();
+     public Map<Long,List<Object>> getAffairMember();
 }
