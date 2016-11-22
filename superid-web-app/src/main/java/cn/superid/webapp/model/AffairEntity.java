@@ -37,9 +37,9 @@ public class AffairEntity extends ExecutableModel {
     private int guestCreateDg;
     private int pathIndex; //创建顺序
     private long folderId;
-    private String shortName;
+    private String shortName = "";
     private int isStuck;//是否置顶
-    private String covers;
+    private String covers = "";
     private int guestLimit;
     private int guestNumber;
 

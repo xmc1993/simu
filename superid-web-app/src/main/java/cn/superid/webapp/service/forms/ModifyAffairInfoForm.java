@@ -11,6 +11,7 @@ public class ModifyAffairInfoForm {
     private String shortName;
     private String logoUrls;
     private Integer isHomepage;
+    private Integer guestLimit;
 
     public String getName() {
         return name;
@@ -58,5 +59,13 @@ public class ModifyAffairInfoForm {
 
     public void setIsHomepage(Integer isHomepage) {
         this.isHomepage = isHomepage;
+    }
+
+    public Integer getGuestLimit() {
+        return guestLimit;
+    }
+
+    public void setGuestLimit(Integer guestLimit) {
+        this.guestLimit = guestLimit;
     }
 }

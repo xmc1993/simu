@@ -22,6 +22,7 @@ import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
 
+import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,12 +87,16 @@ public class AffairService implements IAffairService {
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
-        affairEntity.setShortName(createAffairForm.getLogo());
-        affairEntity.setDescription(createAffairForm.getDescription());
+        //暂定为name
+        affairEntity.setShortName(createAffairForm.getName());
+        //affairEntity.setShortName(createAffairForm.getLogo());
+
+        affairEntity.setDescription(createAffairForm.getDescription() != null ? createAffairForm.getDescription() : "");
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
+        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairEntity.save();
 
         long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());
@@ -126,11 +131,13 @@ public class AffairService implements IAffairService {
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(type);
         affairEntity.setPublicType(PublicType.TO_ALLIANCE);
+        affairEntity.setOwnerRoleId(roleId);
         affairEntity.setAllianceId(allianceId);
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
+        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
         affairEntity.setFolderId(folderId);
@@ -280,17 +287,17 @@ public class AffairService implements IAffairService {
 
     public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
+        //TODO 此处检测都为空?
         AffairInfoForm affairInfoForm = new AffairInfoForm(modifyAffairInfoForm.getName(),
                 modifyAffairInfoForm.getPublicType(),modifyAffairInfoForm.getDescription(),
-                modifyAffairInfoForm.getShortName(),modifyAffairInfoForm.getLogoUrls());
+                modifyAffairInfoForm.getShortName(),modifyAffairInfoForm.getLogoUrls(),modifyAffairInfoForm.getGuestLimit());
         //为了使用鹏哥的setByObject方法,必须form字段名和数据表对应,所以前端传来的修改form中的isHomepage必须去除
         int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(affairInfoForm);
-
+        int userUpdate = 1;
         if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
-            int userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
-            return ((isUpdate>0)&&(userUpdate>0));
+            userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
         }
-        return isUpdate>0;
+        return ((isUpdate>0)&&(userUpdate>0));
     }
 
     @Override
@@ -446,7 +453,7 @@ public class AffairService implements IAffairService {
         affairInfo.setIsPersonal(affairEntity.getType());
         affairInfo.setIsStuck(affairEntity.getIsStuck());
         //TODO 还没有标签
-        affairInfo.setTags(null);
+        affairInfo.setTags("");
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
 
 
