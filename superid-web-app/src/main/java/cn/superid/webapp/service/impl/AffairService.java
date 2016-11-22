@@ -408,6 +408,50 @@ public class AffairService implements IAffairService {
         return result;
     }
 
+    @Override
+    public List<AffairTreeVO> getAffairTreeByUser() {
+        //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
+        UserEntity user = userService.getCurrentUser();
+        StringBuilder sb = new StringBuilder("select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type , a.is_stuck , a.path , b.role_id as roleId from " +
+                "(select * from affair where alliance_id in (" +
+                "select alliance_id from role where user_id = ? )) a " +
+                "left join (select role_id,affair_id from affair_user where user_id = ? ) b " +
+                "on a.id = b.affair_id ");
+        ParameterBindings p =new ParameterBindings();
+        p.addIndexBinding(user.getId());
+        p.addIndexBinding(user.getId());
+        List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class,sb.toString(),p);
+
+        //把所有affairMemberId为null的事务名
+
+        //第二步,取出所有allianceId;
+        StringBuilder sql = new StringBuilder("select distinct alliance_id from role where user_id = ? ");
+        ParameterBindings pb =new ParameterBindings();
+        pb.addIndexBinding(user.getId());
+        List<Long> ids = AffairEntity.getSession().findList(Long.class,sql.toString(),pb);
+
+        List<AffairTreeVO> result = new ArrayList<>();
+        for(Long id : ids){
+            AffairTreeVO a = createTree(getTreeByAlliance(affairList,id));
+            if(a != null){
+                result.add(a);
+            }
+
+        }
+
+        return result;
+    }
+
+    private List<AffairTreeVO> getTreeByAlliance(List<AffairTreeVO> total , long allianceId){
+        List<AffairTreeVO> result = new ArrayList<>();
+        for(AffairTreeVO a : total){
+            if(a.getAllianceId() == allianceId){
+                result.add(a);
+            }
+        }
+        return result;
+    }
+
     private AffairTreeVO createTree(List<AffairTreeVO> vos){
         //第一步,把数组根据path长度排序,把叶节点排在最前面
         Collections.reverse(vos);
@@ -446,6 +490,7 @@ public class AffairService implements IAffairService {
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
         affairInfo.setIsStuck(affairEntity.getIsStuck());
+        affairInfo.setGuestLimit(affairEntity.getGuestLimit());
         //TODO 还没有标签
         affairInfo.setTags(null);
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();

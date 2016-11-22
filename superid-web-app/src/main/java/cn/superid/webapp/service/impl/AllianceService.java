@@ -64,8 +64,7 @@ public class AllianceService  implements IAllianceService{
 
         String shortName = generateCode(allianceEntity.getId());
         allianceEntity.setShortName(shortName);
-        //这样应该更新不了吧= =
-        //AllianceEntity.dao.findById(allianceEntity.getId()).setShortName(shortName);
+
         AllianceEntity.dao.id(allianceEntity.getId()).set("shortName",shortName);
 
         RoleEntity roleEntity = new RoleEntity();

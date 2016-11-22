@@ -170,6 +170,13 @@ public class AffairController {
         return SimpleResponse.ok(affairService.getAffairTree(allianceId));
     }
 
+    @ApiOperation(value = "得到事务树",response = String.class,notes = "拥有权限")
+    @RequestMapping(value = "/get_tree_by_user", method = RequestMethod.POST)
+    @RequiredPermissions()
+    public SimpleResponse getTree() {
+        return SimpleResponse.ok(affairService.getAffairTreeByUser());
+    }
+
     @ApiOperation(value = "移动事务",response = String.class,notes = "拥有权限,返回值中,0表示失败,1表示正在等待审核,2表示成功")
     @RequestMapping(value = "/move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.MOVE_AFFAIR)

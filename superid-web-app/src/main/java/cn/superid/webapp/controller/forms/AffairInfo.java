@@ -14,6 +14,7 @@ public class AffairInfo {
     private String shortName;
     private int isStuck;
     private String[] permissions;
+    private int guestLimit;
 
     private String covers;
     private Object overView;
@@ -122,5 +123,13 @@ public class AffairInfo {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public int getGuestLimit() {
+        return guestLimit;
+    }
+
+    public void setGuestLimit(int guestLimit) {
+        this.guestLimit = guestLimit;
     }
 }
