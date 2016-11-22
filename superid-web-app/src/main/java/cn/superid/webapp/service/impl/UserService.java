@@ -5,6 +5,7 @@ import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.PublicType;
 import cn.superid.webapp.forms.AllianceCreateForm;
@@ -20,6 +21,7 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.utils.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
@@ -319,16 +321,17 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Map<Long, List<Long>> getAffairMember() {
-        StringBuilder sb = new StringBuilder("select a.* from affair_member a join (select id,user_id from role where user_id = ? ) b on a.role_id = b.id ");
+    public Map<Long, List<Object>> getAffairMember() {
+        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
-        List<AffairMemberEntity> affairMemberEntityList = AffairMemberEntity.dao.findList(sb.toString(),p);
-        Map<Long,List<Long>> members = new HashedMap();
-        for(AffairMemberEntity a : affairMemberEntityList){
-            List<Long> user = new ArrayList<>();
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
+        Map<Long,List<Object>> members = new HashedMap();
+        for(AffairMemberVO a : affairMemberVOList){
+            List<Object> user = new ArrayList<>();
             user.add(a.getAffairId());
-            user.add(a.getRoleId());
+            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
+            user.add(role);
             members.put(a.getId(),user);
         }
         return members;
