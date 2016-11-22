@@ -280,11 +280,9 @@ public class AffairService implements IAffairService {
 
     public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
-        AffairInfoForm affairInfoForm = new AffairInfoForm(modifyAffairInfoForm.getName(),
-                modifyAffairInfoForm.getPublicType(),modifyAffairInfoForm.getDescription(),
-                modifyAffairInfoForm.getShortName(),modifyAffairInfoForm.getLogoUrls());
+        modifyAffairInfoForm.setIsHomepage(null);//FBI Warning 狗日的TMS,别建这么多类,鹏哥的setByObject不是这么用的
         //为了使用鹏哥的setByObject方法,必须form字段名和数据表对应,所以前端传来的修改form中的isHomepage必须去除
-        int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(affairInfoForm);
+        int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
 
         if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
             int userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
@@ -361,9 +359,12 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean isChildAffair(long allianceId,long childAffairId, long parentAffairId) {
-        AffairEntity childAffairEntity = AffairEntity.dao.id(childAffairId).partitionId(allianceId).selectOne("level","path");
+        AffairEntity childAffairEntity = AffairEntity.dao.id(childAffairId).partitionId(allianceId).selectOne("level","path","parentId");
         if(childAffairEntity == null)
             return false;
+        if(childAffairEntity.getParentId()==parentAffairId){//WARN 狗日的TMS一般情况只会比较相邻父子节点,注意优化
+            return  true;
+        }
         //获取待比较两个事务的leve,level相减,然后去掉子事务path的后几位,长度为level之差*2,然后对比两个的path,相同则为父事务
         AffairEntity parentAffairEntity = AffairEntity.dao.id(parentAffairId).partitionId(allianceId).selectOne("level","path");
         int parentLevel = parentAffairEntity.getLevel();

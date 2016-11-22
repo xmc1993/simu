@@ -1,8 +1,4 @@
 package socket;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.ByteBuffer;
 
@@ -24,15 +20,14 @@ public class WebsocketTest extends WebSocketClient {
      * @param args
      */
     public static void main( String[] args ) throws Exception{
-        WebsocketTest websocketTest = new WebsocketTest(new Draft_17(),new URI("ws://127.0.0.1:8080/"));
+        WebsocketTest websocketTest = new WebsocketTest(new Draft_17(),new URI("ws://localhost:8080"));
         websocketTest.connect();
-        websocketTest.send("aa");
-
     }
 
     @Override
     public void onMessage( String message ) {
-        send( message );
+        System.out.println(this.getConnection().isConnecting());
+        System.out.println(message);
     }
 
     @Override
@@ -48,6 +43,8 @@ public class WebsocketTest extends WebSocketClient {
 
     @Override
     public void onOpen( ServerHandshake handshake ) {
+        WebSocket webSocket = this.getConnection();
+        send("test");
     }
 
     @Override
