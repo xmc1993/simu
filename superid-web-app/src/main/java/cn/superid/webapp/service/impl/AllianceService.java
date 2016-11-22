@@ -62,10 +62,15 @@ public class AllianceService  implements IAllianceService{
         }
         allianceEntity.save();
 
-        String shortName = generateCode(allianceEntity.getId());
-        allianceEntity.setShortName(shortName);
+        if(allianceCreateForm.getIsPersonal() == true){
+            String code = generateCode(allianceEntity.getId());
+            allianceEntity.setCode(code);
+            AllianceEntity.dao.id(allianceEntity.getId()).set("superId",code);
+        }else{
+            allianceEntity.setCode(allianceCreateForm.getCode());
+            AllianceEntity.dao.id(allianceEntity.getId()).set("superId",allianceCreateForm.getCode());
+        }
 
-        AllianceEntity.dao.id(allianceEntity.getId()).set("shortName",shortName);
 
         RoleEntity roleEntity = new RoleEntity();
         //需求说是直接叫盟主
