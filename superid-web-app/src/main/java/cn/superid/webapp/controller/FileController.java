@@ -204,7 +204,7 @@ public class FileController {
     }
 
     @ApiOperation(value = "缩放盟头像", response = SimpleResponse.class, notes = "")
-    @RequestMapping(value = "/condense_alliance_picture", method = RequestMethod.POST)
+    @RequestMapping(value = "/condense_affair_picture", method = RequestMethod.POST)
     public SimpleResponse condenseAffairPicture(@RequestParam("picture") CommonsMultipartFile picture , Long affairId) {
 
 
