@@ -588,7 +588,7 @@ public class AffairService implements IAffairService {
             id = affairEntity.getId();
             oldLevel = affairEntity.getLevel();
             oldPath = affairEntity.getPath();
-            //将当前事务的level和待移动事务的level相减,然后取path的后几位substring,长度为相减后的值
+            //根据父事务的新path作为前缀加上父事务的老path相减取path的后几位substring
             newPath = basePath+StringUtil.difference(oldAffairPath,oldPath);
             AffairEntity.dao.id(id).partitionId(allianceId).set("path",newPath,"level",oldLevel+offsetLevel);
         }
