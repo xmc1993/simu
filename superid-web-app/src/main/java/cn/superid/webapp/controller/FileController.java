@@ -203,6 +203,21 @@ public class FileController {
 
     }
 
+    @ApiOperation(value = "缩放盟头像", response = SimpleResponse.class, notes = "")
+    @RequestMapping(value = "/condense_alliance_picture", method = RequestMethod.POST)
+    public SimpleResponse condenseAffairPicture(@RequestParam("picture") CommonsMultipartFile picture , Long affairId) {
+
+
+        //设置两个文件名
+        String big = "affair/"+affairId+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+        String small = "affair/"+affairId+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+
+        return SimpleResponse.ok(fileService.condense_picture(picture,big,small,0));
+
+
+
+    }
+
 
 
 

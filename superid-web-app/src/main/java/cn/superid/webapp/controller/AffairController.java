@@ -108,7 +108,7 @@ public class AffairController {
         boolean success;
         try {
             success = affairService.disableAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId());
-            if(success) return SimpleResponse.ok("yep");
+            if(success) return SimpleResponse.ok("失效成功");
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
