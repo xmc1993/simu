@@ -120,8 +120,6 @@ public class AffairController {
     @RequestMapping(value = "/update_covers", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
     public SimpleResponse updateCovers(String coverList , Long affairMemberId ) {
-        long a = GlobalValue.currentAffairId();
-
         if(coverList == null){
             return SimpleResponse.error("coverList不能为空");
         }
@@ -187,6 +185,7 @@ public class AffairController {
         try{
             return SimpleResponse.ok(affairService.moveAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),targetAffairId,GlobalValue.currentRoleId()));
         }catch(Exception e){
+            e.printStackTrace();
             return SimpleResponse.ok(AffairMoveState.FAIL);
         }
 
@@ -211,11 +210,11 @@ public class AffairController {
     @ApiOperation(value = "切换事务角色",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/switch_role", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.CHECK_AFFAIR_HOMEPAGE)
-    public SimpleResponse switchRole(Long affairId , Long allianceId , Long newRoleId) {
-        if(allianceId == null || newRoleId == null || affairId == null){
+    public SimpleResponse switchRole(Long affairMemberId, Long newRoleId) {
+        if( newRoleId == null ){
             return SimpleResponse.error("参数不能为空");
         }
-        boolean result = affairService.switchRole(affairId,allianceId,newRoleId);
+        boolean result = affairService.switchRole(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),newRoleId);
         if(result == false){
             return SimpleResponse.ok(false);
         }else{

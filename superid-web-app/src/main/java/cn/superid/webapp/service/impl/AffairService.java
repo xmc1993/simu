@@ -239,6 +239,10 @@ public class AffairService implements IAffairService {
     }
 
     private boolean hasPermission(String permissions,int toFindPermission){
+        //JZY Warining : tms,注意边界值判断,你代码没加下面这个*号判断
+        if(permissions.equals("*")){
+            return true;
+        }
         String[] permission = permissions.split(",");
         for(String str : permission){
             if(str.equals(String.valueOf(toFindPermission))){
@@ -262,7 +266,7 @@ public class AffairService implements IAffairService {
             return AffairMoveState.WAITING;
         }
 
-        return shiftAffair(allianceId,affairId,targetAffairId,roleId);
+        return shiftAffair(allianceId,affairId,targetAffairId);
 
     }
 
@@ -270,7 +274,7 @@ public class AffairService implements IAffairService {
     public boolean handleMoveAffair(long allianceId, long affairId, long targetAffairId, long roleId, boolean isAgree) {
         if(isAgree == true){
             //同意了移动事务请求
-            shiftAffair(allianceId,affairId,targetAffairId,roleId);
+            shiftAffair(allianceId,affairId,targetAffairId);
             //TODO 给发起人发通知告知已被同意
 
         }else{
@@ -510,25 +514,73 @@ public class AffairService implements IAffairService {
         return true;
     }
 
-    private int shiftAffair(long allianceId,long affairId,long targetAffairId,long roleId){
-        //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
-        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
+    private int shiftAffair(long allianceId,long affairId,long targetAffairId){
+//        //JZY Warning tms,你这方法错误太多,报错太多,我注掉了,你自己感受下
+//        //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
+//        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
+//        AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
+//        //获取目标事务的层级,加到待移动的所有事务上
+//        int targetLevel = targetAffair.getLevel();
+//        String targetPath = targetAffair.getPath();
+//
+//        //根据待移动事务的子事务的level减去待移动事务的level,差值加上目标事务的level,就是待移动事务的所有子事务的level
+//        //即temp-source+target+1,把target和source的差值算出来
+//        int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
+//        int offsetLevel = targetLevel-sourceLevel+1;
+//        //待移动事务本身的parentId,level,number和path
+//        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
+//
+//
+//        //需要找到的所有子事务
+//        List<AffairEntity> allChildAffairs = getAllChildAffairs(allianceId,affairId,"id","level","path");
+//        String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
+//        long id;
+//        int oldLevel,remainingLengthOfPath;
+//        String oldPath,newPath;
+//        for(AffairEntity affairEntity : allChildAffairs){
+//            id = affairEntity.getId();
+//            oldLevel = affairEntity.getLevel();
+//            oldPath = affairEntity.getPath();
+//            //将当前事务的level和待移动事务的level相减,然后取path的后几位substring,长度为相减后的值
+//            remainingLengthOfPath = (oldLevel-sourceLevel)*2;
+//            newPath = basePath+oldPath.substring(oldPath.length()-remainingLengthOfPath);
+//            AffairEntity.dao.id(id).partitionId(allianceId).set("path",newPath,"level",oldLevel+offsetLevel);
+//        }
+//        return AffairMoveState.SUCCESS;
+
+
+        //检测不能在把父事务放到子事务底下
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
+        AffairEntity sourceAffair = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne();
+        if(sourceAffair == null | targetAffair == null | targetAffair.getPath().contains(sourceAffair.getPath())){
+            return 0;
+        }
+
+        //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
+        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).count()+1;
+
         //获取目标事务的层级,加到待移动的所有事务上
         int targetLevel = targetAffair.getLevel();
+        String oldAffairPath = sourceAffair.getPath();
         String targetPath = targetAffair.getPath();
 
         //根据待移动事务的子事务的level减去待移动事务的level,差值加上目标事务的level,就是待移动事务的所有子事务的level
         //即temp-source+target+1,把target和source的差值算出来
-        int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
+        int sourceLevel = sourceAffair.getLevel();
         int offsetLevel = targetLevel-sourceLevel+1;
-        //待移动事务本身的parentId,level,number和path
-        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
 
 
         //需要找到的所有子事务
         List<AffairEntity> allChildAffairs = getAllChildAffairs(allianceId,affairId,"id","level","path");
-        String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
+        //子事务方法需要老的path,所以变化放在找到子事务后面
+        //待移动事务本身的parentId,level,number和path
+        sourceAffair.setParentId(targetAffairId);
+        sourceAffair.setLevel(targetLevel+1);
+        sourceAffair.setPath(targetPath+"-"+max_number);
+        sourceAffair.update();
+
+        //改变子事务的path和level
+        String basePath = sourceAffair.getPath();
         long id;
         int oldLevel,remainingLengthOfPath;
         String oldPath,newPath;
@@ -537,10 +589,11 @@ public class AffairService implements IAffairService {
             oldLevel = affairEntity.getLevel();
             oldPath = affairEntity.getPath();
             //将当前事务的level和待移动事务的level相减,然后取path的后几位substring,长度为相减后的值
-            remainingLengthOfPath = (oldLevel-sourceLevel)*2;
-            newPath = basePath+oldPath.substring(oldPath.length()-remainingLengthOfPath);
+            newPath = basePath+StringUtil.difference(oldAffairPath,oldPath);
             AffairEntity.dao.id(id).partitionId(allianceId).set("path",newPath,"level",oldLevel+offsetLevel);
         }
+
+
         return AffairMoveState.SUCCESS;
 
     }
