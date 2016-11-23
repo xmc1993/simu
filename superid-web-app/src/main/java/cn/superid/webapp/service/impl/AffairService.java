@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
@@ -309,11 +310,7 @@ public class AffairService implements IAffairService {
     public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
         List<SimpleRoleForm> result = new ArrayList<>();
         //第一步,查本盟中的affairmember,防止跨库join
-        StringBuilder sql = new StringBuilder("select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
-                "(select af.role_id , af.permissions from affair_member af where af.state = 1 and af.affair_id = ? and af.alliance_id = ? and af.permission_group_id < 4 ) a " +
-                " join (select bf.title , bf.id , bf.belong_affair_id , bf.user_id from role bf where bf.alliance_id = ? ) b " +
-                " join (select df.id , df.name from affair df where df.alliance_id = ? ) d " +
-                " on a.role_id = b.id and b.belong_affair_id = d.id ");
+        StringBuilder sql = new StringBuilder(SQLDao.GET_ALL_ROLE);
         ParameterBindings p1 = new ParameterBindings();
         p1.addIndexBinding(affairId);
         p1.addIndexBinding(allianceId);
@@ -386,10 +383,7 @@ public class AffairService implements IAffairService {
     public AffairTreeVO getAffairTree(long allianceId) {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-        StringBuilder sb = new StringBuilder("select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type , a.is_stuck , a.path , b.role_id as roleId from " +
-                "(select * from affair where alliance_id = ? ) a " +
-                "left join (select role_id,affair_id from affair_user where alliance_id = ? and user_id = ? ) b " +
-                "on a.id = b.affair_id ");
+        StringBuilder sb = new StringBuilder(SQLDao.GET_AFFAIR_TREE);
         ParameterBindings p =new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
@@ -412,11 +406,7 @@ public class AffairService implements IAffairService {
     public List<AffairTreeVO> getAffairTreeByUser() {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-        StringBuilder sb = new StringBuilder("select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type , a.is_stuck , a.path , b.role_id as roleId from " +
-                "(select * from affair where alliance_id in (" +
-                "select alliance_id from role where user_id = ? )) a " +
-                "left join (select role_id,affair_id from affair_user where user_id = ? ) b " +
-                "on a.id = b.affair_id ");
+        StringBuilder sb = new StringBuilder(SQLDao.GET_AFFAIR_TREE_BY_USER);
         ParameterBindings p =new ParameterBindings();
         p.addIndexBinding(user.getId());
         p.addIndexBinding(user.getId());
