@@ -131,6 +131,7 @@ public class AffairService implements IAffairService {
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
+        affairEntity.setOwnerRoleId(roleId);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
