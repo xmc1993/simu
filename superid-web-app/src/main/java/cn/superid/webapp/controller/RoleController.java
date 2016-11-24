@@ -30,15 +30,15 @@ public class RoleController {
     private IRoleService roleService;
 
     @ApiOperation(value = "搜索用户", response = boolean.class, notes = "在盟内需要权限的接口都要返回roleId")
-    @RequestMapping(value = "/search_user",method = RequestMethod.GET)
+    @RequestMapping(value = "/search_user",method = RequestMethod.POST)
     @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
-    public SimpleResponse searchUser(Long roleId , String input){
+    public SimpleResponse searchUser(Long roleId , String keyword){
 
-        return SimpleResponse.ok(roleService.searchUser(GlobalValue.currentAllianceId(),input));
+        return SimpleResponse.ok(roleService.searchUser(GlobalValue.currentAllianceId(),keyword));
     }
 
     @ApiOperation(value = "添加盟成员", response = boolean.class, notes = "在盟内需要权限的接口都要返回roleId")
-    @RequestMapping(value = "/add_alliance_user",method = RequestMethod.GET)
+    @RequestMapping(value = "/add_alliance_user",method = RequestMethod.POST)
     @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
     public SimpleResponse addAllianceUser(Long roleId , List<AddAllianceUserForm> users){
 
