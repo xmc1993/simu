@@ -27,7 +27,7 @@ public class WebsocketTest extends WebSocketClient {
      * @param args
      */
     public static void main( String[] args ) throws Exception{
-        WebsocketTest websocketTest = new WebsocketTest(new Draft_17(),new URI("ws://192.168.1.127:8080"));
+        WebsocketTest websocketTest = new WebsocketTest(new Draft_17(),new URI("ws://192.168.1.127:8081"));
         websocketTest.connect();
     }
 
