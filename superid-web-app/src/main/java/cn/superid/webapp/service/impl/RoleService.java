@@ -46,14 +46,19 @@ public class RoleService implements IRoleService {
 
     @Override
     public List<SearchUserVO> searchUser(long allianceId, String input) {
-        StringBuilder sql = new StringBuilder("select * from  user where ( username like ? or superid like ? ) and id not in " +
-                "( select distinct user_id from role where alliance_id = ? ) ");
+        List<SearchUserVO> result = new ArrayList<>();
+        if(input == null | input.equals("")){
+            return  result;
+        }
+        StringBuilder sql = new StringBuilder("select  * from  user where ( username like ? or superid like ? ) and id not in " +
+                "( select distinct user_id from role where alliance_id = ? )  order by id desc limit 20 ");
         ParameterBindings pb = new ParameterBindings();
         pb.addIndexBinding("%"+input+"%");
         pb.addIndexBinding("%"+input+"%");
         pb.addIndexBinding(allianceId);
         List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(),pb);
-        List<SearchUserVO> result = new ArrayList<>();
+
+
         if(userEntityList != null){
             for(UserEntity u : userEntityList){
                 SearchUserVO user = new SearchUserVO();
