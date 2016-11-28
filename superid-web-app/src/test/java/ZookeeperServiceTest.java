@@ -34,4 +34,12 @@ public class ZookeeperServiceTest {
         System.out.println("--------------");
 //        System.out.println(new String(zooKeeper.getData("/backends",false,null)));
     }
+
+    @Test
+    public void testChange() throws InterruptedException, IOException, KeeperException {
+        ZookeeperService.getConnectorsInfo();
+        while(true){
+
+        }
+    }
 }

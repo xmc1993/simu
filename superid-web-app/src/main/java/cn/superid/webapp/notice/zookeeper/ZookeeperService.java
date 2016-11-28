@@ -19,16 +19,21 @@ public class ZookeeperService {
     private static final String ZOOKEEPER_URL = "192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184";
     private static JSONObject connectorsInfo = EMPTY_JSON;
     private static JSONObject backEndsInfo = EMPTY_JSON;
+    private static  Integer mux = 0;//同步标志位
 
     private static ZooKeeper zooKeeper;
 
-//    static {
-//        try {
-//            init();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    static {
+        try {
+            init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        }
+    }
 
     private ZookeeperService() {
     }
@@ -37,7 +42,7 @@ public class ZookeeperService {
     public static void init() throws IOException, KeeperException, InterruptedException {
         if (zooKeeper != null) return;
 
-        synchronized (zooKeeper) {
+        synchronized (mux) {
             if (zooKeeper != null) return;
             zooKeeper = new ZooKeeper(ZOOKEEPER_URL,
                     SESSION_TIMEOUT, new Watcher() {
