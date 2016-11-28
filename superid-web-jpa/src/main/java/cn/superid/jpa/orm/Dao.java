@@ -350,6 +350,10 @@ public class Dao<T> {
             sb.append("=?");
             pb.addIndexBinding(value);
         }
+        if(init){
+            clear();
+            return 304;//not modified
+        }
         sb.append(builder);
         String sql = sb.toString();
         ParameterBindings all = pb.addAll(parameterBindings.get());

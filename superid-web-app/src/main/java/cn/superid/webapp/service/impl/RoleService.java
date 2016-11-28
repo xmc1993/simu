@@ -1,10 +1,18 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.controller.VO.SearchUserVO;
+import cn.superid.webapp.controller.forms.AddAllianceUserForm;
+import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IRoleService;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xiaofengxu on 16/9/9.
@@ -34,5 +42,54 @@ public class RoleService implements IRoleService {
         }
 
         return role.getTitle()+": "+user.getUsername();
+    }
+
+    @Override
+    public List<SearchUserVO> searchUser(long allianceId, String input) {
+        List<SearchUserVO> result = new ArrayList<>();
+        if(input == null | input.equals("")){
+            return  result;
+        }
+        StringBuilder sql = new StringBuilder("select  * from  user where ( username like ? or superid like ? ) and id not in " +
+                "( select distinct user_id from role where alliance_id = ? )  order by id desc limit 20 ");
+        ParameterBindings pb = new ParameterBindings();
+        pb.addIndexBinding("%"+input+"%");
+        pb.addIndexBinding("%"+input+"%");
+        pb.addIndexBinding(allianceId);
+        List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(),pb);
+
+
+        if(userEntityList != null){
+            for(UserEntity u : userEntityList){
+                SearchUserVO user = new SearchUserVO();
+                user.setId(u.getId());
+                user.setAvatar(u.getAvatar());
+                user.setName(u.getUsername());
+                user.setSuperId(u.getSuperid());
+
+                result.add(user);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean addAllianceUser(List<AddAllianceUserForm> forms , long allianceId) {
+
+        for(AddAllianceUserForm form : forms){
+            RoleEntity role = new RoleEntity();
+            role.setUserId(form.getUserId());
+            role.setTitle(form.getRoleName());
+            role.setBelongAffairId(form.getMainAffairId());
+            role.setAllianceId(allianceId);
+            role.setPermissions(form.getPermissions());
+            role.setType(RoleType.DEFAULT);
+            role.setState(0);
+            role.save();
+        }
+
+
+        return true;
     }
 }

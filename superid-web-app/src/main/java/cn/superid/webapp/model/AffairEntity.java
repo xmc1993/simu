@@ -18,30 +18,30 @@ import java.util.List;
 public class AffairEntity extends ExecutableModel {
     public final static ConditionalDao<AffairEntity> dao = new ConditionalDao<>(AffairEntity.class);
     private long id;
-    private long parentId;
-    private String superid;
-    private String name ="";
-    private String logoUrl="";
-    private String description="";
-    private long ownerRoleId;
-    private long allianceId;
-    private int publicType;
-    private int type; //原指个人事务还是盟事务
-    private int state;
-    private int isFree;
-    private String path =""; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
-    private int level; //以1开始,记录本事务所在层数
+    private long parentId  = 0;
+    private String superid = "";
+    private String name = "";
+    private String logoUrl = "";
+    private String description = "";
+    private long ownerRoleId = 0;
+    private long allianceId = 0;
+    private int publicType = 0;
+    private int type = 0; //原指个人事务还是盟事务
+    private int state = 0;
+    private int isFree = 0;
+    private String path = "" ; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
+    private int level = 0 ; //以1开始,记录本事务所在层数
     private Timestamp createTime ;
     private Timestamp modifyTime ;
-    private int guestVisible;
-    private int guestCreateDg;
-    private int pathIndex; //创建顺序
-    private long folderId;
+    private int guestVisible  = 0;
+    private int guestCreateDg  = 0;
+    private int pathIndex  = 0; //创建顺序
+    private long folderId  = 0;
     private String shortName = "";
-    private int isStuck;//是否置顶
+    private boolean isStuck = false;//是否置顶
     private String covers = "";
-    private int guestLimit;
-    private int guestNumber;
+    private int guestLimit = 0;
+    private int guestNumber = 0;
 
     private List<AffairEntity> children;
 
@@ -209,11 +209,11 @@ public class AffairEntity extends ExecutableModel {
         this.shortName = shortName;
     }
 
-    public int getIsStuck() {
+    public boolean getIsStuck() {
         return isStuck;
     }
 
-    public void setIsStuck(int isStuck) {
+    public void setIsStuck(boolean isStuck) {
         this.isStuck = isStuck;
     }
 

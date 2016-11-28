@@ -11,7 +11,8 @@ public class ModifyAffairInfoForm {
     private String shortName;
     private String logoUrls;
     private Integer isHomepage;
-    private Integer guestLimit;
+    private int guestLimit;
+    private boolean isStuck;
 
     public String getName() {
         return name;
@@ -61,11 +62,19 @@ public class ModifyAffairInfoForm {
         this.isHomepage = isHomepage;
     }
 
-    public Integer getGuestLimit() {
+    public int getGuestLimit() {
         return guestLimit;
     }
 
-    public void setGuestLimit(Integer guestLimit) {
+    public void setGuestLimit(int guestLimit) {
         this.guestLimit = guestLimit;
+    }
+
+    public boolean getIsStuck() {
+        return isStuck;
+    }
+
+    public void setIsStuck(boolean isStuck) {
+        this.isStuck = isStuck;
     }
 }

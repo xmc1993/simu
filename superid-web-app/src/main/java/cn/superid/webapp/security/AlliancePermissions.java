@@ -33,6 +33,8 @@ public class AlliancePermissions {
     public final static int AddAllianceRole = 5;
     public final static int InvalidAllianceRole = 13;
 
+    public final static int ManageUser = 21;
+
     public final static int AllocatePermission = 6;
 
     public static String alliancePermissions = null;

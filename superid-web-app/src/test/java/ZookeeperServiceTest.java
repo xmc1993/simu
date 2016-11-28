@@ -21,6 +21,7 @@ public class ZookeeperServiceTest {
 
     }
 
+
     @Test
     public void testZookeeperClient() throws IOException, KeeperException, InterruptedException {
         ZooKeeper zooKeeper  = new ZooKeeper("192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184",
@@ -32,5 +33,13 @@ public class ZookeeperServiceTest {
         System.out.println(new String(zooKeeper.getData("/connectors",false,null)));
         System.out.println("--------------");
 //        System.out.println(new String(zooKeeper.getData("/backends",false,null)));
+    }
+
+    @Test
+    public void testChange() throws InterruptedException, IOException, KeeperException {
+        ZookeeperService.getConnectorsInfo();
+        while(true){
+
+        }
     }
 }

@@ -23,7 +23,8 @@ public class AllianceEntity extends ExecutableModel {
     private long rootAffairId;
     private String logoUrl;
     private int isPersonal;
-    private String shortName;
+    private String code;
+    private String superId;
     private Timestamp createTime;
     private Timestamp modifyTime;
     private String description;
@@ -103,14 +104,6 @@ public class AllianceEntity extends ExecutableModel {
         this.isPersonal = isPersonal;
     }
 
-    public String getShortName() {
-        return shortName;
-    }
-
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
-
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -141,5 +134,21 @@ public class AllianceEntity extends ExecutableModel {
 
     public void setFaith(double faith) {
         this.faith = faith;
+    }
+
+    public String getSuperId() {
+        return superId;
+    }
+
+    public void setSuperId(String superId) {
+        this.superId = superId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
