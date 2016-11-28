@@ -153,7 +153,10 @@ public class UserService implements IUserService {
         allianceCreateForm.setIsPersonal(true);
         allianceCreateForm.setUserEntity(userEntity);
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
-        UserEntity.dao.id(allianceCreateForm.getUserEntity().getId()).set("personalRoleId",userEntity.getPersonalRoleId());//更新personalRoleId
+        UserEntity user = UserEntity.dao.findById(allianceCreateForm.getUserEntity().getId());
+        user.setSuperid(generateSuperId(user.getId()));
+        user.setPersonalRoleId(userEntity.getPersonalRoleId());
+        user.update();
         if(allianceEntity==null) return null;
         return userEntity;
     }
@@ -335,5 +338,14 @@ public class UserService implements IUserService {
             members.put(a.getId(),user);
         }
         return members;
+    }
+
+    private String generateSuperId(long id){
+        String superid = id+"";
+        int length = 8 - superid.length();
+        for(int i = 0 ; i<length ; i++){
+            superid = "0"+superid;
+        }
+        return superid;
     }
 }
