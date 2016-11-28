@@ -1,9 +1,11 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AllianceCertificationEntity;
 import cn.superid.webapp.model.AllianceEntity;
+import cn.superid.webapp.model.RoleEntity;
 
 import java.util.List;
 
@@ -27,6 +29,8 @@ public interface IAllianceService {
     public long getDefaultRoleIdFromAlliance(long allianceId);
 
     public List<AllianceEntity> getAllianceList();
+
+    public List<SimpleRoleVO> getRoleByAlliance(long allianceId);
 
 
 }

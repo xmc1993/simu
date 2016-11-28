@@ -3,6 +3,7 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.StateType;
 import cn.superid.webapp.forms.AllianceCertificationForm;
@@ -19,6 +20,7 @@ import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -148,6 +150,18 @@ public class AllianceService  implements IAllianceService{
         ParameterBindings p =new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
         return AllianceEntity.dao.findList(sb.toString(),p);
+    }
+
+    @Override
+    public List<SimpleRoleVO> getRoleByAlliance(long allianceId) {
+        List<RoleEntity> roleEntityList = RoleEntity.dao.partitionId(allianceId).selectList("id","title");
+        List<SimpleRoleVO> result = new ArrayList<>();
+        for(RoleEntity r : roleEntityList){
+            SimpleRoleVO one =new SimpleRoleVO(r.getId() , r.getTitle());
+            result.add(one);
+        }
+
+        return result;
     }
 
     private String generateCode(long allianceId){
