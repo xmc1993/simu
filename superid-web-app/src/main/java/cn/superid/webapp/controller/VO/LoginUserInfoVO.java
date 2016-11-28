@@ -10,14 +10,14 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String userName;
+    private String username;
     private int gender;
     private Timestamp birthday;
     private String avatar;
     private String mobile;
     private String email;
     private int publicType;
-    private Map<Long,List<Long>> members;
+    private Map<Long,List<Object>> members;
 
     public long getId() {
         return id;
@@ -27,12 +27,12 @@ public class LoginUserInfoVO {
         this.id = id;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String userName) {
+        this.username = userName;
     }
 
     public int getGender() {
@@ -83,11 +83,11 @@ public class LoginUserInfoVO {
         this.publicType = publicType;
     }
 
-    public Map<Long, List<Long>> getMembers() {
+    public Map<Long, List<Object>> getMembers() {
         return members;
     }
 
-    public void setMembers(Map<Long, List<Long>> members) {
+    public void setMembers(Map<Long, List<Object>> members) {
         this.members = members;
     }
 }

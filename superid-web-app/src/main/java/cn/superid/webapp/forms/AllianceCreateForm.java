@@ -9,6 +9,7 @@ import com.wordnik.swagger.annotations.ApiModel;
 public class AllianceCreateForm {
     private String name;
     private String logoUrl;
+    private String code;
     private boolean isPersonal = false;
     private long userId;
     private UserEntity userEntity;
@@ -53,5 +54,13 @@ public class AllianceCreateForm {
 
     public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

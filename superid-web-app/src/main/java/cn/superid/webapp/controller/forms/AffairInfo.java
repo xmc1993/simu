@@ -12,8 +12,9 @@ public class AffairInfo {
     private boolean isHomepage;
     private int isPersonal;
     private String shortName;
-    private int isStuck;
+    private boolean isStuck;
     private String[] permissions;
+    private int guestLimit;
 
     private String covers;
     private Object overView;
@@ -108,11 +109,11 @@ public class AffairInfo {
         this.shortName = shortName;
     }
 
-    public int getIsStuck() {
+    public boolean getIsStuck() {
         return isStuck;
     }
 
-    public void setIsStuck(int isStuck) {
+    public void setIsStuck(boolean isStuck) {
         this.isStuck = isStuck;
     }
 
@@ -122,5 +123,13 @@ public class AffairInfo {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public int getGuestLimit() {
+        return guestLimit;
+    }
+
+    public void setGuestLimit(int guestLimit) {
+        this.guestLimit = guestLimit;
     }
 }

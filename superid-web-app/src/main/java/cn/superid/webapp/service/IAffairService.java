@@ -129,6 +129,8 @@ public interface IAffairService  {
      * 不用传参,参数为userId,从currentUser中拿
      * @return
      */
+    public List<AffairTreeVO> getAffairTreeByUser();
+
     public AffairTreeVO getAffairTree(long allianceId);
 
 
