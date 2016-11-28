@@ -5,10 +5,10 @@ package cn.superid.webapp.controller.forms;
  */
 public class AffairInfo {
     private long id;
-    private String name;
-    private String description;
+    private String name = "";
+    private String description = "";
     private int publicType;
-    private String logoUrl;
+    private String logoUrl = "";
     private boolean isHomepage;
     private int isPersonal;
     private String shortName;
@@ -16,10 +16,10 @@ public class AffairInfo {
     private String[] permissions;
     private int guestLimit;
 
-    private String covers;
+    private String covers = "";
     private Object overView;
 
-    private String tags;
+    private String tags = "";
     public long getId() {
         return id;
     }

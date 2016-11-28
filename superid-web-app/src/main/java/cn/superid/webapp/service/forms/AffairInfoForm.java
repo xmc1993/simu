@@ -10,13 +10,15 @@ public class AffairInfoForm {
     private String description;
     private String shortName;
     private String logoUrls;
+    private Integer guestLimit;
 
-    public AffairInfoForm(String name, Integer publicType, String description, String shortName, String logoUrls) {
+    public AffairInfoForm(String name, Integer publicType, String description, String shortName, String logoUrls,Integer guestLimit) {
         this.name = name;
         this.publicType = publicType;
         this.description = description;
         this.shortName = shortName;
         this.logoUrls = logoUrls;
+        this.guestLimit = guestLimit;
     }
 
     public String getName() {
@@ -57,5 +59,13 @@ public class AffairInfoForm {
 
     public void setLogoUrls(String logoUrls) {
         this.logoUrls = logoUrls;
+    }
+
+    public Integer getGuestLimit() {
+        return guestLimit;
+    }
+
+    public void setGuestLimit(Integer guestLimit) {
+        this.guestLimit = guestLimit;
     }
 }

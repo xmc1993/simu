@@ -10,9 +10,9 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String username;
+    private String username = "";
     private int gender;
-    private Timestamp birthday;
+    private Timestamp birthday ;
     private String avatar;
     private String mobile;
     private String email;
@@ -31,8 +31,8 @@ public class LoginUserInfoVO {
         return username;
     }
 
-    public void setUsername(String userName) {
-        this.username = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getGender() {
