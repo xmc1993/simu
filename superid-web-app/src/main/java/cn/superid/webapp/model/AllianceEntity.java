@@ -15,20 +15,20 @@ import java.sql.Timestamp;
 public class AllianceEntity extends ExecutableModel {
     public final static ConditionalDao<AllianceEntity> dao = new ConditionalDao<>(AllianceEntity.class);
     private long id;
-    private String name;
-    private long ownerRoleId;
-    private int state;
-    private int verified; //0表示正常,1表示没有认证,2表示认证正在等待审核
-    private long verifyAffairId;
-    private long rootAffairId;
-    private String logoUrl;
-    private boolean isPersonal;
-    private String superId;
+    private String name = "";
+    private long ownerRoleId = 0;
+    private int state = 0;
+    private int verified = 0; //0表示正常,1表示没有认证,2表示认证正在等待审核
+    private long verifyAffairId = 0;
+    private long rootAffairId = 0;
+    private String logoUrl = "";
+    private boolean isPersonal = false;
+    private String superId = "" ;
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private String description;
-    private double faith;
-    private String code;
+    private String description = "";
+    private double faith = 0;
+    private String code = ""; // code是盟简写,可重复
 
     @Id
     @Column(name = "id")

@@ -67,10 +67,10 @@ public class AllianceService  implements IAllianceService{
         if(allianceCreateForm.getIsPersonal() == true){
             String code = generateCode(allianceEntity.getId());
             allianceEntity.setCode(code);
-            AllianceEntity.dao.id(allianceEntity.getId()).set("superId",code);
+            AllianceEntity.dao.id(allianceEntity.getId()).set("code",code);
         }else{
             allianceEntity.setCode(allianceCreateForm.getCode());
-            AllianceEntity.dao.id(allianceEntity.getId()).set("superId",allianceCreateForm.getCode());
+            AllianceEntity.dao.id(allianceEntity.getId()).set("code",allianceCreateForm.getCode());
         }
 
 
@@ -112,7 +112,7 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean validName(String code) {
-        return !AllianceEntity.dao.eq("shortName",code).exists();
+        return !AllianceEntity.dao.eq("code",code).exists();
     }
 
     @Override
