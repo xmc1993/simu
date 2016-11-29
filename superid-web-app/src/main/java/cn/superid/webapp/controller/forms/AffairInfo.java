@@ -5,6 +5,7 @@ package cn.superid.webapp.controller.forms;
  */
 public class AffairInfo {
     private long id;
+    private String superid = "";
     private String name = "";
     private String description = "";
     private int publicType;
@@ -131,5 +132,13 @@ public class AffairInfo {
 
     public void setGuestLimit(int guestLimit) {
         this.guestLimit = guestLimit;
+    }
+
+    public String getSuperid() {
+        return superid;
+    }
+
+    public void setSuperid(String superid) {
+        this.superid = superid;
     }
 }

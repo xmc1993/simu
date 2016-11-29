@@ -5,11 +5,7 @@ import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
-import cn.superid.webapp.enums.AffairMoveState;
-import cn.superid.webapp.enums.AffairSpecialCondition;
-import cn.superid.webapp.enums.AffairState;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.PublicType;
+import cn.superid.webapp.enums.*;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -44,6 +40,7 @@ public class AffairService implements IAffairService {
     private IUserService userService;
     @Autowired
     private ITaskService taskService;
+
 
     @Override
     public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception{
@@ -98,6 +95,14 @@ public class AffairService implements IAffairService {
         affairEntity.setPathIndex(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+
+        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
+        while(true){
+            if(isExist(superId) == false){
+                affairEntity.setSuperid(superId);
+                break;
+            }
+        }
         affairEntity.save();
 
         long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());
@@ -140,6 +145,13 @@ public class AffairService implements IAffairService {
         affairEntity.setOwnerRoleId(roleId);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
+        while(true){
+            if(isExist(superId) == false){
+                affairEntity.setSuperid(superId);
+                break;
+            }
+        }
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
         affairEntity.setFolderId(folderId);
@@ -490,6 +502,7 @@ public class AffairService implements IAffairService {
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
         affairInfo.setIsStuck(affairEntity.getIsStuck());
+        affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
         //TODO 还没有标签
         affairInfo.setTags("");
@@ -520,40 +533,6 @@ public class AffairService implements IAffairService {
     }
 
     private int shiftAffair(long allianceId,long affairId,long targetAffairId){
-//        //JZY Warning tms,你这方法错误太多,报错太多,我注掉了,你自己感受下
-//        //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
-//        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
-//        AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
-//        //获取目标事务的层级,加到待移动的所有事务上
-//        int targetLevel = targetAffair.getLevel();
-//        String targetPath = targetAffair.getPath();
-//
-//        //根据待移动事务的子事务的level减去待移动事务的level,差值加上目标事务的level,就是待移动事务的所有子事务的level
-//        //即temp-source+target+1,把target和source的差值算出来
-//        int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
-//        int offsetLevel = targetLevel-sourceLevel+1;
-//        //待移动事务本身的parentId,level,number和path
-//        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
-//
-//
-//        //需要找到的所有子事务
-//        List<AffairEntity> allChildAffairs = getAllChildAffairs(allianceId,affairId,"id","level","path");
-//        String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
-//        long id;
-//        int oldLevel,remainingLengthOfPath;
-//        String oldPath,newPath;
-//        for(AffairEntity affairEntity : allChildAffairs){
-//            id = affairEntity.getId();
-//            oldLevel = affairEntity.getLevel();
-//            oldPath = affairEntity.getPath();
-//            //将当前事务的level和待移动事务的level相减,然后取path的后几位substring,长度为相减后的值
-//            remainingLengthOfPath = (oldLevel-sourceLevel)*2;
-//            newPath = basePath+oldPath.substring(oldPath.length()-remainingLengthOfPath);
-//            AffairEntity.dao.id(id).partitionId(allianceId).set("path",newPath,"level",oldLevel+offsetLevel);
-//        }
-//        return AffairMoveState.SUCCESS;
-
-
         //检测不能在把父事务放到子事务底下
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
         AffairEntity sourceAffair = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne();
@@ -601,6 +580,10 @@ public class AffairService implements IAffairService {
 
         return AffairMoveState.SUCCESS;
 
+    }
+
+    private boolean isExist(String superid){
+        return AffairEntity.dao.eq("superid",superid).exists();
     }
 
 }

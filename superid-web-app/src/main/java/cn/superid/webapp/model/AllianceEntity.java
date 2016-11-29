@@ -23,7 +23,7 @@ public class AllianceEntity extends ExecutableModel {
     private long rootAffairId = 0;
     private String logoUrl = "";
     private boolean isPersonal = false;
-    private String superId = "" ;
+    private String superid = "" ;
     private Timestamp createTime;
     private Timestamp modifyTime;
     private String description = "";
@@ -136,12 +136,12 @@ public class AllianceEntity extends ExecutableModel {
         this.faith = faith;
     }
 
-    public String getSuperId() {
-        return superId;
+    public String getSuperid() {
+        return superid;
     }
 
-    public void setSuperId(String superId) {
-        this.superId = superId;
+    public void setSuperid(String superid) {
+        this.superid = superid;
     }
 
     public String getCode() {
