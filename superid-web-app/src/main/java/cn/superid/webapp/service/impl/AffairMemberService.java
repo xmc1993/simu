@@ -237,7 +237,7 @@ public class AffairMemberService implements IAffairMemberService{
             affairMemberEntity.setState(0);
             //判断被邀请的角色是不是自己的某个父事务的负责人
             AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path","level");
-            if(isOwnerOfParentAffair(allianceId,beInvitedRoleId,currentAffair.getPath(),currentAffair.getLevel())){
+            if(isOwnerOfParentAffair(beInvitedRoleId,currentAffair.getId(),allianceId)){
                 //如果是,将权限设置为owner
                 affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OWNER_ID);
                 AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
@@ -262,8 +262,11 @@ public class AffairMemberService implements IAffairMemberService{
         return ResponseCode.OK;
     }
 
-    //判断被邀请的角色是不是自己的某个父事务的负责人
-    private boolean isOwnerOfParentAffair(long allianceId,long roleId,String path,int level){
+    public boolean isOwnerOfParentAffair(long roleId, long affairId,long allianceId){
+        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("level","path");
+        int level = affairEntity.getLevel();
+        String path = affairEntity.getPath();
+
         StringBuilder sb = new StringBuilder("");
         Object[] paths = new Object[level];
         String[] indexs = path.split("-");
@@ -276,7 +279,16 @@ public class AffairMemberService implements IAffairMemberService{
             }
         }
 
-
+        //获取该事务的所有父事务owner
+        List<AffairEntity> parentAffairOwners = AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList("owner_role_id");
+        //用不了contain。。。
+        for(AffairEntity affair : parentAffairOwners){
+            if (roleId == affair.getOwnerRoleId()){
+                return true;
+            }
+        }
+        return false;
+        /*
         //获取该事务的所有父事务id
         List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList("id");
         Object[] parentAffairIds = new Object[affairEntities.size()];
@@ -288,7 +300,7 @@ public class AffairMemberService implements IAffairMemberService{
         //根据父事务id和被邀请人的id以及权限级别去寻找
         boolean isOwner = AffairMemberEntity.dao.partitionId(allianceId).in("affairId",parentAffairIds)
                 .eq("roleId",roleId).eq("permissionLevel",AffairPermissionRoleType.OWNER_ID).exists();
-        return isOwner;
+        */
     }
 
 }

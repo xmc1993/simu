@@ -47,4 +47,13 @@ public interface IUserService {
      ResultUserInfo getUserInfo(long userId);
 
      public Map<Long,List<Object>> getAffairMember();
+
+     /**
+      * 用户修改superid前检测是否已存在该id
+      * @param superId
+      * @return
+      */
+     public boolean validSuperId(String superId);
+
+     public boolean modifySuperId(String superId);
 }
