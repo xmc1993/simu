@@ -5,6 +5,8 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.*;
+import cn.superid.webapp.enums.state.AffairMoveState;
+import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
@@ -80,7 +82,7 @@ public class AffairService implements IAffairService {
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setParentId(parentAffairId);
         affairEntity.setOwnerRoleId(createAffairForm.getOperationRoleId());
-        affairEntity.setState(ValidState.VALID);
+        affairEntity.setState(ValidState.Valid);
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
@@ -195,7 +197,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean disableAffair(Long allianceId,Long affairId) throws Exception{
-        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state", ValidState.INVALID);
+        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state", ValidState.Invalid);
         if(isUpdate == 0){
             return false;
         }
@@ -207,7 +209,7 @@ public class AffairService implements IAffairService {
         long id;
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",ValidState.INVALID);
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",ValidState.Invalid);
             //每个子事务下的task
             tasks.addAll(taskService.getAllValidAffair(allianceId,id,"id"));
         }
@@ -215,7 +217,7 @@ public class AffairService implements IAffairService {
         //关闭所有任务
         for(TaskEntity taskEntity : tasks){
             id = taskEntity.getId();
-            TaskEntity.dao.partitionId(allianceId).id(id).set("state",0);
+            TaskEntity.dao.partitionId(allianceId).id(id).set("state", TaskState.ErrorExit);
         }
 
         //TODO 关闭本事务以及子事务下的交易
@@ -231,7 +233,7 @@ public class AffairService implements IAffairService {
     @Override
     public boolean validAffair(long allianceId, long affairId) throws Exception {
         /*
-        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.VALID);
+        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.Valid);
         if(isUpdate == 0){
             return false;
         }
@@ -239,11 +241,11 @@ public class AffairService implements IAffairService {
         long id;
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.VALID);
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.Valid);
         }
         */
         String basePath = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path").getPath();
-        return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",ValidState.VALID)>0;
+        return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",ValidState.Valid)>0;
     }
 
     @Override

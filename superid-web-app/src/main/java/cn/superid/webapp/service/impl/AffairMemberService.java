@@ -1,9 +1,9 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.StringUtil;
-import cn.superid.webapp.enums.AffairMemberInviteOrApplyState;
 import cn.superid.webapp.enums.ResponseCode;
+import cn.superid.webapp.enums.state.DealState;
+import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -13,7 +13,6 @@ import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberEntity.setAllianceId(allianceId);
         affairMemberEntity.setAffairId(affairId);
         affairMemberEntity.setRoleId(roleId);
-        affairMemberEntity.setState(0);
+        affairMemberEntity.setState(ValidState.Valid);
         affairMemberEntity.setPermissions(permissions);
         affairMemberEntity.setPermissionLevel(permissionLevel);
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
@@ -82,11 +81,11 @@ public class AffairMemberService implements IAffairMemberService{
         if(!affairIsFind){
             return ResponseCode.AffairNotExist;
         }
-        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).state(0).exists();
+        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("role_id",roleId).state(ValidState.Valid).exists();
         if(isExist){
             return ResponseCode.MemberIsExistInAffair;
         }
-        boolean isApplied = AffairMemberApplicationEntity.dao.partitionId(affairId).eq("role_id",roleId).eq("affair_id",affairId).state(0).exists();
+        boolean isApplied = AffairMemberApplicationEntity.dao.partitionId(affairId).eq("role_id",roleId).eq("affair_id",affairId).state(DealState.ToCheck).exists();
         if(isApplied){
             return ResponseCode.WaitForDeal;
         }
@@ -108,7 +107,7 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberApplicationEntity.setUserId(userService.currentUserId());
         affairMemberApplicationEntity.setAffairId(affairId);
         affairMemberApplicationEntity.setAllianceId(allianceId);
-        affairMemberApplicationEntity.setState(0);
+        affairMemberApplicationEntity.setState(DealState.ToCheck);
         affairMemberApplicationEntity.setApplyReason(applyReason);
         affairMemberApplicationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -124,7 +123,7 @@ public class AffairMemberService implements IAffairMemberService{
     public int agreeAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason){
 
         AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId,affairId);
-        if ((affairMemberApplicationEntity == null)||(affairMemberApplicationEntity.getState() != 0)) {
+        if ((affairMemberApplicationEntity == null)||(affairMemberApplicationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.ApplicationNotExist;
         }
         boolean isExist  = AffairEntity.dao.id(affairMemberApplicationEntity.getAffairId()).partitionId(allianceId).exists();
@@ -167,7 +166,7 @@ public class AffairMemberService implements IAffairMemberService{
 
         //更新申请信息
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        affairMemberApplicationEntity.setState(1);
+        affairMemberApplicationEntity.setState(DealState.Agree);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
         affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
         affairMemberApplicationEntity.setDealReason(dealReason);
@@ -184,7 +183,7 @@ public class AffairMemberService implements IAffairMemberService{
         }
         //更新申请信息
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        affairMemberApplicationEntity.setState(2);
+        affairMemberApplicationEntity.setState(DealState.Reject);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
         affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
         affairMemberApplicationEntity.setDealReason(dealReason);
@@ -199,18 +198,18 @@ public class AffairMemberService implements IAffairMemberService{
         if(!affairIsFind){
             return ResponseCode.AffairNotExist;
         }
-        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("roleId",beInvitedRoleId).state(0).exists();
+        boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("roleId",beInvitedRoleId).state(ValidState.Valid).exists();
         if(isExist){
             return ResponseCode.MemberIsExistInAffair;
         }
-        boolean isInvited = AffairMemberInvitationEntity.dao.partitionId(affairId).eq("beInvitedRoleId",beInvitedRoleId).eq("affairId",affairId).state(0).exists();
+        boolean isInvited = AffairMemberInvitationEntity.dao.partitionId(affairId).eq("beInvitedRoleId",beInvitedRoleId).eq("affairId",affairId).state(DealState.ToCheck).exists();
         if(isInvited){
             return ResponseCode.WaitForDeal;
         }
 
         //生成邀请记录
         AffairMemberInvitationEntity affairMemberInvitationEntity = new AffairMemberInvitationEntity();
-        affairMemberInvitationEntity.setState(AffairMemberInviteOrApplyState.ToCheck);
+        affairMemberInvitationEntity.setState(DealState.ToCheck);
         affairMemberInvitationEntity.setAffairId(affairId);
         affairMemberInvitationEntity.setBeInvitedRoleId(beInvitedRoleId);
         affairMemberInvitationEntity.setBeInvitedUserId(RoleCache.dao.findById(beInvitedRoleId).getUserId());
@@ -229,12 +228,12 @@ public class AffairMemberService implements IAffairMemberService{
         boolean isInSameAlliance = RoleEntity.dao.id(beInvitedRoleId).partitionId(allianceId).exists();
         if(isInSameAlliance){
             AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
-                    .set("state",AffairMemberInviteOrApplyState.Agree,"dealReason","本盟人员");
+                    .set("state",DealState.Agree,"dealReason","本盟人员");
             AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
             affairMemberEntity.setAffairId(affairId);
             affairMemberEntity.setAllianceId(allianceId);
             affairMemberEntity.setRoleId(beInvitedRoleId);
-            affairMemberEntity.setState(0);
+            affairMemberEntity.setState(ValidState.Valid);
             //判断被邀请的角色是不是自己的某个父事务的负责人
             AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path","level");
             if(isOwnerOfParentAffair(beInvitedRoleId,currentAffair.getId(),allianceId)){

@@ -16,7 +16,7 @@ public class AllianceUserEntity {
     private long id;
     private long allianceId;
     private long userId;
-    private int state;
+    private int state; //0表示生效中,1表示被失效
 
     @Id
     public long getId() {

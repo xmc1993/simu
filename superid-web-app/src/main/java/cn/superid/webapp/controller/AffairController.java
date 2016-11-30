@@ -2,7 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AffairInfo;
-import cn.superid.webapp.enums.AffairMoveState;
+import cn.superid.webapp.enums.state.AffairMoveState;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
