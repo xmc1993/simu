@@ -351,7 +351,7 @@ public class AffairService implements IAffairService {
 
 
         //第二步,把非本盟的官方加入
-        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(1).neq("alliance_id",allianceId).selectList();
+        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(ValidState.Valid).neq("alliance_id",allianceId).selectList();
         for(AffairMemberEntity a : otherMmeber){
             RoleCache role = RoleCache.dao.findById(a.getRoleId());
             UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
