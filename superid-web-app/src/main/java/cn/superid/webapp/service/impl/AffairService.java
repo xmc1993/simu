@@ -5,11 +5,7 @@ import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
-import cn.superid.webapp.enums.AffairMoveState;
-import cn.superid.webapp.enums.AffairSpecialCondition;
-import cn.superid.webapp.enums.AffairState;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.PublicType;
+import cn.superid.webapp.enums.*;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -23,6 +19,7 @@ import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
 
+import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +40,7 @@ public class AffairService implements IAffairService {
     private IUserService userService;
     @Autowired
     private ITaskService taskService;
+
 
     @Override
     public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception{
@@ -87,12 +85,24 @@ public class AffairService implements IAffairService {
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
-        affairEntity.setShortName(createAffairForm.getLogo());
-        affairEntity.setDescription(createAffairForm.getDescription());
+        //暂定为name
+        affairEntity.setShortName(createAffairForm.getName());
+        //affairEntity.setShortName(createAffairForm.getLogo());
+
+        affairEntity.setDescription(createAffairForm.getDescription() != null ? createAffairForm.getDescription() : "");
         affairEntity.setName(createAffairForm.getName());
         affairEntity.setLevel(parentAffair.getLevel()+1);
         affairEntity.setPathIndex(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
+        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+
+        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
+        while(true){
+            if(isExist(superId) == false){
+                affairEntity.setSuperid(superId);
+                break;
+            }
+        }
         affairEntity.save();
 
         long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());
@@ -127,12 +137,21 @@ public class AffairService implements IAffairService {
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(type);
         affairEntity.setPublicType(PublicType.TO_ALLIANCE);
+        affairEntity.setOwnerRoleId(roleId);
         affairEntity.setAllianceId(allianceId);
         affairEntity.setName(name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
         affairEntity.setOwnerRoleId(roleId);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
+        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
+        while(true){
+            if(isExist(superId) == false){
+                affairEntity.setSuperid(superId);
+                break;
+            }
+        }
         affairEntity.save();
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
         affairEntity.setFolderId(folderId);
@@ -286,15 +305,13 @@ public class AffairService implements IAffairService {
 
     public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
-        modifyAffairInfoForm.setIsHomepage(null);//FBI Warning 狗日的TMS,别建这么多类,鹏哥的setByObject不是这么用的
-        //为了使用鹏哥的setByObject方法,必须form字段名和数据表对应,所以前端传来的修改form中的isHomepage必须去除
+        modifyAffairInfoForm.setIsHomepage(null);//FBI Warning 别建这么多类,鹏哥的setByObject不是这么用的
         int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
-
+        int userUpdate = 1;
         if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
-            int userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
-            return ((isUpdate>0)&&(userUpdate>0));
+            userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
         }
-        return isUpdate>0;
+        return ((isUpdate>0)&&(userUpdate>0));
     }
 
     @Override
@@ -485,9 +502,10 @@ public class AffairService implements IAffairService {
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
         affairInfo.setIsStuck(affairEntity.getIsStuck());
+        affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
         //TODO 还没有标签
-        affairInfo.setTags(null);
+        affairInfo.setTags("");
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
 
 
@@ -515,40 +533,6 @@ public class AffairService implements IAffairService {
     }
 
     private int shiftAffair(long allianceId,long affairId,long targetAffairId){
-//        //JZY Warning tms,你这方法错误太多,报错太多,我注掉了,你自己感受下
-//        //获取目标事务的一级子事务,然后取出最大的number加上1就是待移动事务的number
-//        int max_number = AffairEntity.dao.partitionId(allianceId).eq("parentId",targetAffairId).desc("number").selectOne("path_index").getPathIndex()+1;
-//        AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
-//        //获取目标事务的层级,加到待移动的所有事务上
-//        int targetLevel = targetAffair.getLevel();
-//        String targetPath = targetAffair.getPath();
-//
-//        //根据待移动事务的子事务的level减去待移动事务的level,差值加上目标事务的level,就是待移动事务的所有子事务的level
-//        //即temp-source+target+1,把target和source的差值算出来
-//        int sourceLevel = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("level").getLevel();
-//        int offsetLevel = targetLevel-sourceLevel+1;
-//        //待移动事务本身的parentId,level,number和path
-//        AffairEntity.dao.partitionId(allianceId).id(affairId).set("parent_id",targetAffairId,"level",targetLevel+1,"path",targetPath+"-"+max_number);
-//
-//
-//        //需要找到的所有子事务
-//        List<AffairEntity> allChildAffairs = getAllChildAffairs(allianceId,affairId,"id","level","path");
-//        String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
-//        long id;
-//        int oldLevel,remainingLengthOfPath;
-//        String oldPath,newPath;
-//        for(AffairEntity affairEntity : allChildAffairs){
-//            id = affairEntity.getId();
-//            oldLevel = affairEntity.getLevel();
-//            oldPath = affairEntity.getPath();
-//            //将当前事务的level和待移动事务的level相减,然后取path的后几位substring,长度为相减后的值
-//            remainingLengthOfPath = (oldLevel-sourceLevel)*2;
-//            newPath = basePath+oldPath.substring(oldPath.length()-remainingLengthOfPath);
-//            AffairEntity.dao.id(id).partitionId(allianceId).set("path",newPath,"level",oldLevel+offsetLevel);
-//        }
-//        return AffairMoveState.SUCCESS;
-
-
         //检测不能在把父事务放到子事务底下
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level","path");
         AffairEntity sourceAffair = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne();
@@ -582,7 +566,7 @@ public class AffairService implements IAffairService {
         //改变子事务的path和level
         String basePath = sourceAffair.getPath();
         long id;
-        int oldLevel,remainingLengthOfPath;
+        int oldLevel;
         String oldPath,newPath;
         for(AffairEntity affairEntity : allChildAffairs){
             id = affairEntity.getId();
@@ -596,6 +580,10 @@ public class AffairService implements IAffairService {
 
         return AffairMoveState.SUCCESS;
 
+    }
+
+    private boolean isExist(String superid){
+        return AffairEntity.dao.eq("superid",superid).exists();
     }
 
 }

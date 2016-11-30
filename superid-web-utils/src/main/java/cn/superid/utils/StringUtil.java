@@ -22,7 +22,7 @@ public class StringUtil {
         if (n < 1) {
             return "";
         }
-        String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String base = "abcdefghijklmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXY0123456789";
         Random random = new Random();
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < n; i++) {

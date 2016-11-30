@@ -369,7 +369,7 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
-    @ApiOperation(value = "获取用户的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
+    @ApiOperation(value = "获取用户的详细消息", response = LoginUserInfoVO.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(Long userId){
         LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
@@ -407,7 +407,7 @@ public class UserController {
         session.setAttribute("last_token_time",new Date());
 
         vCode.write(response.getOutputStream());
-        return null;
+        return "ok";
     }
 
     @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST )

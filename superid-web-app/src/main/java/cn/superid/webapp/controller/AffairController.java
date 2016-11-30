@@ -49,6 +49,7 @@ public class AffairController {
            AffairEntity affairEntity= affairService.createAffair(createAffairForm);
             return SimpleResponse.ok(affairEntity.getId());
         } catch (Exception e) {
+            e.printStackTrace();
             return SimpleResponse.exception(e);
         }
     }

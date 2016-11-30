@@ -118,4 +118,13 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.getAllianceList());
     }
 
+    @ApiOperation(value = "获取一个盟里所有角色", response =Long.class)
+    @RequestMapping(value = "/get_role",method = RequestMethod.GET)
+    public SimpleResponse getAllRoleByAlliance(Long allianceId){
+        if (allianceId == null) {
+            return SimpleResponse.error("参数不能为空");
+        }
+        return SimpleResponse.ok(allianceService.getRoleByAlliance(allianceId));
+    }
+
 }
