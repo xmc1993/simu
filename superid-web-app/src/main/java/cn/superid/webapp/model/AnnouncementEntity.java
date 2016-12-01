@@ -27,7 +27,7 @@ public class AnnouncementEntity extends ExecutableModel {
     private String thumbContent;
     private int isTop ;
     private int publicType ;
-    private int state;
+    private int state; //0表示生效中,1表示已失效
     private Timestamp createTime ;
     private Timestamp modifyTime ;
     private String title;

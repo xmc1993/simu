@@ -5,6 +5,7 @@ import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
@@ -46,6 +47,8 @@ public class AffairMemberController {
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        return new SimpleResponse(code,null);
+        /*
         switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("you agree this application");
@@ -56,15 +59,18 @@ public class AffairMemberController {
             default:
                 return SimpleResponse.error("fail");
         }
+        */
 
     }
 
     @ApiOperation(value = "拒绝进入事务申请", response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions()
+    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        return new SimpleResponse(code,null);
+        /*
         switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("you reject this application");
@@ -75,24 +81,24 @@ public class AffairMemberController {
             default:
                 return SimpleResponse.error("fail");
         }
+        */
     }
 
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
-    public SimpleResponse applyForEnterAffair(long allianceId, long affairId, String applyReason) {
-        //判断是否是自己事务的责任人
-        if (GlobalValue.currentAffairMember().getPermissionLevel() == AffairPermissionRoleType.OWNER_ID) {
-            //判断申请事务是不是自己事务的子事务
-            boolean isChild = affairService.isChildAffair(allianceId, affairId, GlobalValue.currentAffairId());
-            if (isChild) {
-                //感觉不需要检查是否已经在目标事务中
-                affairMemberService.addMember(allianceId, affairId, GlobalValue.currentRoleId(), AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
+    public SimpleResponse applyForEnterAffair(long roleId,long allianceId,long targetAllianceId, long targetAffairId, String applyReason) {
+        if(allianceId == targetAllianceId){
+            boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
+            if(isOwner){
+                affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
                 return SimpleResponse.ok("you have joined this affair!");
             }
         }
 
 
-        int code = affairMemberService.applyForEnterAffair(allianceId, affairId, GlobalValue.currentRoleId(), applyReason);
+        int code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
+        return new SimpleResponse(code,null);
+        /*
         switch (code) {
             case ResponseCode.OK:
                 return SimpleResponse.ok("success! please wait for deal");
@@ -105,6 +111,7 @@ public class AffairMemberController {
             default:
                 return new SimpleResponse(ResponseCode.Error, "apply fail");
         }
+        */
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
@@ -112,6 +119,8 @@ public class AffairMemberController {
     public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
         int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
+        return new SimpleResponse(code,null);
+        /*
         switch (code) {
             case ResponseCode.AffairNotExist:
                 return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
@@ -124,5 +133,6 @@ public class AffairMemberController {
             default:
                 return new SimpleResponse(ResponseCode.Error, "invite fail");
         }
+        */
     }
 }

@@ -6,6 +6,7 @@ import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.StateType;
+import cn.superid.webapp.enums.state.CertificationState;
 import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
@@ -53,7 +54,7 @@ public class AllianceService  implements IAllianceService{
         AllianceEntity allianceEntity = new AllianceEntity();
 
         allianceEntity.setIsPersonal(allianceCreateForm.getIsPersonal());
-        allianceEntity.setVerified(StateType.NotCertificated);//等待验证
+        allianceEntity.setVerified(CertificationState.NotCertificated);//等待验证
         allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
 
         if(allianceCreateForm.getIsPersonal() == true){
@@ -117,7 +118,7 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
-        boolean isFind = AllianceCertificationEntity.dao.partitionId(allianceId).eq("roleId",roleId).or(new Expr("checkState","=",0),new Expr("checkState","=",1)).exists();
+        boolean isFind = AllianceCertificationEntity.dao.partitionId(allianceId).eq("roleId",roleId).or(new Expr("checkState","=",CertificationState.Normal),new Expr("checkState","=",CertificationState.WaitCertificated)).exists();
         if(isFind){
             return false;
         }
@@ -127,7 +128,7 @@ public class AllianceService  implements IAllianceService{
         allianceCertificationEntity.setRoleId(roleId);
         allianceCertificationEntity.save();
 
-        AllianceEntity.dao.id(allianceId).set("applyCertificateState",2);
+        AllianceEntity.dao.id(allianceId).set("applyCertificateState",CertificationState.WaitCertificated);
         return true;
     }
 

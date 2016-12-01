@@ -340,6 +340,17 @@ public class UserService implements IUserService {
         return members;
     }
 
+    @Override
+    public boolean validSuperId(String superId) {
+        return UserEntity.dao.eq("superid",superId).exists();
+    }
+
+    @Override
+    public boolean modifySuperId(String superId) {
+        //检测修改的superid是否符合长度等要求,是不是要放在前端
+        return UserEntity.dao.id(currentUserId()).set("superid",superId)>0;
+    }
+
     private String generateSuperId(long id){
         String superid = id+"";
         int length = 8 - superid.length();

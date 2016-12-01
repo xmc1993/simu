@@ -1,4 +1,4 @@
-package cn.superid.webapp.enums;
+package cn.superid.webapp.enums.state;
 
 /**
  * Created by jizhenya on 16/11/16.

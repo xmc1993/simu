@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 public class AllianceCertificationEntity extends ExecutableModel<AllianceCertificationEntity> {
 
     private long id;
-    private long roleId;
     private long allianceId;
     private String companyName;
     private String companyAddress;
@@ -26,9 +25,8 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
     private Float registerMoney;
     private Timestamp setUpDate;
     private Integer checkState = 0;
-    private String checkAdmin = "";
     private String checkReason = "";
-
+    private long roleId;
     private Timestamp createTime;
     private Timestamp modifyTime;
 
@@ -122,14 +120,6 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
 
     public void setCheckState(Integer checkState) {
         this.checkState = checkState;
-    }
-
-    public String getCheckAdmin() {
-        return checkAdmin;
-    }
-
-    public void setCheckAdmin(String checkAdmin) {
-        this.checkAdmin = checkAdmin;
     }
 
     public String getCheckReason() {

@@ -1,11 +1,13 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.*;
+import cn.superid.webapp.enums.state.AffairMoveState;
+import cn.superid.webapp.enums.state.TaskState;
+import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -13,7 +15,6 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.*;
-import cn.superid.webapp.service.forms.AffairInfoForm;
 import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
@@ -81,7 +82,7 @@ public class AffairService implements IAffairService {
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setParentId(parentAffairId);
         affairEntity.setOwnerRoleId(createAffairForm.getOperationRoleId());
-        affairEntity.setState(AffairState.VALID);
+        affairEntity.setState(ValidState.Valid);
         affairEntity.setType(parentAffair.getType());
         affairEntity.setPublicType(createAffairForm.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
@@ -187,6 +188,7 @@ public class AffairService implements IAffairService {
         if(!isExist){
             throw new Exception("找不到该事务");
         }
+        //不包含自己
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).eq("parentId",affairId).selectList("id","allianceId","name","level","path");
 
         return result;
@@ -195,7 +197,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean disableAffair(Long allianceId,Long affairId) throws Exception{
-        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.INVALID);
+        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state", ValidState.Invalid);
         if(isUpdate == 0){
             return false;
         }
@@ -207,7 +209,7 @@ public class AffairService implements IAffairService {
         long id;
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.INVALID);
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",ValidState.Invalid);
             //每个子事务下的task
             tasks.addAll(taskService.getAllValidAffair(allianceId,id,"id"));
         }
@@ -215,7 +217,7 @@ public class AffairService implements IAffairService {
         //关闭所有任务
         for(TaskEntity taskEntity : tasks){
             id = taskEntity.getId();
-            TaskEntity.dao.partitionId(allianceId).id(id).set("state",0);
+            TaskEntity.dao.partitionId(allianceId).id(id).set("state", TaskState.ErrorExit);
         }
 
         //TODO 关闭本事务以及子事务下的交易
@@ -231,7 +233,7 @@ public class AffairService implements IAffairService {
     @Override
     public boolean validAffair(long allianceId, long affairId) throws Exception {
         /*
-        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.VALID);
+        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.Valid);
         if(isUpdate == 0){
             return false;
         }
@@ -239,11 +241,11 @@ public class AffairService implements IAffairService {
         long id;
         for(AffairEntity affairEntity : childAffairs){
             id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.VALID);
+            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.Valid);
         }
         */
         String basePath = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path").getPath();
-        return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",AffairState.VALID)>0;
+        return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",ValidState.Valid)>0;
     }
 
     @Override
@@ -259,6 +261,7 @@ public class AffairService implements IAffairService {
 
     private boolean hasPermission(String permissions,int toFindPermission){
         //JZY Warining : tms,注意边界值判断,你代码没加下面这个*号判断
+        //收到
         if(permissions.equals("*")){
             return true;
         }
@@ -348,7 +351,7 @@ public class AffairService implements IAffairService {
 
 
         //第二步,把非本盟的官方加入
-        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(1).neq("alliance_id",allianceId).selectList();
+        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(ValidState.Valid).neq("alliance_id",allianceId).selectList();
         for(AffairMemberEntity a : otherMmeber){
             RoleCache role = RoleCache.dao.findById(a.getRoleId());
             UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
@@ -384,7 +387,7 @@ public class AffairService implements IAffairService {
         if(childAffairEntity.getParentId()==parentAffairId){//WARN 狗日的TMS一般情况只会比较相邻父子节点,注意优化
             return  true;
         }
-        //获取待比较两个事务的leve,level相减,然后去掉子事务path的后几位,长度为level之差*2,然后对比两个的path,相同则为父事务
+        //获取待比较两个事务的level
         AffairEntity parentAffairEntity = AffairEntity.dao.id(parentAffairId).partitionId(allianceId).selectOne("level","path");
         int parentLevel = parentAffairEntity.getLevel();
         int childLevel = childAffairEntity.getLevel();
@@ -392,13 +395,15 @@ public class AffairService implements IAffairService {
         if(childLevel<=parentLevel)
             return false;
 
-        int levelOffset = childLevel-parentLevel;
-        String parentPath = parentAffairEntity.getPath();
-        String childPath = childAffairEntity.getPath();
-        String prefixPath = childPath.substring(0,childPath.length()-(2*levelOffset));
-        if(parentPath.equals(prefixPath))
-            return true;
-        return false;
+        //取父事务的path,与子事务的前缀path逐一比较,完全相同则为父事务
+        String[] parentPaths = parentAffairEntity.getPath().split("-");
+        String[] childPaths = childAffairEntity.getPath().split("-");
+        for(int i=0;i<parentLevel;i++){
+            if(!(parentPaths[i].equals(childPaths[i]))){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

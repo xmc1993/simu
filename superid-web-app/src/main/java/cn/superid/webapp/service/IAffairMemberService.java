@@ -98,4 +98,12 @@ public interface IAffairMemberService {
     public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason);
 
 
+    /**
+     * 判断一个角色是不是一个事务的某个父事务的负责人
+     * @param roleId 需要判断的角色
+     * @param affairId 需要判断的事务
+     * @param allianceId
+     * @return
+     */
+    public boolean isOwnerOfParentAffair(long roleId,long affairId,long allianceId);
 }
