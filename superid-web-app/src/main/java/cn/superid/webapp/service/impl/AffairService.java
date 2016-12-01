@@ -3,6 +3,7 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.*;
 import cn.superid.webapp.enums.state.AffairMoveState;
@@ -22,6 +23,7 @@ import cn.superid.webapp.service.vo.GetRoleVO;
 
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +72,7 @@ public class AffairService implements IAffairService {
 
     @Override
     @Transactional
-    public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception{
+    public Map<String,Object> createAffair(CreateAffairForm createAffairForm) throws Exception{
         long parentAffairId = createAffairForm.getAffairId();
         long parentAllianceId = createAffairForm.getAllianceId();
         AffairEntity parentAffair = AffairEntity.dao.findById(parentAffairId,parentAllianceId);
@@ -110,7 +112,7 @@ public class AffairService implements IAffairService {
         AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId",folderId);
 
 
-        affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
+        AffairMemberEntity member =  affairMemberService.addCreator(affairEntity.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());//作为创建者
 
         //在affair_user表中记录默认角色
         AffairUserEntity affairUserEntity = new AffairUserEntity();
@@ -120,7 +122,12 @@ public class AffairService implements IAffairService {
         affairUserEntity.setUserId(userService.currentUserId());
         affairUserEntity.save();
 
-        return affairEntity;
+        Map<String,Object> result = new HashedMap();
+        result.put("affair",affairEntity);
+        result.put("affairMemberId",member.getId());
+        result.put("role",new SimpleRoleVO(createAffairForm.getOperationRoleId(),RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
+
+        return result;
     }
 
     /**
