@@ -13,13 +13,13 @@ public class SQLDao {
 
 
     public static String GET_AFFAIR_TREE = "select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type , a.is_stuck , a.path , b.role_id as roleId from " +
-            "(select * from affair where alliance_id = ? ) a " +
+            "(select * from affair where alliance_id = ? and state = 0 ) a " +
             "left join (select role_id,affair_id from affair_user where alliance_id = ? and user_id = ? ) b " +
             "on a.id = b.affair_id ";
 
     public static String GET_AFFAIR_TREE_BY_USER = "select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type , a.is_stuck , a.path , b.role_id as roleId from " +
             "(select * from affair where alliance_id in (" +
-            "select alliance_id from role where user_id = ? )) a " +
+            "select alliance_id from role where user_id = ? ) and state = 0 ) a " +
             "left join (select role_id,affair_id from affair_user where user_id = ? ) b " +
             "on a.id = b.affair_id ";
 
