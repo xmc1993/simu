@@ -238,18 +238,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean validAffair(long allianceId, long affairId) throws Exception {
-        /*
-        int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state",AffairState.Valid);
-        if(isUpdate == 0){
-            return false;
-        }
-        List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
-        long id;
-        for(AffairEntity affairEntity : childAffairs){
-            id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",AffairState.Valid);
-        }
-        */
+
         String basePath = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path").getPath();
         return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",ValidState.Valid)>0;
     }
