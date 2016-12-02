@@ -38,13 +38,21 @@ public class AnnouncementController {
     @Autowired
     private IAnnouncementService announcementService;
 
+    @ApiOperation(value = "根据事务得到公告id",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_id_by_affair", method = RequestMethod.GET)
+    public SimpleResponse getIdByAffair(Long allianceId , Long affairId) {
+        return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId));
+    }
+
+
+
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version) {
+    public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version , Long allianceId , Long affairId) {
 
-        long allianceId = GlobalValue.currentAllianceId();
-        long affairId = GlobalValue.currentAffairId();
+        if(allianceId == null | affairId == null | announcementId == null ){
+            return SimpleResponse.error("参数错误");
+        }
 
         if(announcementId == null){
             return SimpleResponse.error("参数不正确");

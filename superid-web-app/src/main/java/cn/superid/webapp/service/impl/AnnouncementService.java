@@ -1,9 +1,11 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
+import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
@@ -240,5 +242,18 @@ public class AnnouncementService implements IAnnouncementService{
     public boolean deleteAnnouncement(long announcementId, long allianceId) {
         AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state",0);
         return true;
+    }
+
+    @Override
+    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId) {
+        List<AnnouncementEntity> announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modifyTime").selectList("id","modify_time");
+        List<SimpleAnnouncementIdVO> result = new ArrayList<>();
+        if(announcementEntityList != null){
+            for(AnnouncementEntity a : announcementEntityList){
+                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime().getTime());
+                result.add(s);
+            }
+        }
+        return result;
     }
 }

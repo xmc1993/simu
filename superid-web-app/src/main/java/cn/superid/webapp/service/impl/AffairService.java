@@ -123,7 +123,7 @@ public class AffairService implements IAffairService {
         affairUserEntity.save();
 
         Map<String,Object> result = new HashedMap();
-        result.put("affair",affairEntity);
+        result.put("affair",getAffairInfo(affairEntity.getAllianceId(),affairEntity.getId()));
         result.put("affairMemberId",member.getId());
         result.put("role",new SimpleRoleVO(createAffairForm.getOperationRoleId(),RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
 
