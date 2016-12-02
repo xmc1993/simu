@@ -186,7 +186,6 @@ public class AnnouncementController {
     public SimpleResponse getAnnouncementListContainTask(){
         List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(GlobalValue.currentAllianceId()).eq("affair_id",GlobalValue.currentAffairId()).state(1).selectList();
         List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
-
         return SimpleResponse.ok(result);
     }
 
@@ -200,7 +199,6 @@ public class AnnouncementController {
         p.addIndexBinding(affair.getPath()+"%");
         List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findList(AnnouncementEntity.class,sql.toString(),p);
         List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
-
         return SimpleResponse.ok(result);
     }
 

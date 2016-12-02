@@ -18,7 +18,7 @@ public interface IAffairService  {
     public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception;
 
 
-    public AffairEntity createAffair(CreateAffairForm createAffairForm) throws Exception;
+    public Map<String,Object> createAffair(CreateAffairForm createAffairForm) throws Exception;
 
 
 

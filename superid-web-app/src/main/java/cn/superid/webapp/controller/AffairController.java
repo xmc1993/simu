@@ -46,8 +46,8 @@ public class AffairController {
         createAffairForm.setLogo(logo);
         createAffairForm.setDescription(description);
         try {
-           AffairEntity affairEntity= affairService.createAffair(createAffairForm);
-            return SimpleResponse.ok(affairEntity.getId());
+            Map<String,Object> result= affairService.createAffair(createAffairForm);
+            return SimpleResponse.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             return SimpleResponse.exception(e);
