@@ -236,6 +236,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
         announcementEntity.setState(1);
+        announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
@@ -254,7 +255,7 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId) {
-        List<AnnouncementEntity> announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modifyTime").selectList("id","modify_time");
+        List<AnnouncementEntity> announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modify_time").selectList("id","modify_time");
         List<SimpleAnnouncementIdVO> result = new ArrayList<>();
         if(announcementEntityList != null){
             for(AnnouncementEntity a : announcementEntityList){
