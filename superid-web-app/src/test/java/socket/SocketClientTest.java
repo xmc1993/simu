@@ -2,53 +2,41 @@ package socket;
 
 import org.junit.Test;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
 
 /**
  * Created by xmc1993 on 16/10/27.
  */
 public class SocketClientTest {
-    Socket socket;
 
-    @Test
-    public void startConnect() throws IOException {
-        socket = new Socket("localhost", 9999);
-
-
-//        bw.close();
-//        socket.close();
-
-        for (int i = 0; i < 2; i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-//                        Message.NoticeMsg.Builder noticeMsg = Message.NoticeMsg.newBuilder();
-//                        noticeMsg.setType("测试");
-//                        noticeMsg.setContent("i am ");
-//                        noticeMsg.setAffairId(12345L);
-//                        noticeMsg.setDisplayName("xmc1993");
-//                        Message.NoticeMsg notice = noticeMsg.build();
-//                        notice.writeTo(socket.getOutputStream());
-                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        for (int i = 0; i < 10000; i++) {
-                            bw.write(i + "hello world \n");
-                            bw.flush();
+    public static void  main(String[] args) throws Exception{
+        final Socket socket = new Socket("localhost", 10110);
+        final InputStream inputStream = socket.getInputStream() ;
+        byte[] buff = new byte[4096];
+        int k=-1;
+        while (true) {
+            if (!socket.isClosed()) {
+                if (socket.isConnected()) {
+                    if (!socket.isInputShutdown()) {
+                        try {
+                            if ((k=inputStream.read(buff,0,buff.length))!=-1) {
+                                byte[] resultBuff = new byte[k];
+                                System.arraycopy(buff, 0, resultBuff, 0, k); // copy previous bytes
+                                System.out.println(new String(resultBuff, StandardCharsets.UTF_8));
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-//                        socket.getOutputStream().write("hello world\n".getBytes());
-//                        socket.getOutputStream().flush();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
-            }).start();
+            }
+
         }
 
     }
 
-
 }
+

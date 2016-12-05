@@ -159,7 +159,7 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public SimpleResponse register(String token,String password,String username,String verifyCode){
-        if(!userService.checkVerifyCode(verifyCode)){
+        if(!userService.checkVerifyCode(verifyCode,token)){
             return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
         }
 
@@ -200,7 +200,7 @@ public class UserController {
         if(StringUtil.isEmpty(verifyCode)){
             return new SimpleResponse(ResponseCode.NeedVerifyCode,"验证码不能为空");
         }
-        if(!userService.checkVerifyCode(verifyCode)){
+        if(!userService.checkVerifyCode(verifyCode,token)){
             return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
         }
         auth.setSessionAttr("verified_time",new Date());
@@ -214,7 +214,7 @@ public class UserController {
         if(StringUtil.isEmpty(verifyCode) | StringUtil.isEmpty(newPwd)){
             return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
         }
-        if(!userService.checkVerifyCode(verifyCode)){
+        if(!userService.checkVerifyCode(verifyCode,null)){
             return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码不正确");
         }
         return new SimpleResponse(userService.resetPwd(newPwd,(String) auth.getSessionAttr("token")));
@@ -233,7 +233,7 @@ public class UserController {
         if (calendar.getTime().before(new Date())) {//超过15分钟
             return SimpleResponse.error("not_verified_time");
         }
-        if (!userService.checkVerifyCode(verifyCode)){
+        if (!userService.checkVerifyCode(verifyCode,token)){
             return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码不正确");
 
         }
@@ -266,7 +266,7 @@ public class UserController {
                 if("".equals(verifyCode)||(verifyCode == null)){
                     return new SimpleResponse(ResponseCode.NeedVerifyCode,"需要验证码");
                 }
-                if(userService.checkVerifyCode(verifyCode)){
+                if(userService.checkVerifyCode(verifyCode,token)){
                     CheckFrequencyUtil.reset(token);
                 }else{
                     LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));

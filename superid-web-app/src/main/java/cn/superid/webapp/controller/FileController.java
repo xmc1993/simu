@@ -215,7 +215,6 @@ public class FileController {
         return SimpleResponse.ok(fileService.condense_picture(picture,big,small,0));
 
 
-
     }
 
 

@@ -16,7 +16,7 @@ public interface IUserService {
 
      boolean getVerifyCode(String token,String template);
 
-     boolean checkVerifyCode(String code);
+     boolean checkVerifyCode(String code,String token);
 
      UserEntity createUser(UserEntity userEntity);
 

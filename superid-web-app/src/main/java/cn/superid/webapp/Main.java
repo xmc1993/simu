@@ -1,6 +1,5 @@
 package cn.superid.webapp;
 
-import cn.superid.webapp.forms.CountryCode;
 import cn.superid.webapp.utils.PathUtil;
 import cn.superid.webapp.utils.jetty.JettyServer;
 import org.apache.log4j.PropertyConfigurator;
