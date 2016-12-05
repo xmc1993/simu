@@ -1,6 +1,8 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
@@ -9,11 +11,14 @@ import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
+import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.forms.*;
+import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +29,9 @@ import java.util.List;
  */
 @Service
 public class AnnouncementService implements IAnnouncementService{
+    @Autowired
+    private IRoleService roleService;
+
     @Override
     public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
         //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
@@ -254,6 +262,40 @@ public class AnnouncementService implements IAnnouncementService{
                 result.add(s);
             }
         }
+        return result;
+    }
+
+    @Override
+    public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
+        String[] idList = ids.split(",");
+        if(idList.length == 0){
+            return null;
+        }
+        StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where 1 = 2  ");
+        ParameterBindings p = new ParameterBindings();
+        for(String id : idList){
+            try{
+                Long one = Long.parseLong(id);
+                sql.append(" or id = ? ");
+                p.addIndexBinding(one);
+            }catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+        sql.append(" ) a join affair b on a.affair_id = b.id ");
+
+        List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findList(SimpleAnnouncementVO.class,sql.toString(),p);
+        if(result == null ){
+            return null;
+        }
+        for(SimpleAnnouncementVO s : result){
+            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
+            s.setRoleName(name.getRoleName());
+            s.setUsername(name.getUserName());
+        }
+
         return result;
     }
 }

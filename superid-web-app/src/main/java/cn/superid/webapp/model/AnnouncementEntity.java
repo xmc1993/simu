@@ -34,6 +34,7 @@ public class AnnouncementEntity extends ExecutableModel {
     private int version;
     private String decrement;
     private long modifierId;
+    private long creatorId;
     private long allianceId;
 
     @Id
@@ -165,5 +166,13 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 }

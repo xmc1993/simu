@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
@@ -42,6 +43,19 @@ public class AnnouncementController {
     @RequestMapping(value = "/get_id_by_affair", method = RequestMethod.GET)
     public SimpleResponse getIdByAffair(Long allianceId , Long affairId) {
         return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId));
+    }
+
+    @ApiOperation(value = "根据ids得到所有的公告概略",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_overview", method = RequestMethod.GET)
+    public SimpleResponse getOverview(String ids , Long allianceId ) {
+        if(ids == null | ids.equals("") | allianceId == null ){
+            return SimpleResponse.error("参数不能为空");
+        }
+        List<SimpleAnnouncementVO> result = announcementService.getOverview(ids,allianceId);
+        if(result == null){
+            return SimpleResponse.error("未搜到结果");
+        }
+        return SimpleResponse.ok(result);
     }
 
 
