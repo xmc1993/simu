@@ -99,6 +99,7 @@ public class UserService implements IUserService {
             final String code = NumberUtils.randomNumberString(4);
             auth.setSessionAttr("code",code);
             auth.setSessionAttr("last_token_time",new Date());
+            auth.setSessionAttr("token",token);
             if(StringUtil.isEmail(token)){
                 String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", code);
                 return DirectEmailDao.sendEmail("SuperId邮箱验证",emailText,token);
@@ -125,9 +126,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean checkVerifyCode(String code) {
+    public boolean checkVerifyCode(String code,String token) {
         Date date =(Date)auth.getSessionAttr("last_token_time");
         String cachedCode =(String) auth.getSessionAttr("code");
+        if(token!=null){
+            String cachedToken = (String) auth.getSessionAttr("token");
+            if(!cachedToken.equals(token)){
+                return false;
+            }
+        }
 
         if(date!=null&&code!=null){
             Calendar calendar = Calendar.getInstance();
