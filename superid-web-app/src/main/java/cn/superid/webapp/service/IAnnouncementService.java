@@ -1,5 +1,7 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.ContentState;
@@ -28,4 +30,8 @@ public interface IAnnouncementService {
     public boolean createAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , String thumb , ContentState content);
 
     public boolean deleteAnnouncement(long announcementId , long allianceId);
+
+    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId , long allianceId);
+
+    public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
 }

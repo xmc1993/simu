@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
@@ -38,13 +39,34 @@ public class AnnouncementController {
     @Autowired
     private IAnnouncementService announcementService;
 
+    @ApiOperation(value = "根据事务得到公告id",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_id_by_affair", method = RequestMethod.GET)
+    public SimpleResponse getIdByAffair(Long allianceId , Long affairId) {
+        return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId));
+    }
+
+    @ApiOperation(value = "根据ids得到所有的公告概略",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_overview", method = RequestMethod.GET)
+    public SimpleResponse getOverview(String ids , Long allianceId ) {
+        if(ids == null | ids.equals("") | allianceId == null ){
+            return SimpleResponse.error("参数不能为空");
+        }
+        List<SimpleAnnouncementVO> result = announcementService.getOverview(ids,allianceId);
+        if(result == null){
+            return SimpleResponse.error("未搜到结果");
+        }
+        return SimpleResponse.ok(result);
+    }
+
+
+
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version) {
+    public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version , Long allianceId , Long affairId) {
 
-        long allianceId = GlobalValue.currentAllianceId();
-        long affairId = GlobalValue.currentAffairId();
+        if(allianceId == null | affairId == null | announcementId == null ){
+            return SimpleResponse.error("参数错误");
+        }
 
         if(announcementId == null){
             return SimpleResponse.error("参数不正确");

@@ -9,6 +9,7 @@ import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IRoleService;
+import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +44,20 @@ public class RoleService implements IRoleService {
 
         return role.getTitle()+": "+user.getUsername();
     }
+
+    @Override
+    public UserNameAndRoleNameVO getUserNameAndRoleName(Long roleId) {
+        RoleCache role = RoleCache.dao.findById(roleId);
+        UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
+        if(role == null || user == null || role.getTitle() == null || user.getUsername() == null){
+            return null;
+        }
+        UserNameAndRoleNameVO result = new UserNameAndRoleNameVO();
+        result.setRoleName(role.getTitle());
+        result.setUserName(user.getUsername());
+        return result;
+    }
+
 
     @Override
     public List<SearchUserVO> searchUser(long allianceId, String input) {
