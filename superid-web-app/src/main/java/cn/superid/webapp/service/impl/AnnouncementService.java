@@ -236,6 +236,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
         announcementEntity.setState(1);
+        announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
