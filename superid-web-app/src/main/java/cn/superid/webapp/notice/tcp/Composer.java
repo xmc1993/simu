@@ -1,7 +1,6 @@
 package cn.superid.webapp.notice.tcp;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by xmc1993 on 16/12/5.
@@ -18,8 +17,8 @@ public class Composer {
     private int length = 0;
     private int state = ST_LENGTH;
     private int maxLength = DEFAULT_MAX_LENGTH;
-    private ByteBuffer buf = null;
-
+//    private ByteBuffer buf = null;
+    private byte[] buf = null;
 
     public Composer() {
 
@@ -29,8 +28,66 @@ public class Composer {
         this.maxLength = maxLength;
     }
 
-    public void compose(String data) {
-//        Buffer buffer = new StringBuffer(data, "utf-8");
+
+    /**
+     * 包装数据String类型
+     *
+     * @param data
+     */
+    public byte[] compose(String data) throws UnsupportedEncodingException {
+        byte[] resource = data.getBytes("utf-8");
+        return compose(resource);
+    }
+
+    /**
+     * 包装数据byte[]数据
+     *
+     * @param resource
+     * @return 包装好的数据
+     */
+    public byte[] compose(byte[] resource) {
+        int lengthSize = calLengthSize(resource.length);
+        byte[] res = new byte[lengthSize + resource.length];
+        //填充数据包的长度信息
+        fillLength(res, resource.length, lengthSize);
+        //将源数据也填充到新的byte数组里面
+        System.arraycopy(resource, 0, res, lengthSize, resource.length);
+        return res;
+    }
+
+    /**
+     * 向byte数组中写入长度信息
+     *
+     * @param buf
+     * @param length
+     * @param size
+     */
+    private void fillLength(byte[] buf, int length, int size) {
+        int offset = size - 1; //偏移量
+        Integer value; //需要写入的值
+        for (; offset >= 0; offset--) {//对于对于length的每一个size都写入相应的数据
+            value = length % LEFT_SHIFT_BITS;
+            if (offset < size - 1) {
+                value |= 0x80; //最高位要取1 其余的7位代表真实的数值信息
+            }
+            buf[offset] = value.byteValue();
+            length >>>= 7;
+        }
+    }
+
+    /**
+     * 计算长度的规格
+     *
+     * @param length
+     * @return
+     */
+    private int calLengthSize(int length) {
+        int res = 0;
+        while (length > 0) {
+            length >>>= 7;
+            res++;
+        }
+        return res;
     }
 
     private void reset() {
@@ -40,34 +97,72 @@ public class Composer {
         this.left = 0;
     }
 
-    public void feed() throws Exception {
+
+    /**
+     * 解开数据
+     * @param data
+     * @param offset
+     * @param end
+     * @throws Exception
+     */
+    public byte[] feed(byte[] data, int offset,int end) throws Exception {
+        if (this.state == ST_ERROR) {
+            throw new Exception("compose in error state, reset it first");
+        }
+
+        while (offset < end){
+            if(this.state == ST_LENGTH){
+                offset = this.readLength(data, offset, end);
+            }
+            if(this.state == ST_DATA){
+                offset = this.readData(data,offset,end);
+            }
+            if(this.state == ST_ERROR){
+                break;
+            }
+
+        }
+
+        return this.buf;
+    }
+
+    /**
+     * 解开数据
+     * @param data
+     * @throws Exception
+     */
+    public void feed(byte[] data) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
     }
 
+
     /**
-     * 读取包中保存长度信息的部分
-     * @param data
+     * 读取数据包的长度信息
+     *
+     * @param resource
      * @param offset
      * @param end
-     * @return 数据的长度????
+     * @return
      */
-    private int readLength(ByteBuffer data, int offset, int end) {
+    private int readLength(byte[] resource, int offset, int end) {
         int length = this.length;
-        int b = 0;
+        int value = 0;
         boolean finish = false;
-        for (int i = 0; i < end; i++) {
-            //TODO 读取流中的信息
+
+        int i;
+        for (i = 0; i < end; i++) {
+            value = (int) resource[i + offset];//获取对应位置的数值
             length *= LEFT_SHIFT_BITS;
-//            length += (b & 0x7f);
-            if(this.maxLength > 0 && length > this.maxLength){
+            length += (value & 0x7f);
+
+            if (this.maxLength > 0 && length > this.maxLength) {
                 this.state = ST_ERROR;
-                //TODO
-                return -1;
+                throw new RuntimeException("包的大小超过了限制!");
             }
 
-            if(!((b & 0x80)==0x0)){
+            if (!((value & 0x80) >= 0x00)) {//如果等到的还是长度的信息则继续读取长度信息 否则停止
                 i++;
                 finish = true;
                 break;
@@ -76,59 +171,42 @@ public class Composer {
 
         this.length = length;
 
-        if(finish){
+        if (finish) {//不是很明白这些成员变量是干么的 为了向readData提供信息么
             this.state = ST_DATA;
             this.offset = 0;
             this.left = this.length;
-            this.buf = new ByteBuffer(this.length);
+            this.buf = new byte[this.length];
         }
+
+        return i + offset;
     }
 
 
     /**
      * 从返回的流中读取data
      *
-     * @param data
+     * @param resource
      * @param offset
      * @param end
      * @return
      */
-    private int readData(ByteBuffer data, int offset, int end) {
+    private int readData(byte[] resource, int offset, int end) {
         int left = end - offset;
         int size = Math.min(left, this.left);
-        //TODO
+        System.arraycopy(resource, this.offset, this.buf, offset, offset + size);
         this.left -= size;
         this.offset += size;
 
         if (this.left == 0) {
-            ByteBuffer buf = this.buf;
+            byte[] buf = this.buf;
             this.reset();
+
             //TODO get the result
+
+//            return buf;
         }
 
         return offset + size;
-    }
-
-    private int calLengthSize(int length) {
-        int res = 0;
-        while (length > 0) {
-            length >>>= 7;
-            res++;
-        }
-        return 0;
-    }
-
-    private void fillLength(ByteBuffer buf, int data, int size) {
-        int offset = size - 1;
-        int index;
-        for (; offset >= 0; offset--) {
-            index = data % LEFT_SHIFT_BITS;
-            if (offset < size - 1) {
-                index |= 0x80;
-            }
-//            buf.
-            data >>>= 7;
-        }
     }
 
 }
