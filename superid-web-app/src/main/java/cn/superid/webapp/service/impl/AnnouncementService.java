@@ -8,6 +8,7 @@ import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
@@ -254,12 +255,25 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId) {
-        List<AnnouncementEntity> announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modify_time").selectList("id","modify_time");
+    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId , boolean isContainChild) {
+        List<AnnouncementEntity> announcementEntityList = null;
+        if(isContainChild == false){
+            announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modify_time").selectList("id","modify_time");
+        }else{
+            AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
+            if(affair == null){
+                return null;
+            }
+            StringBuilder sql = new StringBuilder("select * from announcement a join affair b on a.affair_id = b.id where b.path like ? ");
+            ParameterBindings p = new ParameterBindings();
+            p.addIndexBinding("%"+affair.getPath()+"%");
+            announcementEntityList = AnnouncementEntity.dao.findList(sql.toString(),p);
+        }
+
         List<SimpleAnnouncementIdVO> result = new ArrayList<>();
         if(announcementEntityList != null){
             for(AnnouncementEntity a : announcementEntityList){
-                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime().getTime());
+                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime().getTime(),a.getAffairId());
                 result.add(s);
             }
         }
@@ -269,16 +283,15 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
         String[] idList = ids.split(",");
-        if(idList.length == 0){
-            return null;
-        }
         StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where 1 = 2  ");
         ParameterBindings p = new ParameterBindings();
         for(String id : idList){
             try{
-                Long one = Long.parseLong(id);
-                sql.append(" or id = ? ");
-                p.addIndexBinding(one);
+                if(id.matches("[0-9]+")){
+                    Long one = Long.parseLong(id);
+                    sql.append(" or id = ? ");
+                    p.addIndexBinding(one);
+                }
             }catch (Exception e){
                 e.printStackTrace();
                 return null;
