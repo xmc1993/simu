@@ -64,7 +64,7 @@ public class CheckFrequencyUtil {
         }
     }
 
-    private  final static int defaultLimit =5;
+    private  final static int defaultLimit =50;
     private final static int defaultTime = 24*60*60;
 
     private static final Map<String,  ValueAttr> cache = new ConcurrentHashMap<>();
