@@ -252,7 +252,7 @@ public class UserController {
             return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
         }
 
-        if(userService.validToken(token)){
+        if(!userService.validToken(token)){
             return new SimpleResponse(ResponseCode.NotRegistered,"该账号不存在");
         }
 

@@ -197,9 +197,9 @@ public class UserService implements IUserService {
             String[] strs = token.split("\\s+");
             if(StringUtil.isMobile(token)){
                 if(strs.length==1){
-                    return !UserEntity.dao.eq("mobile",token).exists();
+                    return UserEntity.dao.eq("mobile",token).exists();
                 }else {
-                    return !UserEntity.dao.eq("mobile",strs[1]).exists();
+                    return UserEntity.dao.eq("mobile",strs[1]).exists();
                 }
 
             }
