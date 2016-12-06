@@ -72,7 +72,7 @@ public class UserController {
         if(StringUtil.isEmpty(token)){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
-            if(!userService.validToken(token)){
+            if(userService.validToken(token)){
                 return new SimpleResponse(ResponseCode.HasRegistered,"此账号已被注册");
             }
 
@@ -167,7 +167,7 @@ public class UserController {
             return new SimpleResponse(ResponseCode.ErrorUserNameOrPassword,"不正确的用户名或密码");
         }
 
-        if(!userService.validToken(token)){
+        if(userService.validToken(token)){
             return new SimpleResponse(ResponseCode.HasRegistered,"该账号已注册");
         }
 

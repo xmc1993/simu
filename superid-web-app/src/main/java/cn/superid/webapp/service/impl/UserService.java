@@ -192,7 +192,7 @@ public class UserService implements IUserService {
     @Override
     public boolean validToken(String token) {
         if(StringUtil.isEmail(token)){
-            return !UserEntity.dao.eq("email",token).exists();
+            return UserEntity.dao.eq("email",token).exists();
         }else{
             String[] strs = token.split("\\s+");
             if(StringUtil.isMobile(token)){
