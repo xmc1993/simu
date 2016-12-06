@@ -303,13 +303,19 @@ public class AffairService implements IAffairService {
 
     public boolean modifyAffairInfo(long allianceId, long affairId,ModifyAffairInfoForm modifyAffairInfoForm){
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
+        Integer isStuck = modifyAffairInfoForm.getIsStuck();
         modifyAffairInfoForm.setIsHomepage(null);//FBI Warning 别建这么多类,鹏哥的setByObject不是这么用的
+        modifyAffairInfoForm.setIsStuck(null);
         int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
         int userUpdate = 1;
         if((isHomepage!=null)&&(isHomepage==IntBoolean.TRUE)){
             userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
         }
-        return ((isUpdate>0)&&(userUpdate>0));
+        int update = 1 ;
+        if((isStuck != null)&&(isStuck == IntBoolean.TRUE)){
+            update = AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).set("isStuck",isStuck);
+        }
+        return ((isUpdate>0)&&(userUpdate>0)&&(update>0));
     }
 
     @Override
@@ -501,7 +507,7 @@ public class AffairService implements IAffairService {
         affairInfo.setShortName(affairEntity.getShortName());
         affairInfo.setPublicType(affairEntity.getPublicType());
         affairInfo.setIsPersonal(affairEntity.getType());
-        affairInfo.setIsStuck(affairEntity.getIsStuck());
+//        affairInfo.setIsStuck(affairEntity.getIsStuck());
         affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
         //TODO 还没有标签
@@ -523,6 +529,12 @@ public class AffairService implements IAffairService {
             affairInfo.setIsHomepage(false)
             ;
         }
+
+        AffairUserEntity affairUserEntity = AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).selectOne("is_stuck");
+        if(affairUserEntity != null ){
+            affairInfo.setIsStuck(affairUserEntity.getIsStuck());
+        }
+
         return affairInfo;
     }
 

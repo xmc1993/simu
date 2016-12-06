@@ -38,7 +38,6 @@ public class AffairEntity extends ExecutableModel {
     private int pathIndex  = 0; //创建顺序
     private long folderId  = 0;
     private String shortName = "";
-    private boolean isStuck = false;//是否置顶
     private String covers = "";
     private int guestLimit = 0;
     private int guestNumber = 0;
@@ -207,14 +206,6 @@ public class AffairEntity extends ExecutableModel {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
-    }
-
-    public boolean getIsStuck() {
-        return isStuck;
-    }
-
-    public void setIsStuck(boolean isStuck) {
-        this.isStuck = isStuck;
     }
 
     @Transient

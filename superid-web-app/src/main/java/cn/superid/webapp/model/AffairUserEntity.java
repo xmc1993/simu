@@ -20,6 +20,7 @@ public class AffairUserEntity extends ExecutableModel {
     private long userId;
     private long roleId;
     private long allianceId;
+    private boolean isStuck = false;
 
     public final static ConditionalDao<AffairUserEntity> dao = new ConditionalDao<>(AffairUserEntity.class);
 
@@ -64,5 +65,13 @@ public class AffairUserEntity extends ExecutableModel {
 
     public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
+    }
+
+    public boolean getIsStuck() {
+        return isStuck;
+    }
+
+    public void setIsStuck(boolean isStuck) {
+        this.isStuck = isStuck;
     }
 }
