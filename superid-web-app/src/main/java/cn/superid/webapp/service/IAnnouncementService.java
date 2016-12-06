@@ -31,7 +31,7 @@ public interface IAnnouncementService {
 
     public boolean deleteAnnouncement(long announcementId , long allianceId);
 
-    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId , long allianceId);
+    public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId , long allianceId , boolean isContainChild);
 
     public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
 }

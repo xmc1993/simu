@@ -7,10 +7,12 @@ public class SimpleAnnouncementIdVO {
 
     private long announcementId;
     private long modifyTime;
+    private long affairId;
 
-    public SimpleAnnouncementIdVO(long announcementId, long modifyTime) {
+    public SimpleAnnouncementIdVO(long announcementId, long modifyTime, long affairId) {
         this.announcementId = announcementId;
         this.modifyTime = modifyTime;
+        this.affairId = affairId;
     }
 
     public SimpleAnnouncementIdVO(){
@@ -31,5 +33,13 @@ public class SimpleAnnouncementIdVO {
 
     public void setModifyTime(long modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
     }
 }

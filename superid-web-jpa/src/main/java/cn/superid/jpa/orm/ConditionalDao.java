@@ -122,7 +122,7 @@ public class ConditionalDao<T> extends Dao<T> {
 
     public ConditionalDao<T> asc(String col){
         where.get().append(" ORDER BY ");
-        where.get().append(col);
+        where.get().append(StringUtil.underscoreName(col));
         where.get().append(" ASC ");
         return this;
     }
@@ -130,7 +130,7 @@ public class ConditionalDao<T> extends Dao<T> {
 
     public ConditionalDao<T> desc(String col){
         where.get().append(" ORDER BY ");
-        where.get().append(col);
+        where.get().append(StringUtil.underscoreName(col));
         where.get().append(" desc ");
         return this;
     }
@@ -138,13 +138,13 @@ public class ConditionalDao<T> extends Dao<T> {
 
     public ConditionalDao<T> orderBy(String orderBy){
         where.get().append(" ORDER BY ");
-        where.get().append(orderBy);
+        where.get().append(StringUtil.underscoreName(orderBy));
         return  this;
     }
 
     public ConditionalDao<T> groupBy(String groupBy){
         where.get().append(" GROUP BY ");
-        where.get().append(groupBy);
+        where.get().append(StringUtil.underscoreName(groupBy));
         return  this;
     }
 

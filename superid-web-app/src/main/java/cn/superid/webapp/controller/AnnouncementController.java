@@ -41,14 +41,15 @@ public class AnnouncementController {
 
     @ApiOperation(value = "根据事务得到公告id",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_id_by_affair", method = RequestMethod.GET)
-    public SimpleResponse getIdByAffair(Long allianceId , Long affairId) {
-        return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId));
+    public SimpleResponse getIdByAffair(Long allianceId , Long affairId , boolean isContainChild) {
+        return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId,isContainChild));
     }
+
 
     @ApiOperation(value = "根据ids得到所有的公告概略",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_overview", method = RequestMethod.GET)
     public SimpleResponse getOverview(String ids , Long allianceId ) {
-        if(ids == null | ids.equals("") | allianceId == null ){
+        if(ids == null | allianceId == null ){
             return SimpleResponse.error("参数不能为空");
         }
         List<SimpleAnnouncementVO> result = announcementService.getOverview(ids,allianceId);
@@ -61,7 +62,7 @@ public class AnnouncementController {
 
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/getDetail", method = RequestMethod.POST)
+    @RequestMapping(value = "/getDetail", method = RequestMethod.GET)
     public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version , Long allianceId , Long affairId) {
 
         if(allianceId == null | affairId == null | announcementId == null ){

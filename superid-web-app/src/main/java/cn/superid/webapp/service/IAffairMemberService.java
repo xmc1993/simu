@@ -97,7 +97,25 @@ public interface IAffairMemberService {
      */
     public int inviteToEnterAffair(long allianceId,long affairId,long inviteRoleId, long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason);
 
+    /**
+     * 同意别人邀请自己进入事务的请求
+     * @param allianceId 当前盟
+     * @param affairId 当前事务
+     * @param invitationId
+     * @param dealReason
+     * @return
+     */
+    public int agreeInvitation(long allianceId,long affairId,long invitationId,String dealReason);
 
+    /**
+     * 拒绝别人的邀请
+     * @param allianceId
+     * @param affairId
+     * @param invitationId
+     * @param dealReason
+     * @return
+     */
+    public int rejectInvitation(long allianceId,long affairId,long invitationId,String dealReason);
     /**
      * 判断一个角色是不是一个事务的某个父事务的负责人
      * @param roleId 需要判断的角色
