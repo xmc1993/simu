@@ -96,7 +96,7 @@ public class UserService implements IUserService {
     @Override
     public boolean  getVerifyCode(String token,String template) {
         if(canSendVerifyCodeAgain()){
-            final String code = NumberUtils.randomNumberString(4);
+            final String code = NumberUtils.randomNumberString(6);
             auth.setSessionAttr("code",code);
             auth.setSessionAttr("last_token_time",new Date());
             auth.setSessionAttr("token",token);
