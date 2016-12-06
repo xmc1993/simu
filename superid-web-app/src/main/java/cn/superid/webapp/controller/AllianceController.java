@@ -63,6 +63,9 @@ public class AllianceController {
         String[] affairList = affairs.split(",");
         int index = 0;
         for (String affairName : affairList) {//在根事务下面建立选择的事务
+            if(affairName.equals("")){
+                break;
+            }
             CreateAffairForm createAffairForm = new CreateAffairForm();
             createAffairForm.setName(affairName);
             createAffairForm.setAffairId(allianceEntity.getRootAffairId());
