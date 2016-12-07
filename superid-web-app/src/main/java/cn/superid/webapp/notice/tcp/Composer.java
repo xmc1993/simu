@@ -164,7 +164,6 @@ public class Composer {
                 throw new RuntimeException("包的大小超过了限制!");
             }
 
-            int val = value & 0x80;
             if (((value & 0x80) == 0x00)) {//如果等到的还是长度的信息则继续读取长度信息 否则停止
                 i++;
                 finish = true;
