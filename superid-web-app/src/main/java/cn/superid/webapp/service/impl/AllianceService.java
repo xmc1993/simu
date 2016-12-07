@@ -118,14 +118,18 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
+        /*
+        //填写验证信息的时候,检测该盟是否是已被验证或者等待验证中
         boolean isFind = AllianceCertificationEntity.dao.partitionId(allianceId).eq("roleId",roleId).or(new Expr("checkState","=",CertificationState.Normal),new Expr("checkState","=",CertificationState.WaitCertificated)).exists();
         if(isFind){
             return false;
         }
+        */
         AllianceCertificationEntity allianceCertificationEntity = new AllianceCertificationEntity();
         allianceCertificationEntity.setAllianceId(allianceId);
         allianceCertificationEntity.copyPropertiesFrom(allianceCertificationForm);
         allianceCertificationEntity.setRoleId(roleId);
+        allianceCertificationEntity.setCheckState(CertificationState.WaitCertificated);
         allianceCertificationEntity.save();
 
         AllianceEntity.dao.id(allianceId).set("applyCertificateState",CertificationState.WaitCertificated);

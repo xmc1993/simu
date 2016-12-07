@@ -1,7 +1,8 @@
-package cn.superid.webapp.enums;
+package cn.superid.webapp.enums.type;
 
 /**
  * Created by zoowii on 15/6/23.
+ * 就是publicType
  */
 public class PublicType {
     public static final int ALL = 0; // 公开 所有人可见

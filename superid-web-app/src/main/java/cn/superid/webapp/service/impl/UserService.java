@@ -6,8 +6,7 @@ import cn.superid.utils.MapUtil;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.PublicType;
+import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
@@ -28,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -203,8 +201,9 @@ public class UserService implements IUserService {
                 }
 
             }
+            return false;
         }
-        return false;
+
     }
 
     @Override
