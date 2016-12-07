@@ -43,6 +43,8 @@ public class SQLResolve {
         StringBuilder cleanAffairMember = new StringBuilder("delete from affair_member where affair_id in (select id from affair where alliance_id in (select id from alliance where name = '12'))");
         //第三步,清除脏的affair
         StringBuilder cleanAffair = new StringBuilder("delete from affair  where alliance_id in (select id from alliance where name = '12')");
+        //第四步,清除脏的role
+        StringBuilder cleanRole = new StringBuilder("delete from role  where alliance_id in (select id from alliance where name = '12')");
         //第四步,清除脏alliance
         StringBuilder cleanAlliance = new StringBuilder("delete from alliance where name = '12'");
 
