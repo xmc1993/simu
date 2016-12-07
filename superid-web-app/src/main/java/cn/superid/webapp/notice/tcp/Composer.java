@@ -6,10 +6,10 @@ import java.io.UnsupportedEncodingException;
  * Created by xmc1993 on 16/12/5.
  */
 public class Composer {
-    private final static Integer ST_LENGTH = 1;
-    private final static Integer ST_DATA = 2;
-    private final static Integer ST_ERROR = 3;
-    private final static Integer DEFAULT_MAX_LENGTH = -1;
+    private final static Integer ST_LENGTH = 1;// state that we should read length
+    private final static Integer ST_DATA = 2;// state that we should read length
+    private final static Integer ST_ERROR = 3;// state that something wrong has happened
+    private final static Integer DEFAULT_MAX_LENGTH = -1;// default max package size: unlimited
     private final static Integer LEFT_SHIFT_BITS = 1 << 7;
 
     private int offset = 0;
@@ -17,7 +17,6 @@ public class Composer {
     private int length = 0;
     private int state = ST_LENGTH;
     private int maxLength = DEFAULT_MAX_LENGTH;
-//    private ByteBuffer buf = null;
     private byte[] buf = null;
 
     public Composer() {
@@ -92,6 +91,7 @@ public class Composer {
 
     private void reset() {
         this.state = ST_LENGTH;
+        this.buf = null;
         this.length = 0;
         this.offset = 0;
         this.left = 0;
@@ -131,10 +131,11 @@ public class Composer {
      * @param data
      * @throws Exception
      */
-    public void feed(byte[] data) throws Exception {
+    public byte[] feed(byte[] data) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
+        return feed(data, 0, data.length);
     }
 
 
@@ -148,12 +149,13 @@ public class Composer {
      */
     private int readLength(byte[] resource, int offset, int end) {
         int length = this.length;
-        int value = 0;
-        boolean finish = false;
+        int value;
+        boolean finish = false;//读取长度的过程是否结束了
 
         int i;
         for (i = 0; i < end; i++) {
-            value = (int) resource[i + offset];//获取对应位置的数值
+            value = (int) resource[i + offset];
+            //还原原数值
             length *= LEFT_SHIFT_BITS;
             length += (value & 0x7f);
 
@@ -162,7 +164,8 @@ public class Composer {
                 throw new RuntimeException("包的大小超过了限制!");
             }
 
-            if (!((value & 0x80) >= 0x00)) {//如果等到的还是长度的信息则继续读取长度信息 否则停止
+            int val = value & 0x80;
+            if (((value & 0x80) == 0x00)) {//如果等到的还是长度的信息则继续读取长度信息 否则停止
                 i++;
                 finish = true;
                 break;
@@ -171,7 +174,7 @@ public class Composer {
 
         this.length = length;
 
-        if (finish) {//不是很明白这些成员变量是干么的 为了向readData提供信息么
+        if (finish) {
             this.state = ST_DATA;
             this.offset = 0;
             this.left = this.length;
@@ -193,18 +196,13 @@ public class Composer {
     private int readData(byte[] resource, int offset, int end) {
         int left = end - offset;
         int size = Math.min(left, this.left);
-        System.arraycopy(resource, this.offset, this.buf, offset, offset + size);
+        System.arraycopy(resource, offset, this.buf, 0 , size);
         this.left -= size;
         this.offset += size;
 
-        if (this.left == 0) {
-            byte[] buf = this.buf;
-            this.reset();
-
-            //TODO get the result
-
-//            return buf;
-        }
+//        if (this.left == 0) {
+//            this.reset();
+//        }
 
         return offset + size;
     }
