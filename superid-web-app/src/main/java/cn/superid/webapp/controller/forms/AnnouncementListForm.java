@@ -9,7 +9,7 @@ public class AnnouncementListForm {
     private long id;
     private String title;
     private String thumbContent;
-    private long roleId;
+    private long creatorId;
     private int isTop;
     private int publicType;
     private int state;
@@ -40,14 +40,6 @@ public class AnnouncementListForm {
 
     public void setThumbContent(String thumbContent) {
         this.thumbContent = thumbContent;
-    }
-
-    public long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
     }
 
     public int getIsTop() {
@@ -104,5 +96,13 @@ public class AnnouncementListForm {
 
     public void setModifierId(long modifierId) {
         this.modifierId = modifierId;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 }

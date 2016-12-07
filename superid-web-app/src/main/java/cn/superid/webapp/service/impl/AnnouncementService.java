@@ -206,7 +206,6 @@ public class AnnouncementService implements IAnnouncementService{
         history.setAnnouncementId(announcementEntity.getId());
         history.setModifierId(announcementEntity.getModifierId());
         history.setTitle(announcementEntity.getTitle());
-        history.setRoleId(announcementEntity.getRoleId());
         history.setVersion(announcementEntity.getVersion());
         history.setCreateTime(TimeUtil.getCurrentSqlTime());
         history.setDecrement(announcementEntity.getDecrement());
@@ -231,7 +230,6 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setContent(JSONObject.toJSONString(content));
         announcementEntity.setAffairId(affairId);
         announcementEntity.setTaskId(taskId);
-        announcementEntity.setRoleId(roleId);
         announcementEntity.setModifierId(roleId);
         announcementEntity.setThumbContent(thumb);
         announcementEntity.setIsTop(isTop);
@@ -243,6 +241,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setVersion(1);
         announcementEntity.setDecrement("0");
         announcementEntity.setAllianceId(allianceId);
+        announcementEntity.setCreatorId(roleId);
         announcementEntity.save();
 
         return true;

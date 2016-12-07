@@ -20,22 +20,21 @@ public class AnnouncementEntity extends ExecutableModel {
     public final static ConditionalDao<AnnouncementEntity> dao = new ConditionalDao<>(AnnouncementEntity.class);
 
     private long id;
-    private long affairId;
-    private long taskId;
-    private long roleId;
-    private String content;
+    private long affairId = 0;
+    private long taskId = 0;
+    private String content = "";
     private String thumbContent;
-    private int isTop ;
-    private int publicType ;
-    private int state; //0表示生效中,1表示已失效
+    private int isTop = 0;
+    private int publicType = 0;
+    private int state = 0; //0表示生效中,1表示已失效
     private Timestamp createTime ;
     private Timestamp modifyTime ;
-    private String title;
-    private int version;
-    private String decrement;
-    private long modifierId;
-    private long creatorId;
-    private long allianceId;
+    private String title = "";
+    private int version = 0;
+    private String decrement = "";
+    private long modifierId = 0;
+    private long creatorId = 0;
+    private long allianceId = 0;
 
     @Id
     @Column(name = "id")
@@ -61,14 +60,6 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setTaskId(long taskId) {
         this.taskId = taskId;
-    }
-
-    public long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
     }
 
     public String getContent() {

@@ -9,7 +9,7 @@ public class AnnouncementForm {
 
     private long id;
     private String title;
-    private long roleId;
+    private long creatorId;
     private String content;
     private int isTop ;
     private int publicType ;
@@ -32,14 +32,6 @@ public class AnnouncementForm {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
     }
 
     public String getContent() {
@@ -96,5 +88,13 @@ public class AnnouncementForm {
 
     public void setModifierId(long modifierId) {
         this.modifierId = modifierId;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
     }
 }
