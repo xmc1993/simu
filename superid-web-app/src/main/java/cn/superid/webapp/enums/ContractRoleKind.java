@@ -2,6 +2,7 @@ package cn.superid.webapp.enums;
 
 /**
  * Created by jizhneya on 16/9/20.
+ * 用于表示合同中的甲乙方
  */
 public enum ContractRoleKind {
     JIAFANG("甲方",1),YIFANG("乙方",0),BINGFANG("丙方",2),DINGFANG("丁方",3),

@@ -9,6 +9,7 @@ import cn.superid.webapp.enums.*;
 import cn.superid.webapp.enums.state.AffairMoveState;
 import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;

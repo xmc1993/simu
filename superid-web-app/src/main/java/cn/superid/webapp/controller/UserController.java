@@ -72,13 +72,15 @@ public class UserController {
         if(StringUtil.isEmpty(token)){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
+            if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
+                return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
+            }
+
             if(userService.validToken(token)){
                 return new SimpleResponse(ResponseCode.HasRegistered,"此账号已被注册");
             }
 
-            if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
-                return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
-            }
+
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.registerCode));
         }
     }
