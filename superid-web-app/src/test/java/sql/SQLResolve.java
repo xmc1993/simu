@@ -36,7 +36,7 @@ public class SQLResolve {
     }
 
     @Test
-    public void cleanDirtyData(){
+    public void cleanDirtyAlliance(){
         //用法:打开阿里云sql,直接按顺序复制运行,条件自己变
         //第一步,清除脏affair_user
         StringBuilder cleanAffairUser = new StringBuilder("delete from affair_user where affair_id in (select id from affair where alliance_id in (select id from alliance where name = '12'))");
