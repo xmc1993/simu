@@ -13,8 +13,6 @@ public class SimpleAnnouncementVO {
     private long affairId;
     private String thumbContent;
     private String affairName;
-
-    @Transient
     private long creatorId;
 
     @Transient

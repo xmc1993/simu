@@ -25,6 +25,7 @@ import cn.superid.webapp.service.vo.GetRoleVO;
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.xmlbeans.impl.xb.ltgfmt.FileDesc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,7 +173,7 @@ public class AffairService implements IAffairService {
             affairUserEntity.setAffairId(affairEntity.getId());
             affairUserEntity.setAllianceId(allianceId);
             affairUserEntity.setRoleId(roleId);
-            affairUserEntity.setUserId(userService.currentUserId());
+            affairUserEntity.setUserId(RoleEntity.dao.findById(roleId,allianceId).getUserId());
             affairUserEntity.save();
         }catch (Exception e){
             e.printStackTrace();
