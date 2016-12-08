@@ -5,23 +5,24 @@ import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
+import cn.superid.webapp.controller.VO.SimpleAllianceVO;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
-import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.AllianceEntity;
-import cn.superid.webapp.model.UserEntity;
-import cn.superid.webapp.model.UserPrivateInfoEntity;
+import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberVO;
+import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.utils.*;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -292,7 +293,7 @@ public class UserService implements IUserService {
         ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
         UserEntity userEntity = UserEntity.dao.findById(userId);
         UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-        resultUserInfo.setNikeNames(userEntity.getNicknames());
+        resultUserInfo.setNickNames(userEntity.getNicknames());
         resultUserInfo.setAvatar(userEntity.getAvatar());
         resultUserInfo.setSuperId(userEntity.getSuperid());
         resultUserInfo.setIsAuthenticated(userEntity.getIsAuthenticated());
@@ -344,6 +345,90 @@ public class UserService implements IUserService {
             members.put(a.getId(),user);
         }
         return members;
+    }
+
+    @Override
+    //public List<UserAllianceRolesVO> getUserAllianceRoles() {
+      public List<AllianceRolesVO> getUserAllianceRoles(){
+        /*
+        //算法1
+        //先取出用户拥有的所有盟
+        StringBuilder sb = new StringBuilder("select a.id, a.name from alliance a where a.id in (select alliance_id from role r where r.user_id = ? group by alliance_id)");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(currentUserId());
+        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findList(SimpleAllianceVO.class,sb.toString(),p);
+
+        //对于该用户的每个盟
+        for(SimpleAllianceVO simpleAllianceVO : allianceVOs){
+            UserAllianceRolesVO userAllianceRolesVO = new UserAllianceRolesVO();
+            userAllianceRolesVO.setAllianceId(simpleAllianceVO.getId());
+            userAllianceRolesVO.setAllianceName(simpleAllianceVO.getName());
+            //根据allianceId和userId去role表中取出相应的数据
+            sb = new StringBuilder("select r.id, r.title from role r where r.user_id = ? and r.alliance_id = ?");
+            p = new ParameterBindings();
+            p.addIndexBinding(currentUserId());
+            p.addIndexBinding(simpleAllianceVO.getId());
+            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findList(SimpleRoleVO.class,sb.toString(),p);
+            //将list转为字符串放到userAllianceRole中
+            userAllianceRolesVO.setRoles(simpleRoleVOs);
+
+            roles.add(userAllianceRolesVO);
+        }
+        */
+
+        /*
+        sb = new StringBuilder(
+                "select t1.id,t1.name,t2.role_id,t2.title  from  (select a.id,a.name from alliance  a where a.id in (select alliance_id from role where user_id = 1893 group by alliance_id)) t1 " +
+                "join" +
+                "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = 1893) t2 " +
+                "on t1.id = t2.alliance_id ");
+        testVos = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString());
+        List<Long> allianceIds = new ArrayList<>();
+        List<SimpleRoleVO> simpleRoleVOs = new ArrayList<>();
+        //用于定位,用法在循环里有解释
+        int index = -1;
+        //下面的这个for循环的前提条件是取出来的数据是group by allianceId的,不然就错了
+        //应该是group的,因为t1表是Group盟的,就是说在join的时候一张表是已经group的
+        //算法的思路是,先将盟id抽取出来,然后遍历testVos,如果盟id相同就更新结果list中的相应的盟id的记录
+        for(AllianceRolesVO allianceRolesVO : testVos){
+            if(allianceIds.contains(allianceRolesVO.getId())){
+                SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
+                simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
+                simpleRoleVO.setRoleName(allianceRolesVO.getName());
+                simpleRoleVOs.add(simpleRoleVO);
+                roles2.get(index).setRoles(simpleRoleVOs);
+                continue;
+            }
+
+            UserAllianceRolesVO userAllianceRolesVO = new UserAllianceRolesVO();
+            userAllianceRolesVO.setAllianceId(allianceRolesVO.getId());
+            userAllianceRolesVO.setAllianceName(allianceRolesVO.getName());
+            //碰到不一样的就重置simpleRoles
+            simpleRoleVOs = new ArrayList<>();
+            SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
+            simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
+            simpleRoleVO.setRoleName(allianceRolesVO.getName());
+            simpleRoleVOs.add(simpleRoleVO);
+            userAllianceRolesVO.setRoles(simpleRoleVOs);
+            roles2.add(userAllianceRolesVO);
+            //定位现在的userAllianceRolesVO
+            index++;
+
+            allianceIds.add(allianceRolesVO.getId());
+
+        }
+         */
+        //这样的格式是王海青强烈要求。。。。
+        StringBuilder sb = new StringBuilder(
+                "select t1.id as alliance_id,t1.name as alliance_name,t2.role_id,t2.title as role_title from  (select a.id,a.name from alliance  a where a.id in (select alliance_id from role where user_id = ? group by alliance_id)) t1 " +
+                        "join" +
+                        "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = ?) t2 " +
+                        "on t1.id = t2.alliance_id");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(currentUserId());
+        p.addIndexBinding(currentUserId());
+        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        return allianceRolesVOs;
     }
 
     @Override

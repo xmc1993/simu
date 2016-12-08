@@ -294,6 +294,8 @@ public class UserController {
         userEntity.copyPropertiesTo(loginUserInfoVO);
         //获取user的所有affairMember
         loginUserInfoVO.setMembers(userService.getAffairMember());
+        //获取user的所有盟的所有角色
+        loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
         return SimpleResponse.ok(loginUserInfoVO);
     }
 
@@ -380,6 +382,7 @@ public class UserController {
 
             user.copyPropertiesTo(loginUserInfoVO);
             loginUserInfoVO.setMembers(userService.getAffairMember());
+            loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);

@@ -17,15 +17,15 @@
     <repositories>
 
         <repository>
-            <id>jboss</id>
+            <roleId>jboss</roleId>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <id>sonatype-oss-public</id>
+            <roleId>sonatype-oss-public</roleId>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>spring-releases</id>
+            <roleId>spring-releases</roleId>
             <name>Spring Release Repository</name>
             <url>https://repo.spring.io/libs-release</url>
             <releases>
@@ -36,7 +36,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>sonatype-nexus-staging</id>
+            <roleId>sonatype-nexus-staging</roleId>
             <name>Sonatype Nexus Staging</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
             <releases>
@@ -49,12 +49,12 @@
     </repositories>
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <roleId>releases</roleId>
             <name>Internal Releases</name>
             <url>http://maven.local:8081/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
-            <id>Snapshots</id>
+            <roleId>Snapshots</roleId>
             <name>Internal Snapshots</name>
             <url>http://maven.local:8081/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
