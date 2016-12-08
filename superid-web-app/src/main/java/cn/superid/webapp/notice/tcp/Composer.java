@@ -89,7 +89,10 @@ public class Composer {
         return res;
     }
 
-    private void reset() {
+    /**
+     * 当一个Composer被使用过以后应该使用该方法重新进行重新初始化Composer
+     */
+    public void reset() {
         this.state = ST_LENGTH;
         this.buf = null;
         this.length = 0;
@@ -100,24 +103,25 @@ public class Composer {
 
     /**
      * 解开数据
+     *
      * @param data
      * @param offset
      * @param end
      * @throws Exception
      */
-    public byte[] feed(byte[] data, int offset,int end) throws Exception {
+    public byte[] feed(byte[] data, int offset, int end) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
 
-        while (offset < end){
-            if(this.state == ST_LENGTH){
+        while (offset < end) {
+            if (this.state == ST_LENGTH) {
                 offset = this.readLength(data, offset, end);
             }
-            if(this.state == ST_DATA){
-                offset = this.readData(data,offset,end);
+            if (this.state == ST_DATA) {
+                offset = this.readData(data, offset, end);
             }
-            if(this.state == ST_ERROR){
+            if (this.state == ST_ERROR) {
                 break;
             }
 
@@ -128,6 +132,7 @@ public class Composer {
 
     /**
      * 解开数据
+     *
      * @param data
      * @throws Exception
      */
@@ -195,13 +200,9 @@ public class Composer {
     private int readData(byte[] resource, int offset, int end) {
         int left = end - offset;
         int size = Math.min(left, this.left);
-        System.arraycopy(resource, offset, this.buf, 0 , size);
+        System.arraycopy(resource, offset, this.buf, 0, size);
         this.left -= size;
         this.offset += size;
-
-//        if (this.left == 0) {
-//            this.reset();
-//        }
 
         return offset + size;
     }
