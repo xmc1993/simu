@@ -111,7 +111,7 @@ public class Composer {
      * @param end
      * @throws Exception
      */
-    public byte[] feed(byte[] data, int offset, int end) throws Exception {
+    public void feed(byte[] data, int offset, int end) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
@@ -129,7 +129,6 @@ public class Composer {
 
         }
 
-        return this.buf;
     }
 
     /**
@@ -138,11 +137,11 @@ public class Composer {
      * @param data
      * @throws Exception
      */
-    public byte[] feed(byte[] data) throws Exception {
+    public void feed(byte[] data) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
-        return feed(data, 0, data.length);
+        feed(data, 0, data.length);
     }
 
 
@@ -207,7 +206,7 @@ public class Composer {
         this.left -= size;
         this.offset += size;
 
-        if(this.left == 0){
+        if (this.left == 0) {
             byte[] bytes = this.buf;
             this.reset();
             callback.callBack(bytes);
