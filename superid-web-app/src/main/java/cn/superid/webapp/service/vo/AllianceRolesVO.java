@@ -9,7 +9,7 @@ public class AllianceRolesVO {
     private long allianceId;
     private String allianceName;
     private long roleId;
-    private String roleTitle;
+    private String roleName;
 
     public long getAllianceId() {
         return allianceId;
@@ -35,11 +35,11 @@ public class AllianceRolesVO {
         this.roleId = roleId;
     }
 
-    public String getRoleTitle() {
-        return roleTitle;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRoleTitle(String roleTitle) {
-        this.roleTitle = roleTitle;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

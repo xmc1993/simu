@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
@@ -371,12 +372,12 @@ public class UserService implements IUserService {
             List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findList(SimpleRoleVO.class,sb.toString(),p);
             //将list转为字符串放到userAllianceRole中
             userAllianceRolesVO.setRoles(simpleRoleVOs);
-
             roles.add(userAllianceRolesVO);
         }
         */
 
         /*
+        算法2
         sb = new StringBuilder(
                 "select t1.id,t1.name,t2.role_id,t2.title  from  (select a.id,a.name from alliance  a where a.id in (select alliance_id from role where user_id = 1893 group by alliance_id)) t1 " +
                 "join" +
@@ -419,11 +420,7 @@ public class UserService implements IUserService {
         }
          */
         //这样的格式是王海青强烈要求。。。。
-        StringBuilder sb = new StringBuilder(
-                "select t1.id as alliance_id,t1.name as alliance_name,t2.role_id,t2.title as role_title from  (select a.id,a.name from alliance  a where a.id in (select alliance_id from role where user_id = ? group by alliance_id)) t1 " +
-                        "join" +
-                        "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = ?) t2 " +
-                        "on t1.id = t2.alliance_id");
+        StringBuilder sb = new StringBuilder(SQLDao.GET_USER_ALLIANCE_ROLES);
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         p.addIndexBinding(currentUserId());
