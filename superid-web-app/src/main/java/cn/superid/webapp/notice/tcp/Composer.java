@@ -18,13 +18,15 @@ public class Composer {
     private int state = ST_LENGTH;
     private int maxLength = DEFAULT_MAX_LENGTH;
     private byte[] buf = null;
+    private Callback callback;
 
-    public Composer() {
-
+    public Composer(Callback callback) {
+        this.callback = callback;
     }
 
-    public Composer(int maxLength) {
+    public Composer(int maxLength, Callback callback) {
         this.maxLength = maxLength;
+        this.callback = callback;
     }
 
 
@@ -109,7 +111,7 @@ public class Composer {
      * @param end
      * @throws Exception
      */
-    public byte[] feed(byte[] data, int offset, int end) throws Exception {
+    public void feed(byte[] data, int offset, int end) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
@@ -127,7 +129,6 @@ public class Composer {
 
         }
 
-        return this.buf;
     }
 
     /**
@@ -136,11 +137,11 @@ public class Composer {
      * @param data
      * @throws Exception
      */
-    public byte[] feed(byte[] data) throws Exception {
+    public void feed(byte[] data) throws Exception {
         if (this.state == ST_ERROR) {
             throw new Exception("compose in error state, reset it first");
         }
-        return feed(data, 0, data.length);
+        feed(data, 0, data.length);
     }
 
 
@@ -192,19 +193,26 @@ public class Composer {
     /**
      * 从返回的流中读取data
      *
-     * @param resource
+     * @param resource 源数据
      * @param offset
      * @param end
      * @return
      */
     private int readData(byte[] resource, int offset, int end) {
-        int left = end - offset;
-        int size = Math.min(left, this.left);
-        System.arraycopy(resource, offset, this.buf, 0, size);
+        int left = end - offset; //end - offset 表示这个数据包还有多少个byte没有读完
+        int size = Math.min(left, this.left);//this.left表示当前的tcp包还需要读取多少数据包才完整
+
+        System.arraycopy(resource, offset, this.buf, this.offset, size);
         this.left -= size;
         this.offset += size;
 
-        return offset + size;
+        if (this.left == 0) {
+            byte[] bytes = this.buf;
+            this.reset();
+            callback.callBack(bytes);
+        }
+
+        return offset + size; //给出当前数据包没有读完部分的offset
     }
 
 }

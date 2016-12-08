@@ -170,7 +170,7 @@ public class UserServiceTest{
             if(allianceIds.contains(allianceRolesVO.getAllianceId())){
                 SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
                 simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
-                simpleRoleVO.setRoleName(allianceRolesVO.getRoleTitle());
+                simpleRoleVO.setRoleName(allianceRolesVO.getRoleName());
                 simpleRoleVOs.add(simpleRoleVO);
                 roles2.get(index).setRoles(simpleRoleVOs);
                 continue;
@@ -183,7 +183,7 @@ public class UserServiceTest{
             simpleRoleVOs = new ArrayList<>();
             SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
             simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
-            simpleRoleVO.setRoleName(allianceRolesVO.getRoleTitle());
+            simpleRoleVO.setRoleName(allianceRolesVO.getRoleName());
             simpleRoleVOs.add(simpleRoleVO);
             userAllianceRolesVO.setRoles(simpleRoleVOs);
             roles2.add(userAllianceRolesVO);

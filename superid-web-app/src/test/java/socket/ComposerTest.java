@@ -1,8 +1,10 @@
 package socket;
 
+import cn.superid.webapp.notice.tcp.Callback;
 import cn.superid.webapp.notice.tcp.Composer;
-import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by xmc1993 on 16/12/6.
@@ -10,30 +12,20 @@ import org.junit.Test;
 public class ComposerTest {
 
     @Test
-    public void testCompose(){
-        Composer composer = new Composer();
-        byte[] resource = {0x10,0x01,0x56,0x09};
-        byte[] compose = composer.compose(resource);
-        for (byte b : compose) {
-            System.out.println(b + " ");
-        }
-        System.out.println(compose);
-    }
-
-
-    @Test
-    public void testFeed() throws Exception {
-        Composer composer = new Composer();
-        byte[] resource = {0x10,0x01,0x56,0x09};
-        byte[] compose = composer.compose(resource);
-        byte[] result = composer.feed(compose);
-        System.out.println("over");
-    }
-
-    @Test
-    public void testLargeData
+    public void testSeparatedPackage
             () throws Exception {
-        Composer composer = new Composer();
+        Composer composer = new Composer(new Callback() {
+            @Override
+            public void callBack(byte[] bytes) {
+                try {
+                    String s = new String(bytes, "utf-8");
+                    System.out.println(s);
+                    System.out.println("-----------------------");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         String resource = "    /**\n" +
                 "     * Returns an array containing all of the elements in this list\n" +
                 "     * in proper sequence (from first to last element).\n" +
@@ -108,9 +100,60 @@ public class ComposerTest {
                 "    }";
         byte[] compose = composer.compose(resource.getBytes("utf-8"));
 
-        byte[] result = composer.feed(compose);
-        String s = new String(result, "utf-8");
-        Assert.assertEquals(resource, s);
-//        System.out.println(s);
+        byte[] bytes = new byte[5];
+        int length = compose.length;
+        byte[] bytes1 = new byte[length - 5];
+        System.arraycopy(compose, 0, bytes, 0, 5);
+        System.arraycopy(compose, 5, bytes1, 0, length - 5);
+
+//        composer.feed(compose);
+        composer.feed(bytes);
+        composer.feed(bytes1);
+
+    }
+
+    @Test
+    public void testCombinePackage() throws Exception {
+        Composer composer = new Composer(new Callback() {
+            @Override
+            public void callBack(byte[] bytes) {
+                try {
+                    String s = new String(bytes, "utf-8");
+                    System.out.println(s);
+                    System.out.println("--------------不同包的分隔符---------");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        String resource1 = "dasdsagdaskdsgkafdkgfdl ldashkfgdslgfldalsflsahdlfjadhsfhjkasdlhfhlshjfjhlha bljkjdfsahfjhfhlhls";
+        String resource2 =                 "    // Positional Access Operations\n" +
+                "\n" +
+                "    @SuppressWarnings(\"unchecked\")\n" +
+                "    E elementData(int index) {\n" +
+                "        return (E) elementData[index];\n" +
+                "    }\n" +
+                "\n" +
+                "    /** \n" +
+                "     * Returns the element at the specified position in this list.\n" +
+                "     *\n" +
+                "     * @param  index index of the element to return\n" +
+                "     * @return the element at the specified position in this list\n" +
+                "     * @throws IndexOutOfBoundsException {@inheritDoc}\n" +
+                "     */\n" +
+                "    public E get(int index) {\n" +
+                "        rangeCheck(index);\n" +
+                "\n" +
+                "        return elementData(index);\n" +
+                "    }";
+        byte[] bytes1 = composer.compose(resource1.getBytes("utf-8"));
+        byte[] bytes2 = composer.compose(resource2.getBytes("utf-8"));
+        int length = bytes1.length;
+        int length1 = bytes2.length;
+        byte[] bytes = new byte[length + length1];
+        System.arraycopy(bytes1, 0, bytes, 0, length);
+        System.arraycopy(bytes2, 0, bytes, length, length1);
+        composer.feed(bytes);
+
     }
 }
