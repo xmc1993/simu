@@ -65,12 +65,12 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <id>releases</id>
+            <roleId>releases</roleId>
             <name>Internal Releases</name>
             <url>http://maven.local:8081/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
-            <id>Snapshots</id>
+            <roleId>Snapshots</roleId>
             <name>Internal Snapshots</name>
             <url>http://maven.local:8081/nexus/content/repositories/snapshots</url>
         </snapshotRepository>

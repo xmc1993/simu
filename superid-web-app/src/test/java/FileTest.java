@@ -50,7 +50,7 @@ public class FileTest {
 //
 //        List<FolderForm> folders = fileService.getChildFolder(1,1);
 //        for(FolderForm f : folders){
-//            System.out.println("name:"+f.getName()+"   "+"id:"+f.getId()+"   "+"total:"+f.getTotal());
+//            System.out.println("name:"+f.getName()+"   "+"id:"+f.getRoleId()+"   "+"total:"+f.getTotal());
 //        }
 //
 //    }
@@ -60,7 +60,7 @@ public class FileTest {
 //
 //        List<FileForm> folders = fileService.getChildFile(12,1);
 //        for(FileForm f : folders){
-//            System.out.println("id:"+f.getId()+" "+"name:"+f.getName()+" "+"fileId:"+f.getFileId()+" "+"uploader:"+f.getUploaderName()+" "+"uid:"+f.getUploaderId()+" "+"createTime:"+f.getCreateTime()+" "+"size:"+f.getSize()+" "+"hasHistory:"+f.isHasHistory());
+//            System.out.println("id:"+f.getRoleId()+" "+"name:"+f.getName()+" "+"fileId:"+f.getFileId()+" "+"uploader:"+f.getUploaderName()+" "+"uid:"+f.getUploaderId()+" "+"createTime:"+f.getCreateTime()+" "+"size:"+f.getSize()+" "+"hasHistory:"+f.isHasHistory());
 //        }
 //
 //    }
@@ -70,7 +70,7 @@ public class FileTest {
 //
 //        List<FileForm> folders = fileService.getHistoryFile(4,1);
 //        for(FileForm f : folders){
-//            System.out.println("id:"+f.getId()+" "+"name:"+f.getName()+" "+"fileId:"+f.getFileId()+" "+"uploader:"+f.getUploaderName()+" "+"uid:"+f.getUploaderId()+" "+"createTime:"+f.getCreateTime()+" "+"size:"+f.getSize()+" "+"hasHistory:"+f.isHasHistory());
+//            System.out.println("id:"+f.getRoleId()+" "+"name:"+f.getName()+" "+"fileId:"+f.getFileId()+" "+"uploader:"+f.getUploaderName()+" "+"uid:"+f.getUploaderId()+" "+"createTime:"+f.getCreateTime()+" "+"size:"+f.getSize()+" "+"hasHistory:"+f.isHasHistory());
 //        }
 //
 //    }

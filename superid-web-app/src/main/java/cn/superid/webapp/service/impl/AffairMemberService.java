@@ -153,7 +153,7 @@ public class AffairMemberService implements IAffairMemberService{
 
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setRoleId(affairMemberApplicationEntity.getRoleId());
-        affairMemberEntity.setAffairId(affairEntity.getId());
+        affairMemberEntity.setAffairId(affairEntity.getRoleId());
         affairMemberEntity.setUserId(affairMemberApplicationEntity.getUserId());
         affairMemberEntity.setState(0);
         affairMemberEntity.setPermissions("");
@@ -331,7 +331,7 @@ public class AffairMemberService implements IAffairMemberService{
         Object[] parentAffairIds = new Object[affairEntities.size()];
 
         for(int i=0;i<affairEntities.size();i++){
-            parentAffairIds[i] = affairEntities.get(i).getId();
+            parentAffairIds[i] = affairEntities.get(i).getRoleId();
         }
 
         //根据父事务id和被邀请人的id以及权限级别去寻找

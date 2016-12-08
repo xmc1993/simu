@@ -1,15 +1,20 @@
 package service;
 
+import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.controller.VO.SimpleAllianceVO;
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
+import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.UserBaseInfo;
-import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +22,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import util.JUnit4ClassRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zp on 2016/8/9.
@@ -106,6 +114,89 @@ public class UserServiceTest{
 
     }
 
+    @Test
+    public void testUserAllianceRoles(){
+        long userid = 1893L;
+        List<UserAllianceRolesVO> roles1 = new ArrayList<>();
+        List<UserAllianceRolesVO> roles2 = new ArrayList<>();
+        List<AllianceRolesVO> testVos = new ArrayList<>();
+        StringBuilder sb;
+        ParameterBindings p;
+
+        //算法1
+        long beginTime = System.currentTimeMillis();
+        //先取出用户拥有的所有盟
+        sb = new StringBuilder("select a.id, a.name from alliance a where a.id in (select alliance_id from role r where r.user_id = ? group by alliance_id)");
+        p = new ParameterBindings();
+        p.addIndexBinding(userid);
+        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findList(SimpleAllianceVO.class,sb.toString(),p);
+
+        //对于该用户的每个盟
+        for(SimpleAllianceVO simpleAllianceVO : allianceVOs){
+            UserAllianceRolesVO userAllianceRolesVO = new UserAllianceRolesVO();
+            userAllianceRolesVO.setAllianceId(simpleAllianceVO.getId());
+            userAllianceRolesVO.setAllianceName(simpleAllianceVO.getName());
+            //根据allianceId和userId去role表中取出相应的数据
+            sb = new StringBuilder("select r.id, r.title from role r where r.user_id = ? and r.alliance_id = ?");
+            p = new ParameterBindings();
+            p.addIndexBinding(userid);
+            p.addIndexBinding(simpleAllianceVO.getId());
+            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findList(SimpleRoleVO.class,sb.toString(),p);
+            //将list转为字符串放到userAllianceRole中
+            userAllianceRolesVO.setRoles(simpleRoleVOs);
+
+            roles1.add(userAllianceRolesVO);
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime-beginTime);
+
+
+        //算法2
+        beginTime = System.currentTimeMillis();
+        sb = new StringBuilder(
+                "select t1.id,t1.name,t2.role_id,t2.title  from  (select a.id,a.name from alliance  a where a.id in (select alliance_id from role where user_id = 1893 group by alliance_id)) t1 " +
+                "join" +
+                "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = 1893) t2 " +
+                "on t1.id = t2.alliance_id ");
+        testVos = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString());
+        List<Long> allianceIds = new ArrayList<>();
+        List<SimpleRoleVO> simpleRoleVOs = new ArrayList<>();
+        //用于定位,用法在循环里有解释
+        int index = -1;
+        //下面的这个for循环的前提条件是取出来的数据是group by allianceId的,不然就错了
+        //应该是group的,因为t1表是Group盟的,就是说在join的时候一张表是已经group的
+        //算法的思路是,先将盟id抽取出来,然后遍历testVos,如果盟id相同就更新结果list中的相应的盟id的记录
+        for(AllianceRolesVO allianceRolesVO : testVos){
+            if(allianceIds.contains(allianceRolesVO.getAllianceId())){
+                SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
+                simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
+                simpleRoleVO.setRoleName(allianceRolesVO.getRoleName());
+                simpleRoleVOs.add(simpleRoleVO);
+                roles2.get(index).setRoles(simpleRoleVOs);
+                continue;
+            }
+
+            UserAllianceRolesVO userAllianceRolesVO = new UserAllianceRolesVO();
+            userAllianceRolesVO.setAllianceId(allianceRolesVO.getAllianceId());
+            userAllianceRolesVO.setAllianceName(allianceRolesVO.getAllianceName());
+            //碰到不一样的就重置simpleRoles
+            simpleRoleVOs = new ArrayList<>();
+            SimpleRoleVO simpleRoleVO = new SimpleRoleVO();
+            simpleRoleVO.setRoleId(allianceRolesVO.getRoleId());
+            simpleRoleVO.setRoleName(allianceRolesVO.getRoleName());
+            simpleRoleVOs.add(simpleRoleVO);
+            userAllianceRolesVO.setRoles(simpleRoleVOs);
+            roles2.add(userAllianceRolesVO);
+            //定位现在的userAllianceRolesVO
+            index++;
+
+            allianceIds.add(allianceRolesVO.getAllianceId());
+
+        }
+        endTime = System.currentTimeMillis();
+        System.out.println(endTime-beginTime);
+
+    }
 
 
 }
