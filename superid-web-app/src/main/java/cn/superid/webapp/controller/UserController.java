@@ -415,7 +415,7 @@ public class UserController {
         return "ok";
     }
 
-    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST )
+    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST)
     public SimpleResponse validValidateCode(HttpServletRequest request){
         String code = request.getParameter("pic_code");
         HttpSession session = request.getSession();
@@ -433,4 +433,5 @@ public class UserController {
     public SimpleResponse getAffairMember(HttpServletRequest request,HttpServletResponse response) throws Exception{
         return SimpleResponse.ok(userService.getAffairMember());
     }
+
 }

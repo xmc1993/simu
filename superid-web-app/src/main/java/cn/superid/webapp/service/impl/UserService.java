@@ -336,6 +336,21 @@ public class UserService implements IUserService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
+        return getMaps(affairMemberVOList);
+    }
+
+    @Override
+    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId) {
+        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? ) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(currentUserId());
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
+
+        return getMaps(affairMemberVOList);
+    }
+
+    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
         Map<Long,List<Object>> members = new HashedMap();
         for(AffairMemberVO a : affairMemberVOList){
             List<Object> user = new ArrayList<>();
@@ -346,6 +361,7 @@ public class UserService implements IUserService {
         }
         return members;
     }
+
 
     @Override
     //public List<UserAllianceRolesVO> getUserAllianceRoles() {
