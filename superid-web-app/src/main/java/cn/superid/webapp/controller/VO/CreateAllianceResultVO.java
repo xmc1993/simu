@@ -14,6 +14,7 @@ public class CreateAllianceResultVO {
     private String name;
     private int verified;
     private String code;
+    private long ownRoleId;
     private AffairTreeVO affairTree;
     private Map<Long,List<Object>> affairMember;
 
@@ -63,5 +64,13 @@ public class CreateAllianceResultVO {
 
     public void setAffairMember(Map<Long, List<Object>> affairMember) {
         this.affairMember = affairMember;
+    }
+
+    public long getOwnRoleId() {
+        return ownRoleId;
+    }
+
+    public void setOwnRoleId(long ownRoleId) {
+        this.ownRoleId = ownRoleId;
     }
 }
