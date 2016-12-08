@@ -9,6 +9,7 @@ import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.AffairEntity;
+import cn.superid.webapp.model.AnnouncementDraftEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.service.IAnnouncementService;
@@ -220,6 +221,36 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
         announcementEntity.update();
+        return true;
+    }
+
+    @Override
+    public boolean saveDraft(ContentState contentState, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, String thumb, long taskId) {
+
+        AnnouncementDraftEntity announcementDraftEntity = null ;
+        if(draftId == 0){
+            //新建的草稿
+            announcementDraftEntity = new AnnouncementDraftEntity();
+        }else{
+            announcementDraftEntity = AnnouncementDraftEntity.dao.findById(draftId,allianceId);
+        }
+        if(announcementDraftEntity == null){
+            return false;
+        }
+        announcementDraftEntity.setTaskId(taskId);
+        announcementDraftEntity.setAffairId(affairId);
+        announcementDraftEntity.setThumbContent(thumb);
+        announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setState(ValidState.Valid);
+        announcementDraftEntity.setCreatorId(roleId);
+        announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementDraftEntity.setTitle(title);
+        if(draftId == 0){
+            announcementDraftEntity.save();
+        }else{
+            announcementDraftEntity.update();
+        }
         return true;
     }
 

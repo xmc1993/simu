@@ -12,6 +12,7 @@ import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.model.AnnouncementHistoryEntity;
+import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.forms.Block;
@@ -173,6 +174,18 @@ public class AnnouncementController {
         }
 
         boolean result = announcementService.save(contentState,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
+    public SimpleResponse saveDraft(Long draftId , ContentState contentState , Long affairMemberId , Integer publicType , String title , String thumb , Long taskId){
+
+        if(draftId == null | contentState == null | publicType == null | title == null | thumb == null | taskId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        boolean result = announcementService.saveDraft(contentState,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,thumb,taskId);
         return SimpleResponse.ok(result);
     }
 

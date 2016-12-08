@@ -497,6 +497,15 @@ public class AffairService implements IAffairService {
 
     }
 
+    private List<AffairTreeVO> filter(List<AffairTreeVO> list){
+        for(AffairTreeVO a : list){
+            if(a.getPublicType() == PublicType.PRIVATE & a.getRoleId() == 0){
+
+            }
+        }
+        return null;
+    }
+
     @Override
     public AffairInfo getAffairInfo(long allianceId, long affairId) {
         AffairInfo affairInfo = new AffairInfo();
