@@ -106,7 +106,9 @@ public class ComposerTest {
         System.arraycopy(compose, 0, bytes, 0, 5);
         System.arraycopy(compose, 5, bytes1, 0, length - 5);
 
-        composer.feed(compose);
+//        composer.feed(compose);
+        composer.feed(bytes);
+        composer.feed(bytes1);
 
     }
 
