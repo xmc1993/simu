@@ -4,6 +4,8 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.RoleType;
+import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.enums.type.DefaultRole;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -99,8 +101,8 @@ public class RoleService implements IRoleService {
             role.setBelongAffairId(form.getMainAffairId());
             role.setAllianceId(allianceId);
             role.setPermissions(form.getPermissions());
-            role.setType(RoleType.DEFAULT);
-            role.setState(0);
+            role.setType(DefaultRole.IsDefault);
+            role.setState(ValidState.Valid);
             role.save();
         }
 

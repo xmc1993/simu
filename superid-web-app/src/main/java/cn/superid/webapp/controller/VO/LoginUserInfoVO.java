@@ -1,5 +1,7 @@
 package cn.superid.webapp.controller.VO;
 
+import cn.superid.webapp.service.vo.AllianceRolesVO;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,8 @@ public class LoginUserInfoVO {
     private String email;
     private int publicType;
     private Map<Long,List<Object>> members;
+    //private List<UserAllianceRolesVO> roles;
+    private List<AllianceRolesVO> roles;
 
     public long getId() {
         return id;
@@ -89,5 +93,13 @@ public class LoginUserInfoVO {
 
     public void setMembers(Map<Long, List<Object>> members) {
         this.members = members;
+    }
+
+    public List<AllianceRolesVO> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<AllianceRolesVO> roles) {
+        this.roles = roles;
     }
 }

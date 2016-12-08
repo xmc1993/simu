@@ -1,9 +1,11 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.service.vo.AllianceRolesVO;
 
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,13 @@ public interface IUserService {
      ResultUserInfo getUserInfo(long userId);
 
      public Map<Long,List<Object>> getAffairMember();
+
+     /**
+      * 用于用户在登录时获取自己所拥有的所有盟下的所有角色
+      * @return
+      */
+     //public List<UserAllianceRolesVO> getUserAllianceRoles();
+     public List<AllianceRolesVO> getUserAllianceRoles();
 
      /**
       * 用户修改superid前检测是否已存在该id

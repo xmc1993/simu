@@ -2,7 +2,6 @@ package cn.superid.webapp.forms;
 
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
-import cn.superid.webapp.model.AffairEntity;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -26,7 +25,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String videoImg;
     private int isVideo;
     private String username;
-    private String nikeNames;
+    private String nickNames;
     private Timestamp birthday;
     private int age;
     private String email;
@@ -116,12 +115,12 @@ public class ResultUserInfo extends ExecutableModel{
         this.username = username;
     }
 
-    public String getNikeNames() {
-        return nikeNames;
+    public String getNickNames() {
+        return nickNames;
     }
 
-    public void setNikeNames(String nikeNames) {
-        this.nikeNames = nikeNames;
+    public void setNickNames(String nickNames) {
+        this.nickNames = nickNames;
     }
 
     public Timestamp getBirthday() {
