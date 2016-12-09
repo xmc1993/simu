@@ -163,6 +163,7 @@ public class UserService implements IUserService {
         UserEntity user = UserEntity.dao.findById(allianceCreateForm.getUserEntity().getId());
         user.setSuperid(generateSuperId(user.getId()));
         user.setPersonalRoleId(userEntity.getPersonalRoleId());
+        user.setModifyTime(TimeUtil.getCurrentSqlTime());
         user.update();
         if(allianceEntity==null) return null;
         return userEntity;

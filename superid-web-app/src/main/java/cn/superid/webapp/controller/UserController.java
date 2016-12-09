@@ -15,6 +15,7 @@ import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.utils.SmsType;
+import cn.superid.webapp.utils.TimeUtil;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.map.HashedMap;
@@ -185,6 +186,7 @@ public class UserController {
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));
         userEntity.setUsername(username);
+        userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         UserEntity result = userService.createUser(userEntity);
         if(result!=null){
             return SimpleResponse.ok(result);
