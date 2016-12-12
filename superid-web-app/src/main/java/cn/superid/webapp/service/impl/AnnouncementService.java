@@ -290,15 +290,17 @@ public class AnnouncementService implements IAnnouncementService{
     public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId , boolean isContainChild) {
         List<AnnouncementEntity> announcementEntityList = null;
         if(isContainChild == false){
+
             announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modify_time").selectList("id","modify_time","affair_id");
         }else{
             AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
             if(affair == null){
                 return null;
             }
-            StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b on a.affair_id = b.id where b.path like ? ");
+            StringBuilder sql = new StringBuilder("select a.id,a.modify_time,a.affair_id from announcement a join affair b on a.affair_id = b.id where b.path like ? ");
             ParameterBindings p = new ParameterBindings();
-            p.addIndexBinding("%"+affair.getPath()+"%");
+            p.addIndexBinding(affair.getPath()+"%");
+
             announcementEntityList = AnnouncementEntity.dao.findList(sql.toString(),p);
         }
 
@@ -315,8 +317,10 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
         String[] idList = ids.split(",");
+
         StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where 1 = 2  ");
         ParameterBindings p = new ParameterBindings();
+
         for(String id : idList){
             try{
                 if(id.matches("[0-9]+")){
