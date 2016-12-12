@@ -19,6 +19,7 @@ public class LoginUserInfoVO {
     private String mobile;
     private String email;
     private int publicType;
+    private long homepageAffairId;
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
     private List<AllianceRolesVO> roles;
@@ -85,6 +86,14 @@ public class LoginUserInfoVO {
 
     public void setPublicType(int publicType) {
         this.publicType = publicType;
+    }
+
+    public long getHomepageAffairId() {
+        return homepageAffairId;
+    }
+
+    public void setHomepageAffairId(long homepageAffairId) {
+        this.homepageAffairId = homepageAffairId;
     }
 
     public Map<Long, List<Object>> getMembers() {

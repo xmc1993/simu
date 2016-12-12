@@ -180,20 +180,23 @@ public class AnnouncementController {
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse saveDraft(Long draftId , ContentState contentState , Long affairMemberId , Integer publicType , String title , String thumb , Long taskId){
+    public SimpleResponse saveDraft(Long draftId , ContentState contentState , Long affairMemberId , Integer publicType , String title , Long taskId){
 
-        if(draftId == null | contentState == null | publicType == null | title == null | thumb == null | taskId == null){
+        if(draftId == null | contentState == null | publicType == null | title == null | taskId == null){
             return SimpleResponse.error("参数不正确");
         }
-        boolean result = announcementService.saveDraft(contentState,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,thumb,taskId);
+        boolean result = announcementService.saveDraft(contentState,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId);
         return SimpleResponse.ok(result);
     }
 
     @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/create_announcement", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse createAnnouncement(String title  , Long taskId , Integer isTop , Integer publicType , String thumb , ContentState content){
-        return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,thumb,content));
+    @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
+    public SimpleResponse createAnnouncement(String title  , Long taskId , Long affairMemberId , Integer isTop , Integer publicType , ContentState content){
+        if(taskId == null){
+            taskId = 0L ;
+        }
+        return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,content));
     }
 
     @ApiOperation(value = "删除公告",response = String.class, notes = "拥有权限")

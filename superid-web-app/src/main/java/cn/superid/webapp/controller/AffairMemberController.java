@@ -91,7 +91,7 @@ public class AffairMemberController {
             boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
             if(isOwner){
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
-                return SimpleResponse.ok("you have joined this affair!");
+                return SimpleResponse.ok(null);
             }
         }
 

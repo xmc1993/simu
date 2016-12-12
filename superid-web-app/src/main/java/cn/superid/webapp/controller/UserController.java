@@ -15,6 +15,7 @@ import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.utils.SmsType;
+import cn.superid.webapp.utils.TimeUtil;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.map.HashedMap;
@@ -185,6 +186,7 @@ public class UserController {
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));
         userEntity.setUsername(username);
+        userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         UserEntity result = userService.createUser(userEntity);
         if(result!=null){
             return SimpleResponse.ok(result);
@@ -415,7 +417,7 @@ public class UserController {
         return "ok";
     }
 
-    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST )
+    @RequestMapping(value = "/valid_image_code",method = RequestMethod.POST)
     public SimpleResponse validValidateCode(HttpServletRequest request){
         String code = request.getParameter("pic_code");
         HttpSession session = request.getSession();
@@ -433,4 +435,5 @@ public class UserController {
     public SimpleResponse getAffairMember(HttpServletRequest request,HttpServletResponse response) throws Exception{
         return SimpleResponse.ok(userService.getAffairMember());
     }
+
 }

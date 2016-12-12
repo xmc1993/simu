@@ -27,9 +27,9 @@ public interface IAnnouncementService {
 
     public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId);
 
-    public boolean saveDraft(ContentState contentState , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , String thumb , long taskId);
+    public boolean saveDraft(ContentState contentState , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId);
 
-    public boolean createAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , String thumb , ContentState content);
+    public boolean createAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , ContentState content);
 
     public boolean deleteAnnouncement(long announcementId , long allianceId);
 

@@ -78,6 +78,8 @@ public class AllianceController {
 
         CreateAllianceResultVO createAllianceResultVO = new CreateAllianceResultVO();
         allianceEntity.copyPropertiesTo(createAllianceResultVO);
+        createAllianceResultVO.setAffairTree(affairService.getAffairTree(allianceEntity.getId()));
+        createAllianceResultVO.setAffairMember(userService.getAffairMemberByAllianceId(allianceEntity.getId()));
         return SimpleResponse.ok(createAllianceResultVO);
     }
 

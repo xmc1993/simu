@@ -47,7 +47,7 @@ public class UserEntity extends ExecutableModel {
     private double faith;
     private int gender;
     private int publicType;
-    private String avatar;
+    private String avatar = "";
     private String chatToken;
 
     private String countryCode; //区号
