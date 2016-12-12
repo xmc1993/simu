@@ -200,11 +200,7 @@ public class AffairController {
             return SimpleResponse.error("参数不能为空");
         }
         boolean result = affairService.handleMoveAffair(allianceId,affairId,targetAffairId,roleId,isAgree);
-        if(result == false){
-            return SimpleResponse.ok(false);
-        }else{
-            return SimpleResponse.ok(true);
-        }
+        return SimpleResponse.ok(result);
 
     }
 
@@ -216,12 +212,7 @@ public class AffairController {
             return SimpleResponse.error("参数不能为空");
         }
         boolean result = affairService.switchRole(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),newRoleId);
-        if(result == false){
-            return SimpleResponse.ok(false);
-        }else{
-            return SimpleResponse.ok(true);
-        }
-
+        return SimpleResponse.ok(result);
     }
 
 }
