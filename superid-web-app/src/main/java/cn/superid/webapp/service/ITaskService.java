@@ -18,7 +18,7 @@ public interface ITaskService {
 
     public boolean removeRole(long role , long loser , long taskId);
 
-    public boolean addAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , String thumb , ContentState content);
+    public boolean addAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , ContentState content);
 
     public List<TaskEntity> getAllValidAffair(long allianceId, long affairId,String... params);
 
