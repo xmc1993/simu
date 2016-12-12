@@ -22,7 +22,7 @@ public interface IAffairService  {
 
 
 
-    public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
+    public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type, String logo);
 
     /**
      * 根据前端传来的状态寻找对应的盟内的事务

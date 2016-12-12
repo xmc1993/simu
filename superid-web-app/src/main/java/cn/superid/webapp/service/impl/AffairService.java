@@ -142,7 +142,7 @@ public class AffairService implements IAffairService {
      * @return
      */
     @Override
-    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
+    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type , String logo) {
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(type);
@@ -150,6 +150,7 @@ public class AffairService implements IAffairService {
         affairEntity.setOwnerRoleId(roleId);
         affairEntity.setAllianceId(allianceId);
         affairEntity.setName(name);
+        affairEntity.setShortName(logo != null ? logo : name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
         affairEntity.setOwnerRoleId(roleId);
