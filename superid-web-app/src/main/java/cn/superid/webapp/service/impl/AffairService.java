@@ -294,7 +294,7 @@ public class AffairService implements IAffairService {
         if(isAgree == true){
             //同意了移动事务请求
             shiftAffair(allianceId,affairId,targetAffairId);
-            //TODO 给发起人发通知告知已被同意
+            //TODO 给发起人发通知  告知已被同意
 
         }else{
             //拒绝了请求
