@@ -224,4 +224,8 @@ public class AffairController {
 
     }
 
+    public SimpleResponse getOutAllianceAffair(){
+        return null;
+    }
+
 }
