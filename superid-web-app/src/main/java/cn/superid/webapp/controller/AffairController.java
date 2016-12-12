@@ -215,4 +215,8 @@ public class AffairController {
         return SimpleResponse.ok(result);
     }
 
+    public SimpleResponse getOutAllianceAffair(){
+        return null;
+    }
+
 }

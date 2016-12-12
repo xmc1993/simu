@@ -25,7 +25,6 @@ import cn.superid.webapp.service.vo.GetRoleVO;
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.xmlbeans.impl.xb.ltgfmt.FileDesc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -549,6 +548,19 @@ public class AffairService implements IAffairService {
     public boolean switchRole(long affairId, long allianceId, long newRoleId) {
         AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).set("roleId",newRoleId);
         return true;
+    }
+
+    @Override
+    public List<AffairInfo> getOutAllianceAffair() {
+        List<AffairInfo> result ;
+        long userId = userService.currentUserId();
+        //TODO 返回格式还没定
+        //找到allianceUser里该用户的盟,然后从affairUser里找到不在之前盟中的affair,join affair表
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userId);
+        p.addIndexBinding(userId);
+        result = AffairEntity.getSession().findList(AffairInfo.class,SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
+        return result;
     }
 
     private int shiftAffair(long allianceId,long affairId,long targetAffairId){

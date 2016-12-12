@@ -1,4 +1,7 @@
+import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.Expr;
+import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IAffairService;
 import org.junit.Test;
@@ -8,8 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by njuTms on 16/9/8.
@@ -131,5 +132,19 @@ public class AffairServiceTest {
 
         List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",paths).selectList("id","path");
         System.out.println();
+    }
+
+    @Test
+    public void testGetOutAllianceAffairs(){
+        List<AffairInfo> result = new ArrayList<>();
+        long userId = 1899;
+        //先从角色表中找到该用户的所有角色所在的盟,然后在affairMember表中找到不在之前盟中的角色的affairMember的affairId,最后从Affair中取
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userId);
+        p.addIndexBinding(userId);
+        long startTime = System.currentTimeMillis();
+        result = AffairEntity.getSession().findList(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime-startTime);
     }
 }
