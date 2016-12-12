@@ -22,7 +22,7 @@ public interface IAffairService  {
 
 
 
-    public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type);
+    public AffairEntity createRootAffair(long allianceId,String name,long roleId,int type, String logo);
 
     /**
      * 根据前端传来的状态寻找对应的盟内的事务
@@ -144,5 +144,12 @@ public interface IAffairService  {
      * @return
      */
     public boolean switchRole(long affairId , long allianceId , long newRoleId);
+
+    /**
+     * 获取一个用户参与的盟外事务
+     * 比如以A盟的角色去参加B盟的事务,但是在B盟中没有角色
+     * @return
+     */
+    public List<AffairInfo> getOutAllianceAffair();
 
 }
