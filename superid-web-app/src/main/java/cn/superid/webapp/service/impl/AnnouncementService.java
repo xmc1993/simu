@@ -34,6 +34,8 @@ public class AnnouncementService implements IAnnouncementService{
     @Autowired
     private IRoleService roleService;
 
+    private static final int THUMB_LENTH = 200 ;
+
     @Override
     public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
         //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
@@ -225,7 +227,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean saveDraft(ContentState contentState, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, String thumb, long taskId) {
+    public boolean saveDraft(ContentState contentState, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
         if(draftId == 0){
@@ -239,7 +241,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
         announcementDraftEntity.setTaskId(taskId);
         announcementDraftEntity.setAffairId(affairId);
-        announcementDraftEntity.setThumbContent(thumb);
+        announcementDraftEntity.setThumbContent(getThumb(getBlock(contentState)));
         announcementDraftEntity.setAllianceId(allianceId);
         announcementDraftEntity.setState(ValidState.Valid);
         announcementDraftEntity.setCreatorId(roleId);
@@ -255,14 +257,14 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean createAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
+    public boolean createAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, ContentState content) {
         AnnouncementEntity announcementEntity = new AnnouncementEntity();
         announcementEntity.setTitle(title);
         announcementEntity.setContent(JSONObject.toJSONString(content));
         announcementEntity.setAffairId(affairId);
         announcementEntity.setTaskId(taskId);
         announcementEntity.setModifierId(roleId);
-        announcementEntity.setThumbContent(thumb);
+        announcementEntity.setThumbContent(getThumb(getBlock(content)));
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
         announcementEntity.setState(1);
@@ -341,5 +343,18 @@ public class AnnouncementService implements IAnnouncementService{
         }
 
         return result;
+    }
+
+    private String getThumb(List<Block> blocks){
+        StringBuilder result = new StringBuilder("");
+        for(Block b : blocks){
+            if((result.length()+b.getContent().length())>200){
+                int remain = THUMB_LENTH - result.length();
+                result.append(b.getContent().substring(0,remain));
+            }else{
+                result.append(b.getContent());
+            }
+        }
+        return result.toString();
     }
 }

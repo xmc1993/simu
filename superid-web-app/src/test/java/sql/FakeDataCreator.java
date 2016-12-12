@@ -16,7 +16,7 @@ public class FakeDataCreator {
     @Test
     public void createFakeAnnouncement(){
         AnnouncementEntity announcementEntity = new AnnouncementEntity();
-        announcementEntity.setTitle("事务1-1-1公告");
+        announcementEntity.setTitle("事务1-1-7公告");
         announcementEntity.setAffairId(7622);
         announcementEntity.setContent("");
         announcementEntity.setThumbContent("小东是我见过最碧浪的人");
