@@ -48,18 +48,6 @@ public class AffairMemberController {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
         return new SimpleResponse(code,null);
-        /*
-        switch (code) {
-            case ResponseCode.OK:
-                return SimpleResponse.ok("you agree this application");
-            case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
-            case ResponseCode.ApplicationNotExist:
-                return new SimpleResponse(ResponseCode.ApplicationNotExist, "this application is not exist");
-            default:
-                return SimpleResponse.error("fail");
-        }
-        */
 
     }
 
@@ -70,18 +58,7 @@ public class AffairMemberController {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
         return new SimpleResponse(code,null);
-        /*
-        switch (code) {
-            case ResponseCode.OK:
-                return SimpleResponse.ok("you reject this application");
-            case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
-            case ResponseCode.ApplicationNotExist:
-                return new SimpleResponse(ResponseCode.ApplicationNotExist, "this application is not exist");
-            default:
-                return SimpleResponse.error("fail");
-        }
-        */
+
     }
 
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
@@ -98,20 +75,7 @@ public class AffairMemberController {
 
         int code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
         return new SimpleResponse(code,null);
-        /*
-        switch (code) {
-            case ResponseCode.OK:
-                return SimpleResponse.ok("success! please wait for deal");
-            case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
-            case ResponseCode.MemberIsExistInAffair:
-                return new SimpleResponse(ResponseCode.MemberIsExistInAffair, "you are in this affair");
-            case ResponseCode.WaitForDeal:
-                return new SimpleResponse(ResponseCode.WaitForDeal, "you have applied before,please wait for deal");
-            default:
-                return new SimpleResponse(ResponseCode.Error, "apply fail");
-        }
-        */
+
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
@@ -120,19 +84,6 @@ public class AffairMemberController {
         int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
         return new SimpleResponse(code,null);
-        /*
-        switch (code) {
-            case ResponseCode.AffairNotExist:
-                return new SimpleResponse(ResponseCode.AffairNotExist, "this affair is not exist");
-            case ResponseCode.MemberIsExistInAffair:
-                return new SimpleResponse(ResponseCode.MemberIsExistInAffair, "this role is in this affair");
-            case ResponseCode.WaitForDeal:
-                return new SimpleResponse(ResponseCode.WaitForDeal, "you have invited this role before,please wait for deal");
-            case ResponseCode.OK:
-                return SimpleResponse.ok("success!");
-            default:
-                return new SimpleResponse(ResponseCode.Error, "invite fail");
-        }
-        */
+
     }
 }
