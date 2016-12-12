@@ -113,8 +113,8 @@ public class TaskService  implements ITaskService{
     }
 
     @Override
-    public boolean addAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, String thumb, ContentState content) {
-        boolean result = announcementService.createAnnouncement(title,affairId,allianceId,taskId,roleId,isTop,publicType,thumb,content);
+    public boolean addAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, ContentState content) {
+        boolean result = announcementService.createAnnouncement(title,affairId,allianceId,taskId,roleId,isTop,publicType,content);
         if(result){
             //生成log
             StringBuilder message = new StringBuilder();

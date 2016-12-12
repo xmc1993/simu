@@ -88,7 +88,7 @@ public class AllianceService  implements IAllianceService{
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.save();
 
-        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal()?1:0);
+        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal()?1:0,allianceEntity.getCode());
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId",affairEntity.getId());//更新所属事务
 

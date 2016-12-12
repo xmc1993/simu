@@ -8,7 +8,15 @@ import java.util.Random;
 
 public class StringUtil {
     public static final String EMPTY = "";
+    private final static String str = "BCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
+    private final static String[] strs =str.split("");
+    private final static int strsLength =strs.length;
+
     public static final int INDEX_NOT_FOUND = -1;
+
+    static {
+        strs[0] ="A";
+    }
 
     public static boolean isEmpty(String str) {
         return str == null || str.trim().length() < 1;
@@ -26,7 +34,6 @@ public class StringUtil {
         if (n < 1) {
             n = 1;
         }
-        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         Random random = new Random();
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < n; i++) {
@@ -171,6 +178,36 @@ public class StringUtil {
            return EMPTY;
         }
         return str2.substring(at);
+    }
+
+    public static String longToString(long n){
+        if(n==0){
+            return "A";
+        }
+        StringBuilder sb = new StringBuilder();
+        int a=0;
+        while (n>0) {
+            a = (int)(n%strsLength);
+            n =  n/strsLength;
+            sb.append(strs[a]);
+        }
+
+        return sb.toString();
+    }
+
+    public static String generateId(long number,int length){
+        String s = longToString(number);
+        int diff = length-s.length();
+
+        if(diff>0){
+            StringBuilder sb = new StringBuilder(s);
+            for(int i=0;i<diff;i++){
+                sb.append('0');
+            }
+            return sb.toString();
+        }else {
+            return s;
+        }
     }
 
     public static int indexOfDifference(String str1, String str2) {

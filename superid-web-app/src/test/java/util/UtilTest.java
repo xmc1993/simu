@@ -1,8 +1,9 @@
 package util;
 
 import cn.superid.jpa.orm.FieldAccessor;
-import cn.superid.utils.StringUtil;
+import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.utils.Timer;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.Timer;
 import org.junit.Assert;
@@ -10,6 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Date;
 
 /**
  * Created by zp on 2016/8/4.
@@ -28,10 +31,13 @@ public class UtilTest {
 
     @Test
     public void testCheck(){
-        Assert.assertFalse(StringUtil.isEmail("15951818230163.com"));
-        Assert.assertTrue(StringUtil.isEmail("15951818239@163.com"));
-        Assert.assertFalse(StringUtil.isMobile("159518182309"));
-        Assert.assertTrue(StringUtil.isMobile("15951818230"));
+        System.out.println(StringUtil.longToString(1481522657490L));
+        System.out.println(StringUtil.generateId(1481522657490L,8));
+        System.out.println(StringUtil.generateId(148152L,8));
+        System.out.println(StringUtil.generateId(148151L,8));
+
+
+
     }
 
     @Test

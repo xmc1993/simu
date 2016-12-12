@@ -71,6 +71,14 @@ public class AffairService implements IAffairService {
         //TODO 如果redis缓存,需要更新缓存
     }
 
+    private void saveAffair(AffairEntity affairEntity){
+        long aid = AffairEntity.dao.getDRDSAutoId();
+        affairEntity.setId(aid);
+        String superId = StringUtil.generateId(aid,SuperIdNumber.AFFAIR_SUPERID);
+        affairEntity.setSuperid(superId);
+        affairEntity.save();
+    }
+
     @Override
     @Transactional
     public Map<String,Object> createAffair(CreateAffairForm createAffairForm) throws Exception{
@@ -81,6 +89,7 @@ public class AffairService implements IAffairService {
             throw new Exception("parent affair not found ");
         }
         int count = AffairEntity.dao.eq("parentId",parentAffairId).partitionId(parentAllianceId).count();//已有数目
+
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setParentId(parentAffairId);
@@ -98,15 +107,7 @@ public class AffairService implements IAffairService {
         affairEntity.setPathIndex(count+1);
         affairEntity.setPath(parentAffair.getPath()+'-'+affairEntity.getPathIndex());
         affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-
-        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
-        while(true){
-            if(isExist(superId) == false){
-                affairEntity.setSuperid(superId);
-                break;
-            }
-        }
-        affairEntity.save();
+        saveAffair(affairEntity);
 
         long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(),affairEntity.getId(),createAffairForm.getOperationRoleId());
         affairEntity.setFolderId(folderId);
@@ -140,7 +141,7 @@ public class AffairService implements IAffairService {
      * @return
      */
     @Override
-    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type) {
+    public AffairEntity createRootAffair(long allianceId, String name, long roleId,int type , String logo) {
 
         AffairEntity affairEntity=new AffairEntity();
         affairEntity.setType(type);
@@ -148,19 +149,14 @@ public class AffairService implements IAffairService {
         affairEntity.setOwnerRoleId(roleId);
         affairEntity.setAllianceId(allianceId);
         affairEntity.setName(name);
+        affairEntity.setShortName(logo != null ? logo : name);
         affairEntity.setLevel(1);
         affairEntity.setPathIndex(1);
         affairEntity.setOwnerRoleId(roleId);
         affairEntity.setPath("/"+affairEntity.getPathIndex());
         affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        String superId = StringUtil.randomString(SuperIdNumber.AFFAIR_SUPERID);
-        while(true){
-            if(isExist(superId) == false){
-                affairEntity.setSuperid(superId);
-                break;
-            }
-        }
-        affairEntity.save();
+        saveAffair(affairEntity);
+
         long folderId = fileService.createRootFolderForAffair(allianceId,affairEntity.getId(),roleId);
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId",folderId);
@@ -293,7 +289,7 @@ public class AffairService implements IAffairService {
         if(isAgree == true){
             //同意了移动事务请求
             shiftAffair(allianceId,affairId,targetAffairId);
-            //TODO 给发起人发通知告知已被同意
+            //TODO 给发起人发通知  告知已被同意
 
         }else{
             //拒绝了请求
