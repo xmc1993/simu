@@ -29,9 +29,8 @@ public interface IAffairService  {
      * @param allianceId
      * @param state
      * @return 返回值根据前端需要进行返回,现在未定义 TODO 返回值
-     * @throws Exception
      */
-    public List<AffairEntity> getAffairByState(long allianceId,int state) throws Exception;
+    public List<AffairEntity> getAffairByState(long allianceId,int state);
 
     /**
      * 获取所有一级子事务
@@ -48,7 +47,7 @@ public interface IAffairService  {
      * @param affairId
      * @return
      */
-    public boolean disableAffair(Long allianceId,Long affairId) throws Exception;
+    public boolean disableAffair(Long allianceId,Long affairId) ;
 
     /**
      * 恢复失效事务
@@ -63,10 +62,9 @@ public interface IAffairService  {
      * 在正式操作一个事务之前,检测是否有特殊情况需要处理
      * @param allianceId
      * @param affairId
-     * @return 0表示无特殊情况,1表示有子事务,2表示有交易
-     * @throws Exception
+     * @return 见responseCode
      */
-    public int canGenerateAffair(long allianceId,long affairId) throws Exception;
+    public int canGenerateAffair(long allianceId,long affairId);
 
     public int moveAffair(long allianceId,long affairId,long targetAffairId,long roleId) throws Exception;
 

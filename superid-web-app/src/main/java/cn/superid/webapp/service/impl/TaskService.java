@@ -2,6 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.Expr;
 import cn.superid.webapp.controller.forms.AddTaskForm;
+import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.TaskEntity;
 import cn.superid.webapp.model.TaskLogEntity;
@@ -130,7 +131,7 @@ public class TaskService  implements ITaskService{
 
     @Override
     public List<TaskEntity> getAllValidAffair(long allianceId, long affairId,String... params) {
-        List<TaskEntity> result = TaskEntity.dao.partitionId(allianceId).eq("affair_id",affairId).state(1).selectList(params);
+        List<TaskEntity> result = TaskEntity.dao.partitionId(allianceId).eq("affair_id",affairId).state(TaskState.OnGoing).selectList(params);
         return result;
     }
 

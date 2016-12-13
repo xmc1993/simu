@@ -2,6 +2,8 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.forms.AffairInfo;
+import cn.superid.webapp.enums.AffairSpecialCondition;
+import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.AffairMoveState;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.forms.SimpleResponse;
@@ -68,24 +70,13 @@ public class AffairController {
 
     @ApiOperation(value = "在失效或者移动等对事务的操作确认之前,比如点击移动按钮,检查该事务是否有特殊情况需要处理",response = String.class,notes = "0表示没毛病,1表示有子事务,2表示有交易")
     @RequestMapping(value = "/generate_affair",method = RequestMethod.POST)
-    public SimpleResponse beforeGenerateAffair(long allianceId,long affairId){
-        int condition ;
-        try{
-            condition = affairService.canGenerateAffair(allianceId,affairId);
-            switch (condition){
-                case 0:
-                    return SimpleResponse.ok("没毛病");
-                case 1:
-                    return SimpleResponse.error("该事务拥有子事务");
-                case 2:
-                    return SimpleResponse.error("该事务下有正在进行的交易");
-                default:
-                    return SimpleResponse.error("大概还有我不知道的事");
-            }
-
-        }catch (Exception e){
-            return SimpleResponse.exception(e);
+    public SimpleResponse beforeGenerateAffair(Long allianceId,Long affairId){
+        if((allianceId == null) || (affairId == null)){
+            return SimpleResponse.error("param can not be null");
         }
+        int condition = affairService.canGenerateAffair(allianceId,affairId);
+        return new SimpleResponse(condition,"");
+
     }
 
     //TODO 标签待定
@@ -110,12 +101,12 @@ public class AffairController {
         boolean success;
         try {
             success = affairService.disableAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId());
-            if(success) return SimpleResponse.ok("失效成功");
+            if(success) return SimpleResponse.ok("disable success");
         } catch (Exception e) {
             return SimpleResponse.exception(e);
         }
 
-        return SimpleResponse.error("因为某些奇怪的原因失败了");
+        return SimpleResponse.error("");
     }
 
     @ApiOperation(value = "更新封面",response = String.class,notes = "拥有权限")

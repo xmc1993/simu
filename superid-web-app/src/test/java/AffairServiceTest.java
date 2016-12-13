@@ -23,9 +23,23 @@ public class AffairServiceTest {
     private IAffairService affairService;
 
     @Test
+    public void getAffairByStateTest(){
+        List<AffairEntity> result = affairService.getAffairByState(2319L,0);
+        System.out.println(result);
+    }
+    @Test
     public void createRootAffairTest(){
         try{
             //affairService.createRootAffair(7L,"三号七年",5L,1);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void getAllDirectChildAffairTest(){
+        try{
+            affairService.getAllDirectChildAffair(2319L,0L);
         }catch (Exception e){
             e.printStackTrace();
         }
