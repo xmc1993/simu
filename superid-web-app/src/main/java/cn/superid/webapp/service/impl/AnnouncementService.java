@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -341,6 +342,7 @@ public class AnnouncementService implements IAnnouncementService{
             UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
             s.setRoleName(name.getRoleName());
             s.setUsername(name.getUserName());
+            s.setAvatar(name.getAvatar());
         }
 
         return result;
@@ -370,5 +372,9 @@ public class AnnouncementService implements IAnnouncementService{
         announcementSnapshotEntity.save();
 
         return true;
+    }
+
+    public List<SimpleAnnouncementIdVO> getHistoryIds(Timestamp time , long affairId  ){
+        return null;
     }
 }
