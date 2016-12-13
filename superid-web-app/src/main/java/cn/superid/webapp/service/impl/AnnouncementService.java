@@ -8,10 +8,7 @@ import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.enums.state.ValidState;
-import cn.superid.webapp.model.AffairEntity;
-import cn.superid.webapp.model.AnnouncementDraftEntity;
-import cn.superid.webapp.model.AnnouncementEntity;
-import cn.superid.webapp.model.AnnouncementHistoryEntity;
+import cn.superid.webapp.model.*;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.forms.*;
@@ -360,5 +357,10 @@ public class AnnouncementService implements IAnnouncementService{
             }
         }
         return result.toString();
+    }
+
+    private boolean generateSnapshot(long announcementId , int version , String content , String decrement , long modifierId , String title){
+        AnnouncementSnapshotEntity announcementSnapshotEntity = new AnnouncementSnapshotEntity();
+        return false;
     }
 }
