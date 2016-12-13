@@ -25,7 +25,7 @@ public class AffairServiceTest {
     @Test
     public void createRootAffairTest(){
         try{
-//            affairService.createRootAffair(7L,"三号七年",5L,1);
+            //affairService.createRootAffair(7L,"三号七年",5L,1);
         }catch (Exception e){
             e.printStackTrace();
         }
