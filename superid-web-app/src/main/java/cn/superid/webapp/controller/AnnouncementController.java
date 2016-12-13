@@ -167,14 +167,18 @@ public class AnnouncementController {
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @RequiredPermissions()
-    public SimpleResponse save(Long announcementId , ContentState contentState){
+    public SimpleResponse save(Long announcementId , String contentState){
 
         if(announcementId == null ){
             return SimpleResponse.error("参数不正确");
         }
-
-        boolean result = announcementService.save(contentState,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
-        return SimpleResponse.ok(result);
+        try{
+            ContentState content = JSON.parseObject(contentState,ContentState.class);
+            boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
+            return SimpleResponse.ok(result);
+        }catch (Exception e){
+            return SimpleResponse.error("ContentState is invaild");
+        }
     }
 
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")

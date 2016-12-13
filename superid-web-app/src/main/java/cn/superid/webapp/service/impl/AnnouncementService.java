@@ -32,6 +32,7 @@ public class AnnouncementService implements IAnnouncementService{
     private IRoleService roleService;
 
     private static final int THUMB_LENTH = 200 ;
+    private static final int SNAPSHOT_INTERVAL = 30 ;
 
     @Override
     public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
@@ -213,6 +214,13 @@ public class AnnouncementService implements IAnnouncementService{
         history.setIncrement(JSONObject.toJSONString(compareTwoPapers(old,contentState)));
         history.save();
 
+        //如果满足记录条件,就存一条快照
+        if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
+            //如果是三十的倍数
+            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
+        }
+
+
         //改变原有记录
         announcementEntity.setVersion(announcementEntity.getVersion()+1);
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -359,8 +367,16 @@ public class AnnouncementService implements IAnnouncementService{
         return result.toString();
     }
 
-    private boolean generateSnapshot(long announcementId , int version , String content , String decrement , long modifierId , String title){
+    private boolean generateSnapshot(long announcementId , int version , String content , long modifierId , String title , long historyId){
         AnnouncementSnapshotEntity announcementSnapshotEntity = new AnnouncementSnapshotEntity();
-        return false;
+        announcementSnapshotEntity.setTitle(title);
+        announcementSnapshotEntity.setContent(content);
+        announcementSnapshotEntity.setAnnouncementId(announcementId);
+        announcementSnapshotEntity.setVersion(version);
+        announcementSnapshotEntity.setModifierId(modifierId);
+        announcementSnapshotEntity.setHsitoryId(historyId);
+        announcementSnapshotEntity.save();
+
+        return true;
     }
 }
