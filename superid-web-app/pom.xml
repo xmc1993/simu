@@ -14,15 +14,15 @@
     <name>superid-web-app</name>
     <repositories>
         <repository>
-            <roleId>jboss</roleId>
+            <id>jboss</id>
             <url>http://repository.jboss.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
-            <roleId>sonatype-oss-public</roleId>
+            <id>sonatype-oss-public</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <roleId>spring-releases</roleId>
+            <id>spring-releases</id>
             <name>Spring Release Repository</name>
             <url>https://repo.spring.io/libs-release</url>
             <releases>
@@ -33,7 +33,7 @@
             </snapshots>
         </repository>
         <repository>
-            <roleId>sonatype-nexus-staging</roleId>
+            <id>sonatype-nexus-staging</id>
             <name>Sonatype Nexus Staging</name>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
             <releases>

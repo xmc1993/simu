@@ -119,7 +119,7 @@ public class UserServiceTest{
         long userid = 1893L;
         List<UserAllianceRolesVO> roles1 = new ArrayList<>();
         List<UserAllianceRolesVO> roles2 = new ArrayList<>();
-        List<AllianceRolesVO> testVos = new ArrayList<>();
+        List<AllianceRolesVO> testVos ;
         StringBuilder sb;
         ParameterBindings p;
 
