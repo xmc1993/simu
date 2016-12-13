@@ -323,23 +323,15 @@ public class AnnouncementService implements IAnnouncementService{
     public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where 1 = 2  ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){
-            try{
-                if(id.matches("[0-9]+")){
-                    Long one = Long.parseLong(id);
-                    sql.append(" or id = ? ");
-                    p.addIndexBinding(one);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-                return null;
+            if(id.matches("[0-9]+")){
+                sql.append(","+id);
             }
-
         }
-        sql.append(" ) a join affair b on a.affair_id = b.id ");
+        sql.append(" ) ) a join affair b on a.affair_id = b.id ");
 
         List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findList(SimpleAnnouncementVO.class,sql.toString(),p);
         if(result == null ){
