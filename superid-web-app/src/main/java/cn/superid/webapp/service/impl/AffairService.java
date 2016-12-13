@@ -205,8 +205,7 @@ public class AffairService implements IAffairService {
     public boolean disableAffair(Long allianceId,Long affairId){
         int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state", ValidState.Invalid);
         if(isUpdate == 0){
-            throw new Ex
-
+            return false;
         }
 
         List<TaskEntity> tasks = taskService.getAllValidAffair(allianceId,affairId,"id");
