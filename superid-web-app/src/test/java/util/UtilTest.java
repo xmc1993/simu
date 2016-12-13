@@ -6,6 +6,7 @@ import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.utils.Timer;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.Timer;
+import com.sun.istack.internal.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,14 +30,29 @@ public class UtilTest {
         Assert.assertTrue(CheckFrequencyUtil.isFrequent("test"));
     }
 
+    private void test(@NotNull String a){
+        System.out.println(a);
+    }
+
     @Test
     public void testCheck(){
-        System.out.println(StringUtil.longToString(1481522657490L));
-        System.out.println(StringUtil.generateId(1481522657490L,8));
-        System.out.println(StringUtil.generateId(148152L,8));
-        System.out.println(StringUtil.generateId(148151L,8));
 
-
+        test(null);
+        util.Timer.compair(100000, new Execution() {
+                    @Override
+                    public void execute() {
+                        String p = "testaaaaaaaaaaa";
+                        String a = p + "/";
+                    }
+                }, new Execution() {
+                    @Override
+                    public void execute() {
+                        StringBuilder stringBuilder = new StringBuilder("testaaaaaaaaaaa");
+                        stringBuilder.append("/");
+                        stringBuilder.toString();
+                    }
+                }
+        );
 
     }
 

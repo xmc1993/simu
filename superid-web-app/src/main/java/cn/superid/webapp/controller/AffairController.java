@@ -11,6 +11,7 @@ import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
+import com.sun.istack.internal.NotNull;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -195,16 +196,12 @@ public class AffairController {
     @ApiOperation(value = "处理移动事务",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/handle_move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ACCEPT_MOVED_AFFAIR)
-    public SimpleResponse handleMoveAffair(Long allianceId , Long affairId , Long targetAffairId , Long roleId , boolean isAgree) {
+    public SimpleResponse handleMoveAffair(Long allianceId ,  Long affairId , Long targetAffairId , Long roleId , boolean isAgree) {
         if(allianceId == null || targetAffairId == null || affairId == null || roleId == null){
             return SimpleResponse.error("参数不能为空");
         }
         boolean result = affairService.handleMoveAffair(allianceId,affairId,targetAffairId,roleId,isAgree);
-        if(result == false){
-            return SimpleResponse.ok(false);
-        }else{
-            return SimpleResponse.ok(true);
-        }
+        return SimpleResponse.ok(result);
 
     }
 
@@ -216,12 +213,7 @@ public class AffairController {
             return SimpleResponse.error("参数不能为空");
         }
         boolean result = affairService.switchRole(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),newRoleId);
-        if(result == false){
-            return SimpleResponse.ok(false);
-        }else{
-            return SimpleResponse.ok(true);
-        }
-
+        return SimpleResponse.ok(result);
     }
 
     public SimpleResponse getOutAllianceAffair(){

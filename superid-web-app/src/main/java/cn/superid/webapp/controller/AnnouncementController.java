@@ -192,11 +192,17 @@ public class AnnouncementController {
     @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/create_announcement", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse createAnnouncement(String title  , Long taskId , Long affairMemberId , Integer isTop , Integer publicType , ContentState content){
+    public SimpleResponse createAnnouncement(String title  , Long taskId , Long affairMemberId , Integer isTop , Integer publicType ,String content){
         if(taskId == null){
             taskId = 0L ;
         }
-        return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,content));
+        try{
+            ContentState contentState = JSON.parseObject(content,ContentState.class);
+            return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,contentState));
+        }catch (Exception e){
+            return SimpleResponse.error("ContentState is invaild");
+        }
+
     }
 
     @ApiOperation(value = "删除公告",response = String.class, notes = "拥有权限")
