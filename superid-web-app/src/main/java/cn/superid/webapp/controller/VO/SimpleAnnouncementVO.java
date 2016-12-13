@@ -11,7 +11,7 @@ public class SimpleAnnouncementVO {
     private String title;
     private long id;
     private long affairId;
-    private String thumbContent;
+    private String content;
     private String affairName;
     private long creatorId;
 
@@ -45,12 +45,12 @@ public class SimpleAnnouncementVO {
         this.affairId = affairId;
     }
 
-    public String getThumbContent() {
-        return thumbContent;
+    public String getContent() {
+        return content;
     }
 
-    public void setThumbContent(String thumbContent) {
-        this.thumbContent = thumbContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getAffairName() {

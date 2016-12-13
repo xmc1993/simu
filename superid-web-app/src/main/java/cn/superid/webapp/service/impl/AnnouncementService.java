@@ -323,7 +323,7 @@ public class AnnouncementService implements IAnnouncementService{
     public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name from (select title , id , affair_id , thumb_content , creator_id from announcement where id in ( 0 ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, creator_id from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){
