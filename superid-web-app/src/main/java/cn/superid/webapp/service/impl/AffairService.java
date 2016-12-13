@@ -342,7 +342,7 @@ public class AffairService implements IAffairService {
             userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
         }
         int update = 1 ;
-        if((isStuck != null)&&(isStuck == IntBoolean.TRUE)){
+        if(isStuck != null){
             update = AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).set("isStuck",isStuck);
         }
         return ((isUpdate>0)&&(userUpdate>0)&&(update>0));

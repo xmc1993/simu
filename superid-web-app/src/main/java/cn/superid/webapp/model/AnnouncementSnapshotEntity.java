@@ -19,11 +19,10 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
     private long id;
     private int version = 0;
     private String content = "";
-    private String increment;
-    private String decrement;
     private long modifierId;
     private String title = "";
     private long announcementId;
+    private long hsitoryId;
 
     @Id
     @Column(name = "id")
@@ -51,22 +50,6 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
         this.content = content;
     }
 
-    public String getIncrement() {
-        return increment;
-    }
-
-    public void setIncrement(String increment) {
-        this.increment = increment;
-    }
-
-    public String getDecrement() {
-        return decrement;
-    }
-
-    public void setDecrement(String decrement) {
-        this.decrement = decrement;
-    }
-
     public long getModifierId() {
         return modifierId;
     }
@@ -90,5 +73,13 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
 
     public void setAnnouncementId(long announcementId) {
         this.announcementId = announcementId;
+    }
+
+    public long getHsitoryId() {
+        return hsitoryId;
+    }
+
+    public void setHsitoryId(long hsitoryId) {
+        this.hsitoryId = hsitoryId;
     }
 }
