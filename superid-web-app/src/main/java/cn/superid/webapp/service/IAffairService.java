@@ -60,6 +60,7 @@ public interface IAffairService  {
 
     /**
      * 在正式操作一个事务之前,检测是否有特殊情况需要处理
+     * 比如点击失效,然后调用这个接口,确认按钮再调用disable方法
      * @param allianceId
      * @param affairId
      * @return 见responseCode
@@ -131,7 +132,12 @@ public interface IAffairService  {
 
     public AffairTreeVO getAffairTree(long allianceId);
 
-
+    /**
+     * 获取事务信息
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
     public AffairInfo getAffairInfo(long allianceId,long affairId);
 
     /**
@@ -145,7 +151,7 @@ public interface IAffairService  {
 
     /**
      * 获取一个用户参与的盟外事务
-     * 比如以A盟的角色去参加B盟的事务,但是在B盟中没有角色
+     * 比如以A盟的角色去参加B盟的事务,但是该用户不是B盟的人
      * @return
      */
     public List<AffairInfo> getOutAllianceAffair();

@@ -130,7 +130,7 @@ public class TaskService  implements ITaskService{
     }
 
     @Override
-    public List<TaskEntity> getAllValidAffair(long allianceId, long affairId,String... params) {
+    public List<TaskEntity> getAllValidTask(long allianceId, long affairId, String... params) {
         List<TaskEntity> result = TaskEntity.dao.partitionId(allianceId).eq("affair_id",affairId).state(TaskState.OnGoing).selectList(params);
         return result;
     }
