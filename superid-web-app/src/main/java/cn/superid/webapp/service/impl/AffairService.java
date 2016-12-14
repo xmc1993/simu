@@ -230,6 +230,7 @@ public class AffairService implements IAffairService {
 
         int updateCount = AffairEntity.dao.partitionId(allianceId).in("id",affairIds).set("state",ValidState.Invalid);
         if (updateCount != childAffairs.size()) {
+            //TODO 事务回滚
             return false;
         }
 
