@@ -16,15 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = {"classpath*:META-INF/spring/spring-all-test.xml"})
 public class RollbackTest {
     @Test
-    @Transactional
     public void testRollback(){
+
         ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding("tms");
+        p.addIndexBinding("tmssss");
         p.addIndexBinding(1899L);
         StringBuilder correctSql = new StringBuilder("update user set username = ? where id= ?");
+        //int count = UserEntity.dao.id(1899L).set("username","tms");
         int count = UserEntity.getSession().execute(correctSql.toString(),p);
+
         UserEntity user = UserEntity.dao.findById(1899L);
-        System.out.println(count);
+        System.out.println(1);
         /*
         try{
             StringBuilder incorrectSql = new StringBuilder("update user set userame = 'tms' where id=1899");

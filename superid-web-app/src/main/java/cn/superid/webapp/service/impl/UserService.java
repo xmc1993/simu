@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
@@ -454,6 +455,20 @@ public class UserService implements IUserService {
     public boolean modifySuperId(String superId) {
         //检测修改的superid是否符合长度等要求,是不是要放在前端
         return UserEntity.dao.id(currentUserId()).set("superid",superId)>0;
+    }
+
+    @Override
+    @Transactional
+    public void rollbackTest() {
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding("汤茂思");
+        p.addIndexBinding(1899L);
+        StringBuilder correctSql = new StringBuilder("update user set username = ? where id= ?");
+        UserEntity.getSession().execute(correctSql.toString(),p);
+        /*
+            StringBuilder incorrectSql = new StringBuilder("update user set userame = 'tms' where id=1899");
+            UserEntity.getSession().execute(incorrectSql.toString());
+            */
     }
 
     private String generateSuperId(long id){
