@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
@@ -62,11 +63,11 @@ public class AnnouncementController {
 
     @ApiOperation(value = "查找公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public SimpleResponse searchAnnouncement(String content , Long affairId ) {
-        if(content == null | affairId == null ){
+    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId ) {
+        if(content == null | affairId == null | allianceId == null ){
             return SimpleResponse.error("参数不能为空");
         }
-        List<Long> result = null;
+        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId);
 
         if(result == null){
             return SimpleResponse.error("未搜到结果");

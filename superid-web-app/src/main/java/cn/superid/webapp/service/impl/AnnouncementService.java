@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
@@ -355,9 +356,18 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<Long> searchAnnouncement(String content, Long affairId) {
-        StringBuilder sql = new StringBuilder("select id from announcement where title like ");
-        return null;
+    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId) {
+        StringBuilder sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding("%"+content+"%");
+        p.addIndexBinding(content);
+        p.addIndexBinding(content);
+
+
+        return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
     }
 
     private String getThumb(List<Block> blocks){

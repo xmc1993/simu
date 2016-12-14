@@ -38,4 +38,10 @@ public class SQLDao {
             "join affair a " +
             "on a.id = b.affair_id ";
 
+    //查找公告
+    public static String SEARCH_ANNOUNCEMENT = "select a.id , a.modify_time from (select id,creator_id,modify_time,title from announcement where alliance_id = ? and affair_id = ? ) a " +
+            "join ( select id , user_id , title from role where alliance_id = ? ) b " +
+            "join ( select id , username from user ) c " +
+            "on a.creator_id = b.id and b.user_id = c.id where a.title like ? or b.title = ? or c.username = ? ";
+
 }
