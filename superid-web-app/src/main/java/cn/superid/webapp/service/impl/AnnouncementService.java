@@ -233,26 +233,30 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean saveDraft(ContentState contentState, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId) {
+    public boolean saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
+        ContentState contentState = null;
         if(draftId == 0){
             //新建的草稿
             announcementDraftEntity = new AnnouncementDraftEntity();
+            contentState = new ContentState();
         }else{
             announcementDraftEntity = AnnouncementDraftEntity.dao.findById(draftId,allianceId);
+            contentState = JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class);
         }
-        if(announcementDraftEntity == null){
+        if(announcementDraftEntity == null | contentState == null){
             return false;
         }
+        announcementDraftEntity.setContent(caulatePaper(JSONObject.toJSONString(contentState),delta));
+        announcementDraftEntity.setThumbContent(getThumb(getBlock(JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class))));
         announcementDraftEntity.setTaskId(taskId);
         announcementDraftEntity.setAffairId(affairId);
-        announcementDraftEntity.setThumbContent(getThumb(getBlock(contentState)));
         announcementDraftEntity.setAllianceId(allianceId);
         announcementDraftEntity.setState(ValidState.Valid);
         announcementDraftEntity.setCreatorId(roleId);
         announcementDraftEntity.setAllianceId(allianceId);
-        announcementDraftEntity.setContent(JSONObject.toJSONString(contentState));
+
         announcementDraftEntity.setTitle(title);
         if(draftId == 0){
             announcementDraftEntity.save();
@@ -289,6 +293,8 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public boolean deleteAnnouncement(long announcementId, long allianceId) {
         AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state",0);
+        //把这条加入announcement中
+        AnnouncementHistoryEntity announcementHistoryEntity = new AnnouncementHistoryEntity();
         return true;
     }
 
@@ -346,6 +352,12 @@ public class AnnouncementService implements IAnnouncementService{
         }
 
         return result;
+    }
+
+    @Override
+    public List<Long> searchAnnouncement(String content, Long affairId) {
+        StringBuilder sql = new StringBuilder("select id from announcement where title like ");
+        return null;
     }
 
     private String getThumb(List<Block> blocks){
