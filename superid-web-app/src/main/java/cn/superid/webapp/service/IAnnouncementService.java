@@ -27,7 +27,7 @@ public interface IAnnouncementService {
 
     public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId);
 
-    public boolean saveDraft(ContentState contentState , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId);
+    public boolean saveDraft(String delta , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId);
 
     public boolean createAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , ContentState content);
 
@@ -36,4 +36,6 @@ public interface IAnnouncementService {
     public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId , long allianceId , boolean isContainChild);
 
     public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
+
+    public List<Long> searchAnnouncement(String content , Long affairId);
 }

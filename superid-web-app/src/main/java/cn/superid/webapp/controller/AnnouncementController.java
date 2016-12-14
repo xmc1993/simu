@@ -60,6 +60,20 @@ public class AnnouncementController {
         return SimpleResponse.ok(result);
     }
 
+    @ApiOperation(value = "查找公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public SimpleResponse searchAnnouncement(String content , Long affairId ) {
+        if(content == null | affairId == null ){
+            return SimpleResponse.error("参数不能为空");
+        }
+        List<Long> result = null;
+
+        if(result == null){
+            return SimpleResponse.error("未搜到结果");
+        }
+        return SimpleResponse.ok(result);
+    }
+
 
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
@@ -184,12 +198,18 @@ public class AnnouncementController {
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse saveDraft(Long draftId , ContentState contentState , Long affairMemberId , Integer publicType , String title , Long taskId){
+    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId){
 
-        if(draftId == null | contentState == null | publicType == null | title == null | taskId == null){
+        if(delta == null | publicType == null | title == null) {
             return SimpleResponse.error("参数不正确");
         }
-        boolean result = announcementService.saveDraft(contentState,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId);
+        if(draftId == null){
+            draftId = 0L ;
+        }
+        if(taskId == null){
+            taskId = 0L ;
+        }
+        boolean result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId);
         return SimpleResponse.ok(result);
     }
 
