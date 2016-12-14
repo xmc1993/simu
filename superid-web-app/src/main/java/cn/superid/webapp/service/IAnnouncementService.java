@@ -37,5 +37,5 @@ public interface IAnnouncementService {
 
     public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
 
-    public List<Long> searchAnnouncement(String content , Long affairId);
+    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
 }
