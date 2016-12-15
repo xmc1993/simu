@@ -320,7 +320,7 @@ public class AnnouncementService implements IAnnouncementService{
         List<SimpleAnnouncementIdVO> result = new ArrayList<>();
         if(announcementEntityList != null){
             for(AnnouncementEntity a : announcementEntityList){
-                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime().getTime(),a.getAffairId());
+                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime(),a.getAffairId());
                 result.add(s);
             }
         }
