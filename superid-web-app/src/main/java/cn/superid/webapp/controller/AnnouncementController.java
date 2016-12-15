@@ -199,7 +199,7 @@ public class AnnouncementController {
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId){
+    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId , String entityMap){
 
         if(delta == null | publicType == null | title == null) {
             return SimpleResponse.error("参数不正确");
@@ -210,7 +210,7 @@ public class AnnouncementController {
         if(taskId == null){
             taskId = 0L ;
         }
-        boolean result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId);
+        boolean result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap);
         return SimpleResponse.ok(result);
     }
 

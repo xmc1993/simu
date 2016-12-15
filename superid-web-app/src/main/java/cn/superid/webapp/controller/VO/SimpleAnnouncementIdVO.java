@@ -1,11 +1,15 @@
 package cn.superid.webapp.controller.VO;
 
+import cn.superid.jpa.orm.ConditionalDao;
+
 import java.sql.Timestamp;
 
 /**
  * Created by jizhenya on 16/12/2.
  */
 public class SimpleAnnouncementIdVO {
+
+    public final static ConditionalDao<SimpleAnnouncementIdVO> dao = new ConditionalDao<>(SimpleAnnouncementIdVO.class);
 
     private long announcementId;
     private Timestamp modifyTime;

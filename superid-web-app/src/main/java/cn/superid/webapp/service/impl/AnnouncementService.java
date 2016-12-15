@@ -39,76 +39,76 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
         //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
-        List<ReplaceForm> substitute = new ArrayList<>();
-        List<InsertForm> insert = new ArrayList<>();
-        List<Integer> delete = new ArrayList<>();
-        List<Block> replace = new ArrayList<>();
-        for(int i = 0 ; i < present.size() ; i++){
-            boolean isExit = false;
-            for( int j = 0 ; j < history.size() ; j++){
-                if(present.get(i).getKey().equals(history.get(j).getKey())){
-                    replace.add(new Block(present.get(i).getKey(),"",i,j));
-                    if(!present.get(i).getContent().equals(history.get(j).getContent())){
-                        //如果两个key相同的block的content不相同,则需要替换操作,相同的话则不需要动
-                        substitute.add(new ReplaceForm(i+1,history.get(j).getContent()));
-                    }
-                    isExit = true ;
-                    break;
-                }
-            }
-            if(isExit == false){
-                //表示该block在老文章中存在,但在新文章中不存在,应该删除
-                delete.add(i+1);
-            }
-        }
-
-        if(replace.size() == 0){
-            //如果没有重复的block,则在开头把所有的按顺序加上就好
-            List<EasyBlock> list = new ArrayList<>();
-            for(Block b : history){
-                list.add(new EasyBlock(b.getContent(),b.getKey()));
-            }
-            insert.add(new InsertForm(0,list));
-        }else{
-            //第三步,增加没有的block
-            for(int i = 0 ; i < replace.size() ; i++){
-                List<EasyBlock> list = new ArrayList<>();
-                if(i == 0){
-                    //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后,有的话就插入
-                    if(replace.get(i).getNewlocation() > 1){
-                        for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
-                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-                        }
-                        insert.add(new InsertForm(0,list));
-                        list = new ArrayList<>();
-                    }
-                }
-                if(i == replace.size()-1){
-                    //如果是最后一个,则把最后那部分加入到最后
-                    if(!(replace.get(i).getNewlocation() == history.size()-1)){
-                        //如果之后都没有段落了,则不用插入
-                        for(int z = replace.get(i).getNewlocation()+1 ; z < history.size() ; z++ ){
-                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-                        }
-                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
-                        list = new ArrayList<>();
-                    }
-                }
-                if(i > 0 & i < replace.size()-1){
-
-                    //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
-                    if(replace.get(i).getNewlocation()+1 < replace.get(i+1).getNewlocation()){
-                        for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
-                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-                        }
-                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
-                    }
-
-                }
-            }
-        }
-        EditDistanceForm result = new EditDistanceForm(delete,insert,substitute);
-        return result;
+//        List<ReplaceForm> substitute = new ArrayList<>();
+//        List<InsertForm> insert = new ArrayList<>();
+//        List<Integer> delete = new ArrayList<>();
+//        List<Block> replace = new ArrayList<>();
+//        for(int i = 0 ; i < present.size() ; i++){
+//            boolean isExit = false;
+//            for( int j = 0 ; j < history.size() ; j++){
+//                if(present.get(i).getKey().equals(history.get(j).getKey())){
+//                    replace.add(new Block(present.get(i).getKey(),"",i,j));
+//                    if(!present.get(i).getContent().equals(history.get(j).getContent())){
+//                        //如果两个key相同的block的content不相同,则需要替换操作,相同的话则不需要动
+//                        substitute.add(new ReplaceForm(i+1,history.get(j).getContent()));
+//                    }
+//                    isExit = true ;
+//                    break;
+//                }
+//            }
+//            if(isExit == false){
+//                //表示该block在老文章中存在,但在新文章中不存在,应该删除
+//                delete.add(i+1);
+//            }
+//        }
+//
+//        if(replace.size() == 0){
+//            //如果没有重复的block,则在开头把所有的按顺序加上就好
+//            List<EasyBlock> list = new ArrayList<>();
+//            for(Block b : history){
+//                list.add(new EasyBlock(b.getContent(),b.getKey()));
+//            }
+//            insert.add(new InsertForm(0,list));
+//        }else{
+//            //第三步,增加没有的block
+//            for(int i = 0 ; i < replace.size() ; i++){
+//                List<EasyBlock> list = new ArrayList<>();
+//                if(i == 0){
+//                    //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后,有的话就插入
+//                    if(replace.get(i).getNewlocation() > 1){
+//                        for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
+//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+//                        }
+//                        insert.add(new InsertForm(0,list));
+//                        list = new ArrayList<>();
+//                    }
+//                }
+//                if(i == replace.size()-1){
+//                    //如果是最后一个,则把最后那部分加入到最后
+//                    if(!(replace.get(i).getNewlocation() == history.size()-1)){
+//                        //如果之后都没有段落了,则不用插入
+//                        for(int z = replace.get(i).getNewlocation()+1 ; z < history.size() ; z++ ){
+//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+//                        }
+//                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
+//                        list = new ArrayList<>();
+//                    }
+//                }
+//                if(i > 0 & i < replace.size()-1){
+//
+//                    //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
+//                    if(replace.get(i).getNewlocation()+1 < replace.get(i+1).getNewlocation()){
+//                        for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
+//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
+//                        }
+//                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
+//                    }
+//
+//                }
+//            }
+//        }
+//        EditDistanceForm result = new EditDistanceForm(delete,insert,substitute);
+        return null;
     }
 
     @Override
@@ -138,8 +138,15 @@ public class AnnouncementService implements IAnnouncementService{
 
         //该方法处理逻辑:先处理替换,再处理删除,但不真正执行,只是记录下要删除的key,防止打乱add的location,然后执行add方法,最后执行delete
         for(ReplaceForm r : ope.getReplace()){
-            //完成替换
-            blocks.get(r.getPosition()-1).setText(r.getNewContent());
+            if(blocks.size()<r.getPosition()){
+                if(r.getPosition() == 1){
+                    //直接插入
+                    blocks.add(r.getContent());
+                }
+            }else{
+                //完成替换
+                blocks.set(r.getPosition()-1,r.getContent());
+            }
         }
         List<TotalBlock> deletes = new ArrayList<>();
         //得到要删除的key
@@ -161,11 +168,7 @@ public class AnnouncementService implements IAnnouncementService{
         //执行insert,因为和上面次序一致,所以可以直接用
         for(int i = 0 ; i < ope.getInsert().size() ; i++){
             InsertForm insert = ope.getInsert().get(i);
-            List<TotalBlock> bs = new ArrayList<>();
-            for(EasyBlock e : insert.getBlocks()){
-                TotalBlock t = new TotalBlock(new Object(),0,new ArrayList<>(),new ArrayList<>(),e.getKey(),e.getContent(),"unstyled");
-                bs.add(t);
-            }
+            List<TotalBlock> bs = insert.getContent();
             if(adds.get(i) == null){
                 //表示是在开头插入
                 blocks.addAll(0,bs);
@@ -234,7 +237,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId) {
+    public boolean saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
         ContentState contentState = null;
@@ -248,6 +251,9 @@ public class AnnouncementService implements IAnnouncementService{
         }
         if(announcementDraftEntity == null | contentState == null){
             return false;
+        }
+        if(!entityMap.equals("")){
+            contentState.setEntityMap(entityMap);
         }
         announcementDraftEntity.setContent(caulatePaper(JSONObject.toJSONString(contentState),delta));
         announcementDraftEntity.setThumbContent(getThumb(getBlock(JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class))));
@@ -301,30 +307,27 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId , boolean isContainChild) {
-        List<AnnouncementEntity> announcementEntityList = null;
+        List<SimpleAnnouncementIdVO> simpleAnnouncementIdVOList = null;
         if(isContainChild == false){
-
-            announcementEntityList = AnnouncementEntity.dao.partitionId(allianceId).state(ValidState.Valid).eq("affairId",affairId).desc("modify_time").selectList("id","modify_time","affair_id");
+            StringBuilder sql = new StringBuilder("select id as announcementId,modify_time,affair_id from announcement  where alliance_id = ? and affair_id = ? and state = 0 order by modify_time desc ");
+            ParameterBindings p = new ParameterBindings();
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(affairId);
+            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
         }else{
             AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
             if(affair == null){
                 return null;
             }
-            StringBuilder sql = new StringBuilder("select a.id,a.modify_time,a.affair_id from announcement a join affair b on a.affair_id = b.id where b.path like ? ");
+            StringBuilder sql = new StringBuilder(SQLDao.GET_ANNOUNCEMENT_ID);
             ParameterBindings p = new ParameterBindings();
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(allianceId);
             p.addIndexBinding(affair.getPath()+"%");
 
-            announcementEntityList = AnnouncementEntity.dao.findList(sql.toString(),p);
+            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
         }
-
-        List<SimpleAnnouncementIdVO> result = new ArrayList<>();
-        if(announcementEntityList != null){
-            for(AnnouncementEntity a : announcementEntityList){
-                SimpleAnnouncementIdVO s = new SimpleAnnouncementIdVO(a.getId(),a.getModifyTime(),a.getAffairId());
-                result.add(s);
-            }
-        }
-        return result;
+        return simpleAnnouncementIdVOList;
     }
 
     @Override
