@@ -237,7 +237,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap) {
+    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
         ContentState contentState = null;
@@ -250,7 +250,7 @@ public class AnnouncementService implements IAnnouncementService{
             contentState = JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class);
         }
         if(announcementDraftEntity == null | contentState == null){
-            return false;
+            return 0L;
         }
         if(!entityMap.equals("")){
             contentState.setEntityMap(entityMap);
@@ -270,7 +270,7 @@ public class AnnouncementService implements IAnnouncementService{
         }else{
             announcementDraftEntity.update();
         }
-        return true;
+        return announcementDraftEntity.getId();
     }
 
     @Override

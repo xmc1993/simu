@@ -210,7 +210,10 @@ public class AnnouncementController {
         if(taskId == null){
             taskId = 0L ;
         }
-        boolean result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap);
+        long result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap);
+        if(result == 0){
+            return SimpleResponse.error("添加失败");
+        }
         return SimpleResponse.ok(result);
     }
 
