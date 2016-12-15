@@ -20,6 +20,6 @@ public interface ITaskService {
 
     public boolean addAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , ContentState content);
 
-    public List<TaskEntity> getAllValidAffair(long allianceId, long affairId,String... params);
+    public List<TaskEntity> getAllValidTask(long allianceId, long affairId, String... params);
 
 }
