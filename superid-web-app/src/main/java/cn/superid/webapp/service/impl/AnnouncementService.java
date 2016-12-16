@@ -2,8 +2,10 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.controller.VO.DraftDetailVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
+import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
@@ -328,6 +330,29 @@ public class AnnouncementService implements IAnnouncementService{
             simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
         }
         return simpleAnnouncementIdVOList;
+    }
+
+    @Override
+    public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
+        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and roleId = ? and state = 0 order by modify_time desc ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(roleId);
+        return SimpleDraftIdVO.dao.findList(sql.toString(),p);
+    }
+
+    @Override
+    public DraftDetailVO getDraftDetail(long draftId) {
+        AnnouncementDraftEntity announcementDraftEntity = AnnouncementDraftEntity.dao.id(draftId).selectOne("content","title","public_type");
+        DraftDetailVO result = new DraftDetailVO();
+        if(announcementDraftEntity != null){
+            result.setContent(announcementDraftEntity.getContent());
+            result.setTitle(announcementDraftEntity.getTitle());
+            result.setPublicType(announcementDraftEntity.getPublicType());
+        }
+
+        return result;
     }
 
     @Override
