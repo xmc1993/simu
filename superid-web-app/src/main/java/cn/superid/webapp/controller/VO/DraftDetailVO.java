@@ -11,6 +11,7 @@ public class DraftDetailVO {
     private String content;
     private String title;
     private int publicType;
+    private int editMode;
 
     public String getContent() {
         return content;
@@ -34,5 +35,13 @@ public class DraftDetailVO {
 
     public void setPublicType(int publicType) {
         this.publicType = publicType;
+    }
+
+    public int getEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(int editMode) {
+        this.editMode = editMode;
     }
 }

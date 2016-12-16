@@ -239,7 +239,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap) {
+    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap, int editMode) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
         ContentState contentState = null;
@@ -265,6 +265,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementDraftEntity.setState(ValidState.Valid);
         announcementDraftEntity.setCreatorId(roleId);
         announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setEditMode(editMode);
 
         announcementDraftEntity.setTitle(title);
         if(draftId == 0){
@@ -344,12 +345,13 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public DraftDetailVO getDraftDetail(long draftId) {
-        AnnouncementDraftEntity announcementDraftEntity = AnnouncementDraftEntity.dao.id(draftId).selectOne("content","title","public_type");
+        AnnouncementDraftEntity announcementDraftEntity = AnnouncementDraftEntity.dao.id(draftId).selectOne("content","title","public_type","edit_mode");
         DraftDetailVO result = new DraftDetailVO();
         if(announcementDraftEntity != null){
             result.setContent(announcementDraftEntity.getContent());
             result.setTitle(announcementDraftEntity.getTitle());
             result.setPublicType(announcementDraftEntity.getPublicType());
+            result.setEditMode(announcementDraftEntity.getEditMode());
         }
 
         return result;

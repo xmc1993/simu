@@ -29,7 +29,7 @@ public interface IAnnouncementService {
 
     public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId);
 
-    public long saveDraft(String delta , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId , String entityMap);
+    public long saveDraft(String delta , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId , String entityMap , int editMode);
 
     public boolean createAnnouncement(String title , long affairId , long allianceId, long taskId , long roleId , int isTop , int publicType , ContentState content);
 
