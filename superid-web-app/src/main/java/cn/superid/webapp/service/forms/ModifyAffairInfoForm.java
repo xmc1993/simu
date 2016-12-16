@@ -2,8 +2,8 @@ package cn.superid.webapp.service.forms;
 
 /**
  * Created by njuTms on 16/11/16.
+ * 前端传来的修改事务信息字段,包含是否是首页
  */
-//前端传来的修改事务信息字段,包含是否是首页
 public class ModifyAffairInfoForm {
     private String name;
     private Integer publicType;

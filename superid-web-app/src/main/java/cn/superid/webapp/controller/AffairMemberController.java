@@ -11,6 +11,8 @@ import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.service.IAffairUserService;
+import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +28,9 @@ public class AffairMemberController {
     @Autowired
     private IAffairMemberService affairMemberService;
     @Autowired
-    private IAffairService affairService;
+    private IAffairUserService affairUserService;
+    @Autowired
+    private IUserService userService;
     /*
     @ApiOperation(value = "添加事务成员",response = String.class,notes = "拥有权限")
     @RequestMapping(value = "/add_member",method = RequestMethod.POST)
@@ -68,6 +72,7 @@ public class AffairMemberController {
             boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
             if(isOwner){
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
+                affairUserService.addAffairUser(targetAllianceId,targetAffairId,roleId,userService.currentUserId());
                 return SimpleResponse.ok(null);
             }
         }
