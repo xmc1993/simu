@@ -171,6 +171,9 @@ public class UserService implements IUserService {
 
     @Override
     public UserEntity findByToken(String token) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("zp");
+        userEntity.save();
         if(StringUtil.isEmail(token)){
             return UserEntity.dao.eq("email",token).selectOne();
         }else if(StringUtil.isMobile(token)){
