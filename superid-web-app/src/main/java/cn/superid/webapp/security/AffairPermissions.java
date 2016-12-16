@@ -40,6 +40,7 @@ public class AffairPermissions {
     public final static int EDIT_ANNOUNCEMENT = 43; //编辑公告
     public final static int APPLY_ANNOUNCEMENT = 56; //回复公告
     public final static int INVALID_ANNOUNCEMENT = 69; //失效公告
+    public final static int CHECK_CHILD_AFFAIR_ANNOUNCEMENT = 82; //查看子事务公告
 
     public final static int TASK = 5; //任务
     public final static int CHECK_TASK_LIST = 18; //查看任务列表
@@ -166,6 +167,9 @@ public class AffairPermissions {
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(INVALID_ANNOUNCEMENT, "失效公告");
             parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_CHILD_AFFAIR_ANNOUNCEMENT, "查看子事务公告");
+            parentNode.getChilds().add(childNode);
+
 
             parentNode = new IdNameNode(TASK, "任务");
             rs.add(parentNode);

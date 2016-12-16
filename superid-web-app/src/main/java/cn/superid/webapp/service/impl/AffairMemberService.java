@@ -8,6 +8,7 @@ import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.List;
 public class AffairMemberService implements IAffairMemberService{
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IAffairUserService affairUserService;
     @Override
     public AffairMemberEntity addMember(Long allianceId,Long affairId, Long roleId,  String permissions,int permissionLevel) {
 
@@ -132,6 +135,9 @@ public class AffairMemberService implements IAffairMemberService{
         }
 
         addMember(allianceId,affairId,affairMemberApplicationEntity.getRoleId(),"",AffairPermissionRoleType.GUEST_ID);
+        //添加事务成员
+        //TODO 要不要检测affairUser是否存在
+        affairUserService.addAffairUser(allianceId,affairId,affairMemberApplicationEntity.getRoleId(),affairMemberApplicationEntity.getUserId());
         /*
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setAllianceId(allianceId);
@@ -144,7 +150,6 @@ public class AffairMemberService implements IAffairMemberService{
         affairMemberEntity.setPermissionGroupId(AffairPermissionRoleType.GUEST_ID);
         affairMemberEntity.save();
 
-        // TODO: 设置权限,暂时设置为客方
         AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId)
                 .eq("role_id",affairMemberApplicationEntity.getRoleId()).eq("affair_id",affairId).selectOne();
         affairMemberEntity.setState(0);

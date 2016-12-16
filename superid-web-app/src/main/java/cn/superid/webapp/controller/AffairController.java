@@ -172,7 +172,7 @@ public class AffairController {
     @RequestMapping(value = "/move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.MOVE_AFFAIR)
     public SimpleResponse moveAffair(Long affairMemberId , Long targetAffairId ) {
-        if(affairMemberId == null || targetAffairId == null){
+        if(targetAffairId == null){
             return SimpleResponse.error("参数不能为空");
         }
         try{
@@ -193,7 +193,6 @@ public class AffairController {
         }
         boolean result = affairService.handleMoveAffair(allianceId,affairId,targetAffairId,roleId,isAgree);
         return SimpleResponse.ok(result);
-
     }
 
     @ApiOperation(value = "切换事务角色",response = String.class,notes = "拥有权限")
