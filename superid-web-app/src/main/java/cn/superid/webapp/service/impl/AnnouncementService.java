@@ -295,6 +295,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setDecrement("0");
         announcementEntity.setAllianceId(allianceId);
         announcementEntity.setCreatorId(roleId);
+        announcementEntity.setSessionSum(0);
         announcementEntity.save();
 
         return true;
