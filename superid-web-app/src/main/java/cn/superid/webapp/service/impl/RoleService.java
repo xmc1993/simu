@@ -58,6 +58,7 @@ public class RoleService implements IRoleService {
         UserNameAndRoleNameVO result = new UserNameAndRoleNameVO();
         result.setRoleName(role.getTitle());
         result.setUserName(user.getUsername());
+        result.setAvatar(user.getAvatar());
         return result;
     }
 

@@ -3,6 +3,7 @@ package cn.superid.webapp.service.forms;
 import clojure.lang.Obj;
 import com.wordnik.swagger.annotations.ApiModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
 public class ContentState {
 
     private Object entityMap;
-    private List<TotalBlock> blocks;
+    private List<TotalBlock> blocks = new ArrayList<>();
 
     public Object getEntityMap() {
         return entityMap;

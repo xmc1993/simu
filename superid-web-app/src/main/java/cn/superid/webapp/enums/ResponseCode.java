@@ -27,4 +27,6 @@ public interface ResponseCode {
      int WaitForDeal = 103;
      int ApplicationNotExist = 104;
      int InvitationNotExist = 105;
+     int HasChild = 106;
+     int HasTrade = 107;
 }

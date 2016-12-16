@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
@@ -54,6 +55,20 @@ public class AnnouncementController {
             return SimpleResponse.error("参数不能为空");
         }
         List<SimpleAnnouncementVO> result = announcementService.getOverview(ids,allianceId);
+        if(result == null){
+            return SimpleResponse.error("未搜到结果");
+        }
+        return SimpleResponse.ok(result);
+    }
+
+    @ApiOperation(value = "查找公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId ) {
+        if(content == null | affairId == null | allianceId == null ){
+            return SimpleResponse.error("参数不能为空");
+        }
+        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId);
+
         if(result == null){
             return SimpleResponse.error("未搜到结果");
         }
@@ -184,12 +199,21 @@ public class AnnouncementController {
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse saveDraft(Long draftId , ContentState contentState , Long affairMemberId , Integer publicType , String title , Long taskId){
+    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId , String entityMap){
 
-        if(draftId == null | contentState == null | publicType == null | title == null | taskId == null){
+        if(delta == null | publicType == null | title == null) {
             return SimpleResponse.error("参数不正确");
         }
-        boolean result = announcementService.saveDraft(contentState,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId);
+        if(draftId == null){
+            draftId = 0L ;
+        }
+        if(taskId == null){
+            taskId = 0L ;
+        }
+        long result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap);
+        if(result == 0){
+            return SimpleResponse.error("添加失败");
+        }
         return SimpleResponse.ok(result);
     }
 

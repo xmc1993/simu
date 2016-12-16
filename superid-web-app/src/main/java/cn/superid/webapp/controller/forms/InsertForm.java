@@ -1,5 +1,7 @@
 package cn.superid.webapp.controller.forms;
 
+import cn.superid.webapp.service.forms.TotalBlock;
+
 import java.util.List;
 
 /**
@@ -8,12 +10,12 @@ import java.util.List;
 public class InsertForm {
 
     private int position;
-    private List<EasyBlock> blocks;
+    private List<TotalBlock> content;
 
 
-    public InsertForm(int position, List<EasyBlock> blocks) {
+    public InsertForm(int position, List<TotalBlock> content) {
         this.position = position;
-        this.blocks = blocks;
+        this.content = content;
     }
 
     public InsertForm(){}
@@ -26,11 +28,11 @@ public class InsertForm {
         this.position = position;
     }
 
-    public List<EasyBlock> getBlocks() {
-        return blocks;
+    public List<TotalBlock> getContent() {
+        return content;
     }
 
-    public void setBlocks(List<EasyBlock> blocks) {
-        this.blocks = blocks;
+    public void setContent(List<TotalBlock> content) {
+        this.content = content;
     }
 }

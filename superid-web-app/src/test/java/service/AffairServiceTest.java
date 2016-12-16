@@ -1,9 +1,12 @@
+package service;
+
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,50 +26,22 @@ public class AffairServiceTest {
     private IAffairService affairService;
 
     @Test
-    public void createRootAffairTest(){
-        try{
-            //affairService.createRootAffair(7L,"三号七年",5L,1);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public void getAffairByStateTest(){
+        List<AffairEntity> result = affairService.getAffairByState(2319L,0);
+        System.out.println(result);
     }
 
     @Test
-    public void getAllChildAffairTest(){
+    public void getAllDirectChildAffairTest(){
         try{
-            affairService.getAllDirectChildAffair(7L,44L);
-            String test = "0-1-2-1";
-            System.out.println(test.substring(3));
+            affairService.getAllDirectChildAffair(2319L,0L);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
 
-    @Test
-    public void moveAffairTest(){
-        try{
-            //affairService.moveAffair(43L,1070L,1050L);
-            /*
-            List<AffairEntity> result_1 = new ArrayList<>();
 
-
-            long st = System.currentTimeMillis();
-            result_1 = affairService.getAllChildAffairs(result_1,43L,1050L);
-            long et = System.currentTimeMillis();
-            System.out.println("递归时间"+(et-st));
-*/
-            List<AffairEntity> result_2 = new ArrayList<>();
-            long st = System.currentTimeMillis();
-            result_2 = affairService.getAllChildAffairs(43L,1050L,"level","path");
-            long et = System.currentTimeMillis();
-            System.out.println("方法时间"+(et-st));
-
-            System.out.println();
-        }catch (Exception e){
-
-        }
-    }
 
     @Test
     public void disableAffairTest(){
@@ -78,6 +53,7 @@ public class AffairServiceTest {
 
     }
 
+
     @Test
     public void validAffairTest(){
         try {
@@ -85,15 +61,30 @@ public class AffairServiceTest {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
+    @Test
+    public void canGenerateAffairTest(){
+        affairService.canGenerateAffair(43L,1070L);
+    }
+    @Test
+    public void moveAffairTest(){
+        //tms留:亚哥,留给你了23333
+    }
+
+    @Test
+    public void handleMoveAffairTest(){
+        //tms留:亚哥,留给你了23333
+    }
+
 
 
     @Test
     public void modifyAffairInfoTest(){
         try {
-            //affairService.modifyAffairInfo(43L,1070L,1,1);
-            //affairService.modifyAffairInfo(43L,1070L,2,"peng");
+            ModifyAffairInfoForm modifyAffairInfoForm = new ModifyAffairInfoForm();
+            modifyAffairInfoForm.setShortName("测试用");
+            affairService.modifyAffairInfo(2319L,0L,modifyAffairInfoForm);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -101,10 +92,82 @@ public class AffairServiceTest {
     }
 
     @Test
-    public void isChildTest(){
+    public void getAllChildAffairTest(){
+        try{
+            /*
+            List<AffairEntity> result_1 = new ArrayList<>();
 
+
+            long st = System.currentTimeMillis();
+            result_1 = affairService.getAllChildAffairs(result_1,43L,1050L);
+            long et = System.currentTimeMillis();
+            System.out.println("递归时间"+(et-st));
+            */
+            List<AffairEntity> result_2 = new ArrayList<>();
+            long st = System.currentTimeMillis();
+            result_2 = affairService.getAllChildAffairs(43L,1050L,"level","path");
+            long et = System.currentTimeMillis();
+            System.out.println("方法时间"+(et-st));
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void updateCoversTest(){
+
+    }
+
+    @Test
+    public void getAllRolesTest(){
+
+    }
+
+    @Test
+    public void affairOverviewTest(){
+
+    }
+
+    @Test
+    public void isChildTest(){
         System.out.println(affairService.isChildAffair(1185L,5573L,5572L));
     }
+
+    @Test
+    public void getAffairTreeByUserTest(){
+
+    }
+
+    @Test
+    public void getAffairTreeTest(){
+
+    }
+
+    @Test
+    public void getAffairInfoTest(){
+
+    }
+
+    @Test
+    public void switchRoleTest(){
+
+    }
+
+    @Test
+    public void getOutAllianceAffairsTest(){
+        List<AffairInfo> result = new ArrayList<>();
+        long userId = 1899;
+        //先从角色表中找到该用户的所有角色所在的盟,然后在affairMember表中找到不在之前盟中的角色的affairMember的affairId,最后从Affair中取
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userId);
+        p.addIndexBinding(userId);
+        long startTime = System.currentTimeMillis();
+        result = AffairEntity.getSession().findList(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime-startTime);
+    }
+
     @Test
     public void test(){
         /*
@@ -132,19 +195,5 @@ public class AffairServiceTest {
 
         List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",paths).selectList("id","path");
         System.out.println();
-    }
-
-    @Test
-    public void testGetOutAllianceAffairs(){
-        List<AffairInfo> result = new ArrayList<>();
-        long userId = 1899;
-        //先从角色表中找到该用户的所有角色所在的盟,然后在affairMember表中找到不在之前盟中的角色的affairMember的affairId,最后从Affair中取
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(userId);
-        p.addIndexBinding(userId);
-        long startTime = System.currentTimeMillis();
-        result = AffairEntity.getSession().findList(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
-        long endTime = System.currentTimeMillis();
-        System.out.println(endTime-startTime);
     }
 }
