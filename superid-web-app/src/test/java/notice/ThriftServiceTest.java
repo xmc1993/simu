@@ -1,6 +1,5 @@
 package notice;
 
-import cn.superid.webapp.notice.thrift.C2c;
 import cn.superid.webapp.notice.thrift.NoticeService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -18,12 +17,12 @@ public class ThriftServiceTest {
         TProtocol protocol = new TBinaryProtocol(transport);
         NoticeService.Client client = new NoticeService.Client(protocol);
         transport.open();
-        C2c c2c = new C2c();
-        c2c.setRequestId("test123");
-        c2c.setType(10);
-        client.atSomeone(c2c);
-        System.out.println(client.systemNotice(c2c));
-        transport.close();
+//        C2c c2c = new C2c();
+//        c2c.setRequestId("test123");
+//        c2c.setType(10);
+//        client.atSomeone(c2c);
+//        System.out.println(client.systemNotice(c2c));
+//        transport.close();
 
     }
 }
