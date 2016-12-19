@@ -401,6 +401,11 @@ public class AnnouncementService implements IAnnouncementService{
         return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
     }
 
+    @Override
+    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
+        return AnnouncementEntity.dao.findById(announcementId,allianceId);
+    }
+
     private String getThumb(List<Block> blocks){
         StringBuilder result = new StringBuilder("");
         for(Block b : blocks){
@@ -425,9 +430,5 @@ public class AnnouncementService implements IAnnouncementService{
         announcementSnapshotEntity.save();
 
         return true;
-    }
-
-    public List<SimpleAnnouncementIdVO> getHistoryIds(Timestamp time , long affairId  ){
-        return null;
     }
 }

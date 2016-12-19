@@ -101,6 +101,14 @@ public class AnnouncementController {
         return SimpleResponse.ok(result);
     }
 
+    @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_detail", method = RequestMethod.GET)
+    public SimpleResponse getDetail( Long announcementId , Long allianceId ){
+        if(announcementId == null | allianceId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        return SimpleResponse.ok(announcementService.getDetail(announcementId,allianceId));
+    }
 
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")

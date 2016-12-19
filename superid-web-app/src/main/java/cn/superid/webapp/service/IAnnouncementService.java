@@ -5,6 +5,7 @@ import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
+import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.ContentState;
 import cn.superid.webapp.service.forms.Operation;
@@ -44,4 +45,6 @@ public interface IAnnouncementService {
     public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
 
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
+
+    public AnnouncementEntity getDetail(long announcementId , long allianceId);
 }
