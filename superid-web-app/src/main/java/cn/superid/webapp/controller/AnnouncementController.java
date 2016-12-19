@@ -3,8 +3,10 @@ package cn.superid.webapp.controller;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.DraftDetailVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
+import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
@@ -47,6 +49,30 @@ public class AnnouncementController {
         return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId,isContainChild));
     }
 
+    @ApiOperation(value = "根据事务得到公告草稿id",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_draft_by_affair", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
+    public SimpleResponse getDraftByAffair(Long affairMemberId) {
+        List<SimpleDraftIdVO> simpleDraftIdVOs = announcementService.getDraftByAffair(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
+        if(simpleDraftIdVOs == null){
+            simpleDraftIdVOs = new ArrayList<>();
+        }
+        return SimpleResponse.ok(simpleDraftIdVOs);
+    }
+
+    @ApiOperation(value = "根据草稿id得到草稿详情",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_draft_detail", method = RequestMethod.GET)
+    public SimpleResponse getDraftDetail(Long draftId) {
+        if(draftId == null ){
+            return SimpleResponse.error("参数不能为空");
+        }
+        DraftDetailVO result = announcementService.getDraftDetail(draftId);
+        if(result == null){
+            return SimpleResponse.error("未得到结果");
+        }
+        return SimpleResponse.ok(result);
+    }
+
 
     @ApiOperation(value = "根据ids得到所有的公告概略",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_overview", method = RequestMethod.GET)
@@ -75,6 +101,14 @@ public class AnnouncementController {
         return SimpleResponse.ok(result);
     }
 
+    @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_detail", method = RequestMethod.GET)
+    public SimpleResponse getDetail( Long announcementId , Long allianceId ){
+        if(announcementId == null | allianceId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        return SimpleResponse.ok(announcementService.getDetail(announcementId,allianceId));
+    }
 
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
@@ -199,7 +233,7 @@ public class AnnouncementController {
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save_draft", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId , String entityMap){
+    public SimpleResponse saveDraft(Long affairMemberId , Long draftId , String delta , Integer publicType , String title , Long taskId , String entityMap , int editMode){
 
         if(delta == null | publicType == null | title == null) {
             return SimpleResponse.error("参数不正确");
@@ -210,12 +244,14 @@ public class AnnouncementController {
         if(taskId == null){
             taskId = 0L ;
         }
-        long result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap);
+        long result = announcementService.saveDraft(delta,draftId,GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),publicType,title,taskId,entityMap,editMode);
         if(result == 0){
             return SimpleResponse.error("添加失败");
         }
         return SimpleResponse.ok(result);
     }
+
+
 
     @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/create_announcement", method = RequestMethod.POST)
@@ -228,6 +264,7 @@ public class AnnouncementController {
             ContentState contentState = JSON.parseObject(content,ContentState.class);
             return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,contentState));
         }catch (Exception e){
+            e.printStackTrace();
             return SimpleResponse.error("ContentState is invaild");
         }
 

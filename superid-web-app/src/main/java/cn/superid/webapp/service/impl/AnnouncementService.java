@@ -2,8 +2,10 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.webapp.controller.VO.DraftDetailVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
+import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
@@ -237,7 +239,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap) {
+    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap, int editMode) {
 
         AnnouncementDraftEntity announcementDraftEntity = null ;
         ContentState contentState = null;
@@ -263,6 +265,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementDraftEntity.setState(ValidState.Valid);
         announcementDraftEntity.setCreatorId(roleId);
         announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setEditMode(editMode);
 
         announcementDraftEntity.setTitle(title);
         if(draftId == 0){
@@ -292,6 +295,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setDecrement("0");
         announcementEntity.setAllianceId(allianceId);
         announcementEntity.setCreatorId(roleId);
+        announcementEntity.setSessionSum(0);
         announcementEntity.save();
 
         return true;
@@ -328,6 +332,30 @@ public class AnnouncementService implements IAnnouncementService{
             simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
         }
         return simpleAnnouncementIdVOList;
+    }
+
+    @Override
+    public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
+        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and roleId = ? and state = 0 order by modify_time desc ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(roleId);
+        return SimpleDraftIdVO.dao.findList(sql.toString(),p);
+    }
+
+    @Override
+    public DraftDetailVO getDraftDetail(long draftId) {
+        AnnouncementDraftEntity announcementDraftEntity = AnnouncementDraftEntity.dao.id(draftId).selectOne("content","title","public_type","edit_mode");
+        DraftDetailVO result = new DraftDetailVO();
+        if(announcementDraftEntity != null){
+            result.setContent(announcementDraftEntity.getContent());
+            result.setTitle(announcementDraftEntity.getTitle());
+            result.setPublicType(announcementDraftEntity.getPublicType());
+            result.setEditMode(announcementDraftEntity.getEditMode());
+        }
+
+        return result;
     }
 
     @Override
@@ -373,6 +401,11 @@ public class AnnouncementService implements IAnnouncementService{
         return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
     }
 
+    @Override
+    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
+        return AnnouncementEntity.dao.findById(announcementId,allianceId);
+    }
+
     private String getThumb(List<Block> blocks){
         StringBuilder result = new StringBuilder("");
         for(Block b : blocks){
@@ -397,9 +430,5 @@ public class AnnouncementService implements IAnnouncementService{
         announcementSnapshotEntity.save();
 
         return true;
-    }
-
-    public List<SimpleAnnouncementIdVO> getHistoryIds(Timestamp time , long affairId  ){
-        return null;
     }
 }
