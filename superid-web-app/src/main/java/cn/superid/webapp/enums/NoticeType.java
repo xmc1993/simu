@@ -3,7 +3,7 @@ package cn.superid.webapp.enums;
 /**
  * Created by xmc1993 on 16/10/25.
  */
-public class SystemEventType {
+public class NoticeType {
 
     //@事件
     public static final Integer AT_MEMBER = 10;//@某人

@@ -7,7 +7,7 @@ import org.apache.thrift.TException;
  */
 public interface INoticeService {
 
-    boolean atSomeone(long frRid, String name, long relateId, long atRole);
+    boolean atSomeone(long frRid, String roleName, long frUid, String userName, long toUid, long relateId, long atRole) throws TException;
 
     boolean taskCreated();
 
