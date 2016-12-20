@@ -118,7 +118,8 @@ public class UserService implements IUserService {
                 if(MobileUtil.isChinaMobile(token)){
                     return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token),template, MapUtil.hashmap("code",code));
                 }else {
-                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token,code,template);
+                    token = MobileUtil.getCountryCode(token)+MobileUtil.getMobile(token);
+                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token.trim(),code,template);
                 }
 
             }

@@ -26,10 +26,10 @@ public class MobileUtil {
 
     public static boolean isValidFormat(String token){
         setStrs(token);
-        if(strs.length!=2){
-            return false;
+        if(strs.length==2){
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static String toString(String token){

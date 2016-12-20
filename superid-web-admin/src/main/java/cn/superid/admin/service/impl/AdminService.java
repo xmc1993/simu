@@ -19,12 +19,9 @@ public class AdminService implements IAdminService {
     @Autowired
     private MyAuth auth;
     @Override
-    public boolean login(String userName, String password) {
-        if(AdminEntity.dao.eq("name",userName).eq("password",password).exists()){
-            auth.authUser(userName);
-            return true;
-        }
-        return false;
+    public AdminEntity login(String userName, String password) {
+        AdminEntity adminEntity = AdminEntity.dao.eq("name",userName).eq("password",password).selectOne();
+        return adminEntity;
     }
 
 }
