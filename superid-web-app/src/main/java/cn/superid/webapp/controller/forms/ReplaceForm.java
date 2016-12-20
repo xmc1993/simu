@@ -1,16 +1,20 @@
 package cn.superid.webapp.controller.forms;
 
+import cn.superid.webapp.service.forms.TotalBlock;
+
+import java.util.List;
+
 /**
  * Created by jizhenya on 16/9/26.
  */
 public class ReplaceForm {
 
     private int position;
-    private String newContent;
+    private TotalBlock content;
 
-    public ReplaceForm(int position, String newContent) {
+    public ReplaceForm(int position, TotalBlock content) {
         this.position = position;
-        this.newContent = newContent;
+        this.content = content;
     }
 
     public ReplaceForm(){}
@@ -23,11 +27,11 @@ public class ReplaceForm {
         this.position = position;
     }
 
-    public String getNewContent() {
-        return newContent;
+    public TotalBlock getContent() {
+        return content;
     }
 
-    public void setNewContent(String newContent) {
-        this.newContent = newContent;
+    public void setContent(TotalBlock content) {
+        this.content = content;
     }
 }

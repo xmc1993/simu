@@ -12,7 +12,7 @@ public class AffairPermissionRoleType {
             AffairPermissions.CHECK_AFFAIR_HOMEPAGE, AffairPermissions.EDIT_AFFAIR_INFO,
             AffairPermissions.CREATE_CHILD_AFFAIR,AffairPermissions.GENERATE_CHILD_AFFAIR_PERMISSION,
             AffairPermissions.ADD_AFFAIR_MEMBER,AffairPermissions.REMOVE_AFFAIR_MEMBER,AffairPermissions.CHECK_AFFAIR_MEMBER,AffairPermissions.ALLOCATE_PERMISSION,
-            AffairPermissions.CHECK_ANNOUNCEMENT,AffairPermissions.ADD_ANNOUNCEMENT,AffairPermissions.EDIT_ANNOUNCEMENT,AffairPermissions.APPLY_ANNOUNCEMENT,AffairPermissions.INVALID_ANNOUNCEMENT,
+            AffairPermissions.CHECK_ANNOUNCEMENT,AffairPermissions.ADD_ANNOUNCEMENT,AffairPermissions.EDIT_ANNOUNCEMENT,AffairPermissions.APPLY_ANNOUNCEMENT,AffairPermissions.INVALID_ANNOUNCEMENT,AffairPermissions.CHECK_CHILD_AFFAIR_ANNOUNCEMENT,
             AffairPermissions.CHECK_TASK_LIST,AffairPermissions.ADD_TASK,AffairPermissions.ADD_TASK_MEMBER,AffairPermissions.REMOVE_TASK_MEMBER,AffairPermissions.EDIT_TASK,AffairPermissions.ADD_TASK_CONTENT,
             AffairPermissions.CHECK_FILE,AffairPermissions.UPLOAD_FILE,AffairPermissions.MOVE_FILE,AffairPermissions.DELETE_FILE,AffairPermissions.DOWNLOAD_FILE,AffairPermissions.UPDATE_FILE_VERSION,AffairPermissions.MANAGE_FOLDER,
             AffairPermissions.ADD_TRADE,AffairPermissions.CHECK_TRADE_FLOW,AffairPermissions.CHECK_TRADE_TO_AND_FROM,

@@ -30,6 +30,7 @@ public class AnnouncementDraftEntity extends ExecutableModel {
     private String title = "";
     private long creatorId = 0;
     private long allianceId = 0;
+    private int editMode = 0;
 
     @Id
     @Column(name = "id")
@@ -128,5 +129,13 @@ public class AnnouncementDraftEntity extends ExecutableModel {
 
     public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
+    }
+
+    public int getEditMode() {
+        return editMode;
+    }
+
+    public void setEditMode(int editMode) {
+        this.editMode = editMode;
     }
 }

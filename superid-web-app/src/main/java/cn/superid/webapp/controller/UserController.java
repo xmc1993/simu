@@ -436,4 +436,17 @@ public class UserController {
         return SimpleResponse.ok(userService.getAffairMember());
     }
 
+
+    @RequestMapping(value = "/rollback",method = RequestMethod.POST)
+    @NotLogin
+    public SimpleResponse rollbackTest(){
+        try{
+            userService.rollbackTest();
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            return SimpleResponse.error("");
+        }
+
+        return SimpleResponse.ok("");
+    }
 }

@@ -179,7 +179,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public List<AffairEntity> getAffairByState(long allianceId, int state) throws Exception {
+    public List<AffairEntity> getAffairByState(long allianceId, int state){
         //TODO 参数未定,到时候看前端需要什么数据
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).state(state).selectList();
         return result;
@@ -199,28 +199,56 @@ public class AffairService implements IAffairService {
 
 
     @Override
-    public boolean disableAffair(Long allianceId,Long affairId) throws Exception{
+    @Transactional
+    public boolean disableAffair(Long allianceId,Long affairId){
         int isUpdate = AffairEntity.dao.id(affairId).partitionId(allianceId).set("state", ValidState.Invalid);
         if(isUpdate == 0){
             return false;
         }
 
-        List<TaskEntity> tasks = taskService.getAllValidAffair(allianceId,affairId,"id");
+        List<TaskEntity> tasks = taskService.getAllValidTask(allianceId,affairId,"id");
 
         //失效所有子事务
         List<AffairEntity> childAffairs = getAllChildAffairs(allianceId,affairId,"id");
         long id;
-        for(AffairEntity affairEntity : childAffairs){
-            id = affairEntity.getId();
-            AffairEntity.dao.partitionId(allianceId).id(id).set("state",ValidState.Invalid);
-            //每个子事务下的task
-            tasks.addAll(taskService.getAllValidAffair(allianceId,id,"id"));
+        //表示ids的下标
+        int index = 0;
+        int updateCount;
+        if((childAffairs!=null)&&(childAffairs.size()!=0)){
+            //id的数组,为了避免多次访问数据库,使用in方法
+            Object[] affairIds = new Object[childAffairs.size()];
+            for(AffairEntity affairEntity : childAffairs){
+                id = affairEntity.getId();
+                // 避免多次访问数据库
+                // AffairEntity.dao.partitionId(allianceId).id(id).set("state",ValidState.Invalid);
+                //每个子事务下的task
+                tasks.addAll(taskService.getAllValidTask(allianceId,id,"id"));
+                affairIds[index] = id;
+                index++;
+            }
+
+            updateCount = AffairEntity.dao.partitionId(allianceId).in("id",affairIds).set("state",ValidState.Invalid);
+            if (updateCount != childAffairs.size()) {
+                //TODO 事务回滚
+                return false;
+            }
         }
 
-        //关闭所有任务
-        for(TaskEntity taskEntity : tasks){
-            id = taskEntity.getId();
-            TaskEntity.dao.partitionId(allianceId).id(id).set("state", TaskState.ErrorExit);
+        if((tasks.size()!=0)&&(tasks != null)){
+            //关闭所有任务,
+            Object[] taskIds = new Object[tasks.size()];
+            index = 0;
+            for(TaskEntity taskEntity : tasks){
+                id = taskEntity.getId();
+                taskIds[index] = id;
+                //同样避免多次访问数据库
+                //TaskEntity.dao.partitionId(allianceId).id(id).set("state", TaskState.ErrorExit);
+            }
+
+            updateCount = TaskEntity.dao.partitionId(allianceId).in("id",taskIds).set("state",TaskState.ErrorExit);
+            if(updateCount != tasks.size()){
+                return false;
+            }
         }
 
         //TODO 关闭本事务以及子事务下的交易
@@ -236,19 +264,31 @@ public class AffairService implements IAffairService {
     @Override
     public boolean validAffair(long allianceId, long affairId) throws Exception {
 
-        String basePath = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path").getPath();
+        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path");
+        if(affairEntity == null){
+            return false;
+        }
+        String basePath = affairEntity.getPath();
+
         return AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"%").set("state",ValidState.Valid)>0;
     }
 
     @Override
-    public int canGenerateAffair(long allianceId, long affairId) throws Exception {
+    public int canGenerateAffair(long allianceId, long affairId) {
+        boolean isExist = AffairEntity.dao.partitionId(allianceId).id(affairId).exists();
+        if(!isExist){
+            return ResponseCode.AffairNotExist;
+        }
         boolean hasChild = AffairEntity.dao.partitionId(allianceId).eq("parentId",affairId).exists();
         if(hasChild){
-            return AffairSpecialCondition.HAS_CHILD;
+            return ResponseCode.HasChild;
         }
 
-        //TODO 检测交易表里有没有affairId是本事务的交易,return 2
-        return AffairSpecialCondition.NO_SPECIAL;
+        //TODO 检测交易表里有没有affairId是本事务的交易,return
+        if(1==2){
+            return ResponseCode.HasTrade;
+        }
+        return ResponseCode.OK;
     }
 
     private boolean hasPermission(String permissions,int toFindPermission){
@@ -309,7 +349,7 @@ public class AffairService implements IAffairService {
             userUpdate = UserEntity.dao.id(userService.currentUserId()).set("homepageAffairId",affairId);
         }
         int update = 1 ;
-        if((isStuck != null)&&(isStuck == IntBoolean.TRUE)){
+        if(isStuck != null){
             update = AffairUserEntity.dao.partitionId(allianceId).eq("affairId",affairId).eq("userId",userService.currentUserId()).set("isStuck",isStuck);
         }
         return ((isUpdate>0)&&(userUpdate>0)&&(update>0));
@@ -317,7 +357,12 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId,String... params) {
-        String basePath = AffairEntity.dao.findById(affairId,allianceId).getPath();
+        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path");
+        if(affairEntity == null){
+            return null;
+        }
+        String basePath = affairEntity.getPath();
+
         List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path",basePath+"-%").selectList(params);
         return result;
     }
@@ -349,8 +394,8 @@ public class AffairService implements IAffairService {
 
 
         //第二步,把非本盟的官方加入
-        List<AffairMemberEntity> otherMmeber = AffairMemberEntity.dao.eq("affair_id",affairId).state(ValidState.Valid).neq("alliance_id",allianceId).selectList();
-        for(AffairMemberEntity a : otherMmeber){
+        List<AffairMemberEntity> otherMember = AffairMemberEntity.dao.eq("affair_id",affairId).state(ValidState.Valid).neq("alliance_id",allianceId).selectList();
+        for(AffairMemberEntity a : otherMember){
             RoleCache role = RoleCache.dao.findById(a.getRoleId());
             UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
             SimpleRoleForm s = new SimpleRoleForm(a.getRoleId(),user.getUsername(),role.getTitle(),a.getPermissions(),-1,"");

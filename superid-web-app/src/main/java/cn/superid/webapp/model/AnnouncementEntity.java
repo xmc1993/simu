@@ -35,6 +35,7 @@ public class AnnouncementEntity extends ExecutableModel {
     private long modifierId = 0;
     private long creatorId = 0;
     private long allianceId = 0;
+    private int sessionSum = 0;
 
     @Id
     @Column(name = "id")
@@ -165,5 +166,13 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public int getSessionSum() {
+        return sessionSum;
+    }
+
+    public void setSessionSum(int sessionSum) {
+        this.sessionSum = sessionSum;
     }
 }

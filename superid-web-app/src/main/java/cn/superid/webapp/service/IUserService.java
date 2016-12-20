@@ -67,4 +67,6 @@ public interface IUserService {
      public boolean validSuperId(String superId);
 
      public boolean modifySuperId(String superId);
+
+     public void rollbackTest();
 }

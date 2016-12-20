@@ -208,7 +208,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                 return notPermitted;
             }
             RoleCache roleCache =RoleCache.dao.findById(roleId);
-            System.out.println(roleCache.getUserId()+ " " + userService.currentUserId());
+//            System.out.println(roleCache.getUserId()+ " " + userService.currentUserId());
             if(roleCache==null||roleCache.getState()!=StateType.Normal||roleCache.getUserId()!=userService.currentUserId()){
                 return notPermitted;
             }
