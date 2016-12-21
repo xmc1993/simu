@@ -449,6 +449,13 @@ public class UserService implements IUserService {
         p.addIndexBinding(currentUserId());
         p.addIndexBinding(currentUserId());
         List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
+            if((allianceRolesVO.getRoleId() == getCurrentUser().getPersonalRoleId())
+                    &&(allianceRolesVO.getAllianceId() == getCurrentUser().getPersonalAllianceId())){
+                allianceRolesVOs.remove(allianceRolesVO);
+                break;
+            }
+        }
         return allianceRolesVOs;
     }
 

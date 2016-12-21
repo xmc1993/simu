@@ -12,6 +12,7 @@ import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
+import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class RoleService implements IRoleService {
         roleEntity.setBelongAffairId(belongAffairId);
         roleEntity.setPermissions(permissions);
         roleEntity.setType(type);
+        roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.save();
         return roleEntity;
     }
