@@ -2,10 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.controller.VO.DraftDetailVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
-import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
@@ -287,7 +284,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setThumbContent(getThumb(getBlock(content)));
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
-        announcementEntity.setState(1);
+        announcementEntity.setState(0);
         announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -403,7 +400,15 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public AnnouncementEntity getDetail(long announcementId, long allianceId) {
-        return AnnouncementEntity.dao.findById(announcementId,allianceId);
+        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(result != null){
+            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
+            if(userNameAndRoleNameVO != null){
+                result.setRoleName(userNameAndRoleNameVO.getRoleName());
+                result.setUsername(userNameAndRoleNameVO.getUserName());
+            }
+        }
+        return result;
     }
 
     private String getThumb(List<Block> blocks){
