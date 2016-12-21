@@ -76,8 +76,8 @@ public class AllianceService  implements IAllianceService{
 
 
         RoleEntity roleEntity = new RoleEntity();
-        //需求说是直接叫盟主
-        roleEntity.setTitle("盟主");
+        //需求说是直接叫盟主,现在改成直接叫userName
+        roleEntity.setTitle(allianceCreateForm.getName());
         roleEntity.setUserId(allianceCreateForm.getUserId());
         roleEntity.setAllianceId(allianceEntity.getId());
         roleEntity.setBelongAffairId(0);

@@ -2,11 +2,14 @@ package sql;
 
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.model.AffairUserEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.service.IAffairService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
@@ -60,6 +63,18 @@ public class SQLResolve {
             a.setIsStuck(false);
             a.save();
         }
+    }
+
+    @Test
+    public void fixPersonalAllianceId(){
+        StringBuilder sb = new StringBuilder("select u.id, u.personal_role_id,u.personal_alliance_id from user u ");
+        List<UserEntity> userEntities = UserEntity.getSession().findList(UserEntity.class,sb.toString());
+        long allianceId ;
+        for(UserEntity userEntity : userEntities){
+            allianceId = RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id").getAllianceId();
+            UserEntity.dao.id(userEntity.getId()).set("personal_alliance_id",allianceId);
+        }
+
     }
 
 

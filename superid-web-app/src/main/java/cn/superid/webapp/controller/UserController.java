@@ -9,6 +9,7 @@ import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
@@ -300,6 +301,9 @@ public class UserController {
         loginUserInfoVO.setMembers(userService.getAffairMember());
         //获取user的所有盟的所有角色
         loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
+        loginUserInfoVO.setPersonalRoleId(userEntity.getPersonalRoleId());
+        loginUserInfoVO.setPersonalAllianceId(RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id").getAllianceId());
+
         return SimpleResponse.ok(loginUserInfoVO);
     }
 
@@ -387,6 +391,8 @@ public class UserController {
             user.copyPropertiesTo(loginUserInfoVO);
             loginUserInfoVO.setMembers(userService.getAffairMember());
             loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
+            loginUserInfoVO.setPersonalRoleId(user.getPersonalRoleId());
+            loginUserInfoVO.setPersonalAllianceId(RoleEntity.dao.id(user.getPersonalRoleId()).selectOne("alliance_id").getAllianceId());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
