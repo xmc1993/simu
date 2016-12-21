@@ -55,6 +55,14 @@ public interface IAffairMemberService {
      */
     public PermissionGroupEntity addPermissionGroup(Long allianceId,Long affairId,String name,String permissions) throws Exception;
 
+    /**
+     * 在申请加入事务之前检测能否加入该事务,返回异常情况code
+     * @param allianceId
+     * @param affairId
+     * @param roleId
+     * @return
+     */
+    public int canApplyForEnterAffair(Long allianceId,Long affairId, Long roleId);
 
     /**
      * 申请加入一个事务
@@ -85,6 +93,14 @@ public interface IAffairMemberService {
      */
     public int rejectAffairMemberApplication(Long allianceId,Long affairId,Long applicationId, Long dealRoleId,String dealReason) ;
 
+    /**
+     * 在邀请加入事务之前检测异常情况,返回异常情况code
+     * @param allianceId
+     * @param affairId
+     * @param beInvitedRoleId
+     * @return
+     */
+    public int canInviteToEnterAffair(Long allianceId,Long affairId, Long beInvitedRoleId);
 
     /**
      * 邀请别人加入事务,需要判断是盟内还是盟外
