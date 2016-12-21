@@ -18,7 +18,7 @@ public class AffairUserEntity extends ExecutableModel {
     private long id;
     private long affairId;
     private long userId;
-    private long roleId;
+    private long roleId; //用于记录最后一次进入这个事务的角色
     private long allianceId;
     private boolean isStuck = false;
 

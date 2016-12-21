@@ -19,6 +19,7 @@ import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.service.vo.AllianceRolesVO;
@@ -48,6 +49,8 @@ public class UserService implements IUserService {
 
     @Autowired
     private IAllianceService allianceService;
+    @Autowired
+    private IAllianceUserService allianceUserService;
 
     private final String lastEmailTime = "last_email_time";
     private String forgetPasswordEmailTmpl ;
@@ -165,8 +168,10 @@ public class UserService implements IUserService {
         UserEntity user = UserEntity.dao.findById(allianceCreateForm.getUserEntity().getId());
         user.setSuperid(generateSuperId(user.getId()));
         user.setPersonalRoleId(userEntity.getPersonalRoleId());
+        user.setPersonalAllianceId(allianceEntity.getId());
         user.setModifyTime(TimeUtil.getCurrentSqlTime());
         user.update();
+        allianceUserService.addAllianceUser(allianceEntity.getId(),user.getId());
         if(allianceEntity==null) return null;
         return userEntity;
     }
