@@ -301,8 +301,6 @@ public class UserController {
         loginUserInfoVO.setMembers(userService.getAffairMember());
         //获取user的所有盟的所有角色
         loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
-        loginUserInfoVO.setPersonalRoleId(userEntity.getPersonalRoleId());
-        loginUserInfoVO.setPersonalAllianceId(RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id").getAllianceId());
 
         return SimpleResponse.ok(loginUserInfoVO);
     }
@@ -391,8 +389,6 @@ public class UserController {
             user.copyPropertiesTo(loginUserInfoVO);
             loginUserInfoVO.setMembers(userService.getAffairMember());
             loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
-            loginUserInfoVO.setPersonalRoleId(user.getPersonalRoleId());
-            loginUserInfoVO.setPersonalAllianceId(RoleEntity.dao.id(user.getPersonalRoleId()).selectOne("alliance_id").getAllianceId());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
