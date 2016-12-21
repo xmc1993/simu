@@ -299,10 +299,12 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean deleteAnnouncement(long announcementId, long allianceId) {
-        AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state",0);
+    public boolean deleteAnnouncement(long announcementId, long allianceId, long roleId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         //把这条加入announcement中
         AnnouncementHistoryEntity announcementHistoryEntity = new AnnouncementHistoryEntity();
+        announcementHistoryEntity.setAnnouncementId(announcementEntity.getId());
+        announcementHistoryEntity.setModifierId(roleId);
         return true;
     }
 
@@ -333,7 +335,7 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
-        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and roleId = ? and state = 0 order by modify_time desc ");
+        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and creator_id = ? and state = 0 order by modify_time desc ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
