@@ -9,6 +9,7 @@ import cn.superid.webapp.utils.TimeUtil;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 
 /**
@@ -36,6 +37,9 @@ public class AnnouncementEntity extends ExecutableModel {
     private long creatorId = 0;
     private long allianceId = 0;
     private int sessionSum = 0;
+
+    private String roleName;
+    private String username;
 
     @Id
     @Column(name = "id")
@@ -174,5 +178,23 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setSessionSum(int sessionSum) {
         this.sessionSum = sessionSum;
+    }
+
+    @Transient
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    @Transient
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

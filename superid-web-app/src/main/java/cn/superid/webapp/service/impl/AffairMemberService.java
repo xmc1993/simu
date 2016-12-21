@@ -79,7 +79,7 @@ public class AffairMemberService implements IAffairMemberService{
     }
 
     @Override
-    public int applyForEnterAffair(Long allianceId,Long affairId, Long roleId,String applyReason){
+    public int canApplyForEnterAffair(Long allianceId, Long affairId, Long roleId) {
         boolean affairIsFind = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
         if(!affairIsFind){
             return ResponseCode.AffairNotExist;
@@ -88,9 +88,18 @@ public class AffairMemberService implements IAffairMemberService{
         if(isExist){
             return ResponseCode.MemberIsExistInAffair;
         }
-        boolean isApplied = AffairMemberApplicationEntity.dao.partitionId(affairId).eq("role_id",roleId).eq("affair_id",affairId).state(DealState.ToCheck).exists();
+        boolean isApplied = AffairMemberApplicationEntity.dao.partitionId(affairId).eq("role_id",roleId).state(DealState.ToCheck).exists();
         if(isApplied){
             return ResponseCode.WaitForDeal;
+        }
+        return ResponseCode.OK;
+    }
+
+    @Override
+    public int applyForEnterAffair(Long allianceId,Long affairId, Long roleId,String applyReason){
+        int code = canApplyForEnterAffair(allianceId,affairId,roleId);
+        if(code!=0){
+            return code;
         }
         /*
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
@@ -197,7 +206,7 @@ public class AffairMemberService implements IAffairMemberService{
     }
 
     @Override
-    public int inviteToEnterAffair(long allianceId, long affairId, long inviteRoleId,long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason) {
+    public int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId) {
         //异常流程
         boolean affairIsFind = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
         if(!affairIsFind){
@@ -207,11 +216,19 @@ public class AffairMemberService implements IAffairMemberService{
         if(isExist){
             return ResponseCode.MemberIsExistInAffair;
         }
-        boolean isInvited = AffairMemberInvitationEntity.dao.partitionId(affairId).eq("beInvitedRoleId",beInvitedRoleId).eq("affairId",affairId).state(DealState.ToCheck).exists();
+        boolean isInvited = AffairMemberInvitationEntity.dao.partitionId(affairId).eq("beInvitedRoleId",beInvitedRoleId).state(DealState.ToCheck).exists();
         if(isInvited){
             return ResponseCode.WaitForDeal;
         }
+        return ResponseCode.OK;
+    }
 
+    @Override
+    public int inviteToEnterAffair(long allianceId, long affairId, long inviteRoleId,long inviteUserId,long beInvitedRoleId,int memberType,String inviteReason) {
+        int code = canInviteToEnterAffair(allianceId,affairId,beInvitedRoleId);
+        if(code!=0){
+            return code;
+        }
         //生成邀请记录
         AffairMemberInvitationEntity affairMemberInvitationEntity = new AffairMemberInvitationEntity();
         affairMemberInvitationEntity.setState(DealState.ToCheck);

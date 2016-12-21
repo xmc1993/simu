@@ -16,6 +16,7 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
+import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class AllianceService  implements IAllianceService{
 
     @Autowired
     private IAffairService affairService;
+    @Autowired
+    private IRoleService roleService;
 
     @Override
     public String getPermissions(long alliance, long roleId) throws Exception{
@@ -74,19 +77,10 @@ public class AllianceService  implements IAllianceService{
             AllianceEntity.dao.id(allianceEntity.getId()).set("code",allianceCreateForm.getCode());
         }
 
-
-        RoleEntity roleEntity = new RoleEntity();
-        //需求说是直接叫盟主
-        roleEntity.setTitle("盟主");
-        roleEntity.setUserId(allianceCreateForm.getUserId());
-        roleEntity.setAllianceId(allianceEntity.getId());
-        roleEntity.setBelongAffairId(0);
-        roleEntity.setPermissions(AffairPermissionRoleType.OWNER);
-        roleEntity.setAllocatePermissions(AffairPermissionRoleType.OWNER);
-        //创建盟的人在这个盟里的默认角色
-        roleEntity.setType(1);
-        roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        roleEntity.save();
+        //创建盟的人在这个盟里的默认角色,就是最后一个参数type为1
+        //需求说是直接叫盟主,现在改成直接叫userName
+        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),
+                allianceCreateForm.getUserId(),0L,AffairPermissionRoleType.OWNER,1);
 
         AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName(),roleEntity.getId(), allianceCreateForm.getIsPersonal()?1:0,allianceEntity.getCode());
 

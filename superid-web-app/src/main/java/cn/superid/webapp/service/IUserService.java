@@ -54,6 +54,7 @@ public interface IUserService {
 
      /**
       * 用于用户在登录时获取自己所拥有的所有盟下的所有角色
+      * 要去掉个人盟及其角色
       * @return
       */
      //public List<UserAllianceRolesVO> getUserAllianceRoles();

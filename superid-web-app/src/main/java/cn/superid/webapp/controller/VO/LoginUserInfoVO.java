@@ -20,9 +20,13 @@ public class LoginUserInfoVO {
     private String email;
     private int publicType;
     private long homepageAffairId;
+    private long personalRoleId;
+    private long personalAllianceId;
+
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
     private List<AllianceRolesVO> roles;
+
 
     public long getId() {
         return id;
@@ -94,6 +98,22 @@ public class LoginUserInfoVO {
 
     public void setHomepageAffairId(long homepageAffairId) {
         this.homepageAffairId = homepageAffairId;
+    }
+
+    public long getPersonalRoleId() {
+        return personalRoleId;
+    }
+
+    public void setPersonalRoleId(long personalRoleId) {
+        this.personalRoleId = personalRoleId;
+    }
+
+    public long getPersonalAllianceId() {
+        return personalAllianceId;
+    }
+
+    public void setPersonalAllianceId(long personalAllianceId) {
+        this.personalAllianceId = personalAllianceId;
     }
 
     public Map<Long, List<Object>> getMembers() {

@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 public class AffairUserService implements IAffairUserService{
     @Override
     public AffairUserEntity addAffairUser(long allianceId, long affairId, long roleId, long userId) {
-        return null;
+        AffairUserEntity affairUserEntity = new AffairUserEntity();
+        affairUserEntity.setAffairId(affairId);
+        affairUserEntity.setAllianceId(allianceId);
+        affairUserEntity.setRoleId(roleId);
+        affairUserEntity.setUserId(userId);
+        affairUserEntity.save();
+        return affairUserEntity;
     }
 }

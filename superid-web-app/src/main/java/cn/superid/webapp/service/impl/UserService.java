@@ -19,6 +19,7 @@ import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAllianceService;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.service.vo.AllianceRolesVO;
@@ -48,6 +49,8 @@ public class UserService implements IUserService {
 
     @Autowired
     private IAllianceService allianceService;
+    @Autowired
+    private IAllianceUserService allianceUserService;
 
     private final String lastEmailTime = "last_email_time";
     private String forgetPasswordEmailTmpl ;
@@ -118,7 +121,8 @@ public class UserService implements IUserService {
                 if(MobileUtil.isChinaMobile(token)){
                     return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token),template, MapUtil.hashmap("code",code));
                 }else {
-                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token,code,template);
+                    token = MobileUtil.getCountryCode(token)+MobileUtil.getMobile(token);
+                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token.trim(),code,template);
                 }
 
             }
@@ -164,8 +168,10 @@ public class UserService implements IUserService {
         UserEntity user = UserEntity.dao.findById(allianceCreateForm.getUserEntity().getId());
         user.setSuperid(generateSuperId(user.getId()));
         user.setPersonalRoleId(userEntity.getPersonalRoleId());
+        user.setPersonalAllianceId(allianceEntity.getId());
         user.setModifyTime(TimeUtil.getCurrentSqlTime());
         user.update();
+        allianceUserService.addAllianceUser(allianceEntity.getId(),user.getId());
         if(allianceEntity==null) return null;
         return userEntity;
     }
@@ -443,6 +449,13 @@ public class UserService implements IUserService {
         p.addIndexBinding(currentUserId());
         p.addIndexBinding(currentUserId());
         List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
+            if((allianceRolesVO.getRoleId() == getCurrentUser().getPersonalRoleId())
+                    &&(allianceRolesVO.getAllianceId() == getCurrentUser().getPersonalAllianceId())){
+                allianceRolesVOs.remove(allianceRolesVO);
+                break;
+            }
+        }
         return allianceRolesVOs;
     }
 

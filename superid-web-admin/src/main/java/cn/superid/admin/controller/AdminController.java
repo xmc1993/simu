@@ -3,7 +3,9 @@ package cn.superid.admin.controller;
 import cn.superid.admin.annotation.NotLogin;
 import cn.superid.admin.form.SimpleResponse;
 import cn.superid.admin.form.UserForm;
+import cn.superid.admin.model.AdminEntity;
 import cn.superid.admin.service.IAdminService;
+import cn.superid.admin.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +24,9 @@ public class AdminController {
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     @NotLogin
     public SimpleResponse login(@RequestBody UserForm userForm){
-
-        if(adminService.login(userForm.getUserName(),userForm.getPassword()))
+        AdminEntity adminEntity = adminService.login(userForm.getUserName(),userForm.getPassword());
+        if(adminEntity!=null)
+            String token = JwtUtil.createJwt(adminEntity.getName(),adminEntity.getId(),adminEntity.getName(),10000L,)
             return SimpleResponse.ok("success");
         else
             return SimpleResponse.error("fail");
