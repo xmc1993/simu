@@ -9,11 +9,9 @@ import cn.superid.utils.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleAllianceVO;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
+import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
-import cn.superid.webapp.forms.AllianceCreateForm;
-import cn.superid.webapp.forms.EditUserBaseInfo;
-import cn.superid.webapp.forms.EditUserDetailForm;
-import cn.superid.webapp.forms.ResultUserInfo;
+import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
@@ -49,8 +47,7 @@ public class UserService implements IUserService {
 
     @Autowired
     private IAllianceService allianceService;
-    @Autowired
-    private IAllianceUserService allianceUserService;
+
 
     private final String lastEmailTime = "last_email_time";
     private String forgetPasswordEmailTmpl ;
@@ -159,20 +156,23 @@ public class UserService implements IUserService {
 //    @Transactional  TODO 支持分布式事务再开启
     public UserEntity createUser(UserEntity userEntity) {
         userEntity.save();
+
+        String superIdCode = cn.superid.jpa.util.StringUtil.generateId(userEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
+
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
-        allianceCreateForm.setName(userEntity.getUsername());
+        allianceCreateForm.setName(userEntity.getUsername()+"的事务");
         allianceCreateForm.setUserId(userEntity.getId());
+        allianceCreateForm.setCode(superIdCode);//因为userId是唯一的
         allianceCreateForm.setIsPersonal(true);
-        allianceCreateForm.setUserEntity(userEntity);
+        allianceCreateForm.setRoleTitle(userEntity.getUsername());
+
         AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
-        UserEntity user = UserEntity.dao.findById(allianceCreateForm.getUserEntity().getId());
-        user.setSuperid(generateSuperId(user.getId()));
-        user.setPersonalRoleId(userEntity.getPersonalRoleId());
-        user.setPersonalAllianceId(allianceEntity.getId());
-        user.setModifyTime(TimeUtil.getCurrentSqlTime());
-        user.update();
-        allianceUserService.addAllianceUser(allianceEntity.getId(),user.getId());
-        if(allianceEntity==null) return null;
+
+        userEntity.setSuperid(superIdCode);
+        userEntity.setPersonalRoleId(allianceEntity.getOwnerRoleId());
+        userEntity.setPersonalAllianceId(allianceEntity.getId());
+        userEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        userEntity.update();
         return userEntity;
     }
 
@@ -488,12 +488,5 @@ public class UserService implements IUserService {
             */
     }
 
-    private String generateSuperId(long id){
-        String superid = id+"";
-        int length = 8 - superid.length();
-        for(int i = 0 ; i<length ; i++){
-            superid = "0"+superid;
-        }
-        return superid;
-    }
+
 }

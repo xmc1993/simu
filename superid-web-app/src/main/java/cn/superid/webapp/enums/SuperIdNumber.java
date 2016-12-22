@@ -5,5 +5,9 @@ package cn.superid.webapp.enums;
  */
 public class SuperIdNumber {
 
+    public static final int COMMON_CODE_LENGTH =8;
+
+    public static final int ALLIANCE_SUPERID =8;
     public static final int AFFAIR_SUPERID = 8;
+
 }

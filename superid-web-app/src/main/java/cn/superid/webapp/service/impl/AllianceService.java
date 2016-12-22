@@ -14,10 +14,7 @@ import cn.superid.webapp.model.AllianceCertificationEntity;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
-import cn.superid.webapp.service.IAffairService;
-import cn.superid.webapp.service.IAllianceService;
-import cn.superid.webapp.service.IRoleService;
-import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.*;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +26,7 @@ import java.util.List;
  * Created by zp on 2016/8/8.
  */
 @Service
-public class AllianceService  implements IAllianceService{
+public class AllianceService  implements IAllianceService {
 
     public static int CODE_LENTH = 8;
 
@@ -41,11 +38,14 @@ public class AllianceService  implements IAllianceService{
     @Autowired
     private IRoleService roleService;
 
+    @Autowired
+    private IAllianceUserService allianceUserService;
+
     @Override
-    public String getPermissions(long alliance, long roleId) throws Exception{
-        RoleEntity roleEntity= RoleEntity.dao.findById(roleId,alliance);
-        if((roleEntity == null)||(StringUtil.isEmpty(roleEntity.getPermissions()))){
-            throw  new Exception("找不到盟成员");
+    public String getPermissions(long alliance, long roleId) throws Exception {
+        RoleEntity roleEntity = RoleEntity.dao.findById(roleId, alliance);
+        if ((roleEntity == null) || (StringUtil.isEmpty(roleEntity.getPermissions()))) {
+            throw new Exception("找不到盟成员");
         }
 
         return roleEntity.getPermissions();
@@ -59,41 +59,26 @@ public class AllianceService  implements IAllianceService{
         allianceEntity.setIsPersonal(allianceCreateForm.getIsPersonal());
         allianceEntity.setVerified(CertificationState.NotCertificated);//等待验证
         allianceEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-
-        if(allianceCreateForm.getIsPersonal() == true){
-            allianceEntity.setName(allianceCreateForm.getName()+"的事务");
-        }
-        else{
-            allianceEntity.setName(allianceCreateForm.getName());
-        }
+        allianceEntity.setCode(allianceCreateForm.getCode());
+        allianceEntity.setName(allianceCreateForm.getName());
         allianceEntity.save();
 
-        if(allianceCreateForm.getIsPersonal() == true){
-            String code = generateCode(allianceEntity.getId());
-            allianceEntity.setCode(code);
-            AllianceEntity.dao.id(allianceEntity.getId()).set("code",code);
-        }else{
-            allianceEntity.setCode(allianceCreateForm.getCode());
-            AllianceEntity.dao.id(allianceEntity.getId()).set("code",allianceCreateForm.getCode());
-        }
+        allianceUserService.addAllianceUser(allianceEntity.getId(), allianceCreateForm.getUserId());
 
-        //创建盟的人在这个盟里的默认角色,就是最后一个参数type为1
-        //需求说是直接叫盟主,现在改成直接叫userName
-        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getName(),allianceEntity.getId(),
-                allianceCreateForm.getUserId(),0L,AffairPermissionRoleType.OWNER,1);
 
-        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(),allianceCreateForm.getName()
-                ,roleEntity.getId(), allianceCreateForm.getIsPersonal()?1:0,allianceEntity.getCode());
+        RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getRoleTitle(), allianceEntity.getId(),
+                allianceCreateForm.getUserId(), 0L, AffairPermissionRoleType.OWNER, 1);
 
-        RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId",affairEntity.getId());//更新所属事务
+        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(), allianceCreateForm.getName()
+                , roleEntity.getId(), allianceCreateForm.getIsPersonal() ? 1 : 0, allianceEntity.getCode());
+
+        RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId", affairEntity.getId());//更新所属事务
 
         allianceEntity.setOwnerRoleId(roleEntity.getId());
         allianceEntity.setRootAffairId(affairEntity.getId());
-        AllianceEntity.dao.id(allianceEntity.getId()).set("ownerRoleId",roleEntity.getId(),"rootAffairId",affairEntity.getId());//更新拥有者和根事务
+        AllianceEntity.dao.id(allianceEntity.getId()).set("ownerRoleId", roleEntity.getId(), "rootAffairId", affairEntity.getId());//更新拥有者和根事务
 
-        if(allianceCreateForm.getIsPersonal()==true){
-            allianceCreateForm.getUserEntity().setPersonalRoleId(roleEntity.getId());
-        }
+
         return allianceEntity;
 
     }
@@ -108,11 +93,11 @@ public class AllianceService  implements IAllianceService{
 
     @Override
     public boolean validName(String code) {
-        return !AllianceEntity.dao.eq("code",code).exists();
+        return !AllianceEntity.dao.eq("code", code).exists();
     }
 
     @Override
-    public boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId,long allianceId) {
+    public boolean addAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId, long allianceId) {
         /*
         //填写验证信息的时候,检测该盟是否是已被验证或者等待验证中
         boolean isFind = AllianceCertificationEntity.dao.partitionId(allianceId).eq("roleId",roleId).or(new Expr("checkState","=",CertificationState.Normal),new Expr("checkState","=",CertificationState.WaitCertificated)).exists();
@@ -127,19 +112,19 @@ public class AllianceService  implements IAllianceService{
         allianceCertificationEntity.setCheckState(CertificationState.WaitCertificated);
         allianceCertificationEntity.save();
 
-        AllianceEntity.dao.id(allianceId).set("applyCertificateState",CertificationState.WaitCertificated);
+        AllianceEntity.dao.id(allianceId).set("applyCertificateState", CertificationState.WaitCertificated);
         return true;
     }
 
     @Override
     public boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId) {
         allianceCertificationForm.setRoleId(roleId);
-        return AllianceCertificationEntity.dao.set(allianceCertificationForm)>0;
+        return AllianceCertificationEntity.dao.set(allianceCertificationForm) > 0;
     }
 
     @Override
     public long getDefaultRoleIdFromAlliance(long allianceId) {
-        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id",userService.currentUserId()).eq("type",1).selectOne("id").getId();
+        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).eq("type", 1).selectOne("id").getId();
         return roleId;
     }
 
@@ -147,32 +132,21 @@ public class AllianceService  implements IAllianceService{
     public List<AllianceEntity> getAllianceList() {
         StringBuilder sb = new StringBuilder("select * from alliance where id in (" +
                 "select alliance_id from role where user_id = ? )");
-        ParameterBindings p =new ParameterBindings();
+        ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
-        return AllianceEntity.dao.findList(sb.toString(),p);
+        return AllianceEntity.dao.findList(sb.toString(), p);
     }
 
     @Override
     public List<SimpleRoleVO> getRoleByAlliance(long allianceId) {
-        List<RoleEntity> roleEntityList = RoleEntity.dao.partitionId(allianceId).selectList("id","title");
+        List<RoleEntity> roleEntityList = RoleEntity.dao.partitionId(allianceId).selectList("id", "title");
         List<SimpleRoleVO> result = new ArrayList<>();
-        for(RoleEntity r : roleEntityList){
-            SimpleRoleVO one =new SimpleRoleVO(r.getId() , r.getTitle());
+        for (RoleEntity r : roleEntityList) {
+            SimpleRoleVO one = new SimpleRoleVO(r.getId(), r.getTitle());
             result.add(one);
         }
 
         return result;
     }
-
-    private String generateCode(long allianceId){
-        String result = allianceId+"";
-        int vacancy = CODE_LENTH - result.length();
-        if(vacancy > 0){
-            for(int i = 0 ; i < vacancy ; i++){
-                result = "0"+result;
-            }
-        }
-        return result;
-    }
-
 }
+
