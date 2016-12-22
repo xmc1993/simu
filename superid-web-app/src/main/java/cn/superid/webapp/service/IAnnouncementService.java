@@ -44,4 +44,6 @@ public interface IAnnouncementService {
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
 
     public AnnouncementEntity getDetail(long announcementId , long allianceId);
+
+    public boolean deleteDraft(long draftId , long allianceId);
 }
