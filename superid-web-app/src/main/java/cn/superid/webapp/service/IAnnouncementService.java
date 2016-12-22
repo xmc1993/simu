@@ -6,10 +6,7 @@ import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.model.AnnouncementEntity;
-import cn.superid.webapp.service.forms.Block;
-import cn.superid.webapp.service.forms.ContentState;
-import cn.superid.webapp.service.forms.Operation;
-import cn.superid.webapp.service.forms.OperationListForm;
+import cn.superid.webapp.service.forms.*;
 
 import java.util.List;
 
@@ -18,7 +15,7 @@ import java.util.List;
  */
 public interface IAnnouncementService {
 
-    public EditDistanceForm compareTwoBlocks(List<Block> present , List<Block> history );
+    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present , List<TotalBlock> history );
 
     public EditDistanceForm compareTwoPapers(ContentState present , ContentState history);
 
@@ -47,4 +44,6 @@ public interface IAnnouncementService {
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
 
     public AnnouncementEntity getDetail(long announcementId , long allianceId);
+
+    public boolean deleteDraft(long draftId , long allianceId);
 }

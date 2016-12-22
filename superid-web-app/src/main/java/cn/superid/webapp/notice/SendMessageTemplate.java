@@ -1,7 +1,7 @@
 package cn.superid.webapp.notice;
 
 import cn.superid.webapp.notice.thrift.NoticeService;
-import cn.superid.webapp.notice.thrift.S2c;
+import cn.superid.webapp.notice.thrift.C2c;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -29,8 +29,8 @@ public class SendMessageTemplate {
         return clients.get();
     }
 
-    public static boolean sendNotice(S2c s2c) throws TException {
-        return getClient().sendNotice(s2c);
+    public static boolean sendNotice(C2c c2c) throws TException {
+        return getClient().sendNotice(c2c);
     }
 
 }
