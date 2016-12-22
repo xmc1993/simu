@@ -36,85 +36,145 @@ public class AnnouncementService implements IAnnouncementService{
     private static final int SNAPSHOT_INTERVAL = 30 ;
 
     @Override
-    public EditDistanceForm compareTwoBlocks(List<Block> present, List<Block> history) {
-        //注意,该方法是计算将现有的文章变为任意一个版本的变量,参数中,prenset表示现有文章,history表示要变的文章
-//        List<ReplaceForm> substitute = new ArrayList<>();
-//        List<InsertForm> insert = new ArrayList<>();
-//        List<Integer> delete = new ArrayList<>();
-//        List<Block> replace = new ArrayList<>();
-//        for(int i = 0 ; i < present.size() ; i++){
-//            boolean isExit = false;
-//            for( int j = 0 ; j < history.size() ; j++){
-//                if(present.get(i).getKey().equals(history.get(j).getKey())){
-//                    replace.add(new Block(present.get(i).getKey(),"",i,j));
-//                    if(!present.get(i).getContent().equals(history.get(j).getContent())){
-//                        //如果两个key相同的block的content不相同,则需要替换操作,相同的话则不需要动
-//                        substitute.add(new ReplaceForm(i+1,history.get(j).getContent()));
-//                    }
-//                    isExit = true ;
-//                    break;
-//                }
-//            }
-//            if(isExit == false){
-//                //表示该block在老文章中存在,但在新文章中不存在,应该删除
-//                delete.add(i+1);
-//            }
-//        }
-//
-//        if(replace.size() == 0){
-//            //如果没有重复的block,则在开头把所有的按顺序加上就好
-//            List<EasyBlock> list = new ArrayList<>();
-//            for(Block b : history){
-//                list.add(new EasyBlock(b.getContent(),b.getKey()));
-//            }
-//            insert.add(new InsertForm(0,list));
-//        }else{
-//            //第三步,增加没有的block
-//            for(int i = 0 ; i < replace.size() ; i++){
-//                List<EasyBlock> list = new ArrayList<>();
-//                if(i == 0){
-//                    //如果是第一个,则取出0~j-1的block执行insert,第一次取出来的应该插入在0之后,有的话就插入
-//                    if(replace.get(i).getNewlocation() > 1){
-//                        for(int z = 0 ; z < replace.get(i).getNewlocation() ; z++){
-//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-//                        }
-//                        insert.add(new InsertForm(0,list));
-//                        list = new ArrayList<>();
-//                    }
-//                }
-//                if(i == replace.size()-1){
-//                    //如果是最后一个,则把最后那部分加入到最后
-//                    if(!(replace.get(i).getNewlocation() == history.size()-1)){
-//                        //如果之后都没有段落了,则不用插入
-//                        for(int z = replace.get(i).getNewlocation()+1 ; z < history.size() ; z++ ){
-//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-//                        }
-//                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
-//                        list = new ArrayList<>();
-//                    }
-//                }
-//                if(i > 0 & i < replace.size()-1){
-//
-//                    //中间部分,取出history j与j+1之间的所有段落,将其插入i+1的后方
-//                    if(replace.get(i).getNewlocation()+1 < replace.get(i+1).getNewlocation()){
-//                        for(int z = replace.get(i).getNewlocation()+1 ; z < replace.get(i+1).getNewlocation() ; z++){
-//                            list.add(new EasyBlock(history.get(z).getContent(),history.get(z).getKey()));
-//                        }
-//                        insert.add(new InsertForm(replace.get(i).getLocation()+1,list));
-//                    }
-//
-//                }
-//            }
-//        }
-//        EditDistanceForm result = new EditDistanceForm(delete,insert,substitute);
-        return null;
+    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present, List<TotalBlock> history) {
+        List<Integer> delete = new ArrayList<>();
+        List<InsertForm> insert = new ArrayList<>();
+        List<ReplaceForm> replace = new ArrayList<>();
+        EditDistanceForm result = new EditDistanceForm();
+
+        //如果被减数为空,则回到过去,每段都是插入
+        if(present.size() == 0){
+            insert.add(new InsertForm(0,history));
+            result.setDelete(delete);
+            result.setInsert(insert);
+            result.setReplace(replace);
+            return result;
+        }
+
+        //如果被减数为空,则每段都是删除
+        if(history.size() == 0){
+            for(int i = 0 ; i < present.size() ; i++){
+                delete.add(i+1);
+            }
+            result.setDelete(delete);
+            result.setInsert(insert);
+            result.setReplace(replace);
+            return result;
+        }
+
+        //如果都不为空,需要矩阵比较
+        int m = present.size();
+        int n = history.size();
+        int[][] matrix = new int[m+1][n+1];
+        TotalBlock b1,b2;
+
+
+        //初始化
+        for(int i = 0 ; i <= m ; i ++){
+            matrix[i][0] = i;
+        }
+        for(int j = 0 ; j <= n ; j++){
+            matrix[0][j] = j;
+        }
+        for(int i = 1 ; i <= m ; i++){
+            TotalBlock p = present.get(i-1);
+            for(int j = 1 ; j <= n ; j++){
+                int temp = 0 ;
+                TotalBlock h = history.get(j-1);
+                if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
+                    //两者相同,不增加距离
+                    temp = 0;
+                }else{
+                    temp = 1;
+                }
+
+                int min = matrix[i-1][j]+1;
+                if(min > (matrix[i][j-1] + 1)){
+                    min = matrix[i][j-1] + 1;
+                }
+                if(min > (matrix[i-1][j-1]+temp)){
+                    min = matrix[i-1][j-1]+temp;
+                }
+                matrix[i][j] = min;
+            }
+        }
+
+        //矩阵生成完毕,现在需要根据matrix[i][j]的值逆推得到操作过程
+        int x = n , y = m;
+        int count = 0 ;
+        while(count < matrix[m][n]){
+            TotalBlock p = present.get(y-1);
+            TotalBlock h = history.get(x-1);
+            int temp = 0;
+            if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
+                temp = 0;
+            }else{
+                temp = 1;
+            }
+
+            int which = 0;
+            int min = matrix[y-1][x]+1;
+            if(min > (matrix[y][x-1] + 1)){
+                min = matrix[y][x-1] + 1;
+                which = 1;
+            }
+            if(min > (matrix[y-1][x-1]+temp)){
+                min = matrix[y-1][x-1]+temp;
+                which = 2;
+            }
+            switch (which){
+                case 0:
+                    //从上方变化而来,比原来多一步删除操作
+                    delete.add(y);
+                    y = y - 1;
+                    count++;
+                    break;
+                case 1:
+                    //从左边变化来,比原来多一步增加操作
+                    List<TotalBlock> one = new ArrayList<>();
+                    int location = 0;
+                    for(int i = 0 ; i < insert.size() ;i++){
+                        InsertForm in = insert.get(i);
+                        if(in.getPosition() == y){
+                            one = in.getContent();
+                            location = i;
+                            break;
+                        }
+                    }
+                    one.add(0,history.get(x));
+                    if(location != 0){
+                        insert.set(location,new InsertForm(y,one));
+                    }else{
+                        insert.add(new InsertForm(y,one));
+                    }
+                    x = x - 1;
+                    count++;
+                    break;
+                case 2:
+                    if(temp == 1){
+                        //说明进行了一步替换
+                        replace.add(new ReplaceForm(y,history.get(x)));
+                        x = x - 1;
+                        y = y - 1;
+                        count++;
+                    }else{
+                        //没变说明未进行操作
+                        x = x - 1;
+                        y = y - 1;
+                    }
+                    break;
+            }
+        }
+
+        result.setDelete(delete);
+        result.setInsert(insert);
+        result.setReplace(replace);
+        return result;
     }
 
     @Override
     public EditDistanceForm compareTwoPapers(ContentState present, ContentState history) {
-        List<Block> presentBlock = getBlock(present);
-        List<Block> historyBlock = getBlock(history);
-        return compareTwoBlocks(presentBlock,historyBlock);
+        return compareTwoBlocks(present.getBlocks(),history.getBlocks());
     }
 
     public List<Block> paperToBlockList(String content){
@@ -438,4 +498,6 @@ public class AnnouncementService implements IAnnouncementService{
 
         return true;
     }
+
+
 }
