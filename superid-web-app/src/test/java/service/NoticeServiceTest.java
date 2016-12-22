@@ -19,7 +19,8 @@ public class NoticeServiceTest {
 
     @Test
     public void testTaskOverDue() throws TException {
-//        boolean result = noticeService.taskOverDue(123L, "xmc", 456L, "xmc's task", 3);
-//        System.out.println("The result is:" + result);
+        boolean result = noticeService.taskOverDue(123L, "xmc", 456L, "xmc's task", 3);
+        System.out.println("The result is:" + result);
     }
 }
+
