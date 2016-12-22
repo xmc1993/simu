@@ -14,6 +14,7 @@ import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;

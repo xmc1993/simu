@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 import util.JUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -50,13 +51,15 @@ public class UserServiceTest{
 
     @Test
     public void testFindUser(){
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("大哥鹏");
-        userEntity.setId(1888L);
-        userEntity.setPassword(PasswordEncryptor.encode("123456"));
-        userEntity.setMobile("15951818231");
-        userEntity.save();
-        UserEntity.dao.findById(userEntity.getId());
+          userService.findByToken("15958586666");
+//        UserEntity userEntity = new UserEntity();
+//        userEntity.setUsername("大哥鹏");
+//        userEntity.setPassword(PasswordEncryptor.encode("123456"));
+//        userEntity.setMobile("15951818231");
+//        userEntity.save();
+//        UserEntity userEntity1=UserEntity.dao.findById(userEntity.getId());
+//        Assert.assertTrue(userEntity1.getUsername().equals(userEntity.getUsername()));
+
 
     }
 

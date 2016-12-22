@@ -12,7 +12,7 @@ public class AllianceCreateForm {
     private String code;
     private boolean isPersonal = false;
     private long userId;
-    private UserEntity userEntity;
+    private String roleTitle;
 
 
     public String getName() {
@@ -48,19 +48,19 @@ public class AllianceCreateForm {
         this.userId = userId;
     }
 
-    public UserEntity getUserEntity() {
-        return userEntity;
-    }
-
-    public void setUserEntity(UserEntity userEntity) {
-        this.userEntity = userEntity;
-    }
-
     public String getCode() {
         return code;
     }
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getRoleTitle() {
+        return roleTitle;
+    }
+
+    public void setRoleTitle(String roleTitle) {
+        this.roleTitle = roleTitle;
     }
 }

@@ -473,6 +473,17 @@ public class AnnouncementService implements IAnnouncementService{
         return result;
     }
 
+    @Override
+    public boolean deleteDraft(long draftId , long allianceId) {
+        int result = AnnouncementDraftEntity.dao.partitionId(allianceId).id(draftId).remove();
+        if(result < 1){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
     private String getThumb(List<Block> blocks){
         StringBuilder result = new StringBuilder("");
         for(Block b : blocks){

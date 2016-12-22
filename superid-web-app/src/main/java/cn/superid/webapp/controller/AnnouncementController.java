@@ -251,6 +251,22 @@ public class AnnouncementController {
         return SimpleResponse.ok(result);
     }
 
+    @ApiOperation(value = "删除草稿",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/delete_draft", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.INVALID_ANNOUNCEMENT)
+    public SimpleResponse deleteDraft(Long draftId, Long affairMemberId ){
+        if(draftId == null){
+            return SimpleResponse.error("参数不正确");
+        }
+        try{
+            return SimpleResponse.ok(announcementService.deleteDraft(draftId,GlobalValue.currentAllianceId()));
+        }catch (Exception e){
+            e.printStackTrace();
+            return SimpleResponse.error("删除失败");
+        }
+
+    }
+
 
 
     @ApiOperation(value = "创建新公告",response = String.class, notes = "拥有权限")

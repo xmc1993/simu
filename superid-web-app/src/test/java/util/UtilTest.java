@@ -13,7 +13,9 @@ import org.junit.runner.RunWith;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zp on 2016/8/4.
@@ -36,20 +38,26 @@ public class UtilTest {
 
     @Test
     public void testCheck(){
-
-        test(null);
-        util.Timer.compair(100000, new Execution() {
+        final List<UserEntity> test = new ArrayList(100000);
+        for(int i=0;i<100000;i++){
+            UserEntity userEntity = new UserEntity();
+            test.add(userEntity);
+        }
+        util.Timer.compair(1000, new Execution() {
                     @Override
                     public void execute() {
-                        String p = "testaaaaaaaaaaa";
-                        String a = p + "/";
+                        for(UserEntity i:test){
+                            i.setId(0);
+                        }
                     }
                 }, new Execution() {
                     @Override
                     public void execute() {
-                        StringBuilder stringBuilder = new StringBuilder("testaaaaaaaaaaa");
-                        stringBuilder.append("/");
-                        stringBuilder.toString();
+
+                        for(int i=0,l=test.size();i<l;i++){
+                            UserEntity userEntity = test.get(i);
+                            userEntity.setId(0);
+                        }
                     }
                 }
         );
@@ -84,9 +92,6 @@ public class UtilTest {
         }
         timer2.end();
     }
-
-
-
 
 
 

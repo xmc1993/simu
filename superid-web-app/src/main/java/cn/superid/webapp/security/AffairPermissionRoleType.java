@@ -64,12 +64,6 @@ public class AffairPermissionRoleType {
         }
     };
 
-//    public static String getPermissions(Long id){
-//        switch (id){
-//
-//        }
-//    }
-
 
     private static String intToString(int[] a) {
         StringBuilder sb = new StringBuilder("");

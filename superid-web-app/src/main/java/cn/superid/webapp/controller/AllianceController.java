@@ -3,6 +3,7 @@ package cn.superid.webapp.controller;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.CreateAllianceResultVO;
+import cn.superid.webapp.enums.SuperIdTitle;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
@@ -50,6 +51,7 @@ public class AllianceController {
         allianceCreateForm.setIsPersonal(false);
         allianceCreateForm.setName(name);
         allianceCreateForm.setCode(code);
+        allianceCreateForm.setRoleTitle(SuperIdTitle.ALLIANCE_OWNER_NAME);
         AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 
         if (allianceEntity == null) {
