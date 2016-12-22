@@ -2,6 +2,7 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
+import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -11,7 +12,7 @@ import javax.persistence.Table;
  * 用来记录盟中的用户,可能会存在将用户拉进盟,但没有赋予角色的情况
  */
 @Table(name = "alliance_user")
-public class AllianceUserEntity {
+public class AllianceUserEntity extends ExecutableModel{
     public final static ConditionalDao<AllianceUserEntity> dao = new ConditionalDao<>(AllianceUserEntity.class);
     private long id;
     private long allianceId;

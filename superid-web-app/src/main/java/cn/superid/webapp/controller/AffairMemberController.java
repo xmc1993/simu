@@ -68,6 +68,10 @@ public class AffairMemberController {
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
     public SimpleResponse applyForEnterAffair(long roleId,long allianceId,long targetAllianceId, long targetAffairId, String applyReason) {
+        int code = affairMemberService.canApplyForEnterAffair(targetAllianceId,targetAffairId,roleId);
+        if(code != 0){
+            return new SimpleResponse(code,null);
+        }
         if(allianceId == targetAllianceId){
             boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
             if(isOwner){
@@ -78,15 +82,18 @@ public class AffairMemberController {
         }
 
 
-        int code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
+        code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
         return new SimpleResponse(code,null);
-
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
-        int code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
+        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),beInvitedRoleId);
+        if(code!=0){
+            return new SimpleResponse(code,null);
+        }
+        code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
         return new SimpleResponse(code,null);
 

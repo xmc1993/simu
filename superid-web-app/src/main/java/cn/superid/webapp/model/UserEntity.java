@@ -35,6 +35,7 @@ public class UserEntity extends ExecutableModel {
     private String email ="";
     private String mobile ="";
     private long personalRoleId;
+    private long personalAllianceId;
     private String idCard ="";
     private int marriageStatus ;
     private int educationLevel;
@@ -202,6 +203,14 @@ public class UserEntity extends ExecutableModel {
 
     public void setPersonalRoleId(long personalRoleId) {
         this.personalRoleId = personalRoleId;
+    }
+
+    public long getPersonalAllianceId() {
+        return personalAllianceId;
+    }
+
+    public void setPersonalAllianceId(long personalAllianceId) {
+        this.personalAllianceId = personalAllianceId;
     }
 
     public String getIdCard() {

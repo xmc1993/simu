@@ -277,7 +277,7 @@ public class AnnouncementController {
         if(announcementId == null ){
             return SimpleResponse.error("参数不正确");
         }
-        return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,GlobalValue.currentAllianceId()));
+        return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId()));
     }
 
     @ApiOperation(value = "查看事务底下公告列表(不含task)",response = String.class, notes = "拥有权限")

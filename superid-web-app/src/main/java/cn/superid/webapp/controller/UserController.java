@@ -9,6 +9,7 @@ import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IUserService;
@@ -199,7 +200,6 @@ public class UserController {
     @NotLogin
     @RequestMapping(value = "/check_token", method = RequestMethod.POST)
     //public SimpleResponse checkToken(String verifyCode){
-    //应吴迪所邀,强行加个token
     public SimpleResponse checkToken(String token,String verifyCode){
         if(StringUtil.isEmpty(verifyCode)){
             return new SimpleResponse(ResponseCode.NeedVerifyCode,"验证码不能为空");
@@ -263,26 +263,29 @@ public class UserController {
 
         int limit =5;
         UserEntity userEntity =userService.findByToken(token);
+        if(CheckFrequencyUtil.isFrequent(token,limit)) {//超过五次需要验证码
 
-        if(!PasswordEncryptor.matches(password,userEntity.getPassword())){
-            if(CheckFrequencyUtil.isFrequent(token,limit)){//超过三次需要验证码
-
-                if("".equals(verifyCode)||(verifyCode == null)){
-                    return new SimpleResponse(ResponseCode.NeedVerifyCode,"需要验证码");
-                }
-                if(userService.checkVerifyCode(verifyCode,token)){
-                    CheckFrequencyUtil.reset(token);
-                }else{
-                    LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
-                    return new SimpleResponse(ResponseCode.Frequency,"访问过于频繁");
-                }
-
-
+            if("".equals(verifyCode)||(verifyCode == null)){
+                return new SimpleResponse(ResponseCode.NeedVerifyCode,"需要验证码");
             }
-            if(CheckFrequencyUtil.getCounts(token) == (limit-1)){
-                return new SimpleResponse(ResponseCode.NeedVerifyCode,"密码错误");
+            if(!PasswordEncryptor.matches(password,userEntity.getPassword())){
+                return new SimpleResponse(ResponseCode.ErrorUserNameOrPassword,"密码错误");
             }
-            return SimpleResponse.error("密码错误");
+            if(userService.checkVerifyCode(verifyCode,token)){
+                CheckFrequencyUtil.reset(token);
+            }else{
+                //LOG.warn(String.format("ip %s, token %s, login error >5",request.getRemoteAddr(),token));
+                //return new SimpleResponse(ResponseCode.Frequency,"访问过于频繁");
+                return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码错误");
+            }
+        }else{
+            if(!PasswordEncryptor.matches(password,userEntity.getPassword())){
+                if(CheckFrequencyUtil.getCounts(token) == (limit-1)){
+                    return new SimpleResponse(ResponseCode.NeedVerifyCode,"密码错误");
+                }
+                return new SimpleResponse(ResponseCode.ErrorUserNameOrPassword,"密码错误");
+            }
+
         }
 
 
@@ -298,6 +301,7 @@ public class UserController {
         loginUserInfoVO.setMembers(userService.getAffairMember());
         //获取user的所有盟的所有角色
         loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
+
         return SimpleResponse.ok(loginUserInfoVO);
     }
 
@@ -323,7 +327,7 @@ public class UserController {
         if(token==null) {
             return SimpleResponse.error("token is null");
         }
-        return SimpleResponse.ok(userService.validToken(token));
+        return SimpleResponse.ok(!userService.validToken(token));
     }
 
     @ApiOperation(value = "登出", response = String.class, notes = "登出")
@@ -397,10 +401,10 @@ public class UserController {
      * 响应验证码页面
      * @return
      */
-    @ApiOperation(value = "获取图片验证码",response = String.class,notes = "不停地访问,访问一次生成一次验证码")
+    @ApiOperation(value = "获取图片验证码",response = String.class,notes = "不停地访问,访问一次生成一次验证码,需要传个token过来")
     @NotLogin
     @RequestMapping(value="/validate_code",method = RequestMethod.GET)
-    public String validateCode(HttpServletRequest request,HttpServletResponse response) throws Exception{
+    public String validateCode(HttpServletRequest request,HttpServletResponse response,String token) throws Exception{
         // 设置响应的类型格式为图片格式
         response.setContentType("image/jpeg");
         //禁止图像缓存。
@@ -410,8 +414,9 @@ public class UserController {
         HttpSession session = request.getSession();
 
         ValidateCode vCode = new ValidateCode(120,40,4,100);
-        session.setAttribute("code", vCode.getCode());
-        session.setAttribute("last_token_time",new Date());
+        auth.setSessionAttr("code", vCode.getCode());
+        auth.setSessionAttr("last_token_time",new Date());
+        auth.setSessionAttr("token",token);
 
         vCode.write(response.getOutputStream());
         return "ok";

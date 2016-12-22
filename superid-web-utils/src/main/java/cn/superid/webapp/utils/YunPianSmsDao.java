@@ -1,5 +1,6 @@
 package cn.superid.webapp.utils;
 
+import com.sun.deploy.net.URLEncoder;
 import com.yunpian.sdk.model.*;
 import com.yunpian.sdk.service.*;
 
@@ -16,6 +17,11 @@ public class YunPianSmsDao {
         client = new YunpianRestClient(apiKey);
         SmsOperator smsOperator = client.getSmsOperator();
         //URLEncoder.encode("+886980377771",)
+        try{
+            mobile = URLEncoder.encode(mobile,"utf-8");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         String msg ;
         switch (codeType){
             case SmsType.registerCode:

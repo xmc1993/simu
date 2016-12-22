@@ -1,5 +1,7 @@
 package cn.superid.webapp.controller.forms;
 
+import java.sql.Timestamp;
+
 /**
  * Created by njuTms on 16/11/14.
  */
@@ -16,7 +18,7 @@ public class AffairInfo {
     private boolean isStuck;
     private String[] permissions;
     private int guestLimit;
-
+    private Timestamp modifyTime;
     private String covers = "";
     private Object overView;
 
@@ -132,6 +134,14 @@ public class AffairInfo {
 
     public void setGuestLimit(int guestLimit) {
         this.guestLimit = guestLimit;
+    }
+
+    public Timestamp getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Timestamp modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public String getSuperid() {

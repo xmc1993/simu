@@ -2,10 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.controller.VO.DraftDetailVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
-import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.controller.forms.EasyBlock;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.controller.forms.InsertForm;
@@ -287,7 +284,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setThumbContent(getThumb(getBlock(content)));
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
-        announcementEntity.setState(1);
+        announcementEntity.setState(0);
         announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -302,10 +299,12 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public boolean deleteAnnouncement(long announcementId, long allianceId) {
-        AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state",0);
+    public boolean deleteAnnouncement(long announcementId, long allianceId, long roleId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         //把这条加入announcement中
         AnnouncementHistoryEntity announcementHistoryEntity = new AnnouncementHistoryEntity();
+        announcementHistoryEntity.setAnnouncementId(announcementEntity.getId());
+        announcementHistoryEntity.setModifierId(roleId);
         return true;
     }
 
@@ -336,7 +335,7 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
-        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and roleId = ? and state = 0 order by modify_time desc ");
+        StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and creator_id = ? and state = 0 order by modify_time desc ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
@@ -403,7 +402,15 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public AnnouncementEntity getDetail(long announcementId, long allianceId) {
-        return AnnouncementEntity.dao.findById(announcementId,allianceId);
+        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(result != null){
+            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
+            if(userNameAndRoleNameVO != null){
+                result.setRoleName(userNameAndRoleNameVO.getRoleName());
+                result.setUsername(userNameAndRoleNameVO.getUserName());
+            }
+        }
+        return result;
     }
 
     private String getThumb(List<Block> blocks){
