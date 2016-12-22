@@ -552,6 +552,7 @@ public class AffairService implements IAffairService {
 //        affairInfo.setIsStuck(affairEntity.getIsStuck());
         affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
+        affairInfo.setModifyTime(affairEntity.getModifyTime());
         //TODO 还没有标签
         affairInfo.setTags("");
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();

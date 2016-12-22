@@ -19,6 +19,7 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private String path;
     private long parentId;
     private boolean isIndex;//是否主页事务
+    private Timestamp modifyTime; //修改时间
 
     private List<AffairTreeVO> children = new ArrayList<>();
 
@@ -118,6 +119,14 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
 
     public void setIsIndex(boolean isIndex) {
         this.isIndex = isIndex;
+    }
+
+    public Timestamp getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Timestamp modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     @Override
