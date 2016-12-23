@@ -32,5 +32,7 @@ public interface IAllianceService {
 
     public List<SimpleRoleVO> getRoleByAlliance(long allianceId);
 
+    public boolean verifyAllianceName(String name);
+
 
 }

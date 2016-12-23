@@ -115,6 +115,12 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.getDefaultRoleIdFromAlliance(allianceId));
     }
 
+    @ApiOperation(value = "校验盟名称是否重复", response =Long.class)
+    @RequestMapping(value = "/verify_alliance_name",method = RequestMethod.GET)
+    public SimpleResponse verifyAllianceName(String name){
+        return SimpleResponse.ok(allianceService.verifyAllianceName(name));
+    }
+
     @ApiOperation(value = "获取一个用户底下所有盟信息", response =Long.class)
     @RequestMapping(value = "/alliance_list",method = RequestMethod.GET)
     public SimpleResponse getAllianceList(){
