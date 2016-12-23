@@ -112,7 +112,7 @@ public class AnnouncementController {
 
 
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/getDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/get_details", method = RequestMethod.GET)
     public SimpleResponse getDetail( Long announcementId , Integer offsetHead , Integer offsetTail , Integer version , Long allianceId , Long affairId) {
 
         if(allianceId == null | affairId == null | announcementId == null ){
