@@ -179,8 +179,8 @@ public class FileController {
 
 
         //设置两个文件名
-        String big = "user/"+userService.currentUserId()+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
-        String small = "user/"+userService.currentUserId()+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+        String small = "user/"+userService.currentUserId()+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+        String big = "user/"+userService.currentUserId()+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
 
         return SimpleResponse.ok(fileService.condense_picture(picture,big,small,0));
 
@@ -194,8 +194,8 @@ public class FileController {
 
 
         //设置两个文件名
-        String big = "alliance/"+allianceId+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
-        String small = "alliance/"+allianceId+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+        String small = "alliance/"+allianceId+"/"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
+        String big = "alliance/"+allianceId+"/large_"+ TimeUtil.getDate()+"."+picture.getContentType().split("/")[1];
 
         return SimpleResponse.ok(fileService.condense_picture(picture,big,small,0));
 
