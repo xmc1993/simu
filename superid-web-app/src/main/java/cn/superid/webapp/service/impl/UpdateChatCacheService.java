@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.webapp.enums.EventType;
+import cn.superid.webapp.enums.CacheUpdateEventType;
 import cn.superid.webapp.notice.ParamVo;
 import cn.superid.webapp.notice.SendMessageTemplate;
 import cn.superid.webapp.notice.thrift.C2c;
@@ -21,7 +21,7 @@ public class UpdateChatCacheService implements IUpdateChatCacheService{
         ParamVo params = new ParamVo();
         params.setAffairId(affairId);
         params.setGroupId(groupId);
-        params.setEventType(EventType.UN_GROUP);
+        params.setEventType(CacheUpdateEventType.UN_GROUP);
         C2c c2c = newC2c();
         c2c.setParams(new Gson().toJson(params));
         return SendMessageTemplate.sendNotice(c2c);
@@ -33,7 +33,7 @@ public class UpdateChatCacheService implements IUpdateChatCacheService{
         params.setAffairId(affairId);
         params.setGroupId(groupId);
         params.setRoleId(roleId);
-        params.setEventType(EventType.REMOVE_MEMBER_FROM_GROUP);
+        params.setEventType(CacheUpdateEventType.REMOVE_MEMBER_FROM_GROUP);
         C2c c2c = newC2c();
         c2c.setParams(new Gson().toJson(params));
         return SendMessageTemplate.sendNotice(c2c);
@@ -45,7 +45,7 @@ public class UpdateChatCacheService implements IUpdateChatCacheService{
         params.setAffairId(affairId);
         params.setGroupId(groupId);
         params.setRoleId(roleId);
-        params.setEventType(EventType.ADD_MEMBER_TO_GROUP);
+        params.setEventType(CacheUpdateEventType.ADD_MEMBER_TO_GROUP);
         C2c c2c = newC2c();
         c2c.setParams(new Gson().toJson(params));
         return SendMessageTemplate.sendNotice(c2c);
