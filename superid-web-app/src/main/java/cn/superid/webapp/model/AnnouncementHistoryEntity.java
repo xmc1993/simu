@@ -30,6 +30,8 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
     private int state;
     private String thumbContent;
     private Timestamp modifyTime ;
+    private long affairId;
+    private long allianceId;
 
     @Id
     @Column(name = "id")
@@ -41,7 +43,6 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
         this.id = id;
     }
 
-    @PartitionId
     public long getAnnouncementId() {
         return announcementId;
     }
@@ -136,5 +137,22 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setModifyTime(Timestamp modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 }

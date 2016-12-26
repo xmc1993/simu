@@ -275,6 +275,8 @@ public class AnnouncementService implements IAnnouncementService{
         history.setVersion(announcementEntity.getVersion());
         history.setCreateTime(TimeUtil.getCurrentSqlTime());
         history.setModifyTime(TimeUtil.getCurrentSqlTime());
+        history.setAllianceId(allianceId);
+        history.setAffairId(announcementEntity.getAffairId());
         history.setDecrement(announcementEntity.getDecrement());
         history.setThumbContent(announcementEntity.getThumbContent());
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
@@ -368,7 +370,7 @@ public class AnnouncementService implements IAnnouncementService{
         //第二步,公告历史表最上面一条置为失效
         StringBuilder sql = new StringBuilder("update announcement_history set state = 1 , modify_time = ? where announcement_id = ? and version in (select max(version) from announcement_history where announcement_id = ? )");
         ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(TimeUtil.getCurrentSqlTime().toString());
+        p.addIndexBinding(TimeUtil.getCurrentSqlTime());
         p.addIndexBinding(announcementId);
         p.addIndexBinding(announcementId);
         int e2 = AnnouncementHistoryEntity.getSession().execute(sql.toString(),p);
@@ -508,7 +510,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
 
-
+        StringBuilder sql = new StringBuilder("select * from announcement_history where modify_time <= ? and id not in (select  )");
 
         return null;
     }
