@@ -14,16 +14,16 @@ public class SimpleAnnouncementIdVO {
     private long announcementId;
     private Timestamp modifyTime;
     private long affairId;
+    private int isTop;
 
-    public SimpleAnnouncementIdVO(long announcementId, Timestamp modifyTime, long affairId) {
+    public SimpleAnnouncementIdVO(long announcementId, Timestamp modifyTime, long affairId, int isTop) {
         this.announcementId = announcementId;
         this.modifyTime = modifyTime;
         this.affairId = affairId;
+        this.isTop = isTop;
     }
 
-    public SimpleAnnouncementIdVO(){
-
-    }
+    public SimpleAnnouncementIdVO(){}
 
     public long getAnnouncementId() {
         return announcementId;
@@ -47,5 +47,13 @@ public class SimpleAnnouncementIdVO {
 
     public void setAffairId(long affairId) {
         this.affairId = affairId;
+    }
+
+    public int getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(int isTop) {
+        this.isTop = isTop;
     }
 }

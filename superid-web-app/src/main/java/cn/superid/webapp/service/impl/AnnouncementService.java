@@ -372,7 +372,7 @@ public class AnnouncementService implements IAnnouncementService{
     public List<SimpleAnnouncementIdVO> getIdByAffair(long affairId, long allianceId , boolean isContainChild) {
         List<SimpleAnnouncementIdVO> simpleAnnouncementIdVOList = null;
         if(isContainChild == false){
-            StringBuilder sql = new StringBuilder("select id as announcementId,modify_time,affair_id from announcement  where alliance_id = ? and affair_id = ? and state = 0 order by modify_time desc ");
+            StringBuilder sql = new StringBuilder("select id as announcementId,modify_time,affair_id,is_top from announcement  where alliance_id = ? and affair_id = ? and state = 0 order by modify_time desc ");
             ParameterBindings p = new ParameterBindings();
             p.addIndexBinding(allianceId);
             p.addIndexBinding(affairId);
@@ -390,6 +390,19 @@ public class AnnouncementService implements IAnnouncementService{
 
             simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
         }
+        //n复杂度排序
+        List<SimpleAnnouncementIdVO> result = new ArrayList<>();
+        //记录下置顶的插入到第几位
+        int location = 0 ;
+        for(int i = 0 ; i < simpleAnnouncementIdVOList.size() ; i++){
+            if(simpleAnnouncementIdVOList.get(i).getIsTop() == 0){
+                result.add(simpleAnnouncementIdVOList.get(i));
+            }else{
+                result.add(location,simpleAnnouncementIdVOList.get(i));
+                location++;
+            }
+        }
+
         return simpleAnnouncementIdVOList;
     }
 
