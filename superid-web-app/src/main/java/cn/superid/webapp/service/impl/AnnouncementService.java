@@ -17,6 +17,7 @@ import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -273,7 +274,9 @@ public class AnnouncementService implements IAnnouncementService{
         history.setTitle(announcementEntity.getTitle());
         history.setVersion(announcementEntity.getVersion());
         history.setCreateTime(TimeUtil.getCurrentSqlTime());
+        history.setModifyTime(TimeUtil.getCurrentSqlTime());
         history.setDecrement(announcementEntity.getDecrement());
+        history.setThumbContent(announcementEntity.getThumbContent());
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
         history.setIncrement(JSONObject.toJSONString(compareTwoPapers(old,contentState)));
         history.save();
@@ -360,12 +363,17 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public boolean deleteAnnouncement(long announcementId, long allianceId, long roleId) {
-        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        //把这条加入announcement中
-        AnnouncementHistoryEntity announcementHistoryEntity = new AnnouncementHistoryEntity();
-        announcementHistoryEntity.setAnnouncementId(announcementEntity.getId());
-        announcementHistoryEntity.setModifierId(roleId);
-        return true;
+        //第一步,公告表置为失效
+        int e1 = AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state", ValidState.Invalid);
+        //第二步,公告历史表最上面一条置为失效
+        StringBuilder sql = new StringBuilder("update announcement_history set state = 1 , modify_time = ? where announcement_id = ? and version in (select max(version) from announcement_history where announcement_id = ? )");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(TimeUtil.getCurrentSqlTime().toString());
+        p.addIndexBinding(announcementId);
+        p.addIndexBinding(announcementId);
+        int e2 = AnnouncementHistoryEntity.getSession().execute(sql.toString(),p);
+
+        return (e1 > 0)&&(e2 > 0);
     }
 
     @Override
@@ -495,6 +503,14 @@ public class AnnouncementService implements IAnnouncementService{
             return true;
         }
 
+    }
+
+    @Override
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
+
+
+
+        return null;
     }
 
     private String getThumb(List<Block> blocks){

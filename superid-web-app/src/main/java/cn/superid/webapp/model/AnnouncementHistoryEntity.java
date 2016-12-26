@@ -28,6 +28,8 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
     private String decrement;
     private long modifierId;
     private int state;
+    private String thumbContent;
+    private Timestamp modifyTime ;
 
     @Id
     @Column(name = "id")
@@ -118,5 +120,21 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getThumbContent() {
+        return thumbContent;
+    }
+
+    public void setThumbContent(String thumbContent) {
+        this.thumbContent = thumbContent;
+    }
+
+    public Timestamp getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Timestamp modifyTime) {
+        this.modifyTime = modifyTime;
     }
 }
