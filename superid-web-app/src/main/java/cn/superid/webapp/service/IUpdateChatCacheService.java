@@ -33,5 +33,30 @@ public interface IUpdateChatCacheService {
      */
     boolean addMemberToGroup(long affairId, long groupId, long roleId) throws TException;
 
+    /**
+     * 事务移除成员
+     * @param affairId
+     * @param allianceId
+     * @param roleId
+     * @param isGuest
+     * @return
+     */
+    boolean removeMemberFromAffair(long affairId, long allianceId, long roleId, boolean isGuest) throws TException;
 
+    /**
+     * 事务添加成员
+     * @param affairId
+     * @param allianceId
+     * @param roleId
+     * @param isGuest
+     * @return
+     */
+    boolean addMemberToAffair(long affairId, long allianceId, long roleId, boolean isGuest) throws TException;
+
+    /**
+     * 失效事务
+     * @param affairId
+     * @return
+     */
+    boolean disableAffair(long affairId) throws TException;
 }
