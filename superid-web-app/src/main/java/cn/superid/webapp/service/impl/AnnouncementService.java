@@ -520,22 +520,18 @@ public class AnnouncementService implements IAnnouncementService{
         result.setCreatorId(announcement.getModifierId());
         result.setState(announcement.getState());
         //组织返回结果
-        if(version == announcement.getVersion()){
-
-            result.setTitle(announcement.getTitle());
-            result.setModifierId(announcement.getModifierId());
-            result.setIsTop(announcement.getIsTop());
-            result.setPublicType(announcement.getPublicType());
-            result.setModifyTime(announcement.getModifyTime());
-        }else{
-            AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",version).selectOne();
-            if(h != null){
-                result.setTitle(h.getTitle());
-                result.setModifierId(h.getModifierId());
-                result.setIsTop(-1);
-                result.setPublicType(-1);
-                result.setModifyTime(h.getCreateTime());
-            }
+        AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",version).selectOne();
+        RoleCache role = RoleCache.dao.findById(announcement.getModifierId());
+        UserBaseInfo user = UserBaseInfo.dao.findById(announcement.getModifierUserId());
+        if(h != null){
+            result.setTitle(h.getTitle());
+            result.setModifierId(h.getModifierId());
+            result.setIsTop(h.getIsTop());
+            result.setPublicType(h.getPublicType());
+            result.setModifyTime(h.getCreateTime());
+            result.setAvatar(user.getAvatar());
+            result.setRoleName(role.getTitle());
+            result.setUsername(user.getUsername());
         }
 
         Map<String, Object> rsMap = new HashMap<>();
@@ -636,7 +632,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
         //TODO:周二来搞
-        StringBuilder sql = new StringBuilder("select announcement_id,max(version) from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
+        StringBuilder sql = new StringBuilder("select announcement_id,max(version), from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
 
 
         return null;
