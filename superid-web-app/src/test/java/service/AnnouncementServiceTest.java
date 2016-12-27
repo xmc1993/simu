@@ -32,35 +32,6 @@ public class AnnouncementServiceTest {
     private IAnnouncementService announcementService;
 
     @Test
-    public void testJson(){
-        String str = AnnouncementEntity.dao.findById(1,1).getContent();
-        JSONObject j = JSON.parseObject(str);
-        JSONArray jj = j.getJSONArray("blocks");
-        for(int i = 0 ; i < jj.size() ; i++){
-            JSONObject b = jj.getJSONObject(i);
-            Block bs = new Block(b.getString("key"),b.getString("text"),i);
-            System.out.println(bs.getKey()+" "+bs.getContent()+ " "+bs.getLocation());
-        }
-    }
-
-    @Test
-    public void testObjectToJson(){
-    }
-
-    @Test
-    public void testJsonToObject(){
-        String str = AnnouncementEntity.dao.findById(1,1).getContent();
-        ContentState total = JSON.parseObject(str,ContentState.class);
-    }
-
-    @Test
-    public void testCaulatePaper(){
-        AnnouncementEntity a = AnnouncementEntity.dao.findById(1,1);
-        String str = a.getContent();
-        String ss = a.getDecrement();
-    }
-
-    @Test
     public void testCalucateBlocks(){
         String present = AnnouncementEntity.dao.findById(33,2237).getContent();
         String history = AnnouncementEntity.dao.findById(68,2298).getContent();
@@ -72,6 +43,8 @@ public class AnnouncementServiceTest {
         String operations = JSONObject.toJSONString(result);
         System.out.println(operations);
     }
+
+
 
 
 

@@ -20,14 +20,39 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
     private long id;
     private long announcementId;
     private String title;
-    private long roleId;
-    private String content;
+    private long creatorId;
     private Timestamp createTime ;
     private int version;
     private String increment;
     private String decrement;
     private long modifierId;
     private int state;
+    private String thumbContent;
+    private Timestamp modifyTime ;
+    private long affairId;
+    private long allianceId;
+    private String entityMap;
+    private long creatorUserId;
+    private long modifierUserId;
+
+    public AnnouncementHistoryEntity(){}
+
+    public AnnouncementHistoryEntity(AnnouncementEntity announcementEntity){
+        announcementId = announcementEntity.getId();
+        title = announcementEntity.getTitle();
+        creatorId = announcementEntity.getModifierId();
+        createTime = announcementEntity.getModifyTime();
+        version = announcementEntity.getVersion();
+        decrement = announcementEntity.getDecrement();
+        modifierId = announcementEntity.getModifierId();
+        state = announcementEntity.getState();
+        thumbContent = announcementEntity.getThumbContent();
+        modifyTime = announcementEntity.getModifyTime();
+        affairId = announcementEntity.getAffairId();
+        allianceId = announcementEntity.getAllianceId();
+        creatorUserId = announcementEntity.getModifierUserId();
+        modifierUserId = announcementEntity.getModifierUserId();
+    }
 
     @Id
     @Column(name = "id")
@@ -39,7 +64,6 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
         this.id = id;
     }
 
-    @PartitionId
     public long getAnnouncementId() {
         return announcementId;
     }
@@ -54,22 +78,6 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public Timestamp getCreateTime() {
@@ -118,5 +126,70 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public String getThumbContent() {
+        return thumbContent;
+    }
+
+    public void setThumbContent(String thumbContent) {
+        this.thumbContent = thumbContent;
+    }
+
+    public Timestamp getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Timestamp modifyTime) {
+        this.modifyTime = modifyTime;
+    }
+
+    public long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
+    }
+
+    @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
+    public String getEntityMap() {
+        return entityMap;
+    }
+
+    public void setEntityMap(String entityMap) {
+        this.entityMap = entityMap;
+    }
+
+    public long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public long getCreatorUserId() {
+        return creatorUserId;
+    }
+
+    public void setCreatorUserId(long creatorUserId) {
+        this.creatorUserId = creatorUserId;
+    }
+
+    public long getModifierUserId() {
+        return modifierUserId;
+    }
+
+    public void setModifierUserId(long modifierUserId) {
+        this.modifierUserId = modifierUserId;
     }
 }

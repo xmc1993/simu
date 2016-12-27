@@ -148,5 +148,10 @@ public class AllianceService  implements IAllianceService {
 
         return result;
     }
+
+    @Override
+    public boolean verifyAllianceName(String name) {
+        return AllianceEntity.dao.eq("name",name).exists();
+    }
 }
 
