@@ -180,17 +180,6 @@ public class AnnouncementService implements IAnnouncementService{
         return compareTwoBlocks(present.getBlocks(),history.getBlocks());
     }
 
-    public List<Block> paperToBlockList(String content){
-        List<Block> result = new ArrayList<>();
-        JSONObject total = JSON.parseObject(content);
-        JSONArray bs = total.getJSONArray("blocks");
-        for(int i = 0 ; i < bs.size() ; i++){
-            JSONObject one = bs.getJSONObject(i);
-            result.add(new Block(one.getString("key"),one.getString("text"),i));
-        }
-        return result;
-    }
-
     public String caulatePaper(String content , String operations){
 
         ContentState total = JSON.parseObject(content,ContentState.class);
@@ -642,6 +631,11 @@ public class AnnouncementService implements IAnnouncementService{
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
         return AnnouncementEntity.getSession().findList(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+    }
+
+    @Override
+    public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId) {
+        return null;
     }
 
     private String getThumb(List<Block> blocks){
