@@ -9,6 +9,8 @@ import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.*;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.forms.*;
@@ -263,83 +265,44 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId) {
+        RoleCache role = RoleCache.dao.findById(roleId);
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcementEntity == null){
             return false;
         }
-        //将现在的一条存为历史
-        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity();
-        history.setAnnouncementId(announcementEntity.getId());
-        history.setModifierId(announcementEntity.getModifierId());
-        history.setTitle(announcementEntity.getTitle());
-        history.setVersion(announcementEntity.getVersion());
-        history.setCreateTime(TimeUtil.getCurrentSqlTime());
-        history.setModifyTime(TimeUtil.getCurrentSqlTime());
-        history.setAllianceId(allianceId);
-        history.setAffairId(announcementEntity.getAffairId());
-        history.setDecrement(announcementEntity.getDecrement());
-        history.setThumbContent(announcementEntity.getThumbContent());
+        //第一步,更新最近一条历史记录的increment
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
-        history.setIncrement(JSONObject.toJSONString(compareTwoPapers(old,contentState)));
+        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",compareTwoPapers(old,contentState));
+
+        //第二步,改变原有记录
+        announcementEntity.setVersion(announcementEntity.getVersion()+1);
+        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setModifierId(roleId);
+        announcementEntity.setModifierUserId(role.getUserId());
+        announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
+        announcementEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementEntity.update();
+
+        //第三步,把这条新记录存在历史记录里
+        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity(announcementEntity);
+        history.setEntityMap(JSONObject.toJSONString(contentState.getEntityMap()));
         history.save();
+
 
         //如果满足记录条件,就存一条快照
         if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
             //如果是三十的倍数
             generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
         }
-
-
-        //改变原有记录
-        announcementEntity.setVersion(announcementEntity.getVersion()+1);
-        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        announcementEntity.setModifierId(roleId);
-        announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
-        announcementEntity.setContent(JSONObject.toJSONString(contentState));
-        announcementEntity.update();
-        return true;
+        return result>0;
     }
 
-    @Override
-    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap, int editMode) {
-
-        AnnouncementDraftEntity announcementDraftEntity = null ;
-        ContentState contentState = null;
-        if(draftId == 0){
-            //新建的草稿
-            announcementDraftEntity = new AnnouncementDraftEntity();
-            contentState = new ContentState();
-        }else{
-            announcementDraftEntity = AnnouncementDraftEntity.dao.findById(draftId,allianceId);
-            contentState = JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class);
-        }
-        if(announcementDraftEntity == null | contentState == null){
-            return 0L;
-        }
-        if(!entityMap.equals("")){
-            contentState.setEntityMap(entityMap);
-        }
-        announcementDraftEntity.setContent(caulatePaper(JSONObject.toJSONString(contentState),delta));
-        announcementDraftEntity.setThumbContent(getThumb(getBlock(JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class))));
-        announcementDraftEntity.setTaskId(taskId);
-        announcementDraftEntity.setAffairId(affairId);
-        announcementDraftEntity.setAllianceId(allianceId);
-        announcementDraftEntity.setState(ValidState.Valid);
-        announcementDraftEntity.setCreatorId(roleId);
-        announcementDraftEntity.setAllianceId(allianceId);
-        announcementDraftEntity.setEditMode(editMode);
-
-        announcementDraftEntity.setTitle(title);
-        if(draftId == 0){
-            announcementDraftEntity.save();
-        }else{
-            announcementDraftEntity.update();
-        }
-        return announcementDraftEntity.getId();
-    }
 
     @Override
     public boolean createAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, ContentState content) {
+        RoleCache role = RoleCache.dao.findById(roleId);
+
+        //第一步在announcement表中生成一条记录
         AnnouncementEntity announcementEntity = new AnnouncementEntity();
         announcementEntity.setTitle(title);
         announcementEntity.setContent(JSONObject.toJSONString(content));
@@ -350,32 +313,52 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
         announcementEntity.setState(0);
-        announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
-        announcementEntity.setDecrement("0");
         announcementEntity.setAllianceId(allianceId);
-        announcementEntity.setCreatorId(roleId);
         announcementEntity.setSessionSum(0);
+        announcementEntity.setModifierUserId(role.getUserId());
+        //生成从第一版本到零的delta,都是删除操作,它的逆操作可以用来从底下往上推
+        ContentState empty = new ContentState();
+        EditDistanceForm decrement = compareTwoPapers(content,empty);
+        announcementEntity.setDecrement(JSONObject.toJSONString(decrement));
         announcementEntity.save();
+
+        //第二步,在历史表中生成一条记录
+        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity(announcementEntity);
+        history.setEntityMap(JSONObject.toJSONString(content.getEntityMap()));
+        history.save();
 
         return true;
     }
 
     @Override
     public boolean deleteAnnouncement(long announcementId, long allianceId, long roleId) {
+        RoleCache role = RoleCache.dao.findById(roleId);
         //第一步,公告表置为失效
-        int e1 = AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state", ValidState.Invalid);
-        //第二步,公告历史表最上面一条置为失效
-        StringBuilder sql = new StringBuilder("update announcement_history set state = 1 , modify_time = ? where announcement_id = ? and version in (select max(version) from announcement_history where announcement_id = ? )");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(TimeUtil.getCurrentSqlTime());
-        p.addIndexBinding(announcementId);
-        p.addIndexBinding(announcementId);
-        int e2 = AnnouncementHistoryEntity.getSession().execute(sql.toString(),p);
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).selectOne();
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setModifierId(roleId);
+        announcementEntity.setModifierUserId(role.getUserId());
+        announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        announcementEntity.setState(ValidState.Invalid);
+        announcementEntity.update();
 
-        return (e1 > 0)&&(e2 > 0);
+        //第二步,把history表中最上面一条状态置为0
+        AnnouncementHistoryEntity history = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("version",announcementEntity.getVersion()).eq("announcement_id",announcementId).selectOne();
+        if(history == null){
+            return false;
+        }
+        history.setState(ValidState.Invalid);
+        history.setModifyTime(announcementEntity.getModifyTime());
+        history.setModifierId(roleId);
+        history.setModifierUserId(role.getUserId());
+        history.update();
+
+        return true;
     }
 
     @Override
@@ -417,6 +400,79 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
+    public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
+        String[] idList = ids.split(",");
+
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
+        ParameterBindings p = new ParameterBindings();
+
+        for(String id : idList){
+            if(id.matches("[0-9]+")){
+                sql.append(","+id);
+            }
+        }
+        sql.append(" ) ) a join affair b on a.affair_id = b.id ");
+
+        List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findList(SimpleAnnouncementVO.class,sql.toString(),p);
+        if(result == null ){
+            return null;
+        }
+        //显示现在的扮演人
+//        for(SimpleAnnouncementVO s : result){
+//            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
+//            s.setRoleName(name.getRoleName());
+//            s.setUsername(name.getUserName());
+//            s.setAvatar(name.getAvatar());
+//        }
+        //显示以前的扮演人
+        for(SimpleAnnouncementVO s : result){
+            RoleCache role = RoleCache.dao.findById(s.getCreatorId());
+            UserBaseInfo user = UserBaseInfo.dao.findById(s.getCreatorUserId());
+            s.setRoleName(role.getTitle());
+            s.setUsername(user.getUsername());
+            s.setAvatar(user.getAvatar());
+        }
+
+        return result;
+    }
+
+    @Override
+    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
+        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(result != null){
+//            //显示最新的user
+//            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
+//            if(userNameAndRoleNameVO != null){
+//                result.setRoleName(userNameAndRoleNameVO.getRoleName());
+//                result.setUsername(userNameAndRoleNameVO.getUserName());
+//                result.setAvatar(userNameAndRoleNameVO.getAvatar());
+//            }
+            //显示老user
+            RoleCache role = RoleCache.dao.findById(result.getModifierId());
+            UserBaseInfo user = UserBaseInfo.dao.findById(result.getModifierUserId());
+            result.setAvatar(user.getAvatar());
+            result.setRoleName(role.getTitle());
+            result.setUsername(user.getUsername());
+        }
+        return result;
+    }
+
+    @Override
+    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId) {
+        StringBuilder sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding("%"+content+"%");
+        p.addIndexBinding(content);
+        p.addIndexBinding(content);
+
+
+        return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
+    }
+
+    @Override
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
         StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and creator_id = ? and state = 0 order by modify_time desc ");
         ParameterBindings p = new ParameterBindings();
@@ -441,62 +497,6 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
-        String[] idList = ids.split(",");
-
-        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, creator_id from announcement where id in ( 0 ");
-        ParameterBindings p = new ParameterBindings();
-
-        for(String id : idList){
-            if(id.matches("[0-9]+")){
-                sql.append(","+id);
-            }
-        }
-        sql.append(" ) ) a join affair b on a.affair_id = b.id ");
-
-        List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findList(SimpleAnnouncementVO.class,sql.toString(),p);
-        if(result == null ){
-            return null;
-        }
-        for(SimpleAnnouncementVO s : result){
-            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
-            s.setRoleName(name.getRoleName());
-            s.setUsername(name.getUserName());
-            s.setAvatar(name.getAvatar());
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId) {
-        StringBuilder sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding("%"+content+"%");
-        p.addIndexBinding(content);
-        p.addIndexBinding(content);
-
-
-        return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
-    }
-
-    @Override
-    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
-        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        if(result != null){
-            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
-            if(userNameAndRoleNameVO != null){
-                result.setRoleName(userNameAndRoleNameVO.getRoleName());
-                result.setUsername(userNameAndRoleNameVO.getUserName());
-            }
-        }
-        return result;
-    }
-
-    @Override
     public boolean deleteDraft(long draftId , long allianceId) {
         int result = AnnouncementDraftEntity.dao.partitionId(allianceId).id(draftId).remove();
         if(result < 1){
@@ -508,9 +508,48 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
+    public long saveDraft(String delta, long draftId, long allianceId, long affairId, long roleId, int publicType, String title, long taskId, String entityMap, int editMode) {
 
-        StringBuilder sql = new StringBuilder("select * from announcement_history where modify_time <= ? and id not in (select  )");
+        AnnouncementDraftEntity announcementDraftEntity = null ;
+        ContentState contentState = null;
+        if(draftId == 0){
+            //新建的草稿
+            announcementDraftEntity = new AnnouncementDraftEntity();
+            contentState = new ContentState();
+        }else{
+            announcementDraftEntity = AnnouncementDraftEntity.dao.findById(draftId,allianceId);
+            contentState = JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class);
+        }
+        if(announcementDraftEntity == null | contentState == null){
+            return 0L;
+        }
+        if(!entityMap.equals("")){
+            contentState.setEntityMap(entityMap);
+        }
+        announcementDraftEntity.setContent(caulatePaper(JSONObject.toJSONString(contentState),delta));
+        announcementDraftEntity.setThumbContent(getThumb(getBlock(JSON.parseObject(announcementDraftEntity.getContent(),ContentState.class))));
+        announcementDraftEntity.setTaskId(taskId);
+        announcementDraftEntity.setAffairId(affairId);
+        announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setState(ValidState.Valid);
+        announcementDraftEntity.setCreatorId(roleId);
+        announcementDraftEntity.setAllianceId(allianceId);
+        announcementDraftEntity.setEditMode(editMode);
+
+        announcementDraftEntity.setTitle(title);
+        if(draftId == 0){
+            announcementDraftEntity.save();
+        }else{
+            announcementDraftEntity.update();
+        }
+        return announcementDraftEntity.getId();
+    }
+
+    @Override
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
+        //TODO:周二来搞
+        StringBuilder sql = new StringBuilder("select announcement_id,max(version) from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
+
 
         return null;
     }

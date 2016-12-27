@@ -15,6 +15,8 @@ public class SimpleAnnouncementVO {
     private String affairName;
     private long creatorId;
 
+    private long creatorUserId;
+
     @Transient
     private String roleName;
 
@@ -94,5 +96,13 @@ public class SimpleAnnouncementVO {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public long getCreatorUserId() {
+        return creatorUserId;
+    }
+
+    public void setCreatorUserId(long creatorUserId) {
+        this.creatorUserId = creatorUserId;
     }
 }

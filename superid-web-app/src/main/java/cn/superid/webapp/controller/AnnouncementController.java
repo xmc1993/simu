@@ -185,7 +185,7 @@ public class AnnouncementController {
         result.setId(announcement.getId());
         result.setContent(content);
         result.setCreateTime(announcement.getCreateTime());
-        result.setCreatorId(announcement.getCreatorId());
+        result.setCreatorId(announcement.getModifierId());
         result.setState(announcement.getState());
         //组织返回结果
         if(version == announcement.getVersion()){
@@ -341,7 +341,7 @@ public class AnnouncementController {
                 announcementForm.setState(a.getState());
                 announcementForm.setThumbContent(a.getThumbContent());
                 announcementForm.setVersion(a.getVersion());
-                announcementForm.setCreatorId(a.getCreatorId());
+                announcementForm.setCreatorId(a.getModifierId());
                 announcementForm.setCreateTime(a.getCreateTime());
                 announcementForm.setTitle(a.getTitle());
                 result.add(announcementForm);

@@ -22,7 +22,7 @@ public class FakeDataCreator {
         announcementEntity.setThumbContent("小东是我见过最碧浪的人");
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        announcementEntity.setCreatorId(3528);
+        announcementEntity.setModifierId(3528);
         announcementEntity.setModifierId(3528);
         announcementEntity.setAllianceId(2198);
         announcementEntity.save();
