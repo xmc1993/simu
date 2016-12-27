@@ -57,7 +57,7 @@ public class AffairMemberService implements IAffairMemberService{
         }
 
         int updateCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("role_id", toRoleId).set("permissions",permissions);
-        return updateCount>0 ? true : false;
+        return updateCount>0;
     }
 
     @Override
