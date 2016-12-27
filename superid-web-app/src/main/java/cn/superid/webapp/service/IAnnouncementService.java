@@ -1,14 +1,12 @@
 package cn.superid.webapp.service;
 
-import cn.superid.webapp.controller.VO.DraftDetailVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
-import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.service.forms.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -61,5 +59,5 @@ public interface IAnnouncementService {
 
 
     //公告接口第四部分:历史节点公告还原部分
-    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId , long allianceId , int count);
+    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId , long allianceId , int count, Timestamp time);
 }

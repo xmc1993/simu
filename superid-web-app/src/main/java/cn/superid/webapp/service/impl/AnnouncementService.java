@@ -630,12 +630,18 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
-        //TODO:周二来搞
-        StringBuilder sql = new StringBuilder("select announcement_id,max(version), from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
-
-
-        return null;
+    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
+        StringBuilder sql = new StringBuilder(SQLDao.GET_ANNOUNCEMENT_HISTORY_LIST);
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(time);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(time);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        return AnnouncementEntity.getSession().findList(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
     }
 
     private String getThumb(List<Block> blocks){

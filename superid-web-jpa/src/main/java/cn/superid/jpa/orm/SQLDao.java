@@ -47,4 +47,11 @@ public class SQLDao {
     //得到要显示的公告id
     public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id,is_top from announcement a where alliance_id = ? and state = 0 ) a " +
             "join (select id from affair where alliance_id = ? and path like ? ) b on a.affair_id = b.id ";
+
+    //查询历史某个时间点的公告列表
+    public static String GET_ANNOUNCEMENT_HISTORY_LIST = "select a.*,b.name as affairName from (" +
+            "select announcement_id as id,max(version) as version,title,affair_id,thumb_content as content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
+            "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
+            "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
+            "on a.affair_id = b.id";
 }
