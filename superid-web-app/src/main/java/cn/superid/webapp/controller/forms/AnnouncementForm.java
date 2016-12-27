@@ -17,6 +17,9 @@ public class AnnouncementForm {
     private Timestamp createTime ;
     private Timestamp modifyTime ;
     private long modifierId;
+    private String roleName;
+    private String username;
+    private String avatar;
 
     public long getId() {
         return id;
@@ -96,5 +99,29 @@ public class AnnouncementForm {
 
     public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

@@ -1,20 +1,18 @@
 package cn.superid.webapp.controller.VO;
 
-
 import javax.persistence.Transient;
 
 /**
- * Created by jizhenya on 16/12/5.
+ * Created by jizhenya on 16/12/27.
  */
-public class SimpleAnnouncementVO {
-
+public class SimpleAnnouncementHistoryVO {
     private String title;
     private long id;
     private long affairId;
     private String content;
     private String affairName;
     private long creatorId;
-
+    private int version;
     private long creatorUserId;
 
     @Transient
@@ -104,5 +102,13 @@ public class SimpleAnnouncementVO {
 
     public void setCreatorUserId(long creatorUserId) {
         this.creatorUserId = creatorUserId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

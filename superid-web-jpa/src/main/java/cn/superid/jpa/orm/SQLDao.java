@@ -54,4 +54,12 @@ public class SQLDao {
             "(select * from user u where u.id in (select au.user_id from affair_user au where au.affair_id = ? )) t1 " +
             "join (select * from role r where r.alliance_id = ? ) t2 " +
             "on t1.id=t2.user_id";
+
+
+    //查询历史某个时间点的公告列表
+    public static String GET_ANNOUNCEMENT_HISTORY_LIST = "select a.*,b.name as affairName from (" +
+            "select announcement_id as id,max(version) as version,title,affair_id,thumb_content as content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
+            "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
+            "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
+            "on a.affair_id = b.id";
 }

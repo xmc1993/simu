@@ -40,6 +40,7 @@ public class AnnouncementEntity extends ExecutableModel {
 
     private String roleName;
     private String username;
+    private String avatar;
 
     @Id
     @Column(name = "id")
@@ -196,5 +197,14 @@ public class AnnouncementEntity extends ExecutableModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Transient
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
