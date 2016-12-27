@@ -34,6 +34,8 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
     private String entityMap;
     private long creatorUserId;
     private long modifierUserId;
+    private int isTop = 0;
+    private int publicType = 0;
 
     public AnnouncementHistoryEntity(){}
 
@@ -52,6 +54,8 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
         allianceId = announcementEntity.getAllianceId();
         creatorUserId = announcementEntity.getModifierUserId();
         modifierUserId = announcementEntity.getModifierUserId();
+        isTop = announcementEntity.getIsTop();
+        publicType = announcementEntity.getPublicType();
     }
 
     @Id
@@ -191,5 +195,21 @@ public class AnnouncementHistoryEntity extends ExecutableModel {
 
     public void setModifierUserId(long modifierUserId) {
         this.modifierUserId = modifierUserId;
+    }
+
+    public int getIsTop() {
+        return isTop;
+    }
+
+    public void setIsTop(int isTop) {
+        this.isTop = isTop;
+    }
+
+    public int getPublicType() {
+        return publicType;
+    }
+
+    public void setPublicType(int publicType) {
+        this.publicType = publicType;
     }
 }

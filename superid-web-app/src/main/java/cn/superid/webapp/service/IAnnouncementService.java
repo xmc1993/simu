@@ -4,11 +4,13 @@ import cn.superid.webapp.controller.VO.DraftDetailVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.EditDistanceForm;
 import cn.superid.webapp.model.AnnouncementEntity;
 import cn.superid.webapp.service.forms.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jizhenya on 16/9/26.
@@ -39,7 +41,11 @@ public interface IAnnouncementService {
 
     public List<SimpleAnnouncementVO> getOverview(String ids , long allianceId);
 
+    //阉割版
     public AnnouncementEntity getDetail(long announcementId , long allianceId);
+
+    //高配版
+    public Map<String,Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId);
 
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
 
