@@ -17,6 +17,7 @@ import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.common.collect.HppcMaps;
 import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -449,6 +450,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public Map<String, Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
         List<EditDistanceForm> operations = new ArrayList<>();
+        List<String> entityMaps = new ArrayList<>();
 
         AnnouncementEntity announcement = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcement == null){
@@ -474,6 +476,7 @@ public class AnnouncementService implements IAnnouncementService{
             //表示请求的越过上限,则在开头填上相同位数的null
             for(int i = 0 ; i < over ; i++){
                 operations.add(null);
+                entityMaps.add(null);
             }
 
         }
@@ -486,6 +489,7 @@ public class AnnouncementService implements IAnnouncementService{
                 }
                 EditDistanceForm e = JSON.parseObject(a.getIncrement(),EditDistanceForm.class);
                 operations.add(e);
+                entityMaps.add(a.getEntityMap());
             }
         }
 
@@ -496,15 +500,16 @@ public class AnnouncementService implements IAnnouncementService{
         for(AnnouncementHistoryEntity a : lowHistories){
             EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
             operations.add(e);
+            entityMaps.add(a.getEntityMap());
         }
         if(lower < 0){
             for(int i = lower ; i < 0 ; i++){
                 operations.add(null);
+                entityMaps.add(null);
             }
         }
         AnnouncementForm result = new AnnouncementForm();
         result.setId(announcement.getId());
-        result.setContent(content);
         result.setCreateTime(announcement.getModifyTime());
         result.setCreatorId(announcement.getModifierId());
         result.setState(announcement.getState());
@@ -521,12 +526,16 @@ public class AnnouncementService implements IAnnouncementService{
             result.setAvatar(user.getAvatar());
             result.setRoleName(role.getTitle());
             result.setUsername(user.getUsername());
+            //这边得替换entityMap
+            ContentState c = JSON.parseObject(content,ContentState.class);
+            c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
+            result.setContent(JSONObject.toJSONString(c));
         }
 
         Map<String, Object> rsMap = new HashMap<>();
         rsMap.put("announcement", result);
         rsMap.put("history",operations);
-
+        rsMap.put("entityMaps",entityMaps);
         return rsMap;
     }
 
