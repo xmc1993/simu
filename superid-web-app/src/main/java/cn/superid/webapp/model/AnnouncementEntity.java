@@ -34,7 +34,7 @@ public class AnnouncementEntity extends ExecutableModel {
     private int version = 0;
     private String decrement = "";
     private long modifierId = 0;
-    private long creatorId = 0;
+    private long modifierUserId = 0;
     private long allianceId = 0;
     private int sessionSum = 0;
 
@@ -164,20 +164,20 @@ public class AnnouncementEntity extends ExecutableModel {
         this.allianceId = allianceId;
     }
 
-    public long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(long creatorId) {
-        this.creatorId = creatorId;
-    }
-
     public int getSessionSum() {
         return sessionSum;
     }
 
     public void setSessionSum(int sessionSum) {
         this.sessionSum = sessionSum;
+    }
+
+    public long getModifierUserId() {
+        return modifierUserId;
+    }
+
+    public void setModifierUserId(long modifierUserId) {
+        this.modifierUserId = modifierUserId;
     }
 
     @Transient
