@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UpdateChatCacheService implements IUpdateChatCacheService{
-    private static final int UPDATE_CACHE = 13;//更新缓存(数据类型)
+    private static final int UPDATE_CACHE = 15;//更新缓存(数据类型)
 
     @Override
     public boolean unGroup(long affairId, long groupId) throws TException {
