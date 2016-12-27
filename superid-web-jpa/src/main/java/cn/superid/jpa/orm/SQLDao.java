@@ -47,4 +47,11 @@ public class SQLDao {
     //得到要显示的公告id
     public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id,is_top from announcement a where alliance_id = ? and state = 0 ) a " +
             "join (select id from affair where alliance_id = ? and path like ? ) b on a.affair_id = b.id ";
+
+
+    //获取某个事务下的所有成员及其对应的需要显示的字段
+    public static String GET_AFFAIR_USERS = "select t1.id,t1.username,t1.superid,t2.title from " +
+            "(select * from user u where u.id in (select au.user_id from affair_user au where au.affair_id = ? )) t1 " +
+            "join (select * from role r where r.alliance_id = ? ) t2 " +
+            "on t1.id=t2.user_id";
 }
