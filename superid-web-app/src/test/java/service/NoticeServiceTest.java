@@ -1,6 +1,7 @@
 package service;
 
 import cn.superid.webapp.service.INoticeService;
+import cn.superid.webapp.service.IUpdateChatCacheService;
 import org.apache.thrift.TException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,10 +17,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class NoticeServiceTest {
     @Autowired
     private INoticeService noticeService;
+    @Autowired
+    private IUpdateChatCacheService updateChatCacheService;
 
     @Test
     public void testTaskOverDue() throws TException {
         boolean result = noticeService.taskOverDue(123L, "xmc", 456L, "xmc's task", 3);
+        System.out.println("The result is:" + result);
+    }
+
+    @Test
+    public void testDisableAffair() throws TException {
+        boolean result = updateChatCacheService.disableAffair(123L);
         System.out.println("The result is:" + result);
     }
 }
