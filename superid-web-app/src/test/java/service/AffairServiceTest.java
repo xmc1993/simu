@@ -26,6 +26,10 @@ public class AffairServiceTest {
     private IAffairService affairService;
 
     @Test
+    public void createAffairTest(){
+
+    }
+    @Test
     public void getAffairByStateTest(){
         List<AffairEntity> result = affairService.getAffairByState(2319L,0);
         System.out.println(result);

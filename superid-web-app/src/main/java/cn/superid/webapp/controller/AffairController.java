@@ -33,6 +33,12 @@ public class AffairController {
     private IAffairService affairService;
     @Autowired
     private IUserService userService;
+
+
+    @RequestMapping(value = "/get_permissions",method = RequestMethod.GET)
+    public SimpleResponse getPermissionsMap(){
+        return SimpleResponse.ok(AffairPermissions.getAllAffairPermissions());
+    }
     /**
      * 增加事务,参数
      */

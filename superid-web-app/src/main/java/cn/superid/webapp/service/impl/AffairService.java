@@ -48,6 +48,7 @@ public class AffairService implements IAffairService {
     private IAffairUserService affairUserService;
 
 
+
     @Override
     public String getPermissions(String permissions,int permissionLevel,long affairId) throws Exception{
 
@@ -451,7 +452,7 @@ public class AffairService implements IAffairService {
         p.addIndexBinding(user.getId());
         List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class,sb.toString(),p);
         //生成树
-        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
+         long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
         for(AffairTreeVO a : affairList){
             if(homepageAffairId == a.getId()){
                 a.setIsIndex(true);
@@ -558,7 +559,7 @@ public class AffairService implements IAffairService {
         String permissions = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",affairId).selectOne("permissions").getPermissions();
 
 
-        affairInfo.setPermissions(permissions.split(","));
+        affairInfo.setPermissions(permissions);
 
         affairInfo.setCovers(affairEntity.getCovers());
 
