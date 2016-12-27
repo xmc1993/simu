@@ -45,6 +45,6 @@ public class SQLDao {
             "on a.creator_id = b.id and b.user_id = c.id where a.title like ? or b.title = ? or c.username = ? ";
 
     //得到要显示的公告id
-    public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id from announcement a where alliance_id = ? and state = 0 ) a " +
+    public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id,is_top from announcement a where alliance_id = ? and state = 0 ) a " +
             "join (select id from affair where alliance_id = ? and path like ? ) b on a.affair_id = b.id ";
 }

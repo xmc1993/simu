@@ -46,4 +46,8 @@ public interface IAnnouncementService {
     public AnnouncementEntity getDetail(long announcementId , long allianceId);
 
     public boolean deleteDraft(long draftId , long allianceId);
+
+
+    //查看历史某个时间点公告
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId , long allianceId , int count);
 }
