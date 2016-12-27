@@ -9,6 +9,8 @@ import cn.superid.webapp.controller.forms.InsertForm;
 import cn.superid.webapp.controller.forms.ReplaceForm;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.*;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.forms.*;
@@ -267,37 +269,30 @@ public class AnnouncementService implements IAnnouncementService{
         if(announcementEntity == null){
             return false;
         }
-        //将现在的一条存为历史
-        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity();
-        history.setAnnouncementId(announcementEntity.getId());
-        history.setModifierId(announcementEntity.getModifierId());
-        history.setTitle(announcementEntity.getTitle());
-        history.setVersion(announcementEntity.getVersion());
-        history.setCreateTime(TimeUtil.getCurrentSqlTime());
-        history.setModifyTime(TimeUtil.getCurrentSqlTime());
-        history.setAllianceId(allianceId);
-        history.setAffairId(announcementEntity.getAffairId());
-        history.setDecrement(announcementEntity.getDecrement());
-        history.setThumbContent(announcementEntity.getThumbContent());
+        //第一步,更新最近一条历史记录的increment
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
-        history.setIncrement(JSONObject.toJSONString(compareTwoPapers(old,contentState)));
-        history.save();
+        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",compareTwoPapers(old,contentState));
 
-        //如果满足记录条件,就存一条快照
-        if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
-            //如果是三十的倍数
-            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
-        }
-
-
-        //改变原有记录
+        //第二步,改变原有记录
         announcementEntity.setVersion(announcementEntity.getVersion()+1);
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifierId(roleId);
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
         announcementEntity.update();
-        return true;
+
+        //第三步,把这条新记录存在历史记录里
+        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity(announcementEntity);
+        history.setEntityMap(JSONObject.toJSONString(contentState.getEntityMap()));
+        history.save();
+
+
+        //如果满足记录条件,就存一条快照
+        if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
+            //如果是三十的倍数
+            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
+        }
+        return result>0;
     }
 
     @Override
@@ -340,6 +335,9 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public boolean createAnnouncement(String title, long affairId, long allianceId, long taskId, long roleId, int isTop, int publicType, ContentState content) {
+        RoleCache role = RoleCache.dao.findById(roleId);
+
+        //第一步在announcement表中生成一条记录
         AnnouncementEntity announcementEntity = new AnnouncementEntity();
         announcementEntity.setTitle(title);
         announcementEntity.setContent(JSONObject.toJSONString(content));
@@ -350,15 +348,22 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setIsTop(isTop);
         announcementEntity.setPublicType(publicType);
         announcementEntity.setState(0);
-        announcementEntity.setCreatorId(roleId);
         announcementEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         announcementEntity.setVersion(1);
-        announcementEntity.setDecrement("0");
         announcementEntity.setAllianceId(allianceId);
-        announcementEntity.setCreatorId(roleId);
         announcementEntity.setSessionSum(0);
+        announcementEntity.setModifierUserId(role.getUserId());
+        //生成从第一版本到零的delta,都是删除操作,它的逆操作可以用来从底下往上推
+        ContentState empty = new ContentState();
+        EditDistanceForm decrement = compareTwoPapers(content,empty);
+        announcementEntity.setDecrement(JSONObject.toJSONString(decrement));
         announcementEntity.save();
+
+        //第二步,在历史表中生成一条记录
+        AnnouncementHistoryEntity history = new AnnouncementHistoryEntity(announcementEntity);
+        history.setEntityMap(JSONObject.toJSONString(content.getEntityMap()));
+        history.save();
 
         return true;
     }
@@ -366,16 +371,14 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public boolean deleteAnnouncement(long announcementId, long allianceId, long roleId) {
         //第一步,公告表置为失效
-        int e1 = AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("state", ValidState.Invalid);
-        //第二步,公告历史表最上面一条置为失效
-        StringBuilder sql = new StringBuilder("update announcement_history set state = 1 , modify_time = ? where announcement_id = ? and version in (select max(version) from announcement_history where announcement_id = ? )");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(TimeUtil.getCurrentSqlTime());
-        p.addIndexBinding(announcementId);
-        p.addIndexBinding(announcementId);
-        int e2 = AnnouncementHistoryEntity.getSession().execute(sql.toString(),p);
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).selectOne();
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setModifierId(roleId);
 
-        return (e1 > 0)&&(e2 > 0);
+
+        return true;
     }
 
     @Override
@@ -444,7 +447,7 @@ public class AnnouncementService implements IAnnouncementService{
     public List<SimpleAnnouncementVO> getOverview(String ids,  long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, creator_id from announcement where id in ( 0 ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, modifier_id as creatorId from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){
@@ -458,11 +461,20 @@ public class AnnouncementService implements IAnnouncementService{
         if(result == null ){
             return null;
         }
+        //显示现在的扮演人
+//        for(SimpleAnnouncementVO s : result){
+//            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
+//            s.setRoleName(name.getRoleName());
+//            s.setUsername(name.getUserName());
+//            s.setAvatar(name.getAvatar());
+//        }
+        //显示以前的扮演人
         for(SimpleAnnouncementVO s : result){
-            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
-            s.setRoleName(name.getRoleName());
-            s.setUsername(name.getUserName());
-            s.setAvatar(name.getAvatar());
+            RoleCache role = RoleCache.dao.findById(s.getCreatorId());
+            UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
+            s.setRoleName(role.getTitle());
+            s.setUsername(user.getUsername());
+            s.setAvatar(user.getAvatar());
         }
 
         return result;
@@ -509,8 +521,9 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
+        //TODO:周二来搞
+        StringBuilder sql = new StringBuilder("select announcement_id,max(version) from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
 
-        StringBuilder sql = new StringBuilder("select * from announcement_history where modify_time <= ? and id not in (select  )");
 
         return null;
     }
