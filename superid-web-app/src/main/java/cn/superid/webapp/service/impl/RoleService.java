@@ -66,17 +66,24 @@ public class RoleService implements IRoleService {
 
 
     @Override
-    public List<SearchUserVO> searchUser(long allianceId, String input) {
+    public List<SearchUserVO> searchUser(long allianceId, String input, boolean containName , boolean containTag) {
         List<SearchUserVO> result = new ArrayList<>();
         if(input == null | input.equals("")){
             return  result;
         }
-        StringBuilder sql = new StringBuilder("select  * from  user where ( username like ? or superid like ? ) and id not in " +
-                "( select distinct user_id from role where alliance_id = ? )  order by id desc limit 20 ");
+        StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
+                "( select distinct user_id from role where alliance_id = ? ) and (  ");
         ParameterBindings pb = new ParameterBindings();
-        pb.addIndexBinding("%"+input+"%");
-        pb.addIndexBinding("%"+input+"%");
         pb.addIndexBinding(allianceId);
+        if(containName == true){
+            sql.append(" username like ? or superid like ? " ) ;
+            pb.addIndexBinding("%"+input+"%");
+            pb.addIndexBinding("%"+input+"%");
+        }
+        if(containTag == true){
+            //TODO:等标签系统好再处理
+        }
+        sql.append(" ) order by id desc limit 20 ");
         List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(),pb);
 
 
