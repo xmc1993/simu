@@ -3,11 +3,9 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.*;
-import cn.superid.webapp.controller.forms.EasyBlock;
-import cn.superid.webapp.controller.forms.EditDistanceForm;
-import cn.superid.webapp.controller.forms.InsertForm;
-import cn.superid.webapp.controller.forms.ReplaceForm;
+import cn.superid.webapp.controller.forms.*;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
@@ -19,13 +17,16 @@ import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.common.collect.HppcMaps;
 import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jizhenya on 16/9/26.
@@ -178,17 +179,6 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public EditDistanceForm compareTwoPapers(ContentState present, ContentState history) {
         return compareTwoBlocks(present.getBlocks(),history.getBlocks());
-    }
-
-    public List<Block> paperToBlockList(String content){
-        List<Block> result = new ArrayList<>();
-        JSONObject total = JSON.parseObject(content);
-        JSONArray bs = total.getJSONArray("blocks");
-        for(int i = 0 ; i < bs.size() ; i++){
-            JSONObject one = bs.getJSONObject(i);
-            result.add(new Block(one.getString("key"),one.getString("text"),i));
-        }
-        return result;
     }
 
     public String caulatePaper(String content , String operations){
@@ -458,6 +448,98 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
+    public Map<String, Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
+        List<EditDistanceForm> operations = new ArrayList<>();
+        List<String> entityMaps = new ArrayList<>();
+
+        AnnouncementEntity announcement = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcement == null){
+            return null;
+        }
+        String present = announcement.getContent();
+        String content = present;
+        //以下用于得到首要的版本的contentState
+        if(version < 1 | version > announcement.getVersion()){ version = announcement.getVersion();}
+        if(version != announcement.getVersion()){
+            List<AnnouncementHistoryEntity> hs = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).gt("version",version).desc("version").selectList();
+            content = present;
+            for(AnnouncementHistoryEntity h : hs){
+                content = caulatePaper(content,h.getDecrement());
+            }
+        }
+
+        //处理取前几位
+        int upper = version+offsetHead;
+        int over = upper-announcement.getVersion();
+
+        if(over > 0){
+            //表示请求的越过上限,则在开头填上相同位数的null
+            for(int i = 0 ; i < over ; i++){
+                operations.add(null);
+                entityMaps.add(null);
+            }
+
+        }
+        List<AnnouncementHistoryEntity> histories = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).gt("version",version-1).lt("version",upper).asc("version").selectList();
+        if(histories != null){
+            for(AnnouncementHistoryEntity a : histories){
+                //如果是最上面一条,则跳过,因为它没有Increament
+                if(a.getVersion() == announcement.getVersion()){
+                    continue;
+                }
+                EditDistanceForm e = JSON.parseObject(a.getIncrement(),EditDistanceForm.class);
+                operations.add(e);
+                entityMaps.add(a.getEntityMap());
+            }
+        }
+
+
+        //处理取后几位
+        int lower = version-offsetTail;
+        List<AnnouncementHistoryEntity> lowHistories = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).lt("version",version+1).gt("version",lower).desc("version").selectList();
+        for(AnnouncementHistoryEntity a : lowHistories){
+            EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
+            operations.add(e);
+            entityMaps.add(a.getEntityMap());
+        }
+        if(lower < 0){
+            for(int i = lower ; i < 0 ; i++){
+                operations.add(null);
+                entityMaps.add(null);
+            }
+        }
+        AnnouncementForm result = new AnnouncementForm();
+        result.setId(announcement.getId());
+        result.setCreateTime(announcement.getModifyTime());
+        result.setCreatorId(announcement.getModifierId());
+        result.setState(announcement.getState());
+        //组织返回结果
+        AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",version).selectOne();
+        RoleCache role = RoleCache.dao.findById(announcement.getModifierId());
+        UserBaseInfo user = UserBaseInfo.dao.findById(announcement.getModifierUserId());
+        if(h != null){
+            result.setTitle(h.getTitle());
+            result.setModifierId(h.getModifierId());
+            result.setIsTop(h.getIsTop());
+            result.setPublicType(h.getPublicType());
+            result.setModifyTime(h.getCreateTime());
+            result.setAvatar(user.getAvatar());
+            result.setRoleName(role.getTitle());
+            result.setUsername(user.getUsername());
+            //这边得替换entityMap
+            ContentState c = JSON.parseObject(content,ContentState.class);
+            c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
+            result.setContent(JSONObject.toJSONString(c));
+        }
+
+        Map<String, Object> rsMap = new HashMap<>();
+        rsMap.put("announcement", result);
+        rsMap.put("history",operations);
+        rsMap.put("entityMaps",entityMaps);
+        return rsMap;
+    }
+
+    @Override
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId) {
         StringBuilder sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
         ParameterBindings p = new ParameterBindings();
@@ -546,11 +628,22 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count) {
-        //TODO:周二来搞
-        StringBuilder sql = new StringBuilder("select announcement_id,max(version) from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and id not in (select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id");
+    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
+        StringBuilder sql = new StringBuilder(SQLDao.GET_ANNOUNCEMENT_HISTORY_LIST);
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(time);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        p.addIndexBinding(time);
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        return AnnouncementEntity.getSession().findList(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+    }
 
-
+    @Override
+    public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId) {
         return null;
     }
 

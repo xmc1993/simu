@@ -16,7 +16,7 @@ public class AffairInfo {
     private int isPersonal;
     private String shortName;
     private boolean isStuck;
-    private String[] permissions;
+    private String permissions;
     private int guestLimit;
     private Timestamp modifyTime;
     private String covers = "";
@@ -79,14 +79,13 @@ public class AffairInfo {
         isHomepage = homepage;
     }
 
-    public String[] getPermissions() {
+    public String getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(String[] permissions) {
+    public void setPermissions(String permissions) {
         this.permissions = permissions;
     }
-
 
     public String getCovers() {
         return covers;
