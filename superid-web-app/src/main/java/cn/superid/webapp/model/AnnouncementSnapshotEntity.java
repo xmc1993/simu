@@ -19,10 +19,9 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
     private long id;
     private int version = 0;
     private String content = "";
-    private long modifierId;
-    private String title = "";
+    private long allianceId;
     private long announcementId;
-    private long hsitoryId;
+    private long historyId;
 
     @Id
     @Column(name = "id")
@@ -50,20 +49,20 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
         this.content = content;
     }
 
-    public long getModifierId() {
-        return modifierId;
+    public long getAllianceId() {
+        return allianceId;
     }
 
-    public void setModifierId(long modifierId) {
-        this.modifierId = modifierId;
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
     }
 
-    public String getTitle() {
-        return title;
+    public long getHistoryId() {
+        return historyId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setHistoryId(long historyId) {
+        this.historyId = historyId;
     }
 
     @PartitionId
@@ -75,11 +74,4 @@ public class AnnouncementSnapshotEntity extends ExecutableModel {
         this.announcementId = announcementId;
     }
 
-    public long getHsitoryId() {
-        return hsitoryId;
-    }
-
-    public void setHsitoryId(long hsitoryId) {
-        this.hsitoryId = hsitoryId;
-    }
 }

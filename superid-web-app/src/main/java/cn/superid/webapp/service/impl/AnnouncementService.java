@@ -282,7 +282,7 @@ public class AnnouncementService implements IAnnouncementService{
         //如果满足记录条件,就存一条快照
         if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
             //如果是三十的倍数
-            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
+            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),allianceId,history.getId());
         }
         return result>0;
     }
@@ -644,6 +644,28 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return null;
+        }
+        int totalVersion = announcementEntity.getVersion();
+        //计算出最近的快照
+        int remainder = version % SNAPSHOT_INTERVAL;
+        int n = version / SNAPSHOT_INTERVAL;
+        boolean isLarge = false ;
+        if(remainder >= SNAPSHOT_INTERVAL/2){
+            n++;
+            isLarge = true;
+        }
+        int lastVersion = n * SNAPSHOT_INTERVAL;
+
+        AnnouncementSnapshotEntity announcementSnapshotEntity = AnnouncementSnapshotEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",lastVersion).selectOne();
+        if(announcementSnapshotEntity != null){
+
+        }
+
+
+
         return null;
     }
 
@@ -660,14 +682,13 @@ public class AnnouncementService implements IAnnouncementService{
         return result.toString();
     }
 
-    private boolean generateSnapshot(long announcementId , int version , String content , long modifierId , String title , long historyId){
+    private boolean generateSnapshot(long announcementId , int version , String content , long allianceId , long historyId){
         AnnouncementSnapshotEntity announcementSnapshotEntity = new AnnouncementSnapshotEntity();
-        announcementSnapshotEntity.setTitle(title);
         announcementSnapshotEntity.setContent(content);
         announcementSnapshotEntity.setAnnouncementId(announcementId);
         announcementSnapshotEntity.setVersion(version);
-        announcementSnapshotEntity.setModifierId(modifierId);
-        announcementSnapshotEntity.setHsitoryId(historyId);
+        announcementSnapshotEntity.setHistoryId(historyId);
+        announcementSnapshotEntity.setAllianceId(allianceId);
         announcementSnapshotEntity.save();
 
         return true;
