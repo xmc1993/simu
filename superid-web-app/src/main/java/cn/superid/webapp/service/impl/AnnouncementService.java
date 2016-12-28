@@ -17,6 +17,7 @@ import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.common.collect.HppcMaps;
 import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -281,7 +282,7 @@ public class AnnouncementService implements IAnnouncementService{
         //如果满足记录条件,就存一条快照
         if(announcementEntity.getVersion()%SNAPSHOT_INTERVAL == 0){
             //如果是三十的倍数
-            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),roleId,announcementEntity.getTitle(),history.getId());
+            generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),allianceId,history.getId());
         }
         return result>0;
     }
@@ -449,6 +450,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public Map<String, Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
         List<EditDistanceForm> operations = new ArrayList<>();
+        List<String> entityMaps = new ArrayList<>();
 
         AnnouncementEntity announcement = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcement == null){
@@ -474,6 +476,7 @@ public class AnnouncementService implements IAnnouncementService{
             //表示请求的越过上限,则在开头填上相同位数的null
             for(int i = 0 ; i < over ; i++){
                 operations.add(null);
+                entityMaps.add(null);
             }
 
         }
@@ -486,6 +489,7 @@ public class AnnouncementService implements IAnnouncementService{
                 }
                 EditDistanceForm e = JSON.parseObject(a.getIncrement(),EditDistanceForm.class);
                 operations.add(e);
+                entityMaps.add(a.getEntityMap());
             }
         }
 
@@ -496,15 +500,16 @@ public class AnnouncementService implements IAnnouncementService{
         for(AnnouncementHistoryEntity a : lowHistories){
             EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
             operations.add(e);
+            entityMaps.add(a.getEntityMap());
         }
         if(lower < 0){
             for(int i = lower ; i < 0 ; i++){
                 operations.add(null);
+                entityMaps.add(null);
             }
         }
         AnnouncementForm result = new AnnouncementForm();
         result.setId(announcement.getId());
-        result.setContent(content);
         result.setCreateTime(announcement.getModifyTime());
         result.setCreatorId(announcement.getModifierId());
         result.setState(announcement.getState());
@@ -521,12 +526,16 @@ public class AnnouncementService implements IAnnouncementService{
             result.setAvatar(user.getAvatar());
             result.setRoleName(role.getTitle());
             result.setUsername(user.getUsername());
+            //这边得替换entityMap
+            ContentState c = JSON.parseObject(content,ContentState.class);
+            c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
+            result.setContent(JSONObject.toJSONString(c));
         }
 
         Map<String, Object> rsMap = new HashMap<>();
         rsMap.put("announcement", result);
         rsMap.put("history",operations);
-
+        rsMap.put("entityMaps",entityMaps);
         return rsMap;
     }
 
@@ -635,6 +644,28 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return null;
+        }
+        int totalVersion = announcementEntity.getVersion();
+        //计算出最近的快照
+        int remainder = version % SNAPSHOT_INTERVAL;
+        int n = version / SNAPSHOT_INTERVAL;
+        boolean isLarge = false ;
+        if(remainder >= SNAPSHOT_INTERVAL/2){
+            n++;
+            isLarge = true;
+        }
+        int lastVersion = n * SNAPSHOT_INTERVAL;
+
+        AnnouncementSnapshotEntity announcementSnapshotEntity = AnnouncementSnapshotEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",lastVersion).selectOne();
+        if(announcementSnapshotEntity != null){
+
+        }
+
+
+
         return null;
     }
 
@@ -651,14 +682,13 @@ public class AnnouncementService implements IAnnouncementService{
         return result.toString();
     }
 
-    private boolean generateSnapshot(long announcementId , int version , String content , long modifierId , String title , long historyId){
+    private boolean generateSnapshot(long announcementId , int version , String content , long allianceId , long historyId){
         AnnouncementSnapshotEntity announcementSnapshotEntity = new AnnouncementSnapshotEntity();
-        announcementSnapshotEntity.setTitle(title);
         announcementSnapshotEntity.setContent(content);
         announcementSnapshotEntity.setAnnouncementId(announcementId);
         announcementSnapshotEntity.setVersion(version);
-        announcementSnapshotEntity.setModifierId(modifierId);
-        announcementSnapshotEntity.setHsitoryId(historyId);
+        announcementSnapshotEntity.setHistoryId(historyId);
+        announcementSnapshotEntity.setAllianceId(allianceId);
         announcementSnapshotEntity.save();
 
         return true;
