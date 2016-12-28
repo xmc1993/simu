@@ -11,8 +11,11 @@ import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairService;
+import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
+import cn.superid.webapp.service.vo.AffairUserVO;
+import com.alibaba.fastjson.JSON;
 import com.sun.istack.internal.NotNull;
 import com.wordnik.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,11 +37,12 @@ public class AffairController {
     private IAffairService affairService;
     @Autowired
     private IUserService userService;
-
+    @Autowired
+    private IAffairUserService affairUserService;
 
     @RequestMapping(value = "/get_permissions",method = RequestMethod.GET)
     public SimpleResponse getPermissionsMap(){
-        return SimpleResponse.ok(AffairPermissions.getAllAffairPermissions());
+        return SimpleResponse.ok(JSON.toJSON(AffairPermissions.getAllAffairPermissions()));
     }
     /**
      * 增加事务,参数
@@ -214,6 +219,12 @@ public class AffairController {
 
     public SimpleResponse getOutAllianceAffair(){
         return null;
+    }
+
+    @RequestMapping(value = "/get_affair_users", method = RequestMethod.GET)
+    public SimpleResponse getAllAffairUsers(long allianceId,long affairId){
+        List<AffairUserVO> result = affairUserService.getAllAffairUsers(allianceId,affairId);
+        return SimpleResponse.ok(result);
     }
 
 }
