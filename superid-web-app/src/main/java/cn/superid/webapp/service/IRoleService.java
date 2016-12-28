@@ -18,7 +18,7 @@ public interface IRoleService {
 
     public UserNameAndRoleNameVO getUserNameAndRoleName(Long roleId);
 
-    public List<SearchUserVO> searchUser(long allianceId , String input);
+    public List<SearchUserVO> searchUser(long allianceId , String input , boolean containName , boolean containTag);
 
     public boolean addAllianceUser(List<AddAllianceUserForm> forms , long allianceId);
 

@@ -32,9 +32,13 @@ public class RoleController {
     @ApiOperation(value = "搜索用户", response = boolean.class, notes = "在盟内需要权限的接口都要返回roleId")
     @RequestMapping(value = "/search_user",method = RequestMethod.POST)
     @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
-    public SimpleResponse searchUser(Long roleId , String keyword){
+    public SimpleResponse searchUser(Long roleId, String keyword, Boolean containName, Boolean containTag){
 
-        return SimpleResponse.ok(roleService.searchUser(GlobalValue.currentAllianceId(),keyword));
+        if(containName == null | containTag == null){
+            return SimpleResponse.error("参数不全");
+        }
+
+        return SimpleResponse.ok(roleService.searchUser(GlobalValue.currentAllianceId(),keyword,containName,containTag));
     }
 
     @ApiOperation(value = "添加盟成员", response = boolean.class, notes = "在盟内需要权限的接口都要返回roleId")
