@@ -94,4 +94,11 @@ public class PingYinUtil {
         }
         return pybf.toString();
     }
+
+    public static void main(String[] args){
+        System.out.println(getFullSpell("simu周鹏"));
+        System.out.println(getFirstSpell("simu周鹏"));
+        System.out.println(getFullSpell("simu 周鹏 17"));
+        System.out.println(getFirstSpell("simu 周鹏 17"));
+    }
 }

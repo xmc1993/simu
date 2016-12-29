@@ -19,32 +19,33 @@ public class UserEntity extends ExecutableModel {
     public final static ConditionalDao<UserEntity> dao = new ConditionalDao<>(UserEntity.class);
 
     private long id;
-    private String superid ="";
-    private String password ="";
-    private String familyName ="";
-    private String givenName="";
+    private String superid = "";
+    private String password = "";
+    private String familyName = "";
+    private String givenName = "";
     private int state;
-    private String videoUrl ="";
-    private String videoImg ="";
+    private String videoUrl = "";
+    private String videoImg = "";
     private int isVideo;
     private String nicknames = "";
     private boolean isAuthenticated;
-    private String username ="";
+    private String username = "";
+    private String nameAbbr = "";
     private Timestamp birthday;
     private int age;
-    private String email ="";
-    private String mobile ="";
+    private String email = "";
+    private String mobile = "";
     private long personalRoleId;
     private long personalAllianceId;
-    private String idCard ="";
-    private int marriageStatus ;
+    private String idCard = "";
+    private int marriageStatus;
     private int educationLevel;
-    private String school ="";
+    private String school = "";
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private String address ="";
-    private String detailAddress ="";
-    private String description ="";//描述
+    private String address = "";
+    private String detailAddress = "";
+    private String description = "";//描述
     private double faith;
     private int gender;
     private int publicType;
@@ -53,7 +54,6 @@ public class UserEntity extends ExecutableModel {
 
     private String countryCode; //区号
     private long homepageAffairId;
-
 
 
     @Id
@@ -334,4 +334,11 @@ public class UserEntity extends ExecutableModel {
         this.chatToken = chatToken;
     }
 
+    public String getNameAbbr() {
+        return nameAbbr;
+    }
+
+    public void setNameAbbr(String nameAbbr) {
+        this.nameAbbr = nameAbbr;
+    }
 }
