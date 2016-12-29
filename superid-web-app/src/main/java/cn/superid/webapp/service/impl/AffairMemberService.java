@@ -51,7 +51,6 @@ public class AffairMemberService implements IAffairMemberService{
     @Override
     public boolean modifyAffairMemberPermissions(Long allianceId, Long affairId, Long toRoleId, String permissions) throws Exception {
 
-
         if (StringUtil.isEmpty(permissions)) {
             throw new Exception("请选择正确的权限");
         }
@@ -101,19 +100,7 @@ public class AffairMemberService implements IAffairMemberService{
         if(code!=0){
             return code;
         }
-        /*
-        AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
-        affairMemberEntity.setAllianceId(allianceId);
-        affairMemberEntity.setAffairId(affairId);
-        affairMemberEntity.setPermissions("");
-        affairMemberEntity.setRoleId(roleId);
-        affairMemberEntity.setUserId(userService.currentUserId());
-        affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        affairMemberEntity.setState(2);
-        affairMemberEntity.setPermissionGroupId(AffairPermissionRoleType.VISITOR_ID);
-        affairMemberEntity.save();
-        */
+
         AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
         affairMemberApplicationEntity.setRoleId(roleId);
         affairMemberApplicationEntity.setUserId(userService.currentUserId());
@@ -361,5 +348,8 @@ public class AffairMemberService implements IAffairMemberService{
                 .eq("roleId",roleId).eq("permissionLevel",AffairPermissionRoleType.OWNER_ID).exists();
         */
     }
+
+
+
 
 }

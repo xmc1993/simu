@@ -370,7 +370,7 @@ public class AffairService implements IAffairService {
     public List<SimpleRoleForm> getAllRoles(long allianceId , long affairId) {
         List<SimpleRoleForm> result = new ArrayList<>();
         //第一步,查本盟中的affairmember,防止跨库join
-        StringBuilder sql = new StringBuilder(SQLDao.GET_ALL_ROLE);
+        StringBuilder sql = new StringBuilder(SQLDao.GET_ALL_OFFICIALS);
         ParameterBindings p1 = new ParameterBindings();
         p1.addIndexBinding(affairId);
         p1.addIndexBinding(allianceId);

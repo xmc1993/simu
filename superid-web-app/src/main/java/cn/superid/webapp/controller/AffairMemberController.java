@@ -31,19 +31,6 @@ public class AffairMemberController {
     private IAffairUserService affairUserService;
     @Autowired
     private IUserService userService;
-    /*
-    @ApiOperation(value = "添加事务成员",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/add_member",method = RequestMethod.POST)
-    @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
-    public SimpleResponse addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId){
-        try {
-            return SimpleResponse.ok(affairMemberService.addMember(allianceId,affairId,roleId,permissions,permissionGroupId));
-        }catch (Exception e){
-            return SimpleResponse.error("添加成员失败");
-        }
-
-    }
-*/
 
     @ApiOperation(value = "同意进入事务申请", response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
@@ -80,8 +67,6 @@ public class AffairMemberController {
                 return SimpleResponse.ok(null);
             }
         }
-
-
         code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
         return new SimpleResponse(code,null);
     }

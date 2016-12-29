@@ -20,8 +20,8 @@ import java.util.List;
  * Created by jizhenya on 16/11/24.
  */
 @Controller
-@RequestMapping("/role")
-public class RoleController {
+@RequestMapping("/alliance_member")
+public class AllianceMemberController {
 
     @Autowired
     private IUserService userService;

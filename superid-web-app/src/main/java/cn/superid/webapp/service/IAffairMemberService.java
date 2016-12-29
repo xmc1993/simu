@@ -140,4 +140,9 @@ public interface IAffairMemberService {
      * @return
      */
     public boolean isOwnerOfParentAffair(long roleId,long affairId,long allianceId);
+
+
+
+
+
 }
