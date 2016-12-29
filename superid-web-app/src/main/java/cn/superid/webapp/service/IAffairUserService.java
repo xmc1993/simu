@@ -14,10 +14,9 @@ public interface IAffairUserService {
      * @param allianceId
      * @param affairId
      * @param roleId
-     * @param userId
      * @return
      */
-    public AffairUserEntity addAffairUser(long allianceId,long affairId,long roleId,long userId);
+    public AffairUserEntity addAffairUser(long allianceId,long affairId,long roleId);
 
 
     /**

@@ -117,14 +117,12 @@ public class AffairService implements IAffairService {
 
         AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), createAffairForm.getOperationRoleId());//作为创建者
 
-        //在affair_user表中记录默认角色
-        affairUserService.addAffairUser(createAffairForm.getAllianceId(), affairEntity.getId(), createAffairForm.getOperationRoleId(), userService.currentUserId());
+
 
         Map<String, Object> result = new HashedMap();
         result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId(), member.getRoleId()));
         result.put("affairMemberId", member.getId());
         result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
-
         return result;
     }
 
@@ -160,12 +158,9 @@ public class AffairService implements IAffairService {
         try {
             affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), roleId);//加入根事务
             //在affair_user表中记录默认角色
-            affairUserService.addAffairUser(allianceId, affairEntity.getId(), roleId, RoleEntity.dao.findById(roleId, allianceId).getUserId());
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
-
-
         return affairEntity;
     }
 

@@ -2,7 +2,6 @@ package cn.superid.webapp.service;
 
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
-
 import java.util.List;
 
 /**
@@ -161,7 +160,11 @@ public interface IAffairMemberService {
      * @param allianceId
      * @return
      */
-    boolean isOwnerOfParentAffair(long roleId, long affairId, long allianceId);
+    public boolean isOwnerOfParentAffair(long roleId,long affairId,long allianceId);
+
+
+
+    public List<Long> getDirectorIds(long affairId,long allianceId);
 
     /**
      * 获取事务中联盟外的成员
