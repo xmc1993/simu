@@ -23,6 +23,13 @@ public interface IAffairMemberService {
 
     AffairMemberEntity addCreator(long allianceId, long affairId, long roleId);
 
+    /**
+     *
+     * @param allianceId
+     * @param affairId
+     * @param roleId
+     * @return
+     */
     AffairMemberEntity getAffairMemberInfo(long allianceId, long affairId, long roleId);
 
     /**
