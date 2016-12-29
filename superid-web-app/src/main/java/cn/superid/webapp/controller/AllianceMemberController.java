@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
@@ -51,7 +52,7 @@ public class AllianceMemberController {
     }
 
     @ApiOperation(value = "获取盟中失效的角色列表", response = String.class, notes = "在盟内需要权限的接口都要传入roleId")
-    @RequestMapping(value = "/invalid_role", method = RequestMethod.GET)
+    @RequestMapping(value = "/invalid_roles", method = RequestMethod.GET)
     @RequiredPermissions(alliance = AlliancePermissions.InvalidAllianceRole)
     public SimpleResponse getInvalidRoles(Long roleId) {
         List<RoleEntity> invalidRoles = roleService.getInvalidRoles(GlobalValue.currentAllianceId());

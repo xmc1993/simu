@@ -123,7 +123,7 @@ public class RoleService implements IRoleService {
 
     @Override
     public List<RoleEntity> getInvalidRoles(long allianceId) {
-        String sql = "select * from role where allianceId = ? and state = ?";
+        String sql = "select * from role where alliance_id = ? and state = ?";
         List<RoleEntity> invalidRoles = RoleEntity.dao.findList(sql, allianceId, ValidState.Invalid);
         return invalidRoles;
     }
