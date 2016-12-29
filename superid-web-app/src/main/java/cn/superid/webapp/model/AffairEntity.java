@@ -18,9 +18,10 @@ import java.util.List;
 public class AffairEntity extends ExecutableModel {
     public final static ConditionalDao<AffairEntity> dao = new ConditionalDao<>(AffairEntity.class);
     private long id;
-    private long parentId  = 0;
+    private long parentId = 0;
     private String superid = "";
     private String name = "";
+    private String nameAbbr = "";
     private String logoUrl = "";
     private String description = "";
     private long ownerRoleId = 0;
@@ -29,14 +30,14 @@ public class AffairEntity extends ExecutableModel {
     private int type = 0; //原指个人事务还是盟事务
     private int state = 0;
     private int isFree = 0;
-    private String path = "" ; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
-    private int level = 0 ; //以1开始,记录本事务所在层数
-    private Timestamp createTime ;
-    private Timestamp modifyTime ;
-    private int guestVisible  = 0;
-    private int guestCreateDg  = 0;
-    private int pathIndex  = 0; //创建顺序
-    private long folderId  = 0;
+    private String path = ""; //以0-1-2此种形式记录本事务所在位置,也就是创建顺序
+    private int level = 0; //以1开始,记录本事务所在层数
+    private Timestamp createTime;
+    private Timestamp modifyTime;
+    private int guestVisible = 0;
+    private int guestCreateDg = 0;
+    private int pathIndex = 0; //创建顺序
+    private long folderId = 0;
     private String shortName = "";
     private String covers = "";
     private int guestLimit = 0;
