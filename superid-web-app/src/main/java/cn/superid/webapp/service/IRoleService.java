@@ -12,16 +12,23 @@ import java.util.List;
  */
 public interface IRoleService {
 
-    RoleEntity createRole(String title,long allianceId,long userId,long belongAffairId,String permissions,int type);
+    RoleEntity createRole(String title, long allianceId, long userId, long belongAffairId, String permissions, int type);
 
-    public String getNameByRoleId(Long roleId);
+    String getNameByRoleId(Long roleId);
 
-    public UserNameAndRoleNameVO getUserNameAndRoleName(Long roleId);
+    UserNameAndRoleNameVO getUserNameAndRoleName(Long roleId);
 
-    public List<SearchUserVO> searchUser(long allianceId , String input , boolean containName , boolean containTag);
+    List<SearchUserVO> searchUser(long allianceId, String input, boolean containName, boolean containTag);
 
-    public boolean addAllianceUser(List<AddAllianceUserForm> forms , long allianceId);
+    boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId);
 
+    /**
+     * 获取盟中失效的角色列表
+     *
+     * @param allianceId
+     * @return
+     */
+    List<RoleEntity> getInvalidRoles(long allianceId);
 
 
 }

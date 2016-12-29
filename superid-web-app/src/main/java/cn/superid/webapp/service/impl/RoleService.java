@@ -26,7 +26,7 @@ import java.util.List;
 public class RoleService implements IRoleService {
 
     @Override
-    public RoleEntity createRole(String title, long allianceId,long userId, long belongAffairId, String permissions, int type) {
+    public RoleEntity createRole(String title, long allianceId, long userId, long belongAffairId, String permissions, int type) {
         RoleEntity roleEntity = new RoleEntity();
         roleEntity.setTitle(title);
         roleEntity.setUserId(userId);
@@ -43,18 +43,18 @@ public class RoleService implements IRoleService {
     public String getNameByRoleId(Long roleId) {
         RoleCache role = RoleCache.dao.findById(roleId);
         UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
-        if(role == null || user == null || role.getTitle() == null || user.getUsername() == null){
+        if (role == null || user == null || role.getTitle() == null || user.getUsername() == null) {
             return null;
         }
 
-        return role.getTitle()+": "+user.getUsername();
+        return role.getTitle() + ": " + user.getUsername();
     }
 
     @Override
     public UserNameAndRoleNameVO getUserNameAndRoleName(Long roleId) {
         RoleCache role = RoleCache.dao.findById(roleId);
         UserBaseInfo user = UserBaseInfo.dao.findById(role.getUserId());
-        if(role == null || user == null || role.getTitle() == null || user.getUsername() == null){
+        if (role == null || user == null || role.getTitle() == null || user.getUsername() == null) {
             return null;
         }
         UserNameAndRoleNameVO result = new UserNameAndRoleNameVO();
@@ -66,29 +66,29 @@ public class RoleService implements IRoleService {
 
 
     @Override
-    public List<SearchUserVO> searchUser(long allianceId, String input, boolean containName , boolean containTag) {
+    public List<SearchUserVO> searchUser(long allianceId, String input, boolean containName, boolean containTag) {
         List<SearchUserVO> result = new ArrayList<>();
-        if(input == null | input.equals("")){
-            return  result;
+        if (input == null | input.equals("")) {
+            return result;
         }
         StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
                 "( select distinct user_id from role where alliance_id = ? ) and (  ");
         ParameterBindings pb = new ParameterBindings();
         pb.addIndexBinding(allianceId);
-        if(containName == true){
-            sql.append(" username like ? or superid like ? " ) ;
-            pb.addIndexBinding("%"+input+"%");
-            pb.addIndexBinding("%"+input+"%");
+        if (containName == true) {
+            sql.append(" username like ? or superid like ? ");
+            pb.addIndexBinding("%" + input + "%");
+            pb.addIndexBinding("%" + input + "%");
         }
-        if(containTag == true){
+        if (containTag == true) {
             //TODO:等标签系统好再处理
         }
         sql.append(" ) order by id desc limit 20 ");
-        List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(),pb);
+        List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(), pb);
 
 
-        if(userEntityList != null){
-            for(UserEntity u : userEntityList){
+        if (userEntityList != null) {
+            for (UserEntity u : userEntityList) {
                 SearchUserVO user = new SearchUserVO();
                 user.setId(u.getId());
                 user.setAvatar(u.getAvatar());
@@ -103,9 +103,9 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public boolean addAllianceUser(List<AddAllianceUserForm> forms , long allianceId) {
+    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId) {
 
-        for(AddAllianceUserForm form : forms){
+        for (AddAllianceUserForm form : forms) {
             RoleEntity role = new RoleEntity();
             role.setUserId(form.getUserId());
             role.setTitle(form.getRoleName());
@@ -119,5 +119,12 @@ public class RoleService implements IRoleService {
 
 
         return true;
+    }
+
+    @Override
+    public List<RoleEntity> getInvalidRoles(long allianceId) {
+//        String sql = "select * from role where alliance_id = ? and state = ?";
+//        List<RoleEntity> invalidRoles = RoleEntity.dao.findList(sql, allianceId, ValidState.Invalid);
+        return RoleEntity.dao.partitionId(allianceId).state(ValidState.Invalid).selectList();
     }
 }
