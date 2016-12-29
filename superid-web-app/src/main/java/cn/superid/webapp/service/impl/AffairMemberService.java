@@ -260,7 +260,6 @@ public class AffairMemberService implements IAffairMemberService {
 
         //加入事务
         addMember(allianceId, affairId, affairMemberInvitationEntity.getBeInvitedRoleId(), "", affairMemberInvitationEntity.getPermissionLevel());
-
         //更新邀请信息
         affairMemberInvitationEntity.setDealReason(dealReason);
         affairMemberInvitationEntity.setState(DealState.Agree);
