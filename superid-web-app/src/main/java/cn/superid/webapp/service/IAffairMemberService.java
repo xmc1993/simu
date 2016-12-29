@@ -3,7 +3,10 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
+import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.cache.AffairMemberCache;
+
+import java.util.List;
 
 /**
  * Created by xiaofengxu on 16/9/2.
@@ -142,6 +145,7 @@ public interface IAffairMemberService {
     public boolean isOwnerOfParentAffair(long roleId,long affairId,long allianceId);
 
 
+    public List<Long> getDirectorIds(long affairId,long allianceId);
 
 
 
