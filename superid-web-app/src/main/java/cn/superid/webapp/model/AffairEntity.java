@@ -249,4 +249,12 @@ public class AffairEntity extends ExecutableModel {
     public void setGuestNumber(int guestNumber) {
         this.guestNumber = guestNumber;
     }
+
+    public String getNameAbbr() {
+        return nameAbbr;
+    }
+
+    public void setNameAbbr(String nameAbbr) {
+        this.nameAbbr = nameAbbr;
+    }
 }

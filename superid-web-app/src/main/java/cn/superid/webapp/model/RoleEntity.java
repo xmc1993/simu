@@ -121,4 +121,12 @@ public class RoleEntity extends ExecutableModel {
     public void setModifyTime(Timestamp modifyTime) {
         this.modifyTime = modifyTime;
     }
+
+    public String getTitleAbbr() {
+        return titleAbbr;
+    }
+
+    public void setTitleAbbr(String titleAbbr) {
+        this.titleAbbr = titleAbbr;
+    }
 }

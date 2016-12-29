@@ -334,4 +334,11 @@ public class UserEntity extends ExecutableModel {
         this.chatToken = chatToken;
     }
 
+    public String getNameAbbr() {
+        return nameAbbr;
+    }
+
+    public void setNameAbbr(String nameAbbr) {
+        this.nameAbbr = nameAbbr;
+    }
 }
