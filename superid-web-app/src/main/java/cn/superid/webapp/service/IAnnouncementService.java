@@ -190,5 +190,5 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId);
+    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId);
 }
