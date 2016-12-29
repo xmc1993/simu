@@ -649,6 +649,9 @@ public class AnnouncementService implements IAnnouncementService{
             return null;
         }
         int totalVersion = announcementEntity.getVersion();
+        if(version > totalVersion){
+            return null;
+        }
         //计算出最近的快照
         int remainder = version % SNAPSHOT_INTERVAL;
         int n = version / SNAPSHOT_INTERVAL;
@@ -660,7 +663,23 @@ public class AnnouncementService implements IAnnouncementService{
         int lastVersion = n * SNAPSHOT_INTERVAL;
 
         AnnouncementSnapshotEntity announcementSnapshotEntity = AnnouncementSnapshotEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",lastVersion).selectOne();
+        String content = null;
         if(announcementSnapshotEntity != null){
+            //找到了最近记录
+            content = announcementSnapshotEntity.getContent();
+
+        }else{
+            //未找到最近记录,则说明要么lastversion大于了现在最大version,要么就是0
+            if(lastVersion > totalVersion){
+                content = announcementEntity.getContent();
+                List<AnnouncementHistoryEntity> histories = AnnouncementHistoryEntity.dao.gt("version",version-1).partitionId(allianceId).eq("announcement_id",announcementId).desc("version").selectList();
+                for(AnnouncementHistoryEntity history : histories){
+                    if(history.getVersion() == version){
+
+                    }
+                    content = caulatePaper(content,history.getDecrement());
+                }
+            }
 
         }
 
