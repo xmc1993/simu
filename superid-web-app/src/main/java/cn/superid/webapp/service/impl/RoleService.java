@@ -79,10 +79,8 @@ public class RoleService implements IRoleService {
         if(containName == false & containTag == false){
             return  result;
         }
-        StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
-                "( select distinct user_id from role where alliance_id = ? ) and (  ");
+        StringBuilder sql = new StringBuilder("select a.*,b.id as memberId from (select id,username as name,avatar,superid as superId from user where ");
         ParameterBindings pb = new ParameterBindings();
-        pb.addIndexBinding(allianceId);
         if (containName == true) {
             sql.append(" username like ? or superid like ? ");
             pb.addIndexBinding("%" + input + "%");
@@ -91,21 +89,10 @@ public class RoleService implements IRoleService {
         if (containTag == true) {
             //TODO:等标签系统好再处理
         }
-        sql.append(" ) order by id desc limit 20 ");
-        List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(), pb);
+        sql.append(" order by id desc limit 20 ) a left join (select id , user_id from alliance_user where alliance_id = ? and state = 0 ) b on a.id = b.user_id ");
+        pb.addIndexBinding(allianceId);
+        result = UserEntity.getSession().findList(SearchUserVO.class,sql.toString(),pb);
 
-
-        if (userEntityList != null) {
-            for (UserEntity u : userEntityList) {
-                SearchUserVO user = new SearchUserVO();
-                user.setId(u.getId());
-                user.setAvatar(u.getAvatar());
-                user.setName(u.getUsername());
-                user.setSuperId(u.getSuperid());
-
-                result.add(user);
-            }
-        }
 
         return result;
     }
