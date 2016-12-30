@@ -119,7 +119,7 @@ public class AllianceService  implements IAllianceService {
     @Override
     public boolean editAllianceCertification(AllianceCertificationForm allianceCertificationForm, long roleId) {
         allianceCertificationForm.setRoleId(roleId);
-        return AllianceCertificationEntity.dao.set(allianceCertificationForm) > 0;
+        return AllianceCertificationEntity.dao.setByObject(allianceCertificationForm) > 0;
     }
 
     @Override
@@ -139,6 +139,7 @@ public class AllianceService  implements IAllianceService {
 
     @Override
     public List<SimpleRoleVO> getRoleByAlliance(long allianceId) {
+
         List<RoleEntity> roleEntityList = RoleEntity.dao.partitionId(allianceId).selectList("id", "title");
         List<SimpleRoleVO> result = new ArrayList<>();
         for (RoleEntity r : roleEntityList) {

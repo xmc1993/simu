@@ -550,9 +550,8 @@ public class AffairService implements IAffairService {
         affairInfo.setModifyTime(affairEntity.getModifyTime());
         //TODO 还没有标签
         affairInfo.setTags("");
+
         String permissions = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId).getPermissions();
-
-
         affairInfo.setPermissions(permissions);
 
         affairInfo.setCovers(affairEntity.getCovers());
@@ -577,8 +576,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean switchRole(long affairId, long allianceId, long newRoleId) {
-        AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userService.currentUserId()).set("roleId", newRoleId);
-        return true;
+        return AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userService.currentUserId()).set("roleId", newRoleId)>0;
     }
 
     @Override

@@ -56,10 +56,10 @@ public class PingYinUtil {
             if (arr[i] > 128) {
                 try {
                     String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);
-                    if (temp != null) {
+                    if (temp != null&&temp.length>0) {
                         pybf.append(temp[0].charAt(0));
                     }
-                } catch (BadHanyuPinyinOutputFormatCombination e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {

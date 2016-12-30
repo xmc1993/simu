@@ -211,7 +211,7 @@ public class AffairMemberService implements IAffairMemberService {
 
         //判断被邀请的是否是本盟成员,如果是则无需同意,直接拉入事务
         boolean isInSameAlliance = RoleEntity.dao.id(beInvitedRoleId).partitionId(allianceId).exists();
-        if (isInSameAlliance) {//FBI W
+        if (isInSameAlliance) {
             AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
                     .set("state", DealState.Agree, "dealReason", "本盟人员");
 
@@ -273,7 +273,6 @@ public class AffairMemberService implements IAffairMemberService {
         if ((affairMemberInvitationEntity == null) || (affairMemberInvitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.InvitationNotExist;
         }
-
 
         //更新邀请信息
         affairMemberInvitationEntity.setDealReason(dealReason);

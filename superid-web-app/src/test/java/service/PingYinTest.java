@@ -1,6 +1,7 @@
 package service;
 
 import cn.superid.utils.PingYinUtil;
+import cn.superid.utils.StringUtil;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
@@ -40,6 +41,9 @@ public class PingYinTest {
     public void updateAffairNameAbbr() {
         List<AffairEntity> entities = AffairEntity.dao.findList("Select * from affair");
         for (AffairEntity entity : entities) {
+            if(StringUtil.isEmpty(entity.getName())){
+                continue;
+            }
             String abbr = PingYinUtil.getFirstSpell(entity.getName());
             entity.setNameAbbr(abbr);
             entity.update();
