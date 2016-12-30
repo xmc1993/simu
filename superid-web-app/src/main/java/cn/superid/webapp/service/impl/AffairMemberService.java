@@ -8,6 +8,7 @@ import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
+import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
@@ -211,34 +212,26 @@ public class AffairMemberService implements IAffairMemberService {
 
         //判断被邀请的是否是本盟成员,如果是则无需同意,直接拉入事务
         boolean isInSameAlliance = RoleEntity.dao.id(beInvitedRoleId).partitionId(allianceId).exists();
-        if (isInSameAlliance) {//FBI W
+        if (isInSameAlliance) {
             AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
                     .set("state", DealState.Agree, "dealReason", "本盟人员");
-
-            AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
-            affairMemberEntity.setAffairId(affairId);
-            affairMemberEntity.setAllianceId(allianceId);
-            affairMemberEntity.setRoleId(beInvitedRoleId);
-            affairMemberEntity.setState(ValidState.Valid);
             //判断被邀请的角色是不是自己的某个父事务的负责人
             AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("id");
             if (isOwnerOfParentAffair(beInvitedRoleId, currentAffair.getId(), allianceId)) {
                 //如果是,将权限设置为owner
-                affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OWNER_ID);
                 AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
                         .set("permissionLevel", AffairPermissionRoleType.OWNER_ID);
+                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
             } else {
                 //如果不是,根据前端选择的权限类型分配给其官方还是客方
                 if (memberType == 0) {
-                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OFFICIAL_ID);
+                    addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.OFFICIAL, AffairPermissionRoleType.OFFICIAL_ID);
                 } else {
-                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.GUEST_ID);
+                    addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.GUEST, AffairPermissionRoleType.GUEST_ID);
                 }
             }
-            affairMemberEntity.save();
 
             //TODO 发送消息通知
-            //affairMemberEntity.setPermissions(AffairPermissionRoleType.);
         }
         //不是本盟成员
         else {
