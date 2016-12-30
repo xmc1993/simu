@@ -12,6 +12,7 @@ import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
@@ -45,6 +46,9 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IAffairMemberService affairMemberService;
     @Autowired
     private IAuth auth;
     public static Log LOG = LogFactory.getLog(UserController.class);
@@ -306,7 +310,7 @@ public class UserController {
         LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
         userEntity.copyPropertiesTo(loginUserInfoVO);
         //获取user的所有affairMember
-        loginUserInfoVO.setMembers(userService.getAffairMember());
+        loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
         //获取user的所有盟的所有角色
         loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
 
@@ -395,7 +399,7 @@ public class UserController {
             UserEntity user = userService.getCurrentUser();
 
             user.copyPropertiesTo(loginUserInfoVO);
-            loginUserInfoVO.setMembers(userService.getAffairMember());
+            loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
             loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
@@ -446,7 +450,7 @@ public class UserController {
     @ApiOperation(value = "得到该用户所有affairMemberId",response = String.class,notes = "")
     @RequestMapping(value="/get_affairMember",method = RequestMethod.POST)
     public SimpleResponse getAffairMember(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        return SimpleResponse.ok(userService.getAffairMember());
+        return SimpleResponse.ok(affairMemberService.getAffairMember());
     }
 
 
