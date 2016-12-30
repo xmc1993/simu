@@ -12,6 +12,7 @@ import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.security.AlliancePermissions;
 import cn.superid.webapp.security.GlobalValue;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
@@ -35,6 +36,9 @@ public class AllianceController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IAffairMemberService affairMemberService;
 
     @Autowired
     private IAffairService affairService;
@@ -81,7 +85,7 @@ public class AllianceController {
         CreateAllianceResultVO createAllianceResultVO = new CreateAllianceResultVO();
         allianceEntity.copyPropertiesTo(createAllianceResultVO);
         createAllianceResultVO.setAffairTree(affairService.getAffairTree(allianceEntity.getId()));
-        createAllianceResultVO.setAffairMember(userService.getAffairMemberByAllianceId(allianceEntity.getId()));
+        createAllianceResultVO.setAffairMember(affairMemberService.getAffairMemberByAllianceId(allianceEntity.getId()));
         return SimpleResponse.ok(createAllianceResultVO);
     }
 

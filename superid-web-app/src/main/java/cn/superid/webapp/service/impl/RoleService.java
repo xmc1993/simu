@@ -71,6 +71,9 @@ public class RoleService implements IRoleService {
         if (input == null | input.equals("")) {
             return result;
         }
+        if(containName == false & containTag == false){
+            return  result;
+        }
         StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
                 "( select distinct user_id from role where alliance_id = ? ) and (  ");
         ParameterBindings pb = new ParameterBindings();

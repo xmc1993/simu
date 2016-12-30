@@ -550,7 +550,11 @@ public class AffairService implements IAffairService {
         affairInfo.setModifyTime(affairEntity.getModifyTime());
         //TODO 还没有标签
         affairInfo.setTags("");
-        String permissions = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId).getPermissions();
+        String permissions = null;
+        AffairMemberEntity affairMemberEntity = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId);
+        if(affairMemberEntity != null){
+            permissions = affairMemberEntity.getPermissions();
+        }
 
 
         affairInfo.setPermissions(permissions);

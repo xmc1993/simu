@@ -16,6 +16,7 @@ import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IUserService;
@@ -47,6 +48,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private IAllianceService allianceService;
+
+    @Autowired
+    private IAffairMemberService affairMemberService;
 
 
     private final String lastEmailTime = "last_email_time";
@@ -338,41 +342,11 @@ public class UserService implements IUserService {
             resultUserInfo.setBirthday(userEntity.getBirthday());
         }
         //resultUserInfo.copyPropertiesFrom(userBaseInfo);
-        resultUserInfo.setMembers(getAffairMember());
+        resultUserInfo.setMembers(affairMemberService.getAffairMember());
         return resultUserInfo;
     }
 
-    @Override
-    public Map<Long, List<Object>> getAffairMember() {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
-        return getMaps(affairMemberVOList);
-    }
 
-    @Override
-    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId) {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
-
-        return getMaps(affairMemberVOList);
-    }
-
-    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
-        Map<Long,List<Object>> members = new HashedMap();
-        for(AffairMemberVO a : affairMemberVOList){
-            List<Object> user = new ArrayList<>();
-            user.add(a.getAffairId());
-            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
-            user.add(role);
-            members.put(a.getId(),user);
-        }
-        return members;
-    }
 
 
     @Override
