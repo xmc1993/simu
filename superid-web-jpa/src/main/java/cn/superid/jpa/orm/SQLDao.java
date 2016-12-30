@@ -9,7 +9,7 @@ public class SQLDao {
     /**
      * affairService相关的sql语句
      */
-    public static String GET_ALL_ROLE = "select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
+    public static String GET_ALL_OFFICIALS = "select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
             "(select af.role_id , af.permissions from affair_member af where af.state = 1 and af.affair_id = ? and af.alliance_id = ? and af.permission_group_id < 4 ) a " +
             " join (select bf.title , bf.id , bf.belong_affair_id , bf.user_id from role bf where bf.alliance_id = ? ) b " +
             " join (select df.id , df.name from affair df where df.alliance_id = ? ) d " +
@@ -43,7 +43,6 @@ public class SQLDao {
             "join" +
             "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = ?) t2 " +
             "on t1.id = t2.alliance_id";
-
 
     /**
      * announcementService相关的sql语句

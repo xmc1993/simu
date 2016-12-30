@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,11 +48,19 @@ public class UserController {
     @Autowired
     private IAuth auth;
     public static Log LOG = LogFactory.getLog(UserController.class);
+    private long userId;
 
 
     @ApiOperation(value = "检查服务器状态,并且获取jSessionId", httpMethod = "GET", response = String.class)
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     public SimpleResponse ping(){
+        return SimpleResponse.ok("isLogin");
+    }
+
+    @ApiOperation(value = "根据userid,获得", httpMethod = "GET", response = String.class)
+    @RequestMapping(value = "/avatar/{userId}", method = RequestMethod.GET)
+    public SimpleResponse getAvatar(@PathVariable String userId){
+//        this.userId = userId;
         return SimpleResponse.ok("isLogin");
     }
 
@@ -61,7 +70,6 @@ public class UserController {
      * @param token
      * @return
      */
-
 
     @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = String.class, notes = "不允许同一个IP地址频繁访问,若是手机,格式为+86 15***")
     @NotLogin

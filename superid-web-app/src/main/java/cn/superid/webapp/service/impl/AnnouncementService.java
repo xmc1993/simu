@@ -643,30 +643,69 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public AnnouncementEntity getHistoryVersion(long announcementId, int version, long allianceId) {
+    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId) {
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        SimpleAnnouncementVO result = new SimpleAnnouncementVO();
         if(announcementEntity == null){
             return null;
         }
         int totalVersion = announcementEntity.getVersion();
+        if(version > totalVersion){
+            return null;
+        }
         //计算出最近的快照
         int remainder = version % SNAPSHOT_INTERVAL;
         int n = version / SNAPSHOT_INTERVAL;
         boolean isLarge = false ;
-        if(remainder >= SNAPSHOT_INTERVAL/2){
+        if(remainder >= SNAPSHOT_INTERVAL/2 | (remainder < SNAPSHOT_INTERVAL/2 & n == 0)){
             n++;
             isLarge = true;
         }
+
         int lastVersion = n * SNAPSHOT_INTERVAL;
 
         AnnouncementSnapshotEntity announcementSnapshotEntity = AnnouncementSnapshotEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",lastVersion).selectOne();
+        String content = null;
+        List<AnnouncementHistoryEntity> histories = null;
         if(announcementSnapshotEntity != null){
+            //找到了最近记录
+            content = announcementSnapshotEntity.getContent();
+            if(isLarge == true){
+                histories = AnnouncementHistoryEntity.dao.gt("version",version-1).lt("version",lastVersion+1).partitionId(allianceId).eq("announcement_id",announcementId).desc("version").selectList();
+            }else{
+                histories = AnnouncementHistoryEntity.dao.lt("version",version+1).gt("version",lastVersion-1).partitionId(allianceId).eq("announcement_id",announcementId).asc("version").selectList();
+            }
 
+        }else{
+            //未找到最近记录,则说明要么lastversion大于了现在最大version,要么就是0
+            content = announcementEntity.getContent();
+            histories = AnnouncementHistoryEntity.dao.gt("version",version-1).partitionId(allianceId).eq("announcement_id",announcementId).desc("version").selectList();
+
+        }
+
+        for(AnnouncementHistoryEntity history : histories){
+            if(history.getVersion() == version){
+                //把entityMap替换
+                ContentState contentState = JSON.parseObject(content,ContentState.class);
+                contentState.setEntityMap(JSON.parseObject(history.getEntityMap(),Object.class));
+                result.setAffairId(history.getAffairId());
+                result.setContent(JSONObject.toJSONString(contentState));
+                result.setCreatorId(history.getCreatorId());
+                result.setCreatorUserId(history.getCreatorUserId());
+                result.setTitle(history.getTitle());
+                result.setId(history.getAnnouncementId());
+                break;
+            }
+            if(lastVersion > totalVersion){
+                content = caulatePaper(content,history.getDecrement());
+            }else if(isLarge == true){
+                content = caulatePaper(content,history.getIncrement());
+            }
         }
 
 
 
-        return null;
+        return result;
     }
 
     private String getThumb(List<Block> blocks){
@@ -693,6 +732,5 @@ public class AnnouncementService implements IAnnouncementService{
 
         return true;
     }
-
 
 }

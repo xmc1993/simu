@@ -35,13 +35,13 @@ public class AllianceTest {
     @Test
     public void testCreateAlliance() {
         String code = StringUtil.randomString(6);
-        SimpleResponse simpleResponse = allianceController.createAlliance("SIMU", "a,b,c","xxx");
+        SimpleResponse simpleResponse = allianceController.createAlliance("这是一个虽然长但是合法的盟名称因为这个盟名称小于32个字符的根文件夹", "a,b,c","xxx");
         AllianceEntity allianceEntity = (AllianceEntity) simpleResponse.getData();
 
         Assert.assertTrue(allianceEntity.getName().equals("SIMU"));
 
-        SimpleResponse simpleResponse1 = allianceController.createAlliance("repeat", "asa,c","ssss");
-        Assert.assertTrue(simpleResponse1.getData().equals("repeat_code"));
+//        SimpleResponse simpleResponse1 = allianceController.createAlliance("repeat", "asa,c","ssss");
+//        Assert.assertTrue(simpleResponse1.getData().equals("repeat_code"));
 
     }
 

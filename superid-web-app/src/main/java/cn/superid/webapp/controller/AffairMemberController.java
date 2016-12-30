@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 /**
  * Created by njuTms on 16/9/14.
  */
@@ -31,19 +34,6 @@ public class AffairMemberController {
     private IAffairUserService affairUserService;
     @Autowired
     private IUserService userService;
-    /*
-    @ApiOperation(value = "添加事务成员",response = String.class,notes = "拥有权限")
-    @RequestMapping(value = "/add_member",method = RequestMethod.POST)
-    @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
-    public SimpleResponse addMember(Long allianceId,Long affairId, Long roleId,  String permissions,long permissionGroupId){
-        try {
-            return SimpleResponse.ok(affairMemberService.addMember(allianceId,affairId,roleId,permissions,permissionGroupId));
-        }catch (Exception e){
-            return SimpleResponse.error("添加成员失败");
-        }
-
-    }
-*/
 
     @ApiOperation(value = "同意进入事务申请", response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
@@ -76,12 +66,9 @@ public class AffairMemberController {
             boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
             if(isOwner){
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
-                affairUserService.addAffairUser(targetAllianceId,targetAffairId,roleId,userService.currentUserId());
                 return SimpleResponse.ok(null);
             }
         }
-
-
         code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
         return new SimpleResponse(code,null);
     }
@@ -98,4 +85,13 @@ public class AffairMemberController {
         return new SimpleResponse(code,null);
 
     }
+
+
+    @ApiOperation(value = "获取某个事务的所有直系负责人", response = AffairMemberEntity.class, notes = "当要修改某个角色权限时,需要判断在不在这个负责人系列里面")
+    @RequestMapping(value = "/get_directors", method = RequestMethod.GET)
+    public SimpleResponse getDirectors(long affairMemberId){
+        List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
+        return SimpleResponse.ok(StringUtil.join(ids,","));
+    }
+
 }
