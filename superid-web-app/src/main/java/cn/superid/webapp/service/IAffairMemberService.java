@@ -16,10 +16,9 @@ public interface IAffairMemberService {
      * @param affairId
      * @param roleId
      * @param permissions
-     * @param permissionLevel
      * @return
      */
-    AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions, int permissionLevel);//type为
+    AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions);//type为
 
     AffairMemberEntity addCreator(long allianceId, long affairId, long roleId);
 

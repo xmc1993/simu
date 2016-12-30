@@ -2,16 +2,12 @@ package cn.superid.webapp.controller;
 
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
-import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
-import cn.superid.webapp.model.AffairMemberApplicationEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairMemberService;
-import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -37,7 +33,7 @@ public class AffairMemberController {
 
     @ApiOperation(value = "同意进入事务申请", response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
+    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_ROLE})
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
@@ -47,7 +43,7 @@ public class AffairMemberController {
 
     @ApiOperation(value = "拒绝进入事务申请", response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
-    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_MEMBER})
+    @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_ROLE})
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
@@ -65,7 +61,7 @@ public class AffairMemberController {
         if(allianceId == targetAllianceId){
             boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
             if(isOwner){
-                affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
+                affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER);
                 return SimpleResponse.ok(null);
             }
         }
@@ -73,7 +69,7 @@ public class AffairMemberController {
         return new SimpleResponse(code,null);
     }
 
-    @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
+    @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
         int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),beInvitedRoleId);

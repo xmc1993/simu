@@ -10,9 +10,11 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,8 @@ import java.util.List;
 @Service
 public class RoleService implements IRoleService {
 
+    @Autowired
+    private IAllianceUserService allianceUserService;
     @Override
     public RoleEntity createRole(String title, long allianceId, long userId, long belongAffairId, String permissions, int type) {
         RoleEntity roleEntity = new RoleEntity();
@@ -34,6 +38,7 @@ public class RoleService implements IRoleService {
         roleEntity.setBelongAffairId(belongAffairId);
         roleEntity.setPermissions(permissions);
         roleEntity.setType(type);
+        roleEntity.setState(ValidState.Valid);
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.save();
         return roleEntity;
@@ -109,15 +114,8 @@ public class RoleService implements IRoleService {
     public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId) {
 
         for (AddAllianceUserForm form : forms) {
-            RoleEntity role = new RoleEntity();
-            role.setUserId(form.getUserId());
-            role.setTitle(form.getRoleName());
-            role.setBelongAffairId(form.getMainAffairId());
-            role.setAllianceId(allianceId);
-            role.setPermissions(form.getPermissions());
-            role.setType(DefaultRole.IsDefault);
-            role.setState(ValidState.Valid);
-            role.save();
+            createRole(form.getRoleName(),allianceId,form.getUserId(),form.getMainAffairId(),form.getPermissions(),DefaultRole.IsDefault);
+            allianceUserService.addAllianceUser(allianceId,form.getUserId());
         }
 
 

@@ -50,7 +50,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public String getPermissions(String permissions, int permissionLevel, long affairId) throws Exception {
-
+        /*
         if (StringUtil.isEmpty(permissions)) {
             if ((permissionLevel > 0) || (permissionLevel < 6)) {
                 Iterator it = AffairPermissionRoleType.roles.keySet().iterator();
@@ -65,6 +65,8 @@ public class AffairService implements IAffairService {
         } else {
             return permissions;
         }
+        */
+        return permissions;
     }
 
     private void adjustOrder(long parentId, int index, long allianceId) {
@@ -300,7 +302,7 @@ public class AffairService implements IAffairService {
 
             return AffairMoveState.WAITING;
         }
-        String permissions = getPermissions(affairMemberEntity.getPermissions(), affairMemberEntity.getPermissionLevel(), targetAffairId);
+        String permissions = affairMemberEntity.getPermissions();
         boolean hasMovePermission = hasPermission(permissions, AffairPermissions.ACCEPT_MOVED_AFFAIR);
         if (!hasMovePermission) {
             //TODO 发给所有有权限接受事务的角色通知
@@ -553,9 +555,11 @@ public class AffairService implements IAffairService {
         String permissions = null;
         AffairMemberEntity affairMemberEntity = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId);
         if(affairMemberEntity != null){
-            permissions = affairMemberEntity.getPermissions();
+            //TODO 暂时写个桩,将权限都定为*
+            //permissions = affairMemberEntity.getPermissions();
         }
 
+        permissions = "*";
 
         affairInfo.setPermissions(permissions);
 

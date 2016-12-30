@@ -14,10 +14,11 @@ import java.sql.Timestamp;
  * Created by njuTms on 16/9/9.
  */
 @Entity
-@Table(name = "affair_member_invitation")
-public class AffairMemberInvitationEntity extends ExecutableModel {
-    public final static ConditionalDao<AffairMemberInvitationEntity> dao = new ConditionalDao<>(AffairMemberInvitationEntity.class);
+@Table(name = "invitation")
+public class InvitationEntity extends ExecutableModel {
+    public final static ConditionalDao<InvitationEntity> dao = new ConditionalDao<>(InvitationEntity.class);
     private long id;
+    private long allianceId;
     private long affairId;
     private long inviteRoleId;
     private long inviteUserId;
@@ -25,8 +26,9 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
     private long beInvitedRoleId;
     private long beInvitedUserId;
     private String dealReason = "";
-    private int permissionLevel;
+    private String permissions;
     private int state = 0; //0等待处理,1同意,2拒绝
+    private int invitationType;
     private Timestamp createTime;
     private Timestamp modifyTime;
 
@@ -41,6 +43,14 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
     }
 
     @PartitionId
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
     public long getAffairId() {
         return affairId;
     }
@@ -97,12 +107,20 @@ public class AffairMemberInvitationEntity extends ExecutableModel {
         this.dealReason = dealReason;
     }
 
-    public int getPermissionLevel() {
-        return permissionLevel;
+    public String getPermissions() {
+        return permissions;
     }
 
-    public void setPermissionLevel(int permissionLevel) {
-        this.permissionLevel = permissionLevel;
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
+    }
+
+    public int getInvitationType() {
+        return invitationType;
+    }
+
+    public void setInvitationType(int invitationType) {
+        this.invitationType = invitationType;
     }
 
     public int getState() {

@@ -23,7 +23,6 @@ public class AffairMemberEntity extends ExecutableModel {
     private String permissions; //事务内的权限
     private Timestamp createTime;
     private Timestamp modifyTime;
-    private int permissionLevel;
 
 
     @Id
@@ -94,12 +93,5 @@ public class AffairMemberEntity extends ExecutableModel {
         this.modifyTime = modifyTime;
     }
 
-    public int getPermissionLevel() {
-        return permissionLevel;
-    }
-
-    public void setPermissionLevel(int permissionLevel) {
-        this.permissionLevel = permissionLevel;
-    }
 
 }
