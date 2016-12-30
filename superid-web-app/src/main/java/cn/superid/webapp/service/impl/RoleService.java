@@ -101,6 +101,7 @@ public class RoleService implements IRoleService {
     public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId) {
 
         for (AddAllianceUserForm form : forms) {
+
             createRole(form.getRoleName(),allianceId,form.getUserId(),form.getMainAffairId(),form.getPermissions(),DefaultRole.IsDefault);
             allianceUserService.addAllianceUser(allianceId,form.getUserId());
         }
