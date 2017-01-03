@@ -2,6 +2,8 @@ package cn.superid.webapp.controller;
 
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -13,6 +15,7 @@ import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -88,6 +91,12 @@ public class AffairMemberController {
     public SimpleResponse getDirectors(long affairMemberId) {
         List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(), GlobalValue.currentAllianceId());
         return SimpleResponse.ok(StringUtil.join(ids, ","));
+    }
+
+    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
+    @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
+    public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),searchAffairRoleConditions));
     }
 
 }
