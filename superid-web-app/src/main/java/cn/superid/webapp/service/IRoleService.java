@@ -20,7 +20,7 @@ public interface IRoleService {
 
     List<SearchUserVO> searchUser(long allianceId, String input, boolean containName, boolean containTag);
 
-    boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId);
+    boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId);
 
     /**
      * 获取盟中失效的角色列表

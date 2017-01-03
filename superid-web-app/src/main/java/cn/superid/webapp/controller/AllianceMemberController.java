@@ -48,7 +48,7 @@ public class AllianceMemberController {
     @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
     public SimpleResponse addAllianceUser(Long roleId, List<AddAllianceUserForm> users) {
 
-        return SimpleResponse.ok(roleService.addAllianceUser(users, GlobalValue.currentAllianceId()));
+        return SimpleResponse.ok(roleService.addAllianceUser(users, GlobalValue.currentAllianceId(),roleId));
     }
 
     @ApiOperation(value = "获取盟中失效的角色列表", response = String.class, notes = "在盟内需要权限的接口都要传入roleId")

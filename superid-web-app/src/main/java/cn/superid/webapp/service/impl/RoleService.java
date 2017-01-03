@@ -98,14 +98,11 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId) {
+    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId) {
 
         for (AddAllianceUserForm form : forms) {
-
-            createRole(form.getRoleName(),allianceId,form.getUserId(),form.getMainAffairId(),form.getPermissions(),DefaultRole.IsDefault);
-            allianceUserService.addAllianceUser(allianceId,form.getUserId());
+            allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId);
         }
-
 
         return true;
     }
