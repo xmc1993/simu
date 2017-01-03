@@ -46,6 +46,7 @@ public class AllianceUserService implements IAllianceUserService {
 
     @Override
     public boolean inviteToEnterAlliance(List<AddAllianceUserForm> forms, long allianceId,long roleId) {
+        InvitationEntity.getSession().startBatch();
         for(AddAllianceUserForm addAllianceUserForm : forms){
             InvitationEntity invitationEntity = new InvitationEntity();
             invitationEntity.setAllianceId(allianceId);
@@ -65,6 +66,7 @@ public class AllianceUserService implements IAllianceUserService {
 
             //TODO 给被邀请人发送消息通知
         }
+        InvitationEntity.getSession().endBatch();
         return true;
     }
 

@@ -253,7 +253,7 @@ public class UserService implements IUserService {
     public boolean changeToken(String token) {
         long userId = currentUserId();
         String column = StringUtil.isEmail(token)?"email":"mobile";
-        int result =  UserEntity.dao.eq("id",userId).set(column,token);
+        int result =  UserEntity.dao.id(userId).set(column,token);
         return result>0;
     }
 
@@ -264,7 +264,7 @@ public class UserService implements IUserService {
             return false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
-        int result =  UserEntity.dao.eq("id",currentUserId()).set("password",newPwd);
+        int result =  UserEntity.dao.id(currentUserId()).set("password",newPwd);
         return result>0;
     }
 
@@ -275,7 +275,7 @@ public class UserService implements IUserService {
             return  false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
-        int result =  UserEntity.dao.eq("id",userEntity.getId()).set("password",newPwd);
+        int result =  UserEntity.dao.id(userEntity.getId()).set("password",newPwd);
         return result>0;
     }
 

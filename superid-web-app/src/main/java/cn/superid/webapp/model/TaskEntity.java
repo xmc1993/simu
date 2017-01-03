@@ -33,6 +33,7 @@ public class TaskEntity extends ExecutableModel{
     private long folderId;
 
 
+
     @Id
     @Column(name = "id")
     public long getId() {
