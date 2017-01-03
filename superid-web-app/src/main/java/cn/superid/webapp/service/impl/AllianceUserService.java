@@ -8,10 +8,8 @@ import cn.superid.webapp.enums.type.InvitationType;
 import cn.superid.webapp.model.AllianceUserEntity;
 import cn.superid.webapp.model.InvitationEntity;
 import cn.superid.webapp.model.RoleEntity;
-import cn.superid.webapp.service.IAffairUserService;
-import cn.superid.webapp.service.IAllianceUserService;
-import cn.superid.webapp.service.IRoleService;
-import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.security.AffairPermissionRoleType;
+import cn.superid.webapp.service.*;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -33,6 +31,9 @@ public class AllianceUserService implements IAllianceUserService {
 
     @Autowired
     private IAffairUserService affairUserService;
+
+    @Autowired
+    private IAffairMemberService affairMemberService;
     @Override
     public AllianceUserEntity addAllianceUser(long allianceId, long userId) {
         AllianceUserEntity allianceUserEntity = new AllianceUserEntity();
@@ -88,11 +89,28 @@ public class AllianceUserService implements IAllianceUserService {
                 return false;
             }
         }
-        //添加affairUser
-        affairUserService.addAffairUser(allianceId,invitationEntity.getAffairId(),beInvitedRoleId);
         //添加allianceUser
         addAllianceUser(allianceId,userService.currentUserId());
+        //添加affairUser
+        affairUserService.addAffairUser(allianceId,invitationEntity.getAffairId(),beInvitedRoleId);
+        //添加affairMember,暂定为参与人
+        affairMemberService.addMember(allianceId,invitationEntity.getAffairId(),beInvitedRoleId, AffairPermissionRoleType.PARTICIPANT);
 
+
+        invitationEntity.setDealReason(dealReason);
+        invitationEntity.setState(DealState.Agree);
+        invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        invitationEntity.update();
         return true;
+    }
+
+    @Override
+    public boolean rejectInvitationToAlliance(long invitationId, long allianceId, long beInvitedUserId, String dealReason) {
+        //检测是否是本人,或许可以不要?
+        if(userService.currentUserId() != beInvitedUserId){
+            return false;
+        }
+        int isUpdate = InvitationEntity.dao.id(invitationId).partitionId(allianceId).set("deal_reason",dealReason,"state",DealState.Reject);
+        return isUpdate>0;
     }
 }
