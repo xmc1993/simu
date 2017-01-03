@@ -1,21 +1,29 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
-import cn.superid.utils.ListUtil;
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.dao.impl.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.utils.TimeUtil;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xiaofengxu on 16/9/2.
@@ -26,6 +34,8 @@ public class AffairMemberService implements IAffairMemberService {
     private IUserService userService;
     @Autowired
     private IAffairUserService affairUserService;
+    @Autowired
+    private IAffairMemberDao affairMemberDao;
 
     @Override
     public AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions, int permissionLevel) {
@@ -327,4 +337,52 @@ public class AffairMemberService implements IAffairMemberService {
         return AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
     }
 
+    @Override
+    public Map<Long, List<Object>> getAffairMember() {
+        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userService.currentUserId());
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+        return getMaps(affairMemberVOList);
+    }
+
+    @Override
+    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId) {
+        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? ) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(userService.currentUserId());
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+
+        return getMaps(affairMemberVOList);
+    }
+
+    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
+        Map<Long,List<Object>> members = new HashedMap();
+        for(AffairMemberVO a : affairMemberVOList){
+            List<Object> user = new ArrayList<>();
+            user.add(a.getAffairId());
+            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
+            user.add(role);
+            members.put(a.getId(),user);
+        }
+        return members;
+    }
+
+    @Override
+    public List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
+//        long[] affairIds;
+//        if(StringUtil.isEmpty(conditions.getAffairIds())){
+//            affairIds = new long[1];
+//            affairIds[1] =affairId;
+//        }else{
+//            String[] ids =conditions.getAffairIds().split(",");
+//            affairIds = new long[ids.length];
+//            for(int i=0;i<ids.length;i++){//TODO 判断id是不是当前id的子事务,并且
+//                affairIds[i] = Long.parseLong(ids[i]);
+//            }
+//        }
+
+        return affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+    }
 }

@@ -75,13 +75,13 @@ public interface Session {
 
     void flush();
 
-    Object findOne(Class<?> cls, String queryString, Object... params);
+    Object findOneByNativeSql(Class<?> cls, String queryString, Object... params);
 
-    List findList(Class<?> cls, String queryString, Object... params);
+    List findListByNativeSql(Class<?> cls, String queryString, Object... params);
 
-    Object findOne(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+    Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
 
-    List findList(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+    List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
 
     int execute(String sql);
 

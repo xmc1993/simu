@@ -5,20 +5,15 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.controller.forms.*;
 import cn.superid.webapp.enums.state.ValidState;
-import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.service.IAnnouncementService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.forms.*;
-import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.elasticsearch.common.collect.HppcMaps;
-import org.elasticsearch.common.recycler.Recycler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -359,7 +354,7 @@ public class AnnouncementService implements IAnnouncementService{
             ParameterBindings p = new ParameterBindings();
             p.addIndexBinding(allianceId);
             p.addIndexBinding(affairId);
-            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
+            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findListByNativeSql(sql.toString(),p);
         }else{
             AffairEntity affair = AffairEntity.dao.findById(affairId,allianceId);
             if(affair == null){
@@ -371,7 +366,7 @@ public class AnnouncementService implements IAnnouncementService{
             p.addIndexBinding(allianceId);
             p.addIndexBinding(affair.getPath()+"%");
 
-            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findList(sql.toString(),p);
+            simpleAnnouncementIdVOList = SimpleAnnouncementIdVO.dao.findListByNativeSql(sql.toString(),p);
         }
         //n复杂度排序
         List<SimpleAnnouncementIdVO> result = new ArrayList<>();
@@ -403,7 +398,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
         sql.append(" ) ) a join affair b on a.affair_id = b.id ");
 
-        List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findList(SimpleAnnouncementVO.class,sql.toString(),p);
+        List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementVO.class,sql.toString(),p);
         if(result == null ){
             return null;
         }
@@ -551,7 +546,7 @@ public class AnnouncementService implements IAnnouncementService{
         p.addIndexBinding(content);
 
 
-        return AnnouncementEntity.getSession().findList(SimpleAnnouncementIdVO.class,sql.toString(),p);
+        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementIdVO.class,sql.toString(),p);
     }
 
     @Override
@@ -561,7 +556,7 @@ public class AnnouncementService implements IAnnouncementService{
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
         p.addIndexBinding(roleId);
-        return SimpleDraftIdVO.dao.findList(sql.toString(),p);
+        return SimpleDraftIdVO.dao.findListByNativeSql(sql.toString(),p);
     }
 
     @Override
@@ -639,7 +634,7 @@ public class AnnouncementService implements IAnnouncementService{
         p.addIndexBinding(time);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
-        return AnnouncementEntity.getSession().findList(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
     }
 
     @Override

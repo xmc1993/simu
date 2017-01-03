@@ -3,7 +3,6 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
-import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.DefaultRole;
 import cn.superid.webapp.model.RoleEntity;
@@ -14,7 +13,6 @@ import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +69,9 @@ public class RoleService implements IRoleService {
         if (input == null | input.equals("")) {
             return result;
         }
+        if(containName == false & containTag == false){
+            return  result;
+        }
         StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
                 "( select distinct user_id from role where alliance_id = ? ) and (  ");
         ParameterBindings pb = new ParameterBindings();
@@ -84,7 +85,7 @@ public class RoleService implements IRoleService {
             //TODO:等标签系统好再处理
         }
         sql.append(" ) order by id desc limit 20 ");
-        List<UserEntity> userEntityList = UserEntity.dao.findList(sql.toString(), pb);
+        List<UserEntity> userEntityList = UserEntity.dao.findListByNativeSql(sql.toString(), pb);
 
 
         if (userEntityList != null) {
@@ -124,7 +125,7 @@ public class RoleService implements IRoleService {
     @Override
     public List<RoleEntity> getInvalidRoles(long allianceId) {
 //        String sql = "select * from role where alliance_id = ? and state = ?";
-//        List<RoleEntity> invalidRoles = RoleEntity.dao.findList(sql, allianceId, ValidState.Invalid);
+//        List<RoleEntity> invalidRoles = RoleEntity.dao.findListByNativeSql(sql, allianceId, ValidState.Invalid);
         return RoleEntity.dao.partitionId(allianceId).state(ValidState.Invalid).selectList();
     }
 }

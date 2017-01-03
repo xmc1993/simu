@@ -372,7 +372,7 @@ public class AffairService implements IAffairService {
         p1.addIndexBinding(allianceId);
         p1.addIndexBinding(allianceId);
 
-        List<GetRoleVO> selfMember = RoleEntity.dao.getSession().findList(GetRoleVO.class, sql.toString(), p1);
+        List<GetRoleVO> selfMember = RoleEntity.dao.getSession().findListByNativeSql(GetRoleVO.class, sql.toString(), p1);
         for (GetRoleVO g : selfMember) {
             UserBaseInfo user = UserBaseInfo.dao.findById(g.getUserId());
             SimpleRoleForm s = new SimpleRoleForm(g.getRoleId(), user.getUsername(), g.getTitle(), g.getPermissions(), g.getAffairId(), g.getAffairName());
@@ -444,7 +444,7 @@ public class AffairService implements IAffairService {
         p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(user.getId());
-        List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class, sb.toString(), p);
+        List<AffairTreeVO> affairList = AffairEntity.getSession().findListByNativeSql(AffairTreeVO.class, sb.toString(), p);
         //生成树
         long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
         for (AffairTreeVO a : affairList) {
@@ -466,7 +466,7 @@ public class AffairService implements IAffairService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(user.getId());
         p.addIndexBinding(user.getId());
-        List<AffairTreeVO> affairList = AffairEntity.getSession().findList(AffairTreeVO.class, sb.toString(), p);
+        List<AffairTreeVO> affairList = AffairEntity.getSession().findListByNativeSql(AffairTreeVO.class, sb.toString(), p);
 
         //把所有affairMemberId为null的事务名
 
@@ -474,7 +474,7 @@ public class AffairService implements IAffairService {
         StringBuilder sql = new StringBuilder("select distinct alliance_id from role where user_id = ? ");
         ParameterBindings pb = new ParameterBindings();
         pb.addIndexBinding(user.getId());
-        List<Long> ids = AffairEntity.getSession().findList(Long.class, sql.toString(), pb);
+        List<Long> ids = AffairEntity.getSession().findListByNativeSql(Long.class, sql.toString(), pb);
 
         List<AffairTreeVO> result = new ArrayList<>();
         for (Long id : ids) {
@@ -551,7 +551,13 @@ public class AffairService implements IAffairService {
         //TODO 还没有标签
         affairInfo.setTags("");
 
-        String permissions = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId).getPermissions();
+        String permissions = null;
+        AffairMemberEntity affairMemberEntity = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId);
+        if(affairMemberEntity != null){
+            permissions = affairMemberEntity.getPermissions();
+        }
+
+
         affairInfo.setPermissions(permissions);
 
         affairInfo.setCovers(affairEntity.getCovers());
@@ -588,7 +594,7 @@ public class AffairService implements IAffairService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userId);
         p.addIndexBinding(userId);
-        result = AffairEntity.getSession().findList(AffairInfo.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS, p);
+        result = AffairEntity.getSession().findListByNativeSql(AffairInfo.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS, p);
         return result;
     }
 

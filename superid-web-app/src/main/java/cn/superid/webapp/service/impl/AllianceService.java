@@ -1,11 +1,8 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.StateType;
 import cn.superid.webapp.enums.state.CertificationState;
 import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
@@ -85,7 +82,7 @@ public class AllianceService  implements IAllianceService {
 
     @Override
     public boolean inSameAlliance(long userId1, long userId2) {
-//        Integer result = (Integer) RoleEntity.getSession().findOne(Integer.class,
+//        Integer result = (Integer) RoleEntity.getSession().findOneByNativeSql(Integer.class,
 //                "select 1 from role r where r.user_id = ? and exists( select 1 from role l where l.user_id =? and l.alliance_id = r.alliance_id) limit 1",new ParameterBindings(userId1,userId2));
 //
         return false;
@@ -134,7 +131,7 @@ public class AllianceService  implements IAllianceService {
                 "select alliance_id from role where user_id = ? )");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
-        return AllianceEntity.dao.findList(sb.toString(), p);
+        return AllianceEntity.dao.findListByNativeSql(sb.toString(), p);
     }
 
     @Override

@@ -6,7 +6,6 @@ import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMetaFactory;
-import cn.superid.jpa.util.Function;
 import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -524,7 +523,7 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public List findList(Class<?> cls, String queryString, Object... params) {
+    public List findListByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
@@ -539,7 +538,7 @@ public class JdbcSession extends AbstractSession {
 
 
     @Override
-    public Object findOne(Class<?> cls, String queryString, Object... params) {
+    public Object findOneByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
@@ -557,13 +556,13 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public Object findOne(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
-        return findOne(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
+    public Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+        return findOneByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
     @Override
-    public List findList(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
-        return findList(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
+    public List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+        return findListByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
     @Override

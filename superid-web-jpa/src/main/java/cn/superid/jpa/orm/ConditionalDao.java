@@ -86,7 +86,7 @@ public class ConditionalDao<T> extends Dao<T> {
         return and(column,">=",value);
     }
 
-    public ConditionalDao<T> inOrNotIn(String column, Object[] values,String op){
+    private ConditionalDao<T> inOrNotIn(String column, Object[] values,String op){//
         where.get().append(" and ");
         where.get().append(column);
         where.get().append(op);

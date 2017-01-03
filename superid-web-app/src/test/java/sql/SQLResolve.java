@@ -4,12 +4,8 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.model.AffairUserEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
-import cn.superid.webapp.service.IAffairService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
@@ -25,7 +21,7 @@ public class SQLResolve {
     public void fixUserSuperid(){
         StringBuilder sb = new StringBuilder("select * from user");
         ParameterBindings p = new ParameterBindings();
-        List<UserEntity> userList = UserEntity.dao.findList(sb.toString(),p);
+        List<UserEntity> userList = UserEntity.dao.findListByNativeSql(sb.toString(),p);
         for(UserEntity u : userList){
             long id = u.getId();
             String superid = id+"";
@@ -58,7 +54,7 @@ public class SQLResolve {
     public void fixAffairUser(){
         StringBuilder sb = new StringBuilder("select a.id as user_id , b.id as role_id , c.id as affair_id , c.alliance_id as alliance_id from user a join role b join affair c on a.personal_role_id = b.id and b.belong_affair_id = c.id");
         ParameterBindings p = new ParameterBindings();
-        List<AffairUserEntity> affairUserEntities = AffairUserEntity.dao.findList(sb.toString(),p);
+        List<AffairUserEntity> affairUserEntities = AffairUserEntity.dao.findListByNativeSql(sb.toString(),p);
         for(AffairUserEntity a : affairUserEntities){
             a.setIsStuck(false);
             a.save();
@@ -68,7 +64,7 @@ public class SQLResolve {
     @Test
     public void fixPersonalAllianceId(){
         StringBuilder sb = new StringBuilder("select u.id, u.personal_role_id,u.personal_alliance_id from user u ");
-        List<UserEntity> userEntities = UserEntity.getSession().findList(UserEntity.class,sb.toString());
+        List<UserEntity> userEntities = UserEntity.getSession().findListByNativeSql(UserEntity.class,sb.toString());
         long allianceId ;
         for(UserEntity userEntity : userEntities){
             allianceId = RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id").getAllianceId();

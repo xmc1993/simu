@@ -1,8 +1,11 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xiaofengxu on 16/9/2.
@@ -184,4 +187,11 @@ public interface IAffairMemberService {
     int countAffairMember(long allianceId, long affairId);
 
 
+
+    public Map<Long,List<Object>> getAffairMember();
+
+    public Map<Long,List<Object>> getAffairMemberByAllianceId(long allianceId);
+
+
+    List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 }

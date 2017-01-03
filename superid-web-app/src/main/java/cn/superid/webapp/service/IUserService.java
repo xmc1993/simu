@@ -48,10 +48,6 @@ public interface IUserService {
 
      ResultUserInfo getUserInfo(long userId);
 
-     public Map<Long,List<Object>> getAffairMember();
-
-     public Map<Long,List<Object>> getAffairMemberByAllianceId(long allianceId);
-
      /**
       * 用于用户在登录时获取自己所拥有的所有盟下的所有角色
       * 要去掉个人盟及其角色

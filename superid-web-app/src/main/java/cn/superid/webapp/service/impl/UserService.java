@@ -6,9 +6,6 @@ import cn.superid.utils.FileUtil;
 import cn.superid.utils.MapUtil;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
-import cn.superid.webapp.controller.VO.SimpleAllianceVO;
-import cn.superid.webapp.controller.VO.SimpleRoleVO;
-import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.*;
@@ -16,14 +13,11 @@ import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
+import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAllianceService;
-import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.utils.*;
-import com.alibaba.fastjson.JSON;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +41,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private IAllianceService allianceService;
+
+    @Autowired
+    private IAffairMemberService affairMemberService;
 
 
     private final String lastEmailTime = "last_email_time";
@@ -338,41 +335,11 @@ public class UserService implements IUserService {
             resultUserInfo.setBirthday(userEntity.getBirthday());
         }
         //resultUserInfo.copyPropertiesFrom(userBaseInfo);
-        resultUserInfo.setMembers(getAffairMember());
+        resultUserInfo.setMembers(affairMemberService.getAffairMember());
         return resultUserInfo;
     }
 
-    @Override
-    public Map<Long, List<Object>> getAffairMember() {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
-        return getMaps(affairMemberVOList);
-    }
 
-    @Override
-    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId) {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
-
-        return getMaps(affairMemberVOList);
-    }
-
-    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
-        Map<Long,List<Object>> members = new HashedMap();
-        for(AffairMemberVO a : affairMemberVOList){
-            List<Object> user = new ArrayList<>();
-            user.add(a.getAffairId());
-            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
-            user.add(role);
-            members.put(a.getId(),user);
-        }
-        return members;
-    }
 
 
     @Override
@@ -384,7 +351,7 @@ public class UserService implements IUserService {
         StringBuilder sb = new StringBuilder("select a.id, a.name from alliance a where a.id in (select alliance_id from role r where r.user_id = ? group by alliance_id)");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
-        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findList(SimpleAllianceVO.class,sb.toString(),p);
+        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findListByNativeSql(SimpleAllianceVO.class,sb.toString(),p);
 
         //对于该用户的每个盟
         for(SimpleAllianceVO simpleAllianceVO : allianceVOs){
@@ -396,7 +363,7 @@ public class UserService implements IUserService {
             p = new ParameterBindings();
             p.addIndexBinding(currentUserId());
             p.addIndexBinding(simpleAllianceVO.getId());
-            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findList(SimpleRoleVO.class,sb.toString(),p);
+            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findListByNativeSql(SimpleRoleVO.class,sb.toString(),p);
             //将list转为字符串放到userAllianceRole中
             userAllianceRolesVO.setRoles(simpleRoleVOs);
             roles.add(userAllianceRolesVO);
@@ -410,7 +377,7 @@ public class UserService implements IUserService {
                 "join" +
                 "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = 1893) t2 " +
                 "on t1.id = t2.alliance_id ");
-        testVos = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString());
+        testVos = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString());
         List<Long> allianceIds = new ArrayList<>();
         List<SimpleRoleVO> simpleRoleVOs = new ArrayList<>();
         //用于定位,用法在循环里有解释
@@ -451,7 +418,7 @@ public class UserService implements IUserService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         p.addIndexBinding(currentUserId());
-        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString(),p);
         //把个人盟和个人角色过滤掉
         for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
             if((allianceRolesVO.getRoleId() == getCurrentUser().getPersonalRoleId())

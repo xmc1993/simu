@@ -41,7 +41,7 @@ public class AffairMemberController {
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
@@ -51,47 +51,47 @@ public class AffairMemberController {
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
-    public SimpleResponse applyForEnterAffair(long roleId,long allianceId,long targetAllianceId, long targetAffairId, String applyReason) {
-        int code = affairMemberService.canApplyForEnterAffair(targetAllianceId,targetAffairId,roleId);
-        if(code != 0){
-            return new SimpleResponse(code,null);
+    public SimpleResponse applyForEnterAffair(long roleId, long allianceId, long targetAllianceId, long targetAffairId, String applyReason) {
+        int code = affairMemberService.canApplyForEnterAffair(targetAllianceId, targetAffairId, roleId);
+        if (code != 0) {
+            return new SimpleResponse(code, null);
         }
-        if(allianceId == targetAllianceId){
-            boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
-            if(isOwner){
+        if (allianceId == targetAllianceId) {
+            boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId, targetAffairId, targetAllianceId);
+            if (isOwner) {
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
                 return SimpleResponse.ok(null);
             }
         }
         code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_MEMBER)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
-        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),beInvitedRoleId);
-        if(code!=0){
-            return new SimpleResponse(code,null);
+        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), beInvitedRoleId);
+        if (code != 0) {
+            return new SimpleResponse(code, null);
         }
         code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
 
     @ApiOperation(value = "获取某个事务的所有直系负责人", response = AffairMemberEntity.class, notes = "当要修改某个角色权限时,需要判断在不在这个负责人系列里面")
     @RequestMapping(value = "/get_directors", method = RequestMethod.GET)
-    public SimpleResponse getDirectors(long affairMemberId){
-        List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
-        return SimpleResponse.ok(StringUtil.join(ids,","));
+    public SimpleResponse getDirectors(long affairMemberId) {
+        List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(), GlobalValue.currentAllianceId());
+        return SimpleResponse.ok(StringUtil.join(ids, ","));
     }
 
 }
