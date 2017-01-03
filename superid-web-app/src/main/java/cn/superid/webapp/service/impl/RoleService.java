@@ -99,11 +99,7 @@ public class RoleService implements IRoleService {
 
     @Override
     public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId) {
-
-        for (AddAllianceUserForm form : forms) {
-            allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId);
-        }
-
+        allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId);
         return true;
     }
 
