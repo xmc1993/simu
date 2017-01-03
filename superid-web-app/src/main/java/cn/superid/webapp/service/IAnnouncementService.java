@@ -126,7 +126,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId);
+    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);
 
     //公告接口第三部分:公告草稿部分
 
