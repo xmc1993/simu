@@ -20,11 +20,11 @@ public class RoleEntity extends ExecutableModel {
     private long id;
     private long userId;
     private long allianceId;
-    private long belongAffairId;
+    private long belongAffairId;//主事务id
     private String title;
     private String titleAbbr = ""; //中文首字母缩写,其他字符不变
     private String permissions; //盟内权限
-    private String allocatePermissions;
+    private String allocatePermissions; //这个角色可以分配的权限
     private int type;  //1表示这个用户在这个盟里的默认角色
     private int state;
     private Timestamp createTime;

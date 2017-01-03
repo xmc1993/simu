@@ -1,24 +1,17 @@
 
-import cn.superid.jpa.core.impl.JdbcSessionFactory;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
-import com.alibaba.druid.pool.DruidDataSource;
 import junit.framework.TestCase;
 import model.Role;
 import model.User;
 import org.junit.Assert;
-import org.junit.runner.RunWith;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
-import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**
@@ -61,13 +54,13 @@ public class TestExecute extends TestCase {
 
 
     public void testFindList() {
-        List<User> list = User.dao.findList("select * from user where name=?", "zp");
+        List<User> list = User.dao.findListByNativeSql("select * from user where name=?", "zp");
         Assert.assertTrue(list != null);
     }
 
     public void testFindOne() {
         testSave();
-        User user = User.dao.findOne("select * from user where name=? and age =? limit 1 ", "zp",18);
+        User user = User.dao.findOneByNativeSql("select * from user where name=? and age =? limit 1 ", "zp",18);
         Assert.assertTrue(user != null);
     }
 

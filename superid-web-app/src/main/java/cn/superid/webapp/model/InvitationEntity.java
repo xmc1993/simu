@@ -25,6 +25,7 @@ public class InvitationEntity extends ExecutableModel {
     private String inviteReason;
     private long beInvitedRoleId;
     private long beInvitedUserId;
+    private String beInvitedRoleTitle;
     private String dealReason = "";
     private String permissions;
     private int state = 0; //0等待处理,1同意,2拒绝
@@ -97,6 +98,14 @@ public class InvitationEntity extends ExecutableModel {
 
     public void setBeInvitedUserId(long beInvitedUserId) {
         this.beInvitedUserId = beInvitedUserId;
+    }
+
+    public String getBeInvitedRoleTitle() {
+        return beInvitedRoleTitle;
+    }
+
+    public void setBeInvitedRoleTitle(String beInvitedRoleTitle) {
+        this.beInvitedRoleTitle = beInvitedRoleTitle;
     }
 
     public String getDealReason() {

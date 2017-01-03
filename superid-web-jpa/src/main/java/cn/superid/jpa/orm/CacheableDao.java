@@ -105,7 +105,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         sb.append(modelMeta.getTableName());
         sb.append(" WHERE ");
         sb.append(" id = ? limit 1");
-        return getSession().findOne(clazz,sb.toString(),key);
+        return getSession().findOneByNativeSql(clazz,sb.toString(),key);
     }
 
     /**
@@ -223,22 +223,22 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
 
     @Override
-    public T findOne(String sql, Object... params) {
+    public T findOneByNativeSql(String sql, Object... params) {
         throw new JdbcRuntimeException("Not Support");
     }
 
     @Override
-    public List findList(String sql, Object... params) {
+    public List findListByNativeSql(String sql, Object... params) {
         throw new JdbcRuntimeException("Not Support");
     }
 
     @Override
-    public T findOne(String sql, ParameterBindings parameterBindings) {
+    public T findOneByNativeSql(String sql, ParameterBindings parameterBindings) {
         throw new JdbcRuntimeException("Not Support");
     }
 
     @Override
-    public List findList(String sql, ParameterBindings parameterBindings) {
+    public List findListByNativeSql(String sql, ParameterBindings parameterBindings) {
         throw new JdbcRuntimeException("Not Support");
     }
 

@@ -27,6 +27,20 @@ public class ParameterBindings {
         return this;
     }
 
+    public ParameterBindings addIndexBinding(Object... values) {
+        for(Object v:values){
+            this.indexBindings.add(v);
+        }
+        return this;
+    }
+
+    public ParameterBindings addIndexBinding(Object value,int times) {
+        for(int i=0;i<times;i++){
+            this.indexBindings.add(value);
+        }
+        return this;
+    }
+
 
 
     public ParameterBindings extend(ParameterBindings other) {

@@ -3,9 +3,12 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.dao.impl.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -31,6 +34,8 @@ public class AffairMemberService implements IAffairMemberService {
     private IUserService userService;
     @Autowired
     private IAffairUserService affairUserService;
+    @Autowired
+    private IAffairMemberDao affairMemberDao;
 
     @Override
     public AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions) {
@@ -249,6 +254,7 @@ public class AffairMemberService implements IAffairMemberService {
         }
 
         //加入事务
+
         addMember(allianceId, affairId, invitationEntity.getBeInvitedRoleId(), invitationEntity.getPermissions());
 
         //更新邀请信息
@@ -264,7 +270,6 @@ public class AffairMemberService implements IAffairMemberService {
         if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.InvitationNotExist;
         }
-
 
         //更新邀请信息
         invitationEntity.setDealReason(dealReason);
@@ -324,7 +329,7 @@ public class AffairMemberService implements IAffairMemberService {
         StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
         return getMaps(affairMemberVOList);
     }
 
@@ -334,7 +339,7 @@ public class AffairMemberService implements IAffairMemberService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findList(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
 
         return getMaps(affairMemberVOList);
     }
@@ -351,4 +356,20 @@ public class AffairMemberService implements IAffairMemberService {
         return members;
     }
 
+    @Override
+    public List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
+//        long[] affairIds;
+//        if(StringUtil.isEmpty(conditions.getAffairIds())){
+//            affairIds = new long[1];
+//            affairIds[1] =affairId;
+//        }else{
+//            String[] ids =conditions.getAffairIds().split(",");
+//            affairIds = new long[ids.length];
+//            for(int i=0;i<ids.length;i++){//TODO 判断id是不是当前id的子事务,并且
+//                affairIds[i] = Long.parseLong(ids[i]);
+//            }
+//        }
+
+        return affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+    }
 }

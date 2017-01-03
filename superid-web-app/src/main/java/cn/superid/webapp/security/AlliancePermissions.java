@@ -15,6 +15,7 @@ public class AlliancePermissions {
     public final static int Alliance = Default;
     public final static int ViewAllianceHomepage = 1;
     public final static int EditAllianceInfo = 9;
+    public final static int ChangeOwner = 17;
 
     public final static int Contract = Default;
     public final static int SignContract = 2;
@@ -30,10 +31,7 @@ public class AlliancePermissions {
     public final static int ManageBrands = 20;
 
     public final static int Role = Default;
-    public final static int AddAllianceRole = 5;
-    public final static int InvalidAllianceRole = 13;
-
-    public final static int ManageUser = 21;
+    public final static int ManageAllianceUserOrRole = 5;
 
     public final static int AllocatePermission = 6;
 
@@ -58,6 +56,8 @@ public class AlliancePermissions {
             childNode = new IdNameNode(ViewAllianceHomepage, "查看盟主页");
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(EditAllianceInfo, "修改盟信息");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(ChangeOwner, "转移总负责人");
             parentNode.getChilds().add(childNode);
 
             parentNode = new IdNameNode(Contract, "合同");
@@ -85,9 +85,7 @@ public class AlliancePermissions {
 
             parentNode = new IdNameNode(Role, "角色");
             rs.add(parentNode);
-            childNode = new IdNameNode(AddAllianceRole, "添加盟成员");
-            parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(InvalidAllianceRole, "失效盟成员");
+            childNode = new IdNameNode(ManageAllianceUserOrRole, "管理盟成员/角色");
             parentNode.getChilds().add(childNode);
 
             parentNode = new IdNameNode(AllocatePermission, "分配权限");

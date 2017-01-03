@@ -1,6 +1,7 @@
 package service;
 
 import cn.superid.utils.PingYinUtil;
+import cn.superid.utils.StringUtil;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
@@ -18,7 +19,7 @@ import java.util.List;
 public class PingYinTest {
     @Test
     public void updateUserNameAbbr() {
-        List<UserEntity> userEntities = UserEntity.dao.findList("Select * from user");
+        List<UserEntity> userEntities = UserEntity.dao.findListByNativeSql("Select * from user");
         for (UserEntity entity : userEntities) {
             String abbr = PingYinUtil.getFirstSpell(entity.getUsername());
             entity.setNameAbbr(abbr);
@@ -28,7 +29,7 @@ public class PingYinTest {
 
     @Test
     public void updateRoleTitleAbbr() {
-        List<RoleEntity> entities = RoleEntity.dao.findList("Select * from role");
+        List<RoleEntity> entities = RoleEntity.dao.findListByNativeSql("Select * from role");
         for (RoleEntity entity : entities) {
             String abbr = PingYinUtil.getFirstSpell(entity.getTitle());
             entity.setTitleAbbr(abbr);
@@ -38,8 +39,11 @@ public class PingYinTest {
 
     @Test
     public void updateAffairNameAbbr() {
-        List<AffairEntity> entities = AffairEntity.dao.findList("Select * from affair");
+        List<AffairEntity> entities = AffairEntity.dao.findListByNativeSql("Select * from affair");
         for (AffairEntity entity : entities) {
+            if(StringUtil.isEmpty(entity.getName())){
+                continue;
+            }
             String abbr = PingYinUtil.getFirstSpell(entity.getName());
             entity.setNameAbbr(abbr);
             entity.update();

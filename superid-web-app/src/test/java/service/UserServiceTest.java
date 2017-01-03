@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 import util.JUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -132,7 +131,7 @@ public class UserServiceTest{
         sb = new StringBuilder("select a.id, a.name from alliance a where a.id in (select alliance_id from role r where r.user_id = ? group by alliance_id)");
         p = new ParameterBindings();
         p.addIndexBinding(userid);
-        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findList(SimpleAllianceVO.class,sb.toString(),p);
+        List<SimpleAllianceVO> allianceVOs = AllianceEntity.getSession().findListByNativeSql(SimpleAllianceVO.class,sb.toString(),p);
 
         //对于该用户的每个盟
         for(SimpleAllianceVO simpleAllianceVO : allianceVOs){
@@ -144,7 +143,7 @@ public class UserServiceTest{
             p = new ParameterBindings();
             p.addIndexBinding(userid);
             p.addIndexBinding(simpleAllianceVO.getId());
-            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findList(SimpleRoleVO.class,sb.toString(),p);
+            List<SimpleRoleVO> simpleRoleVOs = RoleEntity.getSession().findListByNativeSql(SimpleRoleVO.class,sb.toString(),p);
             //将list转为字符串放到userAllianceRole中
             userAllianceRolesVO.setRoles(simpleRoleVOs);
 
@@ -161,7 +160,7 @@ public class UserServiceTest{
                 "join" +
                 "(select r.id as role_id,r.title,r.alliance_id from role r where r.user_id = 1893) t2 " +
                 "on t1.id = t2.alliance_id ");
-        testVos = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString());
+        testVos = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString());
         List<Long> allianceIds = new ArrayList<>();
         List<SimpleRoleVO> simpleRoleVOs = new ArrayList<>();
         //用于定位,用法在循环里有解释
