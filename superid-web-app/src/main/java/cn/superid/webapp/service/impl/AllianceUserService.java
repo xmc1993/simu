@@ -69,12 +69,13 @@ public class AllianceUserService implements IAllianceUserService {
     }
 
     @Override
-    public boolean agreeInvitationToAlliance(long invitationId, long allianceId,long beInvitedUserId,String dealReason) {
+    public boolean agreeInvitationToAlliance(long invitationId, long allianceId,String dealReason) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId,allianceId);
+        long beInvitedUserId = invitationEntity.getBeInvitedUserId();
         //检测是否是本人,或许可以不要?
         if(userService.currentUserId() != beInvitedUserId){
             return false;
         }
-        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId,allianceId);
         long beInvitedRoleId = invitationEntity.getBeInvitedRoleId();
         //如果roleId是0,说明是新增的角色
         if(0 == beInvitedRoleId) {
@@ -105,7 +106,9 @@ public class AllianceUserService implements IAllianceUserService {
     }
 
     @Override
-    public boolean rejectInvitationToAlliance(long invitationId, long allianceId, long beInvitedUserId, String dealReason) {
+    public boolean rejectInvitationToAlliance(long invitationId, long allianceId, String dealReason) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId,allianceId);
+        long beInvitedUserId = invitationEntity.getBeInvitedUserId();
         //检测是否是本人,或许可以不要?
         if(userService.currentUserId() != beInvitedUserId){
             return false;
