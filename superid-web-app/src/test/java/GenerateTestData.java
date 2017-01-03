@@ -36,7 +36,7 @@ public class GenerateTestData {
             userEntity.setPassword(PasswordEncryptor.encode("123456"));
             userEntity.setMobile(String.valueOf(l+i));
             UserEntity result = userService.createUser(userEntity);
-            affairMemberService.addMember(allianceId,affairId,result.getPersonalRoleId(),null, AffairPermissionRoleType.GUEST_ID);
+            affairMemberService.addMember(allianceId,affairId,result.getPersonalRoleId(),null);
         }
     }
 
@@ -45,7 +45,7 @@ public class GenerateTestData {
         for(long i=1910;i<1919;i++){
             UserEntity userEntity =UserEntity.dao.findById(i);
             RoleEntity roleEntity =roleService.createRole("小弟"+i,allianceId,userEntity.getId(),affairId,null, IntBoolean.FALSE);
-            affairMemberService.addMember(allianceId,affairId,roleEntity.getId(),null, AffairPermissionRoleType.OFFICIAL_ID);
+            affairMemberService.addMember(allianceId,affairId,roleEntity.getId(),null);
         }
 
     }

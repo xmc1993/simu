@@ -12,6 +12,7 @@ public class SearchUserVO {
     private String superId;
     private long id;
     private List<String> tag;
+    private long memberId;
 
     public String getAvatar() {
         return avatar;
@@ -51,5 +52,13 @@ public class SearchUserVO {
 
     public void setTag(List<String> tag) {
         this.tag = tag;
+    }
+
+    public long getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(long memberId) {
+        this.memberId = memberId;
     }
 }

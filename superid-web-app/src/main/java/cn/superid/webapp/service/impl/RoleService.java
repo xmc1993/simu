@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.state.ValidState;
@@ -9,9 +10,12 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.security.AlliancePermissions;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +27,31 @@ import java.util.List;
 @Service
 public class RoleService implements IRoleService {
 
+    @Autowired
+    private IAllianceUserService allianceUserService;
+
+
+    //排除拥有权限中的不可分配权限,就是当前角色拥有的可分配权限,不可分配权限根据需求确定
+    private String generateAllocatePermission(String permissions){
+        String toReplace;
+        String result;
+        if ("*".equals(permissions)) {
+            result = permissions;
+        }
+        else if (permissions.contains(AlliancePermissions.ChangeOwner + ",")) {
+            toReplace = AlliancePermissions.ChangeOwner + ",";
+            result = permissions.replaceAll(toReplace,"");
+        }
+        else if (permissions.contains("," + AlliancePermissions.ChangeOwner )){
+            toReplace = "," + AlliancePermissions.ChangeOwner;
+            result = permissions.replaceAll(toReplace,"");
+        }
+        else {
+            result =  permissions;
+        }
+        return result;
+    }
+
     @Override
     public RoleEntity createRole(String title, long allianceId, long userId, long belongAffairId, String permissions, int type) {
         RoleEntity roleEntity = new RoleEntity();
@@ -31,8 +60,11 @@ public class RoleService implements IRoleService {
         roleEntity.setAllianceId(allianceId);
         roleEntity.setBelongAffairId(belongAffairId);
         roleEntity.setPermissions(permissions);
+        roleEntity.setAllocatePermissions(generateAllocatePermission(permissions));
         roleEntity.setType(type);
+        roleEntity.setState(ValidState.Valid);
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        roleEntity.setTitleAbbr(PingYinUtil.getFirstSpell(title));
         roleEntity.save();
         return roleEntity;
     }
@@ -72,10 +104,8 @@ public class RoleService implements IRoleService {
         if(containName == false & containTag == false){
             return  result;
         }
-        StringBuilder sql = new StringBuilder("select  * from  user where id not in " +
-                "( select distinct user_id from role where alliance_id = ? ) and (  ");
+        StringBuilder sql = new StringBuilder("select a.*,b.id as memberId from (select id,username as name,avatar,superid as superId from user where ");
         ParameterBindings pb = new ParameterBindings();
-        pb.addIndexBinding(allianceId);
         if (containName == true) {
             sql.append(" username like ? or superid like ? ");
             pb.addIndexBinding("%" + input + "%");
@@ -84,41 +114,18 @@ public class RoleService implements IRoleService {
         if (containTag == true) {
             //TODO:等标签系统好再处理
         }
-        sql.append(" ) order by id desc limit 20 ");
-        List<UserEntity> userEntityList = UserEntity.dao.findListByNativeSql(sql.toString(), pb);
 
 
-        if (userEntityList != null) {
-            for (UserEntity u : userEntityList) {
-                SearchUserVO user = new SearchUserVO();
-                user.setId(u.getId());
-                user.setAvatar(u.getAvatar());
-                user.setName(u.getUsername());
-                user.setSuperId(u.getSuperid());
-
-                result.add(user);
-            }
-        }
+        sql.append(" order by id desc limit 20 ) a left join (select id , user_id from alliance_user where alliance_id = ? and state = 0 ) b on a.id = b.user_id ");
+        pb.addIndexBinding(allianceId);
+        result = UserEntity.getSession().findListByNativeSql(SearchUserVO.class,sql.toString(),pb);
 
         return result;
     }
 
     @Override
-    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId) {
-
-        for (AddAllianceUserForm form : forms) {
-            RoleEntity role = new RoleEntity();
-            role.setUserId(form.getUserId());
-            role.setTitle(form.getRoleName());
-            role.setBelongAffairId(form.getMainAffairId());
-            role.setAllianceId(allianceId);
-            role.setPermissions(form.getPermissions());
-            role.setType(DefaultRole.IsDefault);
-            role.setState(ValidState.Valid);
-            role.save();
-        }
-
-
+    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId) {
+        allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId);
         return true;
     }
 

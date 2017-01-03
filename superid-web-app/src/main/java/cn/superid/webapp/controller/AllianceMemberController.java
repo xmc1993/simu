@@ -11,6 +11,7 @@ import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,7 @@ public class AllianceMemberController {
 
     @ApiOperation(value = "搜索用户", response = boolean.class, notes = "在盟内需要权限的接口都要传入roleId")
     @RequestMapping(value = "/search_user", method = RequestMethod.POST)
-    @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
+    @RequiredPermissions(alliance = AlliancePermissions.ManageAllianceUserOrRole)
     public SimpleResponse searchUser(Long roleId, String keyword, Boolean containName, Boolean containTag) {
 
         if (containName == null | containTag == null) {
@@ -45,15 +46,16 @@ public class AllianceMemberController {
 
     @ApiOperation(value = "添加盟成员", response = boolean.class, notes = "在盟内需要权限的接口都要传入roleId")
     @RequestMapping(value = "/add_alliance_user", method = RequestMethod.POST)
-    @RequiredPermissions(alliance = AlliancePermissions.ManageUser)
+    @RequiredPermissions(alliance = AlliancePermissions.ManageAllianceUserOrRole)
     public SimpleResponse addAllianceUser(Long roleId, List<AddAllianceUserForm> users) {
 
-        return SimpleResponse.ok(roleService.addAllianceUser(users, GlobalValue.currentAllianceId()));
+        return SimpleResponse.ok(roleService.addAllianceUser(users, GlobalValue.currentAllianceId(),roleId));
     }
+
 
     @ApiOperation(value = "获取盟中失效的角色列表", response = String.class, notes = "在盟内需要权限的接口都要传入roleId")
     @RequestMapping(value = "/invalid_roles", method = RequestMethod.GET)
-    @RequiredPermissions(alliance = AlliancePermissions.InvalidAllianceRole)
+    @RequiredPermissions(alliance = AlliancePermissions.ManageAllianceUserOrRole)
     public SimpleResponse getInvalidRoles(Long roleId) {
         List<RoleEntity> invalidRoles = roleService.getInvalidRoles(GlobalValue.currentAllianceId());
         return SimpleResponse.ok(invalidRoles);

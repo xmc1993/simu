@@ -26,12 +26,12 @@ public class AffairPermissions {
     public final static int CREATE_CHILD_AFFAIR = 15; //创建子事务
     public final static int GENERATE_CHILD_AFFAIR_PERMISSION = 28; //分配子事务权限
 
-    public final static int MEMBER = 3; //成员
-    public final static int ADD_AFFAIR_MEMBER = 16; // 添加事务成员
-    public final static int REMOVE_AFFAIR_MEMBER = 29; // 移除事务成员
+    public final static int ROLE = 3; //角色
+    public final static int ADD_AFFAIR_ROLE = 16; // 添加事务角色
+    public final static int REMOVE_AFFAIR_ROLE = 29; // 移除事务角色
     public final static int TRANSFER_OWNER = 42; //转移负责人
     public final static int SET_ADMINISTRATOR = 55; //设置管理员
-    public final static int CHECK_AFFAIR_MEMBER = 68; //查看事务成员
+    public final static int CHECK_AFFAIR_ROLE = 68; //查看事务角色
     public final static int ALLOCATE_PERMISSION = 81; //分配权限
 
     public final static int ANNOUNCEMENT = 4; //公告
@@ -78,6 +78,8 @@ public class AffairPermissions {
     public final static int UPDATE_PERMISSION_GROUP = 61; // 更新权限组
     public final static int SET_DEFAULT_PERMISSION_GROUP = 74; // 设置默认权限组
 */
+
+
     public final static int FUND = 10; //资金
     public final static int CHECK_AFFAIR_FUND = 23; // 查看事务资金
 
@@ -118,8 +120,6 @@ public class AffairPermissions {
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(VALID_AFFAIR, "恢复失效事务");
             parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(CHECK_AFFAIR_MEMBER, "查看事务成员");
-            parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(CHECK_SECRET_AFFAIR, "查看保密事务");
             parentNode.getChilds().add(childNode);
 
@@ -141,15 +141,17 @@ public class AffairPermissions {
             parentNode.getChilds().add(childNode);
 
 
-            parentNode = new IdNameNode(MEMBER, "成员");
+            parentNode = new IdNameNode(ROLE, "角色");
             rs.add(parentNode);
-            childNode = new IdNameNode(ADD_AFFAIR_MEMBER, "添加事务成员");
+            childNode = new IdNameNode(ADD_AFFAIR_ROLE, "添加事务角色");
             parentNode.getChilds().add(childNode);
-            childNode = new IdNameNode(REMOVE_AFFAIR_MEMBER, "失效事务成员");
+            childNode = new IdNameNode(REMOVE_AFFAIR_ROLE, "失效事务角色");
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(TRANSFER_OWNER, "转移负责人");
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(SET_ADMINISTRATOR, "设置管理员");
+            parentNode.getChilds().add(childNode);
+            childNode = new IdNameNode(CHECK_AFFAIR_ROLE, "查看事务角色");
             parentNode.getChilds().add(childNode);
             childNode = new IdNameNode(ALLOCATE_PERMISSION, "分配权限");
             parentNode.getChilds().add(childNode);

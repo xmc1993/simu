@@ -38,7 +38,7 @@ public class AffairMemberService implements IAffairMemberService {
     private IAffairMemberDao affairMemberDao;
 
     @Override
-    public AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions, int permissionLevel) {
+    public AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions) {
 
         AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
         affairMemberEntity.setAllianceId(allianceId);
@@ -46,7 +46,6 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberEntity.setRoleId(roleId);
         affairMemberEntity.setState(ValidState.Valid);
         affairMemberEntity.setPermissions(permissions);
-        affairMemberEntity.setPermissionLevel(permissionLevel);
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.save();
@@ -59,7 +58,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public AffairMemberEntity addCreator(long allianceId, long affairId, long roleId) {
-        return addMember(allianceId, affairId, roleId, AffairPermissionRoleType.OWNER, AffairPermissionRoleType.OWNER_ID);
+        return addMember(allianceId, affairId, roleId, AffairPermissionRoleType.OWNER);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class AffairMemberService implements IAffairMemberService {
             return ResponseCode.AffairNotExist;
         }
 
-        addMember(allianceId, affairId, affairMemberApplicationEntity.getRoleId(), "", AffairPermissionRoleType.GUEST_ID);
+        addMember(allianceId, affairId, affairMemberApplicationEntity.getRoleId(), "");
 
         //更新申请信息
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -189,7 +188,7 @@ public class AffairMemberService implements IAffairMemberService {
         if (isExist) {
             return ResponseCode.MemberIsExistInAffair;
         }
-        boolean isInvited = AffairMemberInvitationEntity.dao.partitionId(affairId).eq("beInvitedRoleId", beInvitedRoleId).state(DealState.ToCheck).exists();
+        boolean isInvited = InvitationEntity.dao.partitionId(allianceId).eq("beInvitedRoleId", beInvitedRoleId).state(DealState.ToCheck).exists();
         if (isInvited) {
             return ResponseCode.WaitForDeal;
         }
@@ -203,52 +202,38 @@ public class AffairMemberService implements IAffairMemberService {
             return code;
         }
         //生成邀请记录
-        AffairMemberInvitationEntity affairMemberInvitationEntity = new AffairMemberInvitationEntity();
-        affairMemberInvitationEntity.setState(DealState.ToCheck);
-        affairMemberInvitationEntity.setAffairId(affairId);
-        affairMemberInvitationEntity.setBeInvitedRoleId(beInvitedRoleId);
-        affairMemberInvitationEntity.setBeInvitedUserId(RoleCache.dao.findById(beInvitedRoleId).getUserId());
-        affairMemberInvitationEntity.setInviteRoleId(inviteRoleId);
-        affairMemberInvitationEntity.setInviteUserId(inviteUserId);
-        affairMemberInvitationEntity.setInviteReason(inviteReason);
-        affairMemberInvitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        InvitationEntity invitationEntity = new InvitationEntity();
+        invitationEntity.setState(DealState.ToCheck);
+        invitationEntity.setAffairId(affairId);
+        invitationEntity.setBeInvitedRoleId(beInvitedRoleId);
+        invitationEntity.setBeInvitedUserId(RoleCache.dao.findById(beInvitedRoleId).getUserId());
+        invitationEntity.setInviteRoleId(inviteRoleId);
+        invitationEntity.setInviteUserId(inviteUserId);
+        invitationEntity.setInviteReason(inviteReason);
+        invitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         if (memberType == 0) {
-            affairMemberInvitationEntity.setPermissionLevel(AffairPermissionRoleType.OFFICIAL_ID);
         } else {
-            affairMemberInvitationEntity.setPermissionLevel(AffairPermissionRoleType.GUEST_ID);
         }
-        affairMemberInvitationEntity.save();
+        invitationEntity.save();
 
         //判断被邀请的是否是本盟成员,如果是则无需同意,直接拉入事务
         boolean isInSameAlliance = RoleEntity.dao.id(beInvitedRoleId).partitionId(allianceId).exists();
         if (isInSameAlliance) {
-            AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
+            InvitationEntity.dao.id(invitationEntity.getId()).partitionId(affairId)
                     .set("state", DealState.Agree, "dealReason", "本盟人员");
-
-            AffairMemberEntity affairMemberEntity = new AffairMemberEntity();
-            affairMemberEntity.setAffairId(affairId);
-            affairMemberEntity.setAllianceId(allianceId);
-            affairMemberEntity.setRoleId(beInvitedRoleId);
-            affairMemberEntity.setState(ValidState.Valid);
             //判断被邀请的角色是不是自己的某个父事务的负责人
             AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("id");
             if (isOwnerOfParentAffair(beInvitedRoleId, currentAffair.getId(), allianceId)) {
                 //如果是,将权限设置为owner
-                affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OWNER_ID);
-                AffairMemberInvitationEntity.dao.id(affairMemberInvitationEntity.getId()).partitionId(affairId)
-                        .set("permissionLevel", AffairPermissionRoleType.OWNER_ID);
+                InvitationEntity.dao.id(invitationEntity.getId()).partitionId(affairId)
+                        .set("permissions", AffairPermissionRoleType.OWNER);
+                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.OWNER);
             } else {
                 //如果不是,根据前端选择的权限类型分配给其官方还是客方
-                if (memberType == 0) {
-                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.OFFICIAL_ID);
-                } else {
-                    affairMemberEntity.setPermissionLevel(AffairPermissionRoleType.GUEST_ID);
-                }
+                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.PARTICIPANT);
             }
-            affairMemberEntity.save();
 
             //TODO 发送消息通知
-            //affairMemberEntity.setPermissions(AffairPermissionRoleType.);
         }
         //不是本盟成员
         else {
@@ -259,8 +244,8 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public int agreeInvitation(long allianceId, long affairId, long invitationId, String dealReason) {
-        AffairMemberInvitationEntity affairMemberInvitationEntity = AffairMemberInvitationEntity.dao.findById(invitationId, affairId);
-        if ((affairMemberInvitationEntity == null) || (affairMemberInvitationEntity.getState() != DealState.ToCheck)) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId, affairId);
+        if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.InvitationNotExist;
         }
         boolean isExist = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
@@ -269,25 +254,27 @@ public class AffairMemberService implements IAffairMemberService {
         }
 
         //加入事务
-        addMember(allianceId, affairId, affairMemberInvitationEntity.getBeInvitedRoleId(), "", affairMemberInvitationEntity.getPermissionLevel());
+
+        addMember(allianceId, affairId, invitationEntity.getBeInvitedRoleId(), invitationEntity.getPermissions());
+
         //更新邀请信息
-        affairMemberInvitationEntity.setDealReason(dealReason);
-        affairMemberInvitationEntity.setState(DealState.Agree);
-        affairMemberInvitationEntity.update();
+        invitationEntity.setDealReason(dealReason);
+        invitationEntity.setState(DealState.Agree);
+        invitationEntity.update();
         return ResponseCode.OK;
     }
 
     @Override
     public int rejectInvitation(long allianceId, long affairId, long invitationId, String dealReason) {
-        AffairMemberInvitationEntity affairMemberInvitationEntity = AffairMemberInvitationEntity.dao.findById(invitationId, affairId);
-        if ((affairMemberInvitationEntity == null) || (affairMemberInvitationEntity.getState() != DealState.ToCheck)) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId, affairId);
+        if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.InvitationNotExist;
         }
 
         //更新邀请信息
-        affairMemberInvitationEntity.setDealReason(dealReason);
-        affairMemberInvitationEntity.setState(DealState.Reject);
-        affairMemberInvitationEntity.update();
+        invitationEntity.setDealReason(dealReason);
+        invitationEntity.setState(DealState.Reject);
+        invitationEntity.update();
         return ResponseCode.OK;
 
     }
