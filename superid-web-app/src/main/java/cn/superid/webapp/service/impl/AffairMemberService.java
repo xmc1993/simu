@@ -2,12 +2,14 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.utils.ArrayUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.dao.impl.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -15,15 +17,14 @@ import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xiaofengxu on 16/9/2.
@@ -50,7 +51,7 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.save();
 
-        affairUserService.addAffairUser(allianceId,affairId,roleId);
+        affairUserService.addAffairUser(allianceId, affairId, roleId);
 
         return affairMemberEntity;
     }
@@ -227,10 +228,10 @@ public class AffairMemberService implements IAffairMemberService {
                 //如果是,将权限设置为owner
                 InvitationEntity.dao.id(invitationEntity.getId()).partitionId(affairId)
                         .set("permissions", AffairPermissionRoleType.OWNER);
-                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.OWNER);
+                addMember(allianceId, affairId, beInvitedRoleId, AffairPermissionRoleType.OWNER);
             } else {
                 //如果不是,根据前端选择的权限类型分配给其官方还是客方
-                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.PARTICIPANT);
+                addMember(allianceId, affairId, beInvitedRoleId, AffairPermissionRoleType.PARTICIPANT);
             }
 
             //TODO 发送消息通知
@@ -280,10 +281,10 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
 
-    public boolean isOwnerOfParentAffair(long roleId, long affairId,long allianceId) {
-        List<Long> directorIds = getDirectorIds(affairId,allianceId);
-        for(long id:directorIds){
-            if(id==roleId){
+    public boolean isOwnerOfParentAffair(long roleId, long affairId, long allianceId) {
+        List<Long> directorIds = getDirectorIds(affairId, allianceId);
+        for (long id : directorIds) {
+            if (id == roleId) {
                 return true;
             }
         }
@@ -294,7 +295,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public List<Long> getDirectorIds(long affairId, long allianceId) {
-        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("level","path");
+        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("level", "path");
         int level = affairEntity.getLevel();
         String path = affairEntity.getPath();
 
@@ -303,14 +304,14 @@ public class AffairMemberService implements IAffairMemberService {
         String[] indexes = path.split("-");
         paths[0] = indexes[0];
         sb.append(indexes[0]);
-        if(indexes.length>1){
-            for(int i=1;i<level;i++){
+        if (indexes.length > 1) {
+            for (int i = 1; i < level; i++) {
                 sb.append("-");
                 sb.append(indexes[i]);
                 paths[i] = sb.toString();
             }
         }
-        return (List<Long>) AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList(Long.class,"owner_role_id");
+        return (List<Long>) AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
     }
 
 
@@ -329,7 +330,7 @@ public class AffairMemberService implements IAffairMemberService {
         StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
         return getMaps(affairMemberVOList);
     }
 
@@ -339,19 +340,19 @@ public class AffairMemberService implements IAffairMemberService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
 
         return getMaps(affairMemberVOList);
     }
 
-    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
-        Map<Long,List<Object>> members = new HashedMap();
-        for(AffairMemberVO a : affairMemberVOList){
+    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList) {
+        Map<Long, List<Object>> members = new HashedMap();
+        for (AffairMemberVO a : affairMemberVOList) {
             List<Object> user = new ArrayList<>();
             user.add(a.getAffairId());
-            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
+            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(), a.getTitle());
             user.add(role);
-            members.put(a.getId(),user);
+            members.put(a.getId(), user);
         }
         return members;
     }
@@ -370,6 +371,60 @@ public class AffairMemberService implements IAffairMemberService {
 //            }
 //        }
 
-        return affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+        return affairMemberDao.searchAffairRoles(allianceId, affairId, conditions);
+    }
+
+    @Override
+    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
+        StringBuilder sb = new StringBuilder("select u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select role_id from affair_member where alliance_id= ? and affair_id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        if (conditions.isIncludeSubAffair()) {
+            AffairEntity affairEntity = AffairEntity.dao.findById(affairId, allianceId);
+            if (affairEntity == null) return Collections.emptyList();
+            else {
+                List<Long> idList = AffairEntity.getSession().findListByNativeSql(Long.class, "select id from affair where alliance_id=? and path like ?", allianceId, affairEntity.getPath() + "%");
+                if (idList == null)
+                    idList = Arrays.asList(affairId);
+                sb.append(" in (?) ) am ");
+                p.addIndexBinding(ArrayUtil.join(idList.toArray(), ","));
+            }
+
+        } else {
+            sb.append("=? ) am ");
+            p.addIndexBinding(affairId);
+        }
+        sb.append("join (select id,user_id,belong_affair_id,title from role) r on am.role_id=r.id ");
+        sb.append("join (select id,username,superid,gender from user ");
+        if (StringUtil.notEmpty(conditions.getKey())) {
+            sb.append("where username like ? or name_abbr like ? ");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+        }
+        sb.append(") u on r.user_id=u.id ");
+        sb.append("join (select id,name,level from affair) a on r.belong_affair_id=a.id");
+        sb.append(" order by ? ?");
+        switch (conditions.getSortColumn()) {
+            case "name":
+                p.addIndexBinding("u.username");
+                break;
+            case "gender":
+                p.addIndexBinding("u.gender");
+                break;
+            case "role":
+                p.addIndexBinding("r.title");
+                break;
+            case "affair":
+                p.addIndexBinding("a.level");
+                break;
+            default:
+                p.addIndexBinding("u.username");
+                break;
+        }
+        if (conditions.isReverseSort()) p.addIndexBinding("desc");
+        else p.addIndexBinding("asc");
+        sb.append(" limit ?");
+        p.addIndexBinding(conditions.getCount() <= 100 && conditions.getCount() >= 10 ? conditions.getCount() : 20);
+        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
     }
 }

@@ -29,8 +29,8 @@ public class UserEntity extends ExecutableModel {
     private int isVideo;
     private String nicknames = "";
     private boolean isAuthenticated;
-    private String username = "";
-    private String nameAbbr = "";
+    private String username = "";//用户名
+    private String nameAbbr = "";//用户名缩写
     private Timestamp birthday;
     private int age;
     private String email = "";
