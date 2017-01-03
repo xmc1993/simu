@@ -79,11 +79,11 @@ public class AnnouncementController {
 
     @ApiOperation(value = "查找公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId ) {
-        if(content == null | affairId == null | allianceId == null ){
+    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId , Boolean containChild) {
+        if(content == null | affairId == null | allianceId == null | containChild == null){
             return SimpleResponse.error("参数不能为空");
         }
-        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId);
+        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId,containChild);
 
         if(result == null){
             return SimpleResponse.error("未搜到结果");

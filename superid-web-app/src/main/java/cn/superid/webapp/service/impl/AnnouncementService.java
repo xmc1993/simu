@@ -535,15 +535,33 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId) {
-        StringBuilder sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
+    public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild) {
+        StringBuilder sql = null;
         ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding("%"+content+"%");
-        p.addIndexBinding(content);
-        p.addIndexBinding(content);
+        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
+        if(affairEntity == null){
+            return null;
+        }
+
+
+        if(containChild == true){
+            sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT_CONTAIN_CHILD);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(affairEntity.getPath()+"%");
+            p.addIndexBinding("%"+content+"%");
+            p.addIndexBinding(content);
+            p.addIndexBinding(content);
+        }else{
+            sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(affairId);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding("%"+content+"%");
+            p.addIndexBinding(content);
+            p.addIndexBinding(content);
+        }
 
 
         return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementIdVO.class,sql.toString(),p);
