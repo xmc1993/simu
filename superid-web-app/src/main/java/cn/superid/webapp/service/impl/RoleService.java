@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.RoleType;
@@ -40,6 +41,7 @@ public class RoleService implements IRoleService {
         roleEntity.setType(type);
         roleEntity.setState(ValidState.Valid);
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        roleEntity.setTitleAbbr(PingYinUtil.getFirstSpell(title));
         roleEntity.save();
         return roleEntity;
     }
