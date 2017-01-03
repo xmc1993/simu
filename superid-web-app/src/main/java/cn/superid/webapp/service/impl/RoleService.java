@@ -5,7 +5,6 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
-import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.DefaultRole;
 import cn.superid.webapp.model.AllianceEntity;
@@ -22,7 +21,6 @@ import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,10 +121,11 @@ public class RoleService implements IRoleService {
         if (containTag == true) {
             //TODO:等标签系统好再处理
         }
+
+
         sql.append(" order by id desc limit 20 ) a left join (select id , user_id from alliance_user where alliance_id = ? and state = 0 ) b on a.id = b.user_id ");
         pb.addIndexBinding(allianceId);
-        result = UserEntity.getSession().findList(SearchUserVO.class,sql.toString(),pb);
-
+        result = UserEntity.getSession().findListByNativeSql(SearchUserVO.class,sql.toString(),pb);
 
         return result;
     }
@@ -140,7 +139,7 @@ public class RoleService implements IRoleService {
     @Override
     public List<RoleEntity> getInvalidRoles(long allianceId) {
 //        String sql = "select * from role where alliance_id = ? and state = ?";
-//        List<RoleEntity> invalidRoles = RoleEntity.dao.findList(sql, allianceId, ValidState.Invalid);
+//        List<RoleEntity> invalidRoles = RoleEntity.dao.findListByNativeSql(sql, allianceId, ValidState.Invalid);
         return RoleEntity.dao.partitionId(allianceId).state(ValidState.Invalid).selectList();
     }
 

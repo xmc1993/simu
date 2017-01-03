@@ -20,7 +20,7 @@ public class RoleEntity extends ExecutableModel {
     private long id;
     private long userId;
     private long allianceId;
-    private long belongAffairId;
+    private long belongAffairId;//主事务id
     private String title;
     private String titleAbbr = ""; //中文首字母缩写,其他字符不变
     private String permissions; //盟内权限

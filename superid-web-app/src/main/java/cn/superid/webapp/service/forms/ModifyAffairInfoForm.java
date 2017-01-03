@@ -6,6 +6,7 @@ package cn.superid.webapp.service.forms;
  */
 public class ModifyAffairInfoForm {
     private String name;
+    private String nameAbbr;
     private Integer publicType;
     private String description;
     private String shortName;
@@ -76,5 +77,13 @@ public class ModifyAffairInfoForm {
 
     public void setIsStuck(Integer isStuck) {
         this.isStuck = isStuck;
+    }
+
+    public String getNameAbbr() {
+        return nameAbbr;
+    }
+
+    public void setNameAbbr(String nameAbbr) {
+        this.nameAbbr = nameAbbr;
     }
 }

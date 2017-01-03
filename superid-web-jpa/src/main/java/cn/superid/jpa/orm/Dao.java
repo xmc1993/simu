@@ -48,24 +48,23 @@ public class Dao<T> {
 
 
 
-    public  T findOne(String sql,Object... params){
-        return (T)getSession().findOne(this.clazz,sql,params);
+    public  T findOneByNativeSql(String sql, Object... params){
+        return (T)getSession().findOneByNativeSql(this.clazz,sql,params);
     }
 
 
 
-    public List<T> findList(String sql,Object... params){
-        return (List<T> )getSession().findList(this.clazz, sql, params);
+    public List<T> findListByNativeSql(String sql, Object... params){
+        return (List<T> )getSession().findListByNativeSql(this.clazz, sql, params);
     }
 
-    public T findOne(String sql,ParameterBindings parameterBindings){
-        return (T) getSession().findOne(this.clazz,sql,parameterBindings);
+    public T findOneByNativeSql(String sql, ParameterBindings parameterBindings){
+        return (T) getSession().findOneByNativeSql(this.clazz,sql,parameterBindings);
     }
 
 
-
-    public   List<T> findList(String sql,ParameterBindings parameterBindings){
-        return (List<T>)getSession().findList(this.clazz, sql, parameterBindings);
+    public   List<T> findListByNativeSql(String sql, ParameterBindings parameterBindings){
+        return (List<T>)getSession().findListByNativeSql(this.clazz, sql, parameterBindings);
     }
 
 
@@ -116,7 +115,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (T)AbstractSession.currentSession().findOne(this.clazz,sql,sqlParams);
+        return (T)AbstractSession.currentSession().findOneByNativeSql(this.clazz,sql,sqlParams);
     }
 
 
@@ -134,7 +133,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return AbstractSession.currentSession().findOne(target,sql,sqlParams);
+        return AbstractSession.currentSession().findOneByNativeSql(target,sql,sqlParams);
     }
 
     public int count(){
@@ -146,7 +145,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
+        return (int) AbstractSession.currentSession().findOneByNativeSql(Integer.class,sql,sqlParams);
     }
 
     public int sum(String param){
@@ -158,7 +157,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (int) AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams);
+        return (int) AbstractSession.currentSession().findOneByNativeSql(Integer.class,sql,sqlParams);
     }
 
     public List<Integer> sumList(String param){
@@ -170,7 +169,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return  AbstractSession.currentSession().findList(Integer.class,sql,sqlParams);
+        return  AbstractSession.currentSession().findListByNativeSql(Integer.class,sql,sqlParams);
     }
 
 
@@ -184,7 +183,7 @@ public class Dao<T> {
         sb.append(from);
         sb.append(builder);
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
-        int total = (int) AbstractSession.currentSession().findOne(Integer.class,sb.toString(),sqlParams);
+        int total = (int) AbstractSession.currentSession().findOneByNativeSql(Integer.class,sb.toString(),sqlParams);
         pagination.setTotal(total);
 
 
@@ -197,7 +196,7 @@ public class Dao<T> {
         parameterBindings.get().addIndexBinding(pagination.getSize());
         Object[] listParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (List<T>) AbstractSession.currentSession().findList(this.clazz, list.toString(), listParams);
+        return (List<T>) AbstractSession.currentSession().findListByNativeSql(this.clazz, list.toString(), listParams);
 
     }
 
@@ -217,7 +216,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return (List<Object>) AbstractSession.currentSession().findList(clazz, sql, sqlParams);
+        return (List<Object>) AbstractSession.currentSession().findListByNativeSql(clazz, sql, sqlParams);
     }
 
     public List<Object> selectListByJoin(Class target,String... params){
@@ -230,7 +229,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return  AbstractSession.currentSession().findList(target, sql, sqlParams);
+        return  AbstractSession.currentSession().findListByNativeSql(target, sql, sqlParams);
 
     }
 
@@ -407,7 +406,7 @@ public class Dao<T> {
         StringBuilder stringBuilder=new StringBuilder("select AUTO_SEQ_");
         stringBuilder.append(modelMeta.getTableName());
         stringBuilder.append(".NEXTVAL");
-        return  (Long) session.findOne(Long.class,stringBuilder.toString());
+        return  (Long) session.findOneByNativeSql(Long.class,stringBuilder.toString());
     }
 
 
@@ -431,7 +430,7 @@ public class Dao<T> {
         String sql= sb.toString();
         Object[] sqlParams =parameterBindings.get().getIndexParametersArray();
         clear();
-        return AbstractSession.currentSession().findOne(Integer.class,sql,sqlParams)!=null;
+        return AbstractSession.currentSession().findOneByNativeSql(Integer.class,sql,sqlParams)!=null;
     }
 
     private  StringBuilder getFrom(){

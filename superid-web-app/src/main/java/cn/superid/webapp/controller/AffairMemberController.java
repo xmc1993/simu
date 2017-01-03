@@ -2,6 +2,8 @@ package cn.superid.webapp.controller;
 
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -13,6 +15,7 @@ import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -37,7 +40,7 @@ public class AffairMemberController {
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
@@ -47,13 +50,13 @@ public class AffairMemberController {
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
         int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
-    public SimpleResponse applyForEnterAffair(long roleId,long allianceId,long targetAllianceId, long targetAffairId, String applyReason) {
+    public SimpleResponse applyForEnterAffair(long roleId, long allianceId, long targetAllianceId, long targetAffairId, String applyReason) {
         int code = affairMemberService.canApplyForEnterAffair(targetAllianceId,targetAffairId,roleId);
         if(code != 0){
             return new SimpleResponse(code,null);
@@ -72,22 +75,28 @@ public class AffairMemberController {
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
-        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),beInvitedRoleId);
-        if(code!=0){
-            return new SimpleResponse(code,null);
+        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), beInvitedRoleId);
+        if (code != 0) {
+            return new SimpleResponse(code, null);
         }
         code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
                 GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
 
     }
 
 
     @ApiOperation(value = "获取某个事务的所有直系负责人", response = AffairMemberEntity.class, notes = "当要修改某个角色权限时,需要判断在不在这个负责人系列里面")
     @RequestMapping(value = "/get_directors", method = RequestMethod.GET)
-    public SimpleResponse getDirectors(long affairMemberId){
-        List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
-        return SimpleResponse.ok(StringUtil.join(ids,","));
+    public SimpleResponse getDirectors(long affairMemberId) {
+        List<Long> ids = affairMemberService.getDirectorIds(GlobalValue.currentAffairId(), GlobalValue.currentAllianceId());
+        return SimpleResponse.ok(StringUtil.join(ids, ","));
+    }
+
+    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
+    @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
+    public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),searchAffairRoleConditions));
     }
 
 }

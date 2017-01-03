@@ -1,38 +1,28 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.DraftDetailVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
 import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
-import cn.superid.webapp.controller.forms.AnnouncementForm;
 import cn.superid.webapp.controller.forms.AnnouncementListForm;
-import cn.superid.webapp.controller.forms.EditDistanceForm;
-import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
-import cn.superid.webapp.model.AnnouncementHistoryEntity;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAnnouncementService;
-import cn.superid.webapp.service.forms.Block;
 import cn.superid.webapp.service.forms.ContentState;
 import com.alibaba.fastjson.JSON;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jizhenya on 16/9/26.
@@ -89,11 +79,11 @@ public class AnnouncementController {
 
     @ApiOperation(value = "查找公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId ) {
-        if(content == null | affairId == null | allianceId == null ){
+    public SimpleResponse searchAnnouncement(String content , Long affairId , Long allianceId , Boolean containChild) {
+        if(content == null | affairId == null | allianceId == null | containChild == null){
             return SimpleResponse.error("参数不能为空");
         }
-        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId);
+        List<SimpleAnnouncementIdVO> result = announcementService.searchAnnouncement(content,affairId,allianceId,containChild);
 
         if(result == null){
             return SimpleResponse.error("未搜到结果");
@@ -241,7 +231,7 @@ public class AnnouncementController {
         StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b where a.affair_id = b.id and b.path like ? ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(affair.getPath()+"%");
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findList(AnnouncementEntity.class,sql.toString(),p);
+        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findListByNativeSql(AnnouncementEntity.class,sql.toString(),p);
         List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
         return SimpleResponse.ok(result);
     }

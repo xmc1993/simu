@@ -167,7 +167,7 @@ public class AffairServiceTest {
         p.addIndexBinding(userId);
         p.addIndexBinding(userId);
         long startTime = System.currentTimeMillis();
-        result = AffairEntity.getSession().findList(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
+        result = AffairEntity.getSession().findListByNativeSql(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
         long endTime = System.currentTimeMillis();
         System.out.println(endTime-startTime);
     }
