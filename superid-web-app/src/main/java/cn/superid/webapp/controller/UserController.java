@@ -13,6 +13,7 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
@@ -49,6 +50,9 @@ public class UserController {
 
     @Autowired
     private IAffairMemberService affairMemberService;
+
+    @Autowired
+    private IRoleService roleService;
     @Autowired
     private IAuth auth;
     public static Log LOG = LogFactory.getLog(UserController.class);
@@ -312,7 +316,7 @@ public class UserController {
         //获取user的所有affairMember
         loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
         //获取user的所有盟的所有角色
-        loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
+        loginUserInfoVO.setRoles(roleService.getUserAllianceRoles());
 
         return SimpleResponse.ok(loginUserInfoVO);
     }
@@ -400,7 +404,7 @@ public class UserController {
 
             user.copyPropertiesTo(loginUserInfoVO);
             loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
-            loginUserInfoVO.setRoles(userService.getUserAllianceRoles());
+            loginUserInfoVO.setRoles(roleService.getUserAllianceRoles());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);

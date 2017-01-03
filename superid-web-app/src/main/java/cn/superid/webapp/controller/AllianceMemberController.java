@@ -2,6 +2,7 @@ package cn.superid.webapp.controller;
 
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.AddAllianceUserFormVO;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.forms.SimpleResponse;
@@ -14,6 +15,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -47,9 +49,8 @@ public class AllianceMemberController {
     @ApiOperation(value = "添加盟成员", response = boolean.class, notes = "在盟内需要权限的接口都要传入roleId")
     @RequestMapping(value = "/add_alliance_user", method = RequestMethod.POST)
     @RequiredPermissions(alliance = AlliancePermissions.ManageAllianceUserOrRole)
-    public SimpleResponse addAllianceUser(Long roleId, List<AddAllianceUserForm> users) {
-
-        return SimpleResponse.ok(roleService.addAllianceUser(users, GlobalValue.currentAllianceId(),roleId));
+    public SimpleResponse addAllianceUser(@RequestBody AddAllianceUserFormVO users,long roleId) {
+        return SimpleResponse.ok(roleService.addAllianceUser(users.getUsers(), GlobalValue.currentAllianceId(),roleId));
     }
 
 

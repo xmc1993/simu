@@ -112,7 +112,7 @@ public class AllianceService  implements IAllianceService {
         allianceCertificationEntity.setCheckState(CertificationState.WaitCertificated);
         allianceCertificationEntity.save();
 
-        AllianceEntity.dao.id(allianceId).set("applyCertificateState", CertificationState.WaitCertificated);
+        AllianceEntity.dao.id(allianceId).set("verified", CertificationState.WaitCertificated);
         return true;
     }
 

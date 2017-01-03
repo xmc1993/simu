@@ -3,6 +3,7 @@ package cn.superid.webapp.service;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.model.RoleEntity;
+import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 
 import java.util.List;
@@ -30,5 +31,11 @@ public interface IRoleService {
      */
     List<RoleEntity> getInvalidRoles(long allianceId);
 
+    /**
+     * 用于用户在登录时获取自己所拥有的所有盟下的所有角色
+     * 要去掉个人盟及其角色
+     * @return
+     */
+    public List<AllianceRolesVO> getUserAllianceRoles();
 
 }

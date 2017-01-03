@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
@@ -7,6 +8,7 @@ import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.RoleType;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.DefaultRole;
+import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -14,6 +16,8 @@ import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AlliancePermissions;
 import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IRoleService;
+import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,9 @@ public class RoleService implements IRoleService {
 
     @Autowired
     private IAllianceUserService allianceUserService;
+
+    @Autowired
+    private IUserService userService;
 
 
     //排除拥有权限中的不可分配权限,就是当前角色拥有的可分配权限,不可分配权限根据需求确定
@@ -135,5 +142,26 @@ public class RoleService implements IRoleService {
 //        String sql = "select * from role where alliance_id = ? and state = ?";
 //        List<RoleEntity> invalidRoles = RoleEntity.dao.findList(sql, allianceId, ValidState.Invalid);
         return RoleEntity.dao.partitionId(allianceId).state(ValidState.Invalid).selectList();
+    }
+
+    @Override
+    public List<AllianceRolesVO> getUserAllianceRoles(){
+
+        //这样的格式是王海青强烈要求。。。。
+        StringBuilder sb = new StringBuilder(SQLDao.GET_USER_ALLIANCE_ROLES);
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userService.currentUserId());
+        p.addIndexBinding(userService.currentUserId());
+        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        //把个人盟和个人角色过滤掉
+        UserEntity userEntity = userService.getCurrentUser();
+        for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
+            if((allianceRolesVO.getRoleId() == userEntity.getPersonalRoleId())
+                    &&(allianceRolesVO.getAllianceId() == userEntity.getPersonalAllianceId())){
+                allianceRolesVOs.remove(allianceRolesVO);
+                break;
+            }
+        }
+        return allianceRolesVOs;
     }
 }
