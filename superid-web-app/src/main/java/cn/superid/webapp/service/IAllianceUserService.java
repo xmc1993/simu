@@ -26,5 +26,5 @@ public interface IAllianceUserService{
      * @param dealReason
      * @return
      */
-    public boolean agreeInvitationToAlliance(long invitationId,String dealReason);
+    public boolean agreeInvitationToAlliance(long invitationId,long allianceId,long beInvitedUserId,String dealReason);
 }
