@@ -2,10 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.utils.FileUtil;
-import cn.superid.utils.MapUtil;
-import cn.superid.utils.MobileUtil;
-import cn.superid.utils.StringUtil;
+import cn.superid.utils.*;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.*;
@@ -47,7 +44,7 @@ public class UserService implements IUserService {
 
 
     private final String lastEmailTime = "last_email_time";
-    private String forgetPasswordEmailTmpl ;
+    private String forgetPasswordEmailTmpl;
     private String verifyCodeEmailTmpl;
 
 
@@ -74,12 +71,12 @@ public class UserService implements IUserService {
 
     @Override
     public boolean belong(long roleId) {
-       return (Long)RoleCache.dao.findFieldByKey(roleId,"userId",Long.class)==currentUserId();
+        return (Long) RoleCache.dao.findFieldByKey(roleId, "userId", Long.class) == currentUserId();
     }
 
 
     private boolean canSendVerifyCodeAgain() {
-        Date date =(Date)auth.getSessionAttr("last_token_time");
+        Date date = (Date) auth.getSessionAttr("last_token_time");
         if (date != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
@@ -92,31 +89,31 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean  getVerifyCode(String token,String template) {
-        if(canSendVerifyCodeAgain()){
+    public boolean getVerifyCode(String token, String template) {
+        if (canSendVerifyCodeAgain()) {
             final String code = NumberUtils.randomNumberString(6);
-            auth.setSessionAttr("code",code);
-            auth.setSessionAttr("last_token_time",new Date());
-            auth.setSessionAttr("token",token);
-            if(StringUtil.isEmail(token)){
+            auth.setSessionAttr("code", code);
+            auth.setSessionAttr("last_token_time", new Date());
+            auth.setSessionAttr("token", token);
+            if (StringUtil.isEmail(token)) {
                 String emailText = this.verifyCodeEmailTmpl.replace("${verifyCode}", code);
-                return DirectEmailDao.sendEmail("SuperId邮箱验证",emailText,token);
-            }else{
+                return DirectEmailDao.sendEmail("SuperId邮箱验证", emailText, token);
+            } else {
                 //此处因为要分是注册还是其他获取验证码方式,所以要先看看数据库里有咩有该账号
                 //因为注册是要传区号过来,并且数据库没有该条数据,所以token不需要处理
                 //其他获取方式不需要区号,所以要自己去数据库取出区号来加上前端传过来的token然后去发短信
-                UserEntity userEntity = UserEntity.dao.eq("mobile",token).selectOne("countryCode");
+                UserEntity userEntity = UserEntity.dao.eq("mobile", token).selectOne("countryCode");
                 String countryCode;
-                if(userEntity != null){
+                if (userEntity != null) {
                     countryCode = userEntity.getCountryCode();
                     token = countryCode + " " + token;
                 }
 
-                if(MobileUtil.isChinaMobile(token)){
-                    return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token),template, MapUtil.hashmap("code",code));
-                }else {
-                    token = MobileUtil.getCountryCode(token)+MobileUtil.getMobile(token);
-                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token.trim(),code,template);
+                if (MobileUtil.isChinaMobile(token)) {
+                    return AliSmsDao.sendSMSMessageToMobileWithTemplate(MobileUtil.getMobile(token), template, MapUtil.hashmap("code", code));
+                } else {
+                    token = MobileUtil.getCountryCode(token) + MobileUtil.getMobile(token);
+                    return YunPianSmsDao.sendSMSMessageToForeignMobile(token.trim(), code, template);
                 }
 
             }
@@ -125,24 +122,24 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean checkVerifyCode(String code,String token) {
-        Date date =(Date)auth.getSessionAttr("last_token_time");
-        String cachedCode =(String) auth.getSessionAttr("code");
-        if(token!=null){
+    public boolean checkVerifyCode(String code, String token) {
+        Date date = (Date) auth.getSessionAttr("last_token_time");
+        String cachedCode = (String) auth.getSessionAttr("code");
+        if (token != null) {
             String cachedToken = (String) auth.getSessionAttr("token");
-            if(!cachedToken.equals(token)){
+            if (!cachedToken.equals(token)) {
                 return false;
             }
         }
 
-        if(date!=null&&code!=null){
+        if (date != null && code != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
             calendar.add(Calendar.MINUTE, 15);
             if (calendar.getTime().before(new Date())) {//超过15分钟
                 return false;
             }
-            if(StringUtils.equalsIgnoreCase(code, cachedCode)){
+            if (StringUtils.equalsIgnoreCase(code, cachedCode)) {
                 return true;
             }
         }
@@ -157,18 +154,19 @@ public class UserService implements IUserService {
         String superIdCode = cn.superid.jpa.util.StringUtil.generateId(userEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
 
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
-        allianceCreateForm.setName(userEntity.getUsername()+"的事务");
+        allianceCreateForm.setName(userEntity.getUsername() + "的事务");
         allianceCreateForm.setUserId(userEntity.getId());
         allianceCreateForm.setCode(superIdCode);//因为userId是唯一的
         allianceCreateForm.setIsPersonal(true);
         allianceCreateForm.setRoleTitle(userEntity.getUsername());
 
-        AllianceEntity allianceEntity=allianceService.createAlliance(allianceCreateForm);
+        AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 
         userEntity.setSuperid(superIdCode);
         userEntity.setPersonalRoleId(allianceEntity.getOwnerRoleId());
         userEntity.setPersonalAllianceId(allianceEntity.getId());
         userEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+        userEntity.setNameAbbr(PingYinUtil.getFirstSpell(userEntity.getUsername()));
         userEntity.update();
         return userEntity;
     }
@@ -178,36 +176,37 @@ public class UserService implements IUserService {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("zp");
         userEntity.save();
-        if(StringUtil.isEmail(token)){
-            return UserEntity.dao.eq("email",token).selectOne();
-        }else if(StringUtil.isMobile(token)){
-           return UserEntity.dao.eq("mobile",token).selectOne();
-        }else {
+        if (StringUtil.isEmail(token)) {
+            return UserEntity.dao.eq("email", token).selectOne();
+        } else if (StringUtil.isMobile(token)) {
+            return UserEntity.dao.eq("mobile", token).selectOne();
+        } else {
             return null;
         }
     }
 
     @Override
     public boolean validUsername(String username) {
-        return !UserEntity.dao.eq("username",username).exists();
+        return !UserEntity.dao.eq("username", username).exists();
     }
 
     /**
      * 判断手机号码是否注册
+     *
      * @param token
      * @return
      */
     @Override
     public boolean validToken(String token) {
-        if(StringUtil.isEmail(token)){
-            return UserEntity.dao.eq("email",token).exists();
-        }else{
+        if (StringUtil.isEmail(token)) {
+            return UserEntity.dao.eq("email", token).exists();
+        } else {
             String[] strs = token.split("\\s+");
-            if(StringUtil.isMobile(token)){
-                if(strs.length==1){
-                    return UserEntity.dao.eq("mobile",token).exists();
-                }else {
-                    return UserEntity.dao.eq("mobile",strs[1]).exists();
+            if (StringUtil.isMobile(token)) {
+                if (strs.length == 1) {
+                    return UserEntity.dao.eq("mobile", token).exists();
+                } else {
+                    return UserEntity.dao.eq("mobile", strs[1]).exists();
                 }
 
             }
@@ -218,17 +217,17 @@ public class UserService implements IUserService {
 
     @Override
     public boolean validTokenForReset(String token) {
-        if(StringUtil.isEmail(token)){
-            return !UserEntity.dao.eq("email",token).exists();
-        }else if(StringUtil.isMobile(token)){
-            return !UserEntity.dao.eq("mobile",token).exists();
+        if (StringUtil.isEmail(token)) {
+            return !UserEntity.dao.eq("email", token).exists();
+        } else if (StringUtil.isMobile(token)) {
+            return !UserEntity.dao.eq("mobile", token).exists();
         }
         return true;
     }
 
     @Override
     public UserEntity getCurrentUser() {
-         return UserEntity.dao.findById(currentUserId());
+        return UserEntity.dao.findById(currentUserId());
     }
 
     @Override
@@ -240,11 +239,17 @@ public class UserService implements IUserService {
     @Override
     public boolean editBaseInfo(@RequestParam EditUserBaseInfo userBaseInfo) {
         UserBaseInfo update = UserBaseInfo.dao.findById(currentUserId());//有缓存的实体可以先获取再更新
-        if(update==null){
+        if (update == null) {
             return false;
-        }else{
+        } else {
             update.copyPropertiesFromAndSkipNull(userBaseInfo);
             update.update();
+            //更新缩写
+            UserEntity userEntity = UserEntity.dao.findById(currentUserId());
+            if (userEntity != null) {
+                userEntity.setNameAbbr(PingYinUtil.getFirstSpell(update.getUsername()));
+                userEntity.update();
+            }
         }
         return true;
     }
@@ -252,50 +257,50 @@ public class UserService implements IUserService {
     @Override
     public boolean changeToken(String token) {
         long userId = currentUserId();
-        String column = StringUtil.isEmail(token)?"email":"mobile";
-        int result =  UserEntity.dao.eq("id",userId).set(column,token);
-        return result>0;
+        String column = StringUtil.isEmail(token) ? "email" : "mobile";
+        int result = UserEntity.dao.eq("id", userId).set(column, token);
+        return result > 0;
     }
 
     @Override
     public boolean changePwd(String oldPwd, String newPwd) {
         UserEntity userEntity = getCurrentUser();
-        if(!PasswordEncryptor.matches(oldPwd,userEntity.getPassword())){
+        if (!PasswordEncryptor.matches(oldPwd, userEntity.getPassword())) {
             return false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
-        int result =  UserEntity.dao.eq("id",currentUserId()).set("password",newPwd);
-        return result>0;
+        int result = UserEntity.dao.eq("id", currentUserId()).set("password", newPwd);
+        return result > 0;
     }
 
     @Override
-    public boolean resetPwd(String newPwd,String token) {
+    public boolean resetPwd(String newPwd, String token) {
         UserEntity userEntity = findByToken(token);
-        if(userEntity==null){
-            return  false;
+        if (userEntity == null) {
+            return false;
         }
         newPwd = PasswordEncryptor.encode(newPwd);
-        int result =  UserEntity.dao.eq("id",userEntity.getId()).set("password",newPwd);
-        return result>0;
+        int result = UserEntity.dao.eq("id", userEntity.getId()).set("password", newPwd);
+        return result > 0;
     }
 
     @Override
     public boolean editDetailInfo(EditUserDetailForm editUserDetailForm) {
-        int result =  UserEntity.dao.id(currentUserId()).setByObject(editUserDetailForm);
-        return result>0;
+        int result = UserEntity.dao.id(currentUserId()).setByObject(editUserDetailForm);
+        return result > 0;
     }
 
     @Override
     public boolean changePublicType(int publicType) {
 
-        return UserBaseInfo.dao.id(currentUserId()).set("publicType",publicType)>0;
+        return UserBaseInfo.dao.id(currentUserId()).set("publicType", publicType) > 0;
     }
 
     @Override
     public ResultUserInfo getUserInfo(long userId) {
         long thisUserId = currentUserId();
-        UserBaseInfo userBaseInfo =UserBaseInfo.dao.findById(userId);
-        if(userBaseInfo.getPublicType()== PublicType.ALL||(userBaseInfo.getPublicType()==PublicType.TO_ALLIANCE&&allianceService.inSameAlliance(userId,thisUserId))){//如果公开或者对盟内成员公开
+        UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(userId);
+        if (userBaseInfo.getPublicType() == PublicType.ALL || (userBaseInfo.getPublicType() == PublicType.TO_ALLIANCE && allianceService.inSameAlliance(userId, thisUserId))) {//如果公开或者对盟内成员公开
             return ResultUserInfo.dao.id(userId).selectOne();
         }
 
@@ -311,27 +316,27 @@ public class UserService implements IUserService {
 
         //TODO 盟和角色没搞
 
-        if(userPrivateInfoEntity.isPersonalTags()){
+        if (userPrivateInfoEntity.isPersonalTags()) {
             //TODO 标签还没弄
         }
 
-        if(userPrivateInfoEntity.isActualName()){
+        if (userPrivateInfoEntity.isActualName()) {
             resultUserInfo.setUsername(userEntity.getUsername());
         }
 
-        if(userPrivateInfoEntity.isIdentityCard()){
+        if (userPrivateInfoEntity.isIdentityCard()) {
             resultUserInfo.setIdCard(userEntity.getIdCard());
         }
 
-        if(userPrivateInfoEntity.isPhoneNumber()){
+        if (userPrivateInfoEntity.isPhoneNumber()) {
             resultUserInfo.setMobile(userEntity.getMobile());
         }
 
-        if(userPrivateInfoEntity.isMail()){
+        if (userPrivateInfoEntity.isMail()) {
             resultUserInfo.setEmail(userEntity.getEmail());
         }
 
-        if(userPrivateInfoEntity.isBirthday()){
+        if (userPrivateInfoEntity.isBirthday()) {
             resultUserInfo.setBirthday(userEntity.getBirthday());
         }
         //resultUserInfo.copyPropertiesFrom(userBaseInfo);
@@ -340,11 +345,9 @@ public class UserService implements IUserService {
     }
 
 
-
-
     @Override
     //public List<UserAllianceRolesVO> getUserAllianceRoles() {
-      public List<AllianceRolesVO> getUserAllianceRoles(){
+    public List<AllianceRolesVO> getUserAllianceRoles() {
         /*
         //算法1
         //先取出用户拥有的所有盟
@@ -418,11 +421,11 @@ public class UserService implements IUserService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(currentUserId());
         p.addIndexBinding(currentUserId());
-        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString(),p);
+        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class, sb.toString(), p);
         //把个人盟和个人角色过滤掉
-        for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
-            if((allianceRolesVO.getRoleId() == getCurrentUser().getPersonalRoleId())
-                    &&(allianceRolesVO.getAllianceId() == getCurrentUser().getPersonalAllianceId())){
+        for (AllianceRolesVO allianceRolesVO : allianceRolesVOs) {
+            if ((allianceRolesVO.getRoleId() == getCurrentUser().getPersonalRoleId())
+                    && (allianceRolesVO.getAllianceId() == getCurrentUser().getPersonalAllianceId())) {
                 allianceRolesVOs.remove(allianceRolesVO);
                 break;
             }
@@ -432,13 +435,13 @@ public class UserService implements IUserService {
 
     @Override
     public boolean validSuperId(String superId) {
-        return UserEntity.dao.eq("superid",superId).exists();
+        return UserEntity.dao.eq("superid", superId).exists();
     }
 
     @Override
     public boolean modifySuperId(String superId) {
         //检测修改的superid是否符合长度等要求,是不是要放在前端
-        return UserEntity.dao.id(currentUserId()).set("superid",superId)>0;
+        return UserEntity.dao.id(currentUserId()).set("superid", superId) > 0;
     }
 
     @Override
@@ -448,7 +451,7 @@ public class UserService implements IUserService {
         p.addIndexBinding("汤茂思");
         p.addIndexBinding(1899L);
         StringBuilder correctSql = new StringBuilder("update user set username = ? where id= ?");
-        UserEntity.getSession().execute(correctSql.toString(),p);
+        UserEntity.getSession().execute(correctSql.toString(), p);
         /*
             StringBuilder incorrectSql = new StringBuilder("update user set userame = 'tms' where id=1899");
             UserEntity.getSession().execute(incorrectSql.toString());

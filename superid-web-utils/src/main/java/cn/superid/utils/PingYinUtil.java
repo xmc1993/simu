@@ -18,6 +18,7 @@ public class PingYinUtil {
      * @return
      */
     public static String getPingYin(String inputString) {
+        if (StringUtil.isEmpty(inputString)) return "";
         HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
         format.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
@@ -47,6 +48,7 @@ public class PingYinUtil {
      * @return 汉语拼音首字母
      */
     public static String getFirstSpell(String chinese) {
+        if (StringUtil.isEmpty(chinese)) return "";
         StringBuffer pybf = new StringBuffer();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
@@ -56,7 +58,7 @@ public class PingYinUtil {
             if (arr[i] > 128) {
                 try {
                     String[] temp = PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat);
-                    if (temp != null&&temp.length>0) {
+                    if (temp != null && temp.length > 0) {
                         pybf.append(temp[0].charAt(0));
                     }
                 } catch (Exception e) {
@@ -76,6 +78,7 @@ public class PingYinUtil {
      * @return 汉语拼音
      */
     public static String getFullSpell(String chinese) {
+        if (StringUtil.isEmpty(chinese)) return "";
         StringBuffer pybf = new StringBuffer();
         char[] arr = chinese.toCharArray();
         HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
@@ -95,7 +98,7 @@ public class PingYinUtil {
         return pybf.toString();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println(getFullSpell("simu周鹏"));
         System.out.println(getFirstSpell("simu周鹏"));
         System.out.println(getFullSpell("simu 周鹏 17"));
