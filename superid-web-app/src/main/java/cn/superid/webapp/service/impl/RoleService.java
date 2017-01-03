@@ -11,6 +11,7 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
+import cn.superid.webapp.security.AlliancePermissions;
 import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
@@ -30,6 +31,29 @@ public class RoleService implements IRoleService {
 
     @Autowired
     private IAllianceUserService allianceUserService;
+
+
+    //排除拥有权限中的不可分配权限,就是当前角色拥有的可分配权限,不可分配权限根据需求确定
+    private String generateAllocatePermission(String permissions){
+        String toReplace;
+        String result;
+        if ("*".equals(permissions)) {
+            result = permissions;
+        }
+        else if (permissions.contains(AlliancePermissions.ChangeOwner + ",")) {
+            toReplace = AlliancePermissions.ChangeOwner + ",";
+            result = permissions.replaceAll(toReplace,"");
+        }
+        else if (permissions.contains("," + AlliancePermissions.ChangeOwner )){
+            toReplace = "," + AlliancePermissions.ChangeOwner;
+            result = permissions.replaceAll(toReplace,"");
+        }
+        else {
+            result =  permissions;
+        }
+        return result;
+    }
+
     @Override
     public RoleEntity createRole(String title, long allianceId, long userId, long belongAffairId, String permissions, int type) {
         RoleEntity roleEntity = new RoleEntity();
@@ -38,6 +62,7 @@ public class RoleService implements IRoleService {
         roleEntity.setAllianceId(allianceId);
         roleEntity.setBelongAffairId(belongAffairId);
         roleEntity.setPermissions(permissions);
+        roleEntity.setAllocatePermissions(generateAllocatePermission(permissions));
         roleEntity.setType(type);
         roleEntity.setState(ValidState.Valid);
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
