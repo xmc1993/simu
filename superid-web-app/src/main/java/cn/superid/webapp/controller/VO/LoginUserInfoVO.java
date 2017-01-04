@@ -24,6 +24,7 @@ public class LoginUserInfoVO {
     private long personalAllianceId;
     private String superid;
     private String address;
+    private boolean isAuthenticated;
 
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
@@ -148,5 +149,13 @@ public class LoginUserInfoVO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }
