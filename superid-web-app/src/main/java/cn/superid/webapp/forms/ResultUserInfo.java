@@ -25,6 +25,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String videoImg;
     private int isVideo;
     private String realname;
+    private String username;
     private String nickNames;
     private Timestamp birthday;
     private int age;
@@ -250,5 +251,13 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setMembers(Map<Long, List<Object>> members) {
         this.members = members;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

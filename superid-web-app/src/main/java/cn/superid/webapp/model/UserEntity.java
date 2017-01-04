@@ -25,7 +25,8 @@ public class UserEntity extends ExecutableModel {
     private int isVideo;
     private String nicknames = "";
     private boolean isAuthenticated;
-    private String realname = "";//用户名
+    private String realname = "";//真实姓名
+    private String username = "";//用户姓名
     private String nameAbbr = "";//用户名缩写
     private Timestamp birthday;
     private int age;
@@ -318,5 +319,13 @@ public class UserEntity extends ExecutableModel {
 
     public void setNameAbbr(String nameAbbr) {
         this.nameAbbr = nameAbbr;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

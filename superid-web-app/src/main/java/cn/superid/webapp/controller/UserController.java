@@ -199,6 +199,7 @@ public class UserController {
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));
         userEntity.setRealname(username);
+        userEntity.setUsername(username);
         userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         UserEntity result = userService.createUser(userEntity);
         if(result!=null){
