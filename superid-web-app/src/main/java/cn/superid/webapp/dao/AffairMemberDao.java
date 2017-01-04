@@ -141,8 +141,13 @@ public class AffairMemberDao implements IAffairMemberDao{
         }
         if (conditions.isReverseSort()) sb.append(" desc ");
         else sb.append(" asc ");
-        sb.append(" limit ?");
-        p.addIndexBinding(conditions.getCount() <= 100 && conditions.getCount() >= 10 ? conditions.getCount() : 20);
+        sb.append(" limit ? , ?");
+        if(conditions.getCount() <= 100 && conditions.getCount() >= 10)
+            conditions.setCount(20);
+        if(conditions.getPage() <1)
+            conditions.setPage(1);
+        p.addIndexBinding(conditions.getCount()*(conditions.getPage()-1));
+        p.addIndexBinding(conditions.getCount()*(conditions.getPage()));
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
     }
 

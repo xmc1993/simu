@@ -12,10 +12,10 @@ public class SearchAffairMemberConditions {
     private String key;
 
     @ApiModelProperty(notes = "列表显示页码，从1开始")
-    private int page;
+    private int page=1;
 
     @ApiModelProperty(notes = "每页显示数量，10-100之间")
-    private int count;
+    private int count=20;
 
     @ApiModelProperty(notes = "按哪一信息项进行排序，可选值为 name , gender , role , affair")
     private String sortColumn = "name";
