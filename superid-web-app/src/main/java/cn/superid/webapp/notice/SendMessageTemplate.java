@@ -5,6 +5,7 @@ import cn.superid.webapp.notice.thrift.NoticeService;
 import cn.superid.webapp.notice.zookeeper.NodeUtil;
 import com.google.gson.Gson;
 import org.apache.thrift.TException;
+import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class SendMessageTemplate {
      * @return
      * @throws TException
      */
-    public static boolean sendNotice(C2c c2c) throws TException, InterruptedException, IOException, KeeperException {
+    public static boolean sendNotice(C2c c2c) {
         //首先提取出消息中的affairId
         long affairId = 0L;
         if(c2c.getType() == UPDATE_CACHE){
@@ -47,12 +48,27 @@ public class SendMessageTemplate {
         port -= PORT_DISTANCE;
 
         //获取到相应的连接并发送C2c消息
-        NoticeService.Client client = ThriftPool.getClient(host + ":" + port);
+        NoticeService.Client client = null;
+        try {
+            client = ThriftPool.getClient(host + ":" + port);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(client == null){
             throw new IllegalArgumentException("不存在与参数中host&port对应的连接。");
         }
         synchronized (client){//对于使用同一个client的请求要进行同步
-            return client.sendNotice(c2c);
+            try {
+                return client.sendNotice(c2c);
+            } catch (TException e) {
+                e.printStackTrace();
+            }
         }
     }
 
