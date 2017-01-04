@@ -2,6 +2,7 @@ package cn.superid.jpa.core;
 
 
 import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 
 import java.util.HashMap;
@@ -75,6 +76,8 @@ public interface Session {
     Object findOneByNativeSql(Class<?> cls, String queryString, Object... params);
 
     List findListByNativeSql(Class<?> cls, String queryString, Object... params);
+
+    List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination);
 
     Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
 
