@@ -414,62 +414,6 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
-        StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        if (conditions.isIncludeSubAffair()) {
-            AffairEntity affairEntity = AffairEntity.dao.findById(affairId, allianceId);
-            if (affairEntity == null) return Collections.emptyList();
-            else {
-                List<Long> idList = AffairEntity.getSession().findListByNativeSql(Long.class, "select id from affair where alliance_id=? and path like ?", allianceId, affairEntity.getPath() + "%");
-                if (idList == null)
-                    idList = Arrays.asList(affairId);
-                sb.append(" in (").append(ArrayUtil.join(idList.toArray(), ",")).append(")) am ");
-            }
-
-        } else {
-            sb.append("=? ) am ");
-            p.addIndexBinding(affairId);
-        }
-        sb.append("join (select id,user_id,belong_affair_id,title from role) r on am.role_id=r.id ");
-        sb.append("join (select id,username,superid,gender from user ");
-        if (StringUtil.notEmpty(conditions.getKey())) {
-            sb.append("where username like ? or name_abbr like ? ");
-            p.addIndexBinding("%" + conditions.getKey() + "%");
-            p.addIndexBinding("%" + conditions.getKey() + "%");
-        }
-        sb.append(") u on r.user_id=u.id ");
-        sb.append("join (select id,name from affair) a on r.belong_affair_id=a.id ");
-        sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
-        if (conditions.isAllianceUser()) {
-            sb.append("join (select  user_id from alliance_user where alliance_id= ? ) au on au.user_id=r.user_id");
-        }else{
-            sb.append("where r.user_id not in (select  user_id from alliance_user where alliance_id= ? )");
-        }
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(allianceId);
-        sb.append(" order by ");
-        switch (conditions.getSortColumn()) {
-            case "name":
-                sb.append("u.username");
-                break;
-            case "gender":
-                sb.append("u.gender");
-                break;
-            case "role":
-                sb.append("r.title");
-                break;
-            case "affair":
-                sb.append("a2.level");
-                break;
-            default:
-                sb.append("u.username");
-                break;
-        }
-        if (conditions.isReverseSort()) sb.append(" desc ");
-        else sb.append(" asc ");
-        sb.append(" limit ?");
-        p.addIndexBinding(conditions.getCount() <= 100 && conditions.getCount() >= 10 ? conditions.getCount() : 20);
-        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
+        return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions);
     }
 }
