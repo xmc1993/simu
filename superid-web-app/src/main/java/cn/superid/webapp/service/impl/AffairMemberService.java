@@ -441,6 +441,12 @@ public class AffairMemberService implements IAffairMemberService {
         sb.append(") u on r.user_id=u.id ");
         sb.append("join (select id,name from affair) a on r.belong_affair_id=a.id ");
         sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
+        if (conditions.isAllianceUser()) {
+            sb.append("join (select  user_id from alliance_user where alliance_id= ? ) au on au.user_id=r.user_id");
+        }else{
+            sb.append("where r.user_id not in (select  user_id from alliance_user where alliance_id= ? )");
+        }
+        p.addIndexBinding(allianceId);
         p.addIndexBinding(allianceId);
         sb.append(" order by ");
         switch (conditions.getSortColumn()) {

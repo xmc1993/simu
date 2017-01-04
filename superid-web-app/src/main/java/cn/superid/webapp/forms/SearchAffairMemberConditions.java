@@ -26,6 +26,9 @@ public class SearchAffairMemberConditions {
     @ApiModelProperty(notes = "是否包含子事务，不填默认不包含")
     private boolean includeSubAffair;
 
+    @ApiModelProperty(notes = "盟内成员或者盟外成员,不填默认为盟内成员")
+    private boolean isAllianceUser=true;
+
     public String getKey() {
         return key;
     }
@@ -72,5 +75,13 @@ public class SearchAffairMemberConditions {
 
     public void setIncludeSubAffair(boolean includeSubAffair) {
         this.includeSubAffair = includeSubAffair;
+    }
+
+    public boolean isAllianceUser() {
+        return isAllianceUser;
+    }
+
+    public void setIsAllianceUser(boolean isAllianceUser) {
+        this.isAllianceUser = isAllianceUser;
     }
 }
