@@ -1,7 +1,6 @@
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
-import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
@@ -32,7 +31,7 @@ public class GenerateTestData {
         long l = 15951829999L;
         for(int i=0;i<20;i++){
             UserEntity userEntity = new UserEntity();
-            userEntity.setUsername("大哥 "+i+" 代目");
+            userEntity.setRealname("大哥 "+i+" 代目");
             userEntity.setPassword(PasswordEncryptor.encode("123456"));
             userEntity.setMobile(String.valueOf(l+i));
             UserEntity result = userService.createUser(userEntity);

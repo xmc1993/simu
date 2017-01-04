@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
-import java.util.Map;
 
 /**
  * Created by zp on 2016/7/25.
@@ -21,15 +20,13 @@ public class UserEntity extends ExecutableModel {
     private long id;
     private String superid = "";
     private String password = "";
-    private String familyName = "";
-    private String givenName = "";
     private int state;
     private String videoUrl = "";
     private String videoImg = "";
     private int isVideo;
     private String nicknames = "";
     private boolean isAuthenticated;
-    private String username = "";//用户名
+    private String realname = "";//用户名
     private String nameAbbr = "";//用户名缩写
     private Timestamp birthday;
     private int age;
@@ -93,22 +90,6 @@ public class UserEntity extends ExecutableModel {
         this.gender = gender;
     }
 
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
-
     public String getVideoUrl() {
         return videoUrl;
     }
@@ -133,12 +114,12 @@ public class UserEntity extends ExecutableModel {
         this.videoImg = videoImg;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
     public String getNicknames() {

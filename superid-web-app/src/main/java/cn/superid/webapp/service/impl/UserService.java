@@ -1,6 +1,5 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.*;
 import cn.superid.webapp.enums.SuperIdNumber;
@@ -13,7 +12,6 @@ import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
-import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.utils.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -154,11 +152,11 @@ public class UserService implements IUserService {
         String superIdCode = cn.superid.jpa.util.StringUtil.generateId(userEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
 
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
-        allianceCreateForm.setName(userEntity.getUsername() + "的事务");
+        allianceCreateForm.setName(userEntity.getRealname() + "的事务");
         allianceCreateForm.setUserId(userEntity.getId());
         allianceCreateForm.setCode(superIdCode);//因为userId是唯一的
         allianceCreateForm.setIsPersonal(true);
-        allianceCreateForm.setRoleTitle(userEntity.getUsername());
+        allianceCreateForm.setRoleTitle(userEntity.getRealname());
 
         AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 
@@ -166,7 +164,7 @@ public class UserService implements IUserService {
         userEntity.setPersonalRoleId(allianceEntity.getOwnerRoleId());
         userEntity.setPersonalAllianceId(allianceEntity.getId());
         userEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        userEntity.setNameAbbr(PingYinUtil.getFirstSpell(userEntity.getUsername()));
+        userEntity.setNameAbbr(PingYinUtil.getFirstSpell(userEntity.getRealname()));
         userEntity.update();
         return userEntity;
     }
@@ -174,7 +172,7 @@ public class UserService implements IUserService {
     @Override
     public UserEntity findByToken(String token) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("zp");
+        userEntity.setRealname("zp");
         userEntity.save();
         if (StringUtil.isEmail(token)) {
             return UserEntity.dao.eq("email", token).selectOne();
@@ -323,7 +321,7 @@ public class UserService implements IUserService {
         }
 
         if (userPrivateInfoEntity.isActualName()) {
-            resultUserInfo.setUsername(userEntity.getUsername());
+            resultUserInfo.setRealname(userEntity.getRealname());
         }
 
         if (userPrivateInfoEntity.isIdentityCard()) {

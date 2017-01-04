@@ -12,7 +12,7 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String username = "";
+    private String realname = "";
     private int gender;
     private Timestamp birthday ;
     private String avatar;
@@ -26,8 +26,6 @@ public class LoginUserInfoVO {
     private String address;
     private boolean isAuthenticated;
     private String idCard = "";
-    private String familyName = "";
-    private String givenName = "";
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
     private List<AllianceRolesVO> roles;
@@ -41,12 +39,12 @@ public class LoginUserInfoVO {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
     public int getGender() {
@@ -169,19 +167,4 @@ public class LoginUserInfoVO {
         this.idCard = idCard;
     }
 
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
-    }
 }

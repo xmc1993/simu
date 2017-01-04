@@ -41,7 +41,7 @@ public class UserServiceTest{
 
     private UserEntity addUser(){
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("汤茂思");
+        userEntity.setRealname("汤茂思");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
         userEntity.setMobile("15958586666");
         UserEntity result = userService.createUser(userEntity);
@@ -52,12 +52,12 @@ public class UserServiceTest{
     public void testFindUser(){
           userService.findByToken("15958586666");
 //        UserEntity userEntity = new UserEntity();
-//        userEntity.setUsername("大哥鹏");
+//        userEntity.setRealname("大哥鹏");
 //        userEntity.setPassword(PasswordEncryptor.encode("123456"));
 //        userEntity.setMobile("15951818231");
 //        userEntity.save();
 //        UserEntity userEntity1=UserEntity.dao.findById(userEntity.getId());
-//        Assert.assertTrue(userEntity1.getUsername().equals(userEntity.getUsername()));
+//        Assert.assertTrue(userEntity1.getRealname().equals(userEntity.getRealname()));
 
 
     }
@@ -81,7 +81,7 @@ public class UserServiceTest{
         userService.editBaseInfo(editUserBaseInfo);
         UserBaseInfo userBaseInfo=UserBaseInfo.dao.findById(testUser.getId());
         Assert.assertTrue(userBaseInfo.getAvatar().equals("test"));
-        Assert.assertTrue(userBaseInfo.getUsername().equals(testUser.getUsername()));
+        Assert.assertTrue(userBaseInfo.getUsername().equals(testUser.getRealname()));
 
     }
 
@@ -104,7 +104,7 @@ public class UserServiceTest{
        UserEntity testUser = addUser();
        auth.setSessionAttr("userId",testUser.getId());
        ResultUserInfo resultUserInfo=userService.getUserInfo(testUser.getId());
-       Assert.assertTrue(testUser.getUsername().equals(testUser.getUsername()));
+       Assert.assertTrue(testUser.getRealname().equals(testUser.getRealname()));
    }
 
     @Test
