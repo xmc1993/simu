@@ -15,8 +15,10 @@ import java.io.IOException;
  */
 public class ZookeeperService {
     private static final int SESSION_TIMEOUT = 20000;
-    private static final String CONNECTOR_URL = "/connectors";
-    private static final String BACKEND_URL = "/backends";
+    private static final String CONNECTOR_URL = "/connectors-x";
+//    private static final String CONNECTOR_URL = "/connectors-m";
+    private static final String BACKEND_URL = "/backends-x";
+//    private static final String BACKEND_URL = "/backends-m";
     private static final String ZOOKEEPER_URL = "192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184";
     private static JSONObject connectorsInfo;
     private static JSONObject backEndsInfo;

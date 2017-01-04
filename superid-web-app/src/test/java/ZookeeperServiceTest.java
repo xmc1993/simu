@@ -1,3 +1,4 @@
+import cn.superid.webapp.notice.zookeeper.NodeUtil;
 import cn.superid.webapp.notice.zookeeper.ZookeeperService;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -41,5 +42,11 @@ public class ZookeeperServiceTest {
         while(true){
 
         }
+    }
+
+    @Test
+    public void testService() throws InterruptedException, IOException, KeeperException {
+        String res = NodeUtil.getBackendNodeByKey(100L);
+        System.out.println(res);
     }
 }
