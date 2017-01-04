@@ -28,8 +28,6 @@ public class LoginUserInfoVO {
     private boolean isAuthenticated;
     private String idCard = "";
     private Map<Long,List<Object>> members;
-    //private List<UserAllianceRolesVO> roles;
-    private List<AllianceRolesVO> roles;
 
 
     public long getId() {
@@ -128,13 +126,7 @@ public class LoginUserInfoVO {
         this.members = members;
     }
 
-    public List<AllianceRolesVO> getRoles() {
-        return roles;
-    }
 
-    public void setRoles(List<AllianceRolesVO> roles) {
-        this.roles = roles;
-    }
 
     public String getSuperid() {
         return superid;

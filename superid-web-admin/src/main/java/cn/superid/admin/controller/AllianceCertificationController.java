@@ -1,5 +1,6 @@
 package cn.superid.admin.controller;
 
+import cn.superid.admin.annotation.NotLogin;
 import cn.superid.admin.form.CertificationForm;
 import cn.superid.admin.form.SimpleResponse;
 import cn.superid.admin.service.IAllianceCertificationService;
@@ -20,21 +21,25 @@ public class AllianceCertificationController {
     private IAllianceCertificationService allianceCertificationService;
 
     @RequestMapping(value = "/list",method = RequestMethod.POST)
+    @NotLogin
     public SimpleResponse getAllianceCertificationList(){
         return SimpleResponse.ok(allianceCertificationService.showUncheckedCertification());
     }
 
     @RequestMapping(value = "/info",method = RequestMethod.POST)
-    public SimpleResponse getCertificationInfo(@RequestBody CertificationForm certificationForm){
-        return SimpleResponse.ok(allianceCertificationService.showCertificationInfo(certificationForm.getId(),certificationForm.getAllianceId()));
+    @NotLogin
+    public SimpleResponse getCertificationInfo(long id,long allianceId){
+        return SimpleResponse.ok(allianceCertificationService.showCertificationInfo(id,allianceId));
     }
 
     @RequestMapping(value = "/agree",method = RequestMethod.POST)
+    @NotLogin
     public SimpleResponse agreeCertification(@RequestBody CertificationForm certificationForm){
         return SimpleResponse.ok(allianceCertificationService.agreeCertification(certificationForm.getId(),certificationForm.getAllianceId(),certificationForm.getCheckReason(),certificationForm.getUserName()));
     }
 
     @RequestMapping(value = "/reject",method = RequestMethod.POST)
+    @NotLogin
     public SimpleResponse rejectCertification(@RequestBody CertificationForm certificationForm){
         return SimpleResponse.ok(allianceCertificationService.rejectCertification(certificationForm.getId(),certificationForm.getAllianceId(),certificationForm.getCheckReason(),certificationForm.getUserName()));
     }

@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import clojure.lang.Obj;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.ArrayUtil;
@@ -203,10 +204,22 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+    public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
-        for (AddAffairRoleForm form : roles) {
-            beInvitedRoleId = form.getRoleId();
+        Object[] roleIds = new Object[roles.size()];
+        for(int i=0;i<roles.size();i++){
+            roleIds[i] = roles.get(i);
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        for ( RoleEntity role: roleEntities) {
+            if(role == null){
+                return ResponseCode.RoleNotExist;
+            }
+            //不能是盟外角色
+            if(!(allianceId == role.getAllianceId())){
+                return ResponseCode.RoleNotInAlliance;
+            }
+            beInvitedRoleId = role.getId();
             int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
             if (code != 0) {
                 return code;
@@ -218,9 +231,9 @@ public class AffairMemberService implements IAffairMemberService {
             invitationEntity.setInviteUserId(inviteUserId);
             invitationEntity.setInviteRoleId(inviteRoleId);
             invitationEntity.setInviteReason("");
-            invitationEntity.setBeInvitedUserId(form.getUserId());
-            invitationEntity.setBeInvitedRoleId(form.getRoleId());
-            invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+            invitationEntity.setBeInvitedUserId(role.getUserId());
+            invitationEntity.setBeInvitedRoleId(role.getId());
+            invitationEntity.setBeInvitedRoleTitle(role.getTitle());
             invitationEntity.setInvitationType(InvitationType.Affair);
             invitationEntity.setState(DealState.Agree);
             //盟内人员默认是参与者
@@ -239,10 +252,22 @@ public class AffairMemberService implements IAffairMemberService {
 
 
     @Override
-    public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+    public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
-        for (AddAffairRoleForm form : roles) {
-            beInvitedRoleId = form.getRoleId();
+        Object[] roleIds = new Object[roles.size()];
+        for(int i=0;i<roles.size();i++){
+            roleIds[i] = roles.get(i);
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        for (RoleEntity role: roleEntities) {
+            if(role == null){
+                return ResponseCode.RoleNotExist;
+            }
+            //不能是盟内角色
+            if(allianceId == role.getAllianceId()){
+                return ResponseCode.RoleIsInAlliance;
+            }
+            beInvitedRoleId = role.getId();
             int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
             if (code != 0) {
                 return code;
@@ -263,9 +288,9 @@ public class AffairMemberService implements IAffairMemberService {
                 invitationEntity.setInviteUserId(inviteUserId);
                 invitationEntity.setInviteRoleId(inviteRoleId);
                 invitationEntity.setInviteReason("");
-                invitationEntity.setBeInvitedUserId(form.getUserId());
-                invitationEntity.setBeInvitedRoleId(form.getRoleId());
-                invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+                invitationEntity.setBeInvitedUserId(role.getUserId());
+                invitationEntity.setBeInvitedRoleId(role.getId());
+                invitationEntity.setBeInvitedRoleTitle(role.getTitle());
                 invitationEntity.setInvitationType(InvitationType.Affair);
                 invitationEntity.setState(DealState.ToCheck);
                 //盟外人员进来是盟客

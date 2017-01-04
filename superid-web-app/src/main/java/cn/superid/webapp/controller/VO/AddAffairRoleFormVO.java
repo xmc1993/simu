@@ -1,29 +1,30 @@
 package cn.superid.webapp.controller.VO;
 
-import cn.superid.webapp.controller.forms.AddAffairRoleForm;
+import com.wordnik.swagger.annotations.ApiModel;
 
 import java.util.List;
 
 /**
  * Created by njuTms on 17/1/3.
  */
+@ApiModel
 public class AddAffairRoleFormVO {
-    List<AddAffairRoleForm> allianceRoles; //盟内角色
-    List<AddAffairRoleForm> outAllianceRoles; //盟外角色
+    List<Long> allianceRoles; //盟内角色
+    List<Long> outAllianceRoles; //盟外角色
 
-    public List<AddAffairRoleForm> getAllianceRoles() {
+    public List<Long> getAllianceRoles() {
         return allianceRoles;
     }
 
-    public void setAllianceRoles(List<AddAffairRoleForm> allianceRoles) {
+    public void setAllianceRoles(List<Long> allianceRoles) {
         this.allianceRoles = allianceRoles;
     }
 
-    public List<AddAffairRoleForm> getOutAllianceRoles() {
+    public List<Long> getOutAllianceRoles() {
         return outAllianceRoles;
     }
 
-    public void setOutAllianceRoles(List<AddAffairRoleForm> outAllianceRoles) {
+    public void setOutAllianceRoles(List<Long> outAllianceRoles) {
         this.outAllianceRoles = outAllianceRoles;
     }
 }
