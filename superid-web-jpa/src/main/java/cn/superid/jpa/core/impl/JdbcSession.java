@@ -96,6 +96,7 @@ public class JdbcSession extends AbstractSession {
         try {
             if (jdbcConnection != null) {
                 jdbcConnection.close();
+                jdbcConnection = null;
             }
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -511,7 +512,7 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public List findListByNativeSql(Class<?> cls, String queryString, Object... params) {
+    public List  findListByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMeta.getModelMeta(cls));
