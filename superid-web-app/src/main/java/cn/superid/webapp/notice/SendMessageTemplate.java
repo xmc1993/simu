@@ -68,6 +68,7 @@ public class SendMessageTemplate {
                 return client.sendNotice(c2c);
             } catch (TException e) {
                 e.printStackTrace();
+                return false;
             }
         }
     }
