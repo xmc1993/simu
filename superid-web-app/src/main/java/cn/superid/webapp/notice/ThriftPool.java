@@ -20,7 +20,7 @@ public class ThriftPool {
 
     private static Map<String, NoticeService.Client> _pool;
     private static Map<String, TTransport> _channel;
-    private static final Integer POOL_SEMAPHORE = 0;//同步标志
+    private static final Integer POOL_SEMAPHORE = 0;//同步信号
     private static final Integer PORT_DISTANCE = 7;//shrift-server相对于backend-server的端口差
 
     private ThriftPool() {
@@ -75,7 +75,10 @@ public class ThriftPool {
      * @throws IOException
      */
     public static void updatePool() throws InterruptedException, TTransportException, KeeperException, IOException {
-        if (_pool == null) init();
+        if (_pool == null) {
+            init();
+            return;
+        }
         synchronized (POOL_SEMAPHORE) {
             JSONObject backEndsInfo = ZookeeperService.getBackEndsInfo();
             Iterator keys = backEndsInfo.keys();
@@ -94,7 +97,7 @@ public class ThriftPool {
                 TTransport tTransport = _channel.get(host + ":" + port);
 
                 //如果连接池中的对应连接状态正常,则不做任何处理
-                if (client != null && tTransport != null && tTransport.isOpen()) return;
+                if (client != null && tTransport != null && tTransport.isOpen()) continue;
 
                 if (client == null || tTransport == null) {//如果不存在对应的连接
                     TTransport transport = new TSocket(host, port);
@@ -110,14 +113,15 @@ public class ThriftPool {
             }
 
             //移除不再需要的连接
-            Set<Map.Entry<String, NoticeService.Client>> entries = _pool.entrySet();
-            for (Map.Entry<String, NoticeService.Client> entry : entries) {
-                if (!urls.contains(entry.getKey())) {
-                    _pool.remove(entry.getKey());
-                    _channel.get(entry.getKey()).close();
-                    _channel.remove(entry.getKey());
+            Set<String> localKeys = _pool.keySet();
+            for (String key : localKeys) {
+                if(!urls.contains(key)){
+                    _pool.remove(key);
+                    _channel.get(key).close();
+                    _channel.remove(key);
                 }
             }
+
         }
     }
 }

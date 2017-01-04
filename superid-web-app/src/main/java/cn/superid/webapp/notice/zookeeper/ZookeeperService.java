@@ -20,9 +20,9 @@ public class ZookeeperService {
     private static final String ZOOKEEPER_URL = "192.168.1.100:2182,192.168.1.100:2183,192.168.1.100:2184";
     private static JSONObject connectorsInfo;
     private static JSONObject backEndsInfo;
-    private static final Integer CLIENT_SEMAPHORE = 0;//同步标志
-    private static final Integer CONNECTOR_SEMAPHORE = 0;//同步标志
-    private static final Integer BACKEND_SEMAPHORE = 0;//同步标志
+    private static final Integer CLIENT_SEMAPHORE = 0;//同步信号
+    private static final Integer CONNECTOR_SEMAPHORE = 0;//同步信号
+    private static final Integer BACKEND_SEMAPHORE = 0;//同步信号
 
     private static ZooKeeper zooKeeper;
 
