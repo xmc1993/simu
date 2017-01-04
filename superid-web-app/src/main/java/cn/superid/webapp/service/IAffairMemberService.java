@@ -2,9 +2,12 @@ package cn.superid.webapp.service;
 
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
+import cn.superid.webapp.service.vo.AffairMemberSearchVo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +29,6 @@ public interface IAffairMemberService {
     AffairMemberEntity addCreator(long allianceId, long affairId, long roleId);
 
     /**
-     *
      * @param allianceId
      * @param affairId
      * @param roleId
@@ -172,11 +174,10 @@ public interface IAffairMemberService {
      * @param allianceId
      * @return
      */
-    public boolean isOwnerOfParentAffair(long roleId,long affairId,long allianceId);
+    public boolean isOwnerOfParentAffair(long roleId, long affairId, long allianceId);
 
 
-
-    public List<Long> getDirectorIds(long affairId,long allianceId);
+    public List<Long> getDirectorIds(long affairId, long allianceId);
 
     /**
      * 获取事务中联盟外的成员
@@ -196,11 +197,20 @@ public interface IAffairMemberService {
     int countAffairMember(long allianceId, long affairId);
 
 
+    public Map<Long, List<Object>> getAffairMember();
 
-    public Map<Long,List<Object>> getAffairMember();
-
-    public Map<Long,List<Object>> getAffairMemberByAllianceId(long allianceId);
+    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId);
 
 
     List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
+
+
+    /**
+     * 搜索事务的盟内成员列表，并提供分页和多条件排序
+     * @param allianceId
+     * @param affairId
+     * @param conditions
+     * @return
+     */
+    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions);
 }

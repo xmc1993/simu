@@ -17,7 +17,7 @@ public class NodeUtil {
     }
 
     /**
-     * 根据affairId获取相应的服务器地址
+     * 根据affairId获取相应的backend服务器地址
      *
      * @param key
      * @return
@@ -25,10 +25,37 @@ public class NodeUtil {
      * @throws IOException
      * @throws KeeperException
      */
-    public static String getNodeByKey(long key) throws InterruptedException, IOException, KeeperException {
+    public static String getBackendNodeByKey(long key) throws InterruptedException, IOException, KeeperException {
+        JSONObject backEndsInfo = ZookeeperService.getBackEndsInfo();
+        return getNodeByKey(key, backEndsInfo);
+    }
+
+    /**
+     * 根据affairId获取相应的connector服务器地址
+     *
+     * @param key
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws KeeperException
+     */
+    public static String getConnectorNodeByKey(long key) throws InterruptedException, IOException, KeeperException {
         JSONObject connectorsInfo = ZookeeperService.getConnectorsInfo();
-        int serverCount = connectorsInfo.length();
-        Iterator keys = connectorsInfo.keys();
+        return getNodeByKey(key, connectorsInfo);
+    }
+
+    /**
+     * 以affairId为基础的hash算法
+     *
+     * @param key
+     * @return
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws KeeperException
+     */
+    private static String getNodeByKey(long key, JSONObject info) throws InterruptedException, IOException, KeeperException {
+        int serverCount = info.length();
+        Iterator keys = info.keys();
         long[] indexArray = new long[serverCount];
         int i = 0;
         while (keys.hasNext()) {
@@ -44,11 +71,11 @@ public class NodeUtil {
         long first = indexArray[0];
         long last = indexArray[indexArray.length - 1];
         if (index < first || index > last || index == last) {
-            return (String) connectorsInfo.get(String.valueOf(last));
+            return (String) info.get(String.valueOf(last));
         }
         for (int j = 0; j < indexArray.length - 1; j++) {
             if (indexArray[j + 1] > index) {
-                return (String) connectorsInfo.get(String.valueOf(j));
+                return (String) info.get(String.valueOf(j));
             }
         }
 
@@ -56,7 +83,8 @@ public class NodeUtil {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException, KeeperException {
-        String nodeByKey = getNodeByKey(100L);
+        String nodeByKey = getConnectorNodeByKey(100L);
         System.out.println(nodeByKey);
     }
 }
+
