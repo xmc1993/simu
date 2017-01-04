@@ -12,7 +12,8 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String realname = "";
+    private String realname;
+    private String username;
     private int gender;
     private Timestamp birthday ;
     private String avatar;
@@ -167,4 +168,11 @@ public class LoginUserInfoVO {
         this.idCard = idCard;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }
