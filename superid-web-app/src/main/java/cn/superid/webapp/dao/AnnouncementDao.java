@@ -1,6 +1,5 @@
 package cn.superid.webapp.dao;
 
-import cn.superid.jpa.orm.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
 import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;

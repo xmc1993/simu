@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.SQLDao;
+import cn.superid.webapp.dao.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;

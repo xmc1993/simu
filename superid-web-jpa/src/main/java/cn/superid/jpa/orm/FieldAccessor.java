@@ -11,14 +11,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * java bean property(field/get-method/set-method)'s wrapper of java bean
  */
 public class FieldAccessor {
-    private final static int totalFiledsNum =1000;
+    private final static int totalFieldsNum =1000;
     private Field field;
     private Method getMethod;
     private Method setMethod;
     private final Class<?> cls;
     private final String name;
 
-    private static final Map<String, FieldAccessor> fieldAccessorCache = new ConcurrentHashMap<>(totalFiledsNum);
+    private static final Map<String, FieldAccessor> fieldAccessorCache = new ConcurrentHashMap<>(totalFieldsNum);
 
     public static FieldAccessor getFieldAccessor(Class<?> cls, String name) {
         StringBuilder stringBuilder=new StringBuilder(cls.getCanonicalName());

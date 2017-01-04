@@ -1,4 +1,4 @@
-package cn.superid.jpa.orm;
+package cn.superid.webapp.dao;
 
 /**
  * Created by jizhenya on 16/11/23.
