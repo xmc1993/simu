@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -123,16 +124,25 @@ public interface IAffairMemberService {
     int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId);
 
     /**
-     * 邀请别人加入事务,需要判断是盟内还是盟外
-     *
+     * 邀请盟内角色加入事务
      * @param allianceId
      * @param affairId
      * @param inviteRoleId
-     * @param beInvitedRoleId
-     * @param memberType      盟内默认官方,盟外默认客方,0表示官方,1表示客方
+     * @param inviteUserId
      * @return
      */
-    int inviteToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, long beInvitedRoleId, int memberType, String inviteReason);
+    int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles);
+
+
+    /**
+     * 邀请盟外角色加入事务
+     * @param allianceId
+     * @param affairId
+     * @param inviteRoleId
+     * @param inviteUserId
+     * @return
+     */
+    int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles);
 
     /**
      * 同意别人邀请自己进入事务的请求
