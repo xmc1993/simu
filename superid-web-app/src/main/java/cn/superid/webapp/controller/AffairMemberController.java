@@ -2,6 +2,8 @@ package cn.superid.webapp.controller;
 
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
+import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
+import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
@@ -57,30 +59,36 @@ public class AffairMemberController {
     @ApiOperation(value = "申请加入事务", response = String.class, notes = "")
     @RequestMapping(value = "/apply_for_enter_affair", method = RequestMethod.POST)
     public SimpleResponse applyForEnterAffair(long roleId, long allianceId, long targetAllianceId, long targetAffairId, String applyReason) {
-        int code = affairMemberService.canApplyForEnterAffair(targetAllianceId,targetAffairId,roleId);
-        if(code != 0){
-            return new SimpleResponse(code,null);
+        int code = affairMemberService.canApplyForEnterAffair(targetAllianceId, targetAffairId, roleId);
+        if (code != 0) {
+            return new SimpleResponse(code, null);
         }
-        if(allianceId == targetAllianceId){
-            boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId,targetAffairId,targetAllianceId);
-            if(isOwner){
+        if (allianceId == targetAllianceId) {
+            boolean isOwner = affairMemberService.isOwnerOfParentAffair(roleId, targetAffairId, targetAllianceId);
+            if (isOwner) {
+                //添加affairMember
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER);
+                //检测是否已经是事务成员,是的话就更新,不是就添加affairUser
+                affairUserService.addAffairUser(targetAllianceId,targetAffairId,userService.currentUserId(),roleId);
                 return SimpleResponse.ok(null);
             }
         }
         code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
-        return new SimpleResponse(code,null);
+        return new SimpleResponse(code, null);
     }
 
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
-    public SimpleResponse inviteToEnterAffair(long affairMemberId, long beInvitedRoleId, int memberType, String inviteReason) {
-        int code = affairMemberService.canInviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), beInvitedRoleId);
-        if (code != 0) {
+    public SimpleResponse inviteToEnterAffair(long affairMemberId, @RequestBody AddAffairRoleFormVO roles) {
+        List<AddAffairRoleForm> allianceRoles = roles.getAllianceRoles();
+        List<AddAffairRoleForm> outAllianceRoles = roles.getOutAllianceRoles();
+        //邀请盟内
+        int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),allianceRoles);
+        if(code != 0){
             return new SimpleResponse(code, null);
         }
-        code = affairMemberService.inviteToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
-                GlobalValue.currentRoleId(), GlobalValue.currentRole().getUserId(), beInvitedRoleId, memberType, inviteReason);
+        //邀请盟外
+        code = affairMemberService.inviteOutAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),outAllianceRoles);
         return new SimpleResponse(code, null);
 
     }
@@ -96,7 +104,7 @@ public class AffairMemberController {
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
     public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),searchAffairRoleConditions));
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), searchAffairRoleConditions));
     }
 
 }

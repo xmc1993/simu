@@ -50,7 +50,8 @@ public class AllianceMemberController {
     @RequestMapping(value = "/add_alliance_user", method = RequestMethod.POST)
     @RequiredPermissions(alliance = AlliancePermissions.ManageAllianceUserOrRole)
     public SimpleResponse addAllianceUser(@RequestBody AddAllianceUserFormVO users,long roleId) {
-        return SimpleResponse.ok(roleService.addAllianceUser(users.getUsers(), GlobalValue.currentAllianceId(),roleId));
+
+        return SimpleResponse.ok(roleService.addAllianceUser(users.getUsers(), GlobalValue.currentAllianceId(),roleId,userService.currentUserId()));
     }
 
 

@@ -9,14 +9,25 @@ import java.util.List;
  * Created by njuTms on 16/12/15.
  */
 public interface IAffairUserService {
+
     /**
-     * 在添加affairMember的时候必然会调用,
+     * 检测是否已经是该事务的成员,便于进行add或者update操作
+     * @param allianceId
+     * @param affairId
+     * @param userId
+     * @return
+     */
+    public AffairUserEntity isAffairUser(long allianceId,long affairId,long userId);
+
+    /**
+     * 先判断是否是该事务成员,如果是就更新,不是就添加
      * @param allianceId
      * @param affairId
      * @param roleId
      * @return
      */
-    public AffairUserEntity addAffairUser(long allianceId,long affairId,long roleId);
+    public AffairUserEntity addAffairUser(long allianceId,long affairId,long userId,long roleId);
+
 
 
     /**
