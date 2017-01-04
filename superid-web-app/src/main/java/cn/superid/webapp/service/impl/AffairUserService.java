@@ -1,13 +1,10 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.SQLDao;
+import cn.superid.webapp.dao.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairUserEntity;
-import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.vo.AffairUserVO;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

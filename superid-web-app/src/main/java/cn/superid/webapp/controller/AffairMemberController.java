@@ -5,6 +5,7 @@ import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -77,11 +78,12 @@ public class AffairMemberController {
         return new SimpleResponse(code, null);
     }
 
+    @ApiOperation(value = "邀请加入事务",response = String.class)
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, @RequestBody AddAffairRoleFormVO roles) {
-        List<AddAffairRoleForm> allianceRoles = roles.getAllianceRoles();
-        List<AddAffairRoleForm> outAllianceRoles = roles.getOutAllianceRoles();
+        List<Long> allianceRoles = roles.getAllianceRoles();
+        List<Long> outAllianceRoles = roles.getOutAllianceRoles();
         //邀请盟内
         int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),allianceRoles);
         if(code != 0){
@@ -105,6 +107,12 @@ public class AffairMemberController {
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
     public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
         return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), searchAffairRoleConditions));
+    }
+
+    @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
+        return SimpleResponse.ok(affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions));
     }
 
 }

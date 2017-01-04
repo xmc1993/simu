@@ -31,11 +31,10 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
      */
     public void save(Session session) {
         session.save(this);
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(this.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
             RedisUtil.save(this);
         }
-
     }
 
 
@@ -45,7 +44,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
     public void update(Session session) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(this.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
             RedisUtil.save(this);
         }
@@ -54,7 +53,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
 
     @Override
     public void delete() {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(this.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
             RedisUtil.delete(this.generateKey());
         }
@@ -117,7 +116,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
     public byte[] generateKey(){
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(this.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         Object id= BinaryUtil.getBytes(meta.getIdAccessor().getProperty(this));
         return  RedisUtil.generateKey(meta.getKey(),BinaryUtil.getBytes(id));
     }

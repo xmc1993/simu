@@ -1,6 +1,5 @@
 package cn.superid.webapp.model;
 
-import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -9,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
-import java.util.Map;
 
 /**
  * Created by zp on 2016/7/25.
@@ -21,15 +19,14 @@ public class UserEntity extends ExecutableModel {
     private long id;
     private String superid = "";
     private String password = "";
-    private String familyName = "";
-    private String givenName = "";
     private int state;
     private String videoUrl = "";
     private String videoImg = "";
     private int isVideo;
     private String nicknames = "";
     private boolean isAuthenticated;
-    private String username = "";//用户名
+    private String realname = "";//真实姓名
+    private String username = "";//用户姓名
     private String nameAbbr = "";//用户名缩写
     private Timestamp birthday;
     private int age;
@@ -74,8 +71,6 @@ public class UserEntity extends ExecutableModel {
         this.superid = superid;
     }
 
-
-    @NotTooSimple
     public String getPassword() {
         return password;
     }
@@ -91,22 +86,6 @@ public class UserEntity extends ExecutableModel {
 
     public void setGender(int gender) {
         this.gender = gender;
-    }
-
-    public String getFamilyName() {
-        return familyName;
-    }
-
-    public void setFamilyName(String familyName) {
-        this.familyName = familyName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
     }
 
     public String getVideoUrl() {
@@ -133,12 +112,12 @@ public class UserEntity extends ExecutableModel {
         this.videoImg = videoImg;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
     public String getNicknames() {
@@ -147,14 +126,6 @@ public class UserEntity extends ExecutableModel {
 
     public void setNicknames(String nickNames) {
         this.nicknames = nicknames;
-    }
-
-    public boolean getIsAuthenticated() {
-        return isAuthenticated;
-    }
-
-    public void setIsAuthenticated(boolean authenticated) {
-        isAuthenticated = authenticated;
     }
 
     public int getIsVideo() {
@@ -340,5 +311,21 @@ public class UserEntity extends ExecutableModel {
 
     public void setNameAbbr(String nameAbbr) {
         this.nameAbbr = nameAbbr;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

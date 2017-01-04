@@ -279,13 +279,13 @@ public class ContractService implements IContractService {
 
         String signedRole = addition.getSignedRole();
         if(signedRole == null || signedRole.equals("[]")){
-            addition.setSignedRole("[{\"roleName\":\""+role.getTitle()+"\",\"kind\":\""+signer.getKind()+"\",\"signedTime\":\""+TimeUtil.getCurrentSqlTime()+"\",\"userName\":\""+user.getUsername()+"\",\"roleId\":\""+role.getId()+"\"}]");
+            addition.setSignedRole("[{\"roleName\":\""+role.getTitle()+"\",\"kind\":\""+signer.getKind()+"\",\"signedTime\":\""+TimeUtil.getCurrentSqlTime()+"\",\"userName\":\""+user.getRealname()+"\",\"roleId\":\""+role.getId()+"\"}]");
         }else{
             HashMap<String,String> hash = new HashMap<>();
             hash.put("roleName",role.getTitle());
             hash.put("kind",signer.getKind()+"");
             hash.put("signedTime",TimeUtil.getCurrentSqlTime().toString());
-            hash.put("userName",user.getUsername());
+            hash.put("userName",user.getRealname());
             hash.put("roleId",role.getId()+"");
             JSONArray info = JSONArray.parseArray(signedRole);
             info.add(0,hash);

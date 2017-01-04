@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import clojure.lang.Obj;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.ArrayUtil;
@@ -203,10 +204,22 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+    public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
-        for (AddAffairRoleForm form : roles) {
-            beInvitedRoleId = form.getRoleId();
+        Object[] roleIds = new Object[roles.size()];
+        for(int i=0;i<roles.size();i++){
+            roleIds[i] = roles.get(i);
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        for ( RoleEntity role: roleEntities) {
+            if(role == null){
+                return ResponseCode.RoleNotExist;
+            }
+            //不能是盟外角色
+            if(!(allianceId == role.getAllianceId())){
+                return ResponseCode.RoleNotInAlliance;
+            }
+            beInvitedRoleId = role.getId();
             int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
             if (code != 0) {
                 return code;
@@ -218,9 +231,9 @@ public class AffairMemberService implements IAffairMemberService {
             invitationEntity.setInviteUserId(inviteUserId);
             invitationEntity.setInviteRoleId(inviteRoleId);
             invitationEntity.setInviteReason("");
-            invitationEntity.setBeInvitedUserId(form.getUserId());
-            invitationEntity.setBeInvitedRoleId(form.getRoleId());
-            invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+            invitationEntity.setBeInvitedUserId(role.getUserId());
+            invitationEntity.setBeInvitedRoleId(role.getId());
+            invitationEntity.setBeInvitedRoleTitle(role.getTitle());
             invitationEntity.setInvitationType(InvitationType.Affair);
             invitationEntity.setState(DealState.Agree);
             //盟内人员默认是参与者
@@ -239,10 +252,22 @@ public class AffairMemberService implements IAffairMemberService {
 
 
     @Override
-    public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+    public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
-        for (AddAffairRoleForm form : roles) {
-            beInvitedRoleId = form.getRoleId();
+        Object[] roleIds = new Object[roles.size()];
+        for(int i=0;i<roles.size();i++){
+            roleIds[i] = roles.get(i);
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        for (RoleEntity role: roleEntities) {
+            if(role == null){
+                return ResponseCode.RoleNotExist;
+            }
+            //不能是盟内角色
+            if(allianceId == role.getAllianceId()){
+                return ResponseCode.RoleIsInAlliance;
+            }
+            beInvitedRoleId = role.getId();
             int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
             if (code != 0) {
                 return code;
@@ -263,9 +288,9 @@ public class AffairMemberService implements IAffairMemberService {
                 invitationEntity.setInviteUserId(inviteUserId);
                 invitationEntity.setInviteRoleId(inviteRoleId);
                 invitationEntity.setInviteReason("");
-                invitationEntity.setBeInvitedUserId(form.getUserId());
-                invitationEntity.setBeInvitedRoleId(form.getRoleId());
-                invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+                invitationEntity.setBeInvitedUserId(role.getUserId());
+                invitationEntity.setBeInvitedRoleId(role.getId());
+                invitationEntity.setBeInvitedRoleTitle(role.getTitle());
                 invitationEntity.setInvitationType(InvitationType.Affair);
                 invitationEntity.setState(DealState.ToCheck);
                 //盟外人员进来是盟客
@@ -414,55 +439,6 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
-        StringBuilder sb = new StringBuilder("select u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select role_id from affair_member where alliance_id= ? and affair_id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        if (conditions.isIncludeSubAffair()) {
-            AffairEntity affairEntity = AffairEntity.dao.findById(affairId, allianceId);
-            if (affairEntity == null) return Collections.emptyList();
-            else {
-                List<Long> idList = AffairEntity.getSession().findListByNativeSql(Long.class, "select id from affair where alliance_id=? and path like ?", allianceId, affairEntity.getPath() + "%");
-                if (idList == null)
-                    idList = Arrays.asList(affairId);
-                sb.append(" in (?) ) am ");
-                p.addIndexBinding(ArrayUtil.join(idList.toArray(), ","));
-            }
-
-        } else {
-            sb.append("=? ) am ");
-            p.addIndexBinding(affairId);
-        }
-        sb.append("join (select id,user_id,belong_affair_id,title from role) r on am.role_id=r.id ");
-        sb.append("join (select id,username,superid,gender from user ");
-        if (StringUtil.notEmpty(conditions.getKey())) {
-            sb.append("where username like ? or name_abbr like ? ");
-            p.addIndexBinding("%" + conditions.getKey() + "%");
-            p.addIndexBinding("%" + conditions.getKey() + "%");
-        }
-        sb.append(") u on r.user_id=u.id ");
-        sb.append("join (select id,name,level from affair) a on r.belong_affair_id=a.id");
-        sb.append(" order by ? ?");
-        switch (conditions.getSortColumn()) {
-            case "name":
-                p.addIndexBinding("u.username");
-                break;
-            case "gender":
-                p.addIndexBinding("u.gender");
-                break;
-            case "role":
-                p.addIndexBinding("r.title");
-                break;
-            case "affair":
-                p.addIndexBinding("a.level");
-                break;
-            default:
-                p.addIndexBinding("u.username");
-                break;
-        }
-        if (conditions.isReverseSort()) p.addIndexBinding("desc");
-        else p.addIndexBinding("asc");
-        sb.append(" limit ?");
-        p.addIndexBinding(conditions.getCount() <= 100 && conditions.getCount() >= 10 ? conditions.getCount() : 20);
-        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
+        return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions);
     }
 }

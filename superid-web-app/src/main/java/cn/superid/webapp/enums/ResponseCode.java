@@ -29,4 +29,9 @@ public interface ResponseCode {
      int InvitationNotExist = 105;
      int HasChild = 106;
      int HasTrade = 107;
+
+     //Role
+     int RoleNotExist = 201;
+     int RoleNotInAlliance = 202;
+     int RoleIsInAlliance = 203;
 }

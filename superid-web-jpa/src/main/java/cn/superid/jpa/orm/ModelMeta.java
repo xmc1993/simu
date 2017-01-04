@@ -1,19 +1,20 @@
 package cn.superid.jpa.orm;
 
 import cn.superid.jpa.annotation.Cacheable;
-import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ModelMeta {
+    private final static int fieldsNum = 30;
+    private final static int cachedClassNum = 200;
     private Class<?> modelCls;
     private String tableName;
     private String tableSchema;
@@ -23,9 +24,7 @@ public class ModelMeta {
     private String findByIdSql;
 
 
-
     private boolean cacheable  =false;
-    private String findTinyByIdSql;
     private byte[] key =null;
     private byte[][] fields;
     private List<ModelColumnMeta> columnMetas;
@@ -53,14 +52,7 @@ public class ModelMeta {
      */
     private List<ModelColumnMeta> getColumnMetas() {
         Field[] fields = modelCls.getDeclaredFields();
-        List<ModelColumnMeta> columnMetas = new ArrayList<>(30);
-        StringBuilder insertSb=new StringBuilder();
-        StringBuilder updateSb = new StringBuilder();
-        StringBuilder findTinySb= new StringBuilder();
-        boolean init = true;
-        boolean initForTiny = true;
-        boolean initForUpdate = true;
-
+        List<ModelColumnMeta> columnMetas = new ArrayList<>(fieldsNum);
         for (Field field : fields) {
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                 continue;
@@ -88,11 +80,7 @@ public class ModelMeta {
                     columnMeta.columnName = columnAnno.name();
                 }
             }
-            if(init){
-                init =false;
-            }else{
-                insertSb.append(",");
-            }
+
 
 
             if (fieldAccessor.getPropertyAnnotation(javax.persistence.Id.class) != null) {
@@ -101,37 +89,17 @@ public class ModelMeta {
             }else if(fieldAccessor.getPropertyAnnotation(PartitionId.class)!=null){
                 columnMeta.isPartition = true;
                 this.partitionColumn = columnMeta;
-            } else{
-                if(initForUpdate){
-                    initForUpdate = false;
-                }else{
-                    updateSb.append(",");
-                }
-                updateSb.append(columnMeta.columnName);
-                updateSb.append("=? ");
             }
-            insertSb.append(columnMeta.columnName);
 
-
-
-            if(fieldAccessor.getPropertyAnnotation(NotTooSimple.class)==null){
-                if(initForTiny){
-                    initForTiny = false;
-                }else{
-                    findTinySb.append(",");
-                }
-                findTinySb.append(columnMeta.columnName);
-            }
             columnMetas.add(columnMeta);
         }
 
 
         this.columnMetas = columnMetas;
         if(this.idColumnMeta!=null){
-            initInsertSql(insertSb.toString());
-            initUpdateSql(updateSb.toString());
+            initInsertSql();
+            initUpdateSql();
             initFindByIdSql();
-            initFindTinyByIdSql(findTinySb.toString());
             initDeleteSql();
         }
         return columnMetas;
@@ -144,11 +112,21 @@ public class ModelMeta {
         return this.insertSql;
     }
 
-    public void initInsertSql(String columns) {
+    public void initInsertSql() {//init insert sql
+        boolean first = true;
         StringBuilder sql = new StringBuilder("INSERT INTO ");
         sql.append(this.getTableName());
         sql.append(" (");
-        sql.append(columns);
+
+        for(ModelColumnMeta columnMeta:columnMetas){
+            if(first){
+                first =false;
+            }else{
+                sql.append(",");
+            }
+            sql.append(columnMeta.columnName);
+        }
+
         sql.append(")");
         sql.append(" VALUES (");
         int size = this.getColumnMetaSet().size();
@@ -166,11 +144,25 @@ public class ModelMeta {
         return updateSql;
     }
 
-    public void initUpdateSql(String updateSql) {
+    public void initUpdateSql() {
+        boolean first = true;
+
         StringBuilder sql = new StringBuilder("UPDATE ");
         sql.append(this.getTableName());
         sql.append(" SET ");
-        sql.append(updateSql);
+
+        for(ModelColumnMeta columnMeta:columnMetas){
+             if(!columnMeta.isId&&!columnMeta.isPartition){// id and partitionId can't set
+                 if(first){
+                     first = false;
+                 }else{
+                     sql.append(",");
+                 }
+                 sql.append(columnMeta.columnName);
+                 sql.append("=? ");
+             }
+        }
+
         sql.append(" WHERE ");
         generatePartitionCondition(sql);
         sql.append(this.idColumnMeta.columnName);
@@ -216,23 +208,7 @@ public class ModelMeta {
     }
 
 
-    public String getFindTinyByIdSql() {
-        return findTinyByIdSql;
-    }
-
-    public void  initFindTinyByIdSql(String findTinyByIdSql) {
-        StringBuilder sql = new StringBuilder("SELECT ");
-        sql.append(findTinyByIdSql);
-        sql.append(" FROM ");
-        sql.append(this.getTableName());
-        sql.append(" WHERE ");
-        generatePartitionCondition(sql);
-        sql.append(this.idColumnMeta.columnName);
-        sql.append("=?");
-        this.findTinyByIdSql = sql.toString();
-    }
-
-    private static final Map<Class<?>, ModelMeta> modelMetaCache = new HashMap<Class<?>, ModelMeta>();
+    private static final Map<Class<?>, ModelMeta> modelMetaCache = new ConcurrentHashMap<>(cachedClassNum);
 
     public static ModelMeta getModelMeta(Class<?> modelCls) {
         ModelMeta modelMeta = modelMetaCache.get(modelCls);

@@ -1,15 +1,12 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.ValidateCode;
-import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
-import cn.superid.webapp.model.AffairMemberEntity;
-import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
@@ -21,7 +18,6 @@ import cn.superid.webapp.utils.SmsType;
 import cn.superid.webapp.utils.TimeUtil;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -202,6 +198,7 @@ public class UserController {
             userEntity.setMobile(MobileUtil.getMobile(token));
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));
+        userEntity.setRealname(username);
         userEntity.setUsername(username);
         userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         UserEntity result = userService.createUser(userEntity);
@@ -315,8 +312,6 @@ public class UserController {
         userEntity.copyPropertiesTo(loginUserInfoVO);
         //获取user的所有affairMember
         loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
-        //获取user的所有盟的所有角色
-        loginUserInfoVO.setRoles(roleService.getUserAllianceRoles());
 
         return SimpleResponse.ok(loginUserInfoVO);
     }
@@ -404,7 +399,6 @@ public class UserController {
 
             user.copyPropertiesTo(loginUserInfoVO);
             loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
-            loginUserInfoVO.setRoles(roleService.getUserAllianceRoles());
             return SimpleResponse.ok(loginUserInfoVO);
         }else{
             ResultUserInfo resultUserInfo=userService.getUserInfo(userId);

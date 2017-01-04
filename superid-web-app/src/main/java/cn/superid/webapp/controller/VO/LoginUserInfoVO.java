@@ -12,7 +12,8 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String username = "";
+    private String realname;
+    private String username;
     private int gender;
     private Timestamp birthday ;
     private String avatar;
@@ -22,10 +23,11 @@ public class LoginUserInfoVO {
     private long homepageAffairId;
     private long personalRoleId;
     private long personalAllianceId;
-
+    private String superid;
+    private String address;
+    private boolean isAuthenticated;
+    private String idCard = "";
     private Map<Long,List<Object>> members;
-    //private List<UserAllianceRolesVO> roles;
-    private List<AllianceRolesVO> roles;
 
 
     public long getId() {
@@ -36,12 +38,12 @@ public class LoginUserInfoVO {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
     public int getGender() {
@@ -124,11 +126,45 @@ public class LoginUserInfoVO {
         this.members = members;
     }
 
-    public List<AllianceRolesVO> getRoles() {
-        return roles;
+
+
+    public String getSuperid() {
+        return superid;
     }
 
-    public void setRoles(List<AllianceRolesVO> roles) {
-        this.roles = roles;
+    public void setSuperid(String superid) {
+        this.superid = superid;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

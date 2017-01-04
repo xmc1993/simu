@@ -1,7 +1,6 @@
 package model;
 
 import cn.superid.jpa.annotation.Cacheable;
-import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -46,7 +45,6 @@ public class User  extends ExecutableModel{
         this.age = age;
     }
 
-    @NotTooSimple
     public String getDetails() {
         return details;
     }

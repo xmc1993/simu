@@ -2,7 +2,6 @@ package cn.superid.jpa.core;
 
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
-import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.BinaryUtil;
 import com.google.common.collect.ImmutableMap;
@@ -182,8 +181,8 @@ public abstract class AbstractSession implements Session {
     @Override
     public void copyProperties(Object from, Object to, boolean skipNull) {
 
-        ModelMeta fromMeta = ModelMetaFactory.getEntityMetaOfClass(from.getClass());
-        ModelMeta toMeta = ModelMetaFactory.getEntityMetaOfClass(to.getClass());
+        ModelMeta fromMeta = ModelMeta.getModelMeta(from.getClass());
+        ModelMeta toMeta = ModelMeta.getModelMeta(to.getClass());
         for (ModelMeta.ModelColumnMeta fromColumnMeta : fromMeta.getColumnMetaSet()) {
             for (ModelMeta.ModelColumnMeta toColumnMeta : toMeta.getColumnMetaSet()) {
                 if (fromColumnMeta.isId && skipNull) {
@@ -206,7 +205,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public HashMap<String, Object> generateHashMapFromEntity(Object entity,boolean skipNull) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<String, Object> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
@@ -226,7 +225,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public HashMap<byte[], byte[]> generateHashByteMap(Object entity) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
         hashMap.put(RedisUtil.getHmFeature(),RedisUtil.getHmFeature());
@@ -243,7 +242,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public Object generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity, hashMap.get(modelColumnMeta.fieldName));
@@ -253,7 +252,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap, Object entity) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity,BinaryUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
@@ -264,7 +263,7 @@ public abstract class AbstractSession implements Session {
 
     @Override
     public byte[][] generateZipMap(Object entity) {
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         byte[][] result = new byte[(meta.getColumnMetaSet().size()-1)*2+1][];//因为id不需要存入zipmap
         byte[] key=  meta.getKey();
         int i= 1;

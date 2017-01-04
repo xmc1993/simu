@@ -2,7 +2,6 @@ package cn.superid.jpa.redis;
 import cn.superid.jpa.exceptions.JedisRuntimeException;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.orm.ModelMeta;
-import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.log4j.Logger;
@@ -115,7 +114,7 @@ public class RedisUtil {
 //            Object result = clazz.newInstance();
 //            Jedis jedis = getJedis();
 //            if(jedis!=null){
-//                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+//                ModelMeta modelMeta = ModelMeta.getModelMeta(clazz);
 //                List<byte[]> list = jedis.hmget(key,fields);
 //                jedis.close();
 //                if (list==null||list.size()==0){
@@ -151,7 +150,7 @@ public class RedisUtil {
             Object result = clazz.newInstance();
             Jedis jedis = getJedis();
             if(jedis!=null){
-                ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(clazz);
+                ModelMeta modelMeta = ModelMeta.getModelMeta(clazz);
                 List<byte[]> list = jedis.hmget(generateKey(modelMeta.getKey(),BinaryUtil.getBytes(id)),modelMeta.getCachedFields());
                 jedis.close();
                 if(!RedisUtil.isPOJO(list)){

@@ -1,13 +1,19 @@
 package cn.superid.webapp.dao;
 
 import cn.superid.jpa.util.ParameterBindings;
+import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.dao.impl.IAffairMemberDao;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,6 +83,72 @@ public class AffairMemberDao implements IAffairMemberDao{
         parameterBindings.addIndexBinding(conditions.getLimit());
 
         return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sql.toString(),parameterBindings.getIndexParametersArray());
+    }
+
+    @Override
+    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
+        StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        if (conditions.isIncludeSubAffair()) {
+            AffairEntity affairEntity = AffairEntity.dao.findById(affairId, allianceId);
+            if (affairEntity == null) return Collections.emptyList();
+            else {
+                List<Long> idList = AffairEntity.getSession().findListByNativeSql(Long.class, "select id from affair where alliance_id=? and path like ?", allianceId, affairEntity.getPath() + "%");
+                if (idList == null)
+                    idList = Arrays.asList(affairId);
+                sb.append(" in (").append(ArrayUtil.join(idList.toArray(), ",")).append(")) am ");
+            }
+
+        } else {
+            sb.append("=? ) am ");
+            p.addIndexBinding(affairId);
+        }
+        sb.append("join (select id,user_id,belong_affair_id,title from role) r on am.role_id=r.id ");
+        sb.append("join (select id,username,superid,gender from user ");
+        if (cn.superid.jpa.util.StringUtil.notEmpty(conditions.getKey())) {
+            sb.append("where username like ? or name_abbr like ? ");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+        }
+        sb.append(") u on r.user_id=u.id ");
+        sb.append("join (select id,name from affair) a on r.belong_affair_id=a.id ");
+        sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
+        if (conditions.isAllianceUser()) {
+            sb.append("join (select  user_id from alliance_user where alliance_id= ? ) au on au.user_id=r.user_id");
+        }else{
+            sb.append("where r.user_id not in (select  user_id from alliance_user where alliance_id= ? )");
+        }
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(allianceId);
+        sb.append(" order by ");
+        switch (conditions.getSortColumn()) {
+            case "name":
+                sb.append("u.username");
+                break;
+            case "gender":
+                sb.append("u.gender");
+                break;
+            case "role":
+                sb.append("r.title");
+                break;
+            case "affair":
+                sb.append("a2.level");
+                break;
+            default:
+                sb.append("u.username");
+                break;
+        }
+        if (conditions.isReverseSort()) sb.append(" desc ");
+        else sb.append(" asc ");
+        sb.append(" limit ? , ?");
+        if(conditions.getCount() <= 100 && conditions.getCount() >= 10)
+            conditions.setCount(20);
+        if(conditions.getPage() <1)
+            conditions.setPage(1);
+        p.addIndexBinding(conditions.getCount()*(conditions.getPage()-1));
+        p.addIndexBinding(conditions.getCount()*(conditions.getPage()));
+        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
     }
 
 }

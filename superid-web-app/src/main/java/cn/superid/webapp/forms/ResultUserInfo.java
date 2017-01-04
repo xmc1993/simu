@@ -24,6 +24,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String videoUrl;
     private String videoImg;
     private int isVideo;
+    private String realname;
     private String username;
     private String nickNames;
     private Timestamp birthday;
@@ -107,12 +108,12 @@ public class ResultUserInfo extends ExecutableModel{
         this.isVideo = isVideo;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRealname() {
+        return realname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRealname(String realname) {
+        this.realname = realname;
     }
 
     public String getNickNames() {
@@ -250,5 +251,13 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setMembers(Map<Long, List<Object>> members) {
         this.members = members;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

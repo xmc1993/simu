@@ -1,9 +1,12 @@
 package cn.superid.webapp.controller.forms;
 
+import com.wordnik.swagger.annotations.ApiModel;
+
 /**
  * Created by njuTms on 17/1/3.
  * 邀请事务角色
  */
+@ApiModel
 public class AddAffairRoleForm {
     private long userId;
     private long roleId;
