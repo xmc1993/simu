@@ -18,7 +18,7 @@ public class AllianceCertificationService implements IAllianceCertificationServi
 
     @Override
     public List<AllianceCertificationEntity> showUncheckedCertification() {
-        return AllianceCertificationEntity.dao.eq("check_state",0).selectList("id","company_name","alliance_id");
+        return AllianceCertificationEntity.dao.eq("check_state",2).selectList("id","company_name","alliance_id");
     }
 
     @Override
