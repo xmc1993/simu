@@ -1,12 +1,11 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.orm.SQLDao;
+import cn.superid.webapp.dao.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.state.ValidState;
-import cn.superid.webapp.enums.type.DefaultRole;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;

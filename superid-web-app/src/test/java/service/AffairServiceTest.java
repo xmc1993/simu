@@ -1,6 +1,6 @@
 package service;
 
-import cn.superid.jpa.orm.SQLDao;
+import cn.superid.webapp.dao.SQLDao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.forms.AffairInfo;
