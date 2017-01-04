@@ -25,7 +25,9 @@ public class LoginUserInfoVO {
     private String superid;
     private String address;
     private boolean isAuthenticated;
-
+    private String idCard = "";
+    private String familyName = "";
+    private String givenName = "";
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
     private List<AllianceRolesVO> roles;
@@ -151,11 +153,35 @@ public class LoginUserInfoVO {
         this.address = address;
     }
 
-    public boolean isAuthenticated() {
+    public boolean getIsAuthenticated() {
         return isAuthenticated;
     }
 
-    public void setAuthenticated(boolean authenticated) {
+    public void setIsAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
     }
 }
