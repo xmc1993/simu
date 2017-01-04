@@ -103,6 +103,8 @@ public class AffairMemberServiceTest {
         SearchAffairMemberConditions conditions = new SearchAffairMemberConditions();
         conditions.setIncludeSubAffair(true);
         conditions.setSortColumn("level");
+        conditions.setCount(190);
+        conditions.setPage(0);
         List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions);
         System.out.println(list);
     }

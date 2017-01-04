@@ -5,6 +5,7 @@ import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -105,6 +106,12 @@ public class AffairMemberController {
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
     public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
         return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), searchAffairRoleConditions));
+    }
+
+    @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
+        return SimpleResponse.ok(affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions));
     }
 
 }
