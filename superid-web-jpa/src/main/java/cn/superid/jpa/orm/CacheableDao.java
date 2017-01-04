@@ -28,7 +28,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
     public CacheableDao(Class clazz) {
         super(clazz);
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         if(!modelMeta.isCacheable()){
             throw new RuntimeException("You should add annotation cacheable");
         }
@@ -58,7 +58,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
 
     public T selectOne(String... params) {
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
             byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
@@ -91,7 +91,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     }
 
     public Object findFieldByKey(Object key,String field,Class<?> clazz){
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         List<byte[]> result = RedisUtil.findByKey(RedisUtil.generateKey(modelMeta.getKey(),BinaryUtil.getBytes(key)),BinaryUtil.getBytes(field));
         if(result!=null&&result.size()>0){
             byte[] bytes = result.get(0);
@@ -122,7 +122,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     }
 
     private void deleteFromCache(){
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
             byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
@@ -135,7 +135,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
     @Override
     public int set(Object... params) {
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(this.clazz);
+        ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
             byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
@@ -179,7 +179,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
             throw  new RuntimeException("Cacheable model should operation by id");
         }
         StringBuilder builder = where.get();
-        ModelMeta meta = ModelMetaFactory.getEntityMetaOfClass(from.getClass());
+        ModelMeta meta = ModelMeta.getModelMeta(from.getClass());
 
         byte[] redisKey = RedisUtil.generateKey(meta.getKey(), BinaryUtil.getBytes(id));
         Jedis jedis = RedisUtil.getJedis();
@@ -187,7 +187,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
         ParameterBindings pb = new ParameterBindings();
         StringBuilder sb = new StringBuilder(" UPDATE ");
-        sb.append(ModelMetaFactory.getEntityMetaOfClass(this.clazz).getTableName());
+        sb.append(ModelMeta.getModelMeta(this.clazz).getTableName());
         sb.append(" SET ");
         boolean init =true;
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
@@ -244,11 +244,6 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
 
     @Override
-    public T findTinyById(Object id) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
     public T findById(Object id, Object partitionId) {
         Object cached = RedisUtil.findByKey(id,clazz);
         if(cached!=null){
@@ -262,10 +257,6 @@ public class CacheableDao<T> extends ConditionalDao<T> {
         return getFromSQl;
     }
 
-    @Override
-    public T findTinyById(Object id, Object partitionId) {
-        throw new JdbcRuntimeException("Not Support");
-    }
 
     @Override
     public Object selectOneByJoin(Class target, String... params) {

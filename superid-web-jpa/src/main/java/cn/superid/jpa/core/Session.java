@@ -65,11 +65,8 @@ public interface Session {
 
     Object find(Class<?> cls, Object id);
 
-    Object findTiny(Class<?> cls, Object id);
-
     Object find(Class<?> cls, Object id,Object partitionId);
 
-    Object findTiny(Class<?> cls, Object id,Object partitionId);
 
     void delete(Object entity);
 

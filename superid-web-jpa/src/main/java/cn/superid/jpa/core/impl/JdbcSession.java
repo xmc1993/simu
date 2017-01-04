@@ -5,7 +5,6 @@ import cn.superid.jpa.core.Transaction;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.orm.FieldAccessor;
-import cn.superid.jpa.orm.ModelMetaFactory;
 import cn.superid.jpa.util.NumberUtil;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -139,7 +138,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public void save(Object entity) {
         try {
-            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             String sql = modelMeta.getInsertSql();
             if (!isInBatch) {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -190,7 +189,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public boolean update(final Object entity) {
         try {
-            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             boolean isSharding = modelMeta.getPatitionColumn()!=null;
             Object partitionId =null;
 
@@ -248,7 +247,7 @@ public class JdbcSession extends AbstractSession {
     public boolean update(Object entity, List<String> columns) {
         try {
 
-            final ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+            final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             if(modelMeta.getPatitionColumn()!=null){
                 throw new JdbcRuntimeException(" This method don't support partition entity:"+modelMeta.getPatitionColumn().columnName);
             }
@@ -294,7 +293,7 @@ public class JdbcSession extends AbstractSession {
     @Override
     public void delete(Object entity) {
         try {
-            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+            ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             FieldAccessor idAccessor = modelMeta.getIdAccessor();
             boolean isSharding = modelMeta.getPatitionColumn()!=null;
             Object partitionId =null;
@@ -423,7 +422,7 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public void refresh(Object entity) {
-        ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(entity.getClass());
+        ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
         FieldAccessor idAccessor = modelMeta.getIdAccessor();
         Object latestEntity = find(entity.getClass(), idAccessor.getProperty(entity));
         if (latestEntity != null) {
@@ -453,27 +452,22 @@ public class JdbcSession extends AbstractSession {
      * @param cls return Type
      * @param id
      * @param partitionId Distributed db partitionId
-     * @param tiny not select Unnecessary big column
      * @return
      */
 
-    public Object find(Class<?> cls, Object id,Object partitionId, boolean tiny) {
+    @Override
+    public Object find(Class<?> cls, Object id,Object partitionId) {
         try {
-            String sql;
-            ModelMeta modelMeta = ModelMetaFactory.getEntityMetaOfClass(cls);
+            ModelMeta modelMeta = ModelMeta.getModelMeta(cls);
+            String  sql = modelMeta.getFindByIdSql();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
             ModelMeta.ModelColumnMeta partitionColumn = modelMeta.getPatitionColumn();
-            if (tiny) {
-                sql = modelMeta.getFindTinyByIdSql();
-            } else {
-                sql = modelMeta.getFindByIdSql();
-            }
+
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
             int i =getIndexParamBaseOrdinal();
             if(partitionColumn!=null){
                 if(NumberUtil.isUndefined(partitionId)){
                     throw new JdbcRuntimeException("you should have partition column:"+partitionColumn.columnName);
-
                 }
                 preparedStatement.setObject(i,partitionId);
                 i++;
@@ -512,7 +506,7 @@ public class JdbcSession extends AbstractSession {
      */
     @Override
     public Object find(Class<?> cls, Object id) {
-        return find(cls, id, null,false);
+        return find(cls, id, null);
     }
 
 
@@ -526,7 +520,7 @@ public class JdbcSession extends AbstractSession {
     public List findListByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
-            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
+            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMeta.getModelMeta(cls));
             return runner.query(getJdbcConnection(), queryString, handler, params);
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -541,7 +535,7 @@ public class JdbcSession extends AbstractSession {
     public Object findOneByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
-            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMetaFactory.getEntityMetaOfClass(cls));
+            ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMeta.getModelMeta(cls));
             List<Object> result = runner.query(getJdbcConnection(), queryString, handler, params);
             if (result.size() > 0) {
                 return result.get(0);
@@ -565,20 +559,9 @@ public class JdbcSession extends AbstractSession {
         return findListByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
-    @Override
-    public Object findTiny(Class<?> cls, Object id) {
-        return find(cls, id,null, true);
-    }
 
-    @Override
-    public Object find(Class<?> cls, Object id, Object partitionId) {
-        return find(cls,id,partitionId,false);
-    }
 
-    @Override
-    public Object findTiny(Class<?> cls, Object id, Object partitionId) {
-        return find(cls,id,partitionId,true);
-    }
+
 
     @Override
     public int execute(String sql) {

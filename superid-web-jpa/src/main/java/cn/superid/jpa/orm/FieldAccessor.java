@@ -1,39 +1,39 @@
 package cn.superid.jpa.orm;
 
-import cn.superid.jpa.core.AbstractSession;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * java bean property(field/get-method/set-method)'s wrapper of java bean
  */
 public class FieldAccessor {
+    private final static int totalFiledsNum =1000;
     private Field field;
     private Method getMethod;
     private Method setMethod;
     private final Class<?> cls;
     private final String name;
 
-    private static final Map<String, FieldAccessor> fieldAccessorCache = new HashMap<String, FieldAccessor>();
+    private static final Map<String, FieldAccessor> fieldAccessorCache = new ConcurrentHashMap<>(totalFiledsNum);
 
     public static FieldAccessor getFieldAccessor(Class<?> cls, String name) {
         StringBuilder stringBuilder=new StringBuilder(cls.getCanonicalName());
         stringBuilder.append("@");
         stringBuilder.append(name);
         String key = stringBuilder.toString();
-        if(!fieldAccessorCache.containsKey(key)) {
+        FieldAccessor fieldAccessor = fieldAccessorCache.get(key);
+        if(fieldAccessor==null) {
             synchronized (fieldAccessorCache) {
                 if(!fieldAccessorCache.containsKey(key)) {
                     fieldAccessorCache.put(key, new FieldAccessor(cls, name));
                 }
             }
         }
-        return fieldAccessorCache.get(key);
+        return fieldAccessor;
     }
 
     @SuppressWarnings("unchecked")
@@ -52,7 +52,7 @@ public class FieldAccessor {
             getMethod = null;
         }
         try {
-            setMethod = cls.getMethod(getSetMethodName());
+            setMethod = cls.getMethod(getSetMethodName(),field.getType());
         } catch (NoSuchMethodException e) {
             setMethod = null;
         }
@@ -77,15 +77,15 @@ public class FieldAccessor {
      */
     public <T extends Annotation> T getPropertyAnnotation(Class<T> annoCls) {
         if(field != null) {
-            T annoOnField = field.getAnnotation(annoCls);
-            if (annoOnField != null) {
-                return annoOnField;
+            T fieldAnnotation = field.getAnnotation(annoCls);
+            if (fieldAnnotation != null) {
+                return fieldAnnotation;
             }
         }
         if(getMethod != null) {
-            T annoOnGetMethod = getMethod.getAnnotation(annoCls);
-            if (annoOnGetMethod != null) {
-                return annoOnGetMethod;
+            T getMethodAnnotation = getMethod.getAnnotation(annoCls);
+            if (getMethodAnnotation != null) {
+                return getMethodAnnotation;
             }
         }
         if(setMethod != null) {
@@ -103,9 +103,6 @@ public class FieldAccessor {
             }
         }
         if (field != null) {
-            if (Proxy.isProxyClass(obj.getClass())) {
-                // You may need process this, maybe you can make all proxy instance implement a special interface
-            }
             try {
                 return field.get(obj);
             } catch (IllegalAccessException e) {
@@ -119,6 +116,7 @@ public class FieldAccessor {
         if((getPropertyType()==int.class||getPropertyType()==Integer.class)&&value instanceof Long){
             value =((Long) value).intValue();
         }
+
         if (setMethod != null) {
             try {
                 setMethod.invoke(obj, value);
@@ -128,9 +126,6 @@ public class FieldAccessor {
             }
         }
         if (field != null) {
-            if (Proxy.isProxyClass(obj.getClass())) {
-                // You may need process this, maybe you can make all proxy instance implement a special interface
-            }
             try {
                 field.set(obj, value);
                 return;
@@ -159,8 +154,10 @@ public class FieldAccessor {
      */
     private String getGetMethodName() {
         assert name != null;
-        if (field != null && (field.getType() == Boolean.class
-                    || "boolean".equals(field.getType().getName()))) {
+        if (field.getType() == Boolean.class || "boolean".equals(field.getType().getName())) {
+            if(name.indexOf("is")==0){
+                return name;
+            }
             return "is" + upperFirstChar(name);
         }
         return "get" + upperFirstChar(name);
@@ -173,6 +170,12 @@ public class FieldAccessor {
      */
     private String getSetMethodName() {
         assert name != null;
-        return "set" + upperFirstChar(name);
+        String methodName = name;
+        if (field.getType() == Boolean.class || "boolean".equals(field.getType().getName())) {
+            if(name.indexOf("is")==0){
+                methodName= name.substring(2);
+            }
+        }
+        return "set" + upperFirstChar(methodName);
     }
 }

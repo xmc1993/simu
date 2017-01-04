@@ -1,6 +1,5 @@
 package cn.superid.webapp.model;
 
-import cn.superid.jpa.annotation.NotTooSimple;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -74,8 +73,6 @@ public class UserEntity extends ExecutableModel {
         this.superid = superid;
     }
 
-
-    @NotTooSimple
     public String getPassword() {
         return password;
     }

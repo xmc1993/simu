@@ -151,7 +151,7 @@ public class RoleService implements IRoleService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
         p.addIndexBinding(userService.currentUserId());
-        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findList(AllianceRolesVO.class,sb.toString(),p);
+        List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString(),p);
         //把个人盟和个人角色过滤掉
         UserEntity userEntity = userService.getCurrentUser();
         for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
