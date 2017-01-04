@@ -22,6 +22,8 @@ public class LoginUserInfoVO {
     private long homepageAffairId;
     private long personalRoleId;
     private long personalAllianceId;
+    private String superid;
+    private String address;
 
     private Map<Long,List<Object>> members;
     //private List<UserAllianceRolesVO> roles;
@@ -130,5 +132,21 @@ public class LoginUserInfoVO {
 
     public void setRoles(List<AllianceRolesVO> roles) {
         this.roles = roles;
+    }
+
+    public String getSuperid() {
+        return superid;
+    }
+
+    public void setSuperid(String superid) {
+        this.superid = superid;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
