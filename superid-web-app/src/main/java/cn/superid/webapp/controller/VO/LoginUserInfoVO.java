@@ -144,14 +144,6 @@ public class LoginUserInfoVO {
         this.address = address;
     }
 
-    public boolean getIsAuthenticated() {
-        return isAuthenticated;
-    }
-
-    public void setIsAuthenticated(boolean authenticated) {
-        isAuthenticated = authenticated;
-    }
-
     public String getIdCard() {
         return idCard;
     }
@@ -166,5 +158,13 @@ public class LoginUserInfoVO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

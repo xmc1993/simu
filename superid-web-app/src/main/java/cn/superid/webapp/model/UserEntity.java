@@ -128,14 +128,6 @@ public class UserEntity extends ExecutableModel {
         this.nicknames = nicknames;
     }
 
-    public boolean getIsAuthenticated() {
-        return isAuthenticated;
-    }
-
-    public void setIsAuthenticated(boolean authenticated) {
-        isAuthenticated = authenticated;
-    }
-
     public int getIsVideo() {
         return isVideo;
     }
@@ -327,5 +319,13 @@ public class UserEntity extends ExecutableModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }
