@@ -2,13 +2,14 @@ package cn.superid.webapp.controller.forms;
 
 /**
  * Created by jizhenya on 16/11/24.
+ * 邀请盟成员
  */
 public class AddAllianceUserForm {
 
     private long userId;
     private long mainAffairId;
     private long roleId;
-    private String roleName;
+    private String roleTitle;
     private String permissions;
     private String comment;
 
@@ -37,12 +38,12 @@ public class AddAllianceUserForm {
         this.roleId = roleId;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String getRoleTitle() {
+        return roleTitle;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setRoleTitle(String roleTitle) {
+        this.roleTitle = roleTitle;
     }
 
     public String getPermissions() {

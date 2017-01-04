@@ -131,8 +131,8 @@ public class RoleService implements IRoleService {
     }
 
     @Override
-    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId) {
-        allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId);
+    public boolean addAllianceUser(List<AddAllianceUserForm> forms, long allianceId,long roleId,long inviteUserId) {
+        allianceUserService.inviteToEnterAlliance(forms,allianceId,roleId,inviteUserId);
         return true;
     }
 

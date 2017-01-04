@@ -4,9 +4,7 @@ import cn.superid.webapp.enums.MessageColumn;
 import cn.superid.webapp.notice.proto.Message;
 import cn.superid.webapp.service.IMessageService;
 import cn.superid.webapp.service.IRedisMessageService;
-import cn.superid.webapp.notice.tcp.TcpConnectorsPool;
 import cn.superid.webapp.utils.AliOTSDao;
-import cn.superid.webapp.notice.zookeeper.NodeUtil;
 import com.aliyun.openservices.ots.ClientException;
 import com.aliyun.openservices.ots.OTSClient;
 import com.aliyun.openservices.ots.ServiceException;
@@ -17,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,24 +41,24 @@ public class MessageService implements IMessageService {
 
     @Override
     public boolean sendNotice(Message.NoticeMsg noticeMsg) throws InterruptedException, IOException, KeeperException {
-        String url = NodeUtil.getNodeByKey(noticeMsg.getAffairId());
-        String[] infos = url.split(":");
-        String host = infos[0];
-        int port = Integer.valueOf(infos[1]);
-        Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
-        if (socket == null) {
-            socket = TcpConnectorsPool.newTcpConnector(host, port);
-        }
-        if (socket == null) {
-            return false;
-        }
-        try {
-            OutputStream outputStream = socket.getOutputStream();
-            noticeMsg.writeTo(outputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+//        String url = NodeUtil.getNodeByKey(noticeMsg.getAffairId());
+//        String[] infos = url.split(":");
+//        String host = infos[0];
+//        int port = Integer.valueOf(infos[1]);
+//        Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
+//        if (socket == null) {
+//            socket = TcpConnectorsPool.newTcpConnector(host, port);
+//        }
+//        if (socket == null) {
+//            return false;
+//        }
+//        try {
+//            OutputStream outputStream = socket.getOutputStream();
+//            noticeMsg.writeTo(outputStream);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return false;
+//        }
 
         return true;
     }

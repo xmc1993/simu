@@ -18,7 +18,7 @@ public interface IAllianceUserService{
      * @param allianceId
      * @return
      */
-    public boolean inviteToEnterAlliance(List<AddAllianceUserForm> forms, long allianceId,long roleId);
+    public boolean inviteToEnterAlliance(List<AddAllianceUserForm> forms, long allianceId,long roleId,long inviteUserId);
 
     /**
      *

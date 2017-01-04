@@ -21,7 +21,7 @@ public class PingYinTest {
     public void updateUserNameAbbr() {
         List<UserEntity> userEntities = UserEntity.dao.findListByNativeSql("Select * from user");
         for (UserEntity entity : userEntities) {
-            String abbr = PingYinUtil.getFirstSpell(entity.getUsername());
+            String abbr = PingYinUtil.getFirstSpell(entity.getRealname());
             entity.setNameAbbr(abbr);
             entity.update();
         }

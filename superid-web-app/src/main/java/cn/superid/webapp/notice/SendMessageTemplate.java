@@ -1,36 +1,76 @@
 package cn.superid.webapp.notice;
 
-import cn.superid.webapp.notice.thrift.NoticeService;
 import cn.superid.webapp.notice.thrift.C2c;
+import cn.superid.webapp.notice.thrift.NoticeService;
+import cn.superid.webapp.notice.zookeeper.NodeUtil;
+import com.google.gson.Gson;
 import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
+import org.apache.zookeeper.KeeperException;
+
+import java.io.IOException;
 
 /**
  * Created by xmc1993 on 16/12/19.
  */
 public class SendMessageTemplate {
-    private static final String HOST = "localhost";
-    private static final Integer PORT = 9799;
-    //多线程下使用Thrift的client会出现包接收错乱的问题因此采用ThreadLocal
-    private static ThreadLocal<NoticeService.Client> clients = new ThreadLocal<>();
+    private static final Integer PORT_DISTANCE = 7; //shrift-server相对于backend-server的端口值差
+    private static final int UPDATE_CACHE = 15;//更新缓存(数据类型)
+    private static final int SYSTEM = 10;//系统通知(消息类型)
 
-    private static NoticeService.Client getClient() throws TException {
-        NoticeService.Client client = clients.get();
-        if (client == null) {
-            TTransport transport = new TSocket(HOST, PORT);
-            TProtocol protocol = new TBinaryProtocol(transport);
-            NoticeService.Client _client = new NoticeService.Client(protocol);
-            transport.open();
-            clients.set(_client);
+    /**
+     * 向eternal模块发送C2c消息
+     * @param c2c
+     * @return
+     * @throws TException
+     */
+    public static boolean sendNotice(C2c c2c) {
+        //首先提取出消息中的affairId
+        long affairId = 0L;
+        if(c2c.getType() == UPDATE_CACHE){
+            ParamVo paramVo = new Gson().fromJson(c2c.getParams(), ParamVo.class);
+            affairId = paramVo.getAffairId();
+        }else if (c2c.getType() == SYSTEM){
+            affairId = c2c.getChat().getAid();
         }
-        return clients.get();
-    }
 
-    public static boolean sendNotice(C2c c2c) throws TException {
-        return getClient().sendNotice(c2c);
+        //根据hash算法得到要取得连接的url
+        String url;
+        try {
+            url = NodeUtil.getBackendNodeByKey(affairId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        String[] params = url.split(":");
+        String host = params[0];
+        Integer port = Integer.valueOf(params[1]);
+        port -= PORT_DISTANCE;
+
+        //获取到相应的连接并发送C2c消息
+        NoticeService.Client client = null;
+        try {
+            client = ThriftPool.getClient(host + ":" + port);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(client == null){
+            throw new IllegalArgumentException("不存在与参数中host&port对应的连接。");
+        }
+        synchronized (client){//对于使用同一个client的请求要进行同步
+            try {
+                return client.sendNotice(c2c);
+            } catch (TException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
     }
 
 }

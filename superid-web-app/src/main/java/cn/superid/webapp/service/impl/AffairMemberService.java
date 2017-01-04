@@ -2,12 +2,16 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.utils.ArrayUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.dao.impl.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.enums.type.InvitationType;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -15,15 +19,15 @@ import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import cn.superid.webapp.service.vo.AffairMemberVO;
+import cn.superid.webapp.service.vo.AffairUserVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xiaofengxu on 16/9/2.
@@ -50,7 +54,6 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.save();
 
-        affairUserService.addAffairUser(allianceId,affairId,roleId);
 
         return affairMemberEntity;
     }
@@ -58,6 +61,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public AffairMemberEntity addCreator(long allianceId, long affairId, long roleId) {
+        affairUserService.addAffairUser(allianceId, affairId, userService.currentUserId(), roleId);
         return addMember(allianceId, affairId, roleId, AffairPermissionRoleType.OWNER);
     }
 
@@ -149,6 +153,7 @@ public class AffairMemberService implements IAffairMemberService {
         }
 
         addMember(allianceId, affairId, affairMemberApplicationEntity.getRoleId(), "");
+        affairUserService.addAffairUser(allianceId, affairId, affairMemberApplicationEntity.getUserId(), affairMemberApplicationEntity.getRoleId());
 
         //更新申请信息
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
@@ -188,58 +193,90 @@ public class AffairMemberService implements IAffairMemberService {
         if (isExist) {
             return ResponseCode.MemberIsExistInAffair;
         }
+        /*
         boolean isInvited = InvitationEntity.dao.partitionId(allianceId).eq("beInvitedRoleId", beInvitedRoleId).state(DealState.ToCheck).exists();
         if (isInvited) {
             return ResponseCode.WaitForDeal;
         }
+        */
         return ResponseCode.OK;
     }
 
     @Override
-    public int inviteToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, long beInvitedRoleId, int memberType, String inviteReason) {
-        int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
-        if (code != 0) {
-            return code;
-        }
-        //生成邀请记录
-        InvitationEntity invitationEntity = new InvitationEntity();
-        invitationEntity.setState(DealState.ToCheck);
-        invitationEntity.setAffairId(affairId);
-        invitationEntity.setBeInvitedRoleId(beInvitedRoleId);
-        invitationEntity.setBeInvitedUserId(RoleCache.dao.findById(beInvitedRoleId).getUserId());
-        invitationEntity.setInviteRoleId(inviteRoleId);
-        invitationEntity.setInviteUserId(inviteUserId);
-        invitationEntity.setInviteReason(inviteReason);
-        invitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        if (memberType == 0) {
-        } else {
-        }
-        invitationEntity.save();
-
-        //判断被邀请的是否是本盟成员,如果是则无需同意,直接拉入事务
-        boolean isInSameAlliance = RoleEntity.dao.id(beInvitedRoleId).partitionId(allianceId).exists();
-        if (isInSameAlliance) {
-            InvitationEntity.dao.id(invitationEntity.getId()).partitionId(affairId)
-                    .set("state", DealState.Agree, "dealReason", "本盟人员");
-            //判断被邀请的角色是不是自己的某个父事务的负责人
-            AffairEntity currentAffair = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("id");
-            if (isOwnerOfParentAffair(beInvitedRoleId, currentAffair.getId(), allianceId)) {
-                //如果是,将权限设置为owner
-                InvitationEntity.dao.id(invitationEntity.getId()).partitionId(affairId)
-                        .set("permissions", AffairPermissionRoleType.OWNER);
-                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.OWNER);
-            } else {
-                //如果不是,根据前端选择的权限类型分配给其官方还是客方
-                addMember(allianceId,affairId,beInvitedRoleId,AffairPermissionRoleType.PARTICIPANT);
+    public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+        long beInvitedRoleId;
+        for (AddAffairRoleForm form : roles) {
+            beInvitedRoleId = form.getRoleId();
+            int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
+            if (code != 0) {
+                return code;
             }
 
-            //TODO 发送消息通知
+            InvitationEntity invitationEntity = new InvitationEntity();
+            invitationEntity.setAllianceId(allianceId);
+            invitationEntity.setAffairId(affairId);
+            invitationEntity.setInviteUserId(inviteUserId);
+            invitationEntity.setInviteRoleId(inviteRoleId);
+            invitationEntity.setInviteReason("");
+            invitationEntity.setBeInvitedUserId(form.getUserId());
+            invitationEntity.setBeInvitedRoleId(form.getRoleId());
+            invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+            invitationEntity.setInvitationType(InvitationType.Affair);
+            invitationEntity.setState(DealState.Agree);
+            //盟内人员默认是参与者
+            invitationEntity.setPermissions(AffairPermissionRoleType.PARTICIPANT);
+            invitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+            invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+            invitationEntity.save();
+
+            //增加affairMember
+            addMember(allianceId, affairId, beInvitedRoleId, AffairPermissionRoleType.PARTICIPANT);
+            //增加affairUser
+            affairUserService.addAffairUser(allianceId, affairId, invitationEntity.getBeInvitedUserId(), invitationEntity.getBeInvitedRoleId());
         }
-        //不是本盟成员
-        else {
-            //TODO 发送消息通知
+        return 0;
+    }
+
+
+    @Override
+    public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles) {
+        long beInvitedRoleId;
+        for (AddAffairRoleForm form : roles) {
+            beInvitedRoleId = form.getRoleId();
+            int code = canInviteToEnterAffair(allianceId, affairId, beInvitedRoleId);
+            if (code != 0) {
+                return code;
+            }
+            InvitationEntity existInvitation = InvitationEntity.dao.partitionId(allianceId).eq("beInvitedRoleId", beInvitedRoleId).eq("affairId", affairId).state(DealState.ToCheck).selectOne();
+            //如果该角色已经被邀请过进入该事务,就更新邀请信息,继续发送通知
+            if (existInvitation != null) {
+                existInvitation.setModifyTime(TimeUtil.getCurrentSqlTime());
+                existInvitation.setInviteUserId(inviteUserId);
+                existInvitation.setInviteRoleId(inviteRoleId);
+                existInvitation.update();
+            }
+            //生成邀请信息,推送
+            else {
+                InvitationEntity invitationEntity = new InvitationEntity();
+                invitationEntity.setAllianceId(allianceId);
+                invitationEntity.setAffairId(affairId);
+                invitationEntity.setInviteUserId(inviteUserId);
+                invitationEntity.setInviteRoleId(inviteRoleId);
+                invitationEntity.setInviteReason("");
+                invitationEntity.setBeInvitedUserId(form.getUserId());
+                invitationEntity.setBeInvitedRoleId(form.getRoleId());
+                invitationEntity.setBeInvitedRoleTitle(form.getRoleTitle());
+                invitationEntity.setInvitationType(InvitationType.Affair);
+                invitationEntity.setState(DealState.ToCheck);
+                //盟外人员进来是盟客
+                invitationEntity.setPermissions(AffairPermissionRoleType.MENKOR);
+                invitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+                invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+                invitationEntity.save();
+            }
         }
-        return ResponseCode.OK;
+
+        return 0;
     }
 
     @Override
@@ -254,8 +291,10 @@ public class AffairMemberService implements IAffairMemberService {
         }
 
         //加入事务
-
+        //添加affairMember
         addMember(allianceId, affairId, invitationEntity.getBeInvitedRoleId(), invitationEntity.getPermissions());
+        //添加affairUser
+        affairUserService.addAffairUser(allianceId, affairId, invitationEntity.getBeInvitedUserId(), invitationEntity.getBeInvitedRoleId());
 
         //更新邀请信息
         invitationEntity.setDealReason(dealReason);
@@ -280,10 +319,10 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
 
-    public boolean isOwnerOfParentAffair(long roleId, long affairId,long allianceId) {
-        List<Long> directorIds = getDirectorIds(affairId,allianceId);
-        for(long id:directorIds){
-            if(id==roleId){
+    public boolean isOwnerOfParentAffair(long roleId, long affairId, long allianceId) {
+        List<Long> directorIds = getDirectorIds(affairId, allianceId);
+        for (long id : directorIds) {
+            if (id == roleId) {
                 return true;
             }
         }
@@ -294,7 +333,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public List<Long> getDirectorIds(long affairId, long allianceId) {
-        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("level","path");
+        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("level", "path");
         int level = affairEntity.getLevel();
         String path = affairEntity.getPath();
 
@@ -303,14 +342,14 @@ public class AffairMemberService implements IAffairMemberService {
         String[] indexes = path.split("-");
         paths[0] = indexes[0];
         sb.append(indexes[0]);
-        if(indexes.length>1){
-            for(int i=1;i<level;i++){
+        if (indexes.length > 1) {
+            for (int i = 1; i < level; i++) {
                 sb.append("-");
                 sb.append(indexes[i]);
                 paths[i] = sb.toString();
             }
         }
-        return (List<Long>) AffairEntity.dao.partitionId(allianceId).in("path",paths).selectList(Long.class,"owner_role_id");
+        return (List<Long>) AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
     }
 
 
@@ -329,7 +368,7 @@ public class AffairMemberService implements IAffairMemberService {
         StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
         return getMaps(affairMemberVOList);
     }
 
@@ -339,19 +378,19 @@ public class AffairMemberService implements IAffairMemberService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class,sb.toString(),p);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
 
         return getMaps(affairMemberVOList);
     }
 
-    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList){
-        Map<Long,List<Object>> members = new HashedMap();
-        for(AffairMemberVO a : affairMemberVOList){
+    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList) {
+        Map<Long, List<Object>> members = new HashedMap();
+        for (AffairMemberVO a : affairMemberVOList) {
             List<Object> user = new ArrayList<>();
             user.add(a.getAffairId());
-            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(),a.getTitle());
+            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(), a.getTitle());
             user.add(role);
-            members.put(a.getId(),user);
+            members.put(a.getId(), user);
         }
         return members;
     }
@@ -370,6 +409,11 @@ public class AffairMemberService implements IAffairMemberService {
 //            }
 //        }
 
-        return affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+        return affairMemberDao.searchAffairRoles(allianceId, affairId, conditions);
+    }
+
+    @Override
+    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
+        return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions);
     }
 }
