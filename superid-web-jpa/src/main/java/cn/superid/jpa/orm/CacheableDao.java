@@ -1,6 +1,7 @@
 package cn.superid.jpa.orm;
 
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.redis.BinaryUtil;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.*;
 import redis.clients.jedis.Jedis;

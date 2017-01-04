@@ -3,7 +3,7 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.jpa.util.BinaryUtil;
+import cn.superid.jpa.redis.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import javax.persistence.Transient;
 import java.lang.reflect.Field;

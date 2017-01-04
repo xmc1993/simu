@@ -1,4 +1,4 @@
-package cn.superid.jpa.util;
+package cn.superid.jpa.redis;
 
 import cn.superid.jpa.redis.RedisUtil;
 

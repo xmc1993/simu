@@ -560,9 +560,6 @@ public class JdbcSession extends AbstractSession {
     }
 
 
-
-
-
     @Override
     public int execute(String sql) {
         PreparedStatement preparedStatement =null;

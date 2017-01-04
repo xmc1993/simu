@@ -74,6 +74,7 @@ public interface Session {
 
     Object findOneByNativeSql(Class<?> cls, String queryString, Object... params);
 
+
     List findListByNativeSql(Class<?> cls, String queryString, Object... params);
 
     Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);

@@ -2,7 +2,6 @@ package cn.superid.jpa.redis;
 import cn.superid.jpa.exceptions.JedisRuntimeException;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.orm.ModelMeta;
-import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.Jedis;
@@ -12,11 +11,9 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-;
-
 /**
  * Redis 工具类
- * @author caspar
+ * @author zp
  *
  */
 public class RedisUtil {
@@ -107,43 +104,6 @@ public class RedisUtil {
     }
 
 
-
-
-//    public static Object findByKey(byte[] key,Class<?> clazz,byte[][] fields){
-//        try {
-//            Object result = clazz.newInstance();
-//            Jedis jedis = getJedis();
-//            if(jedis!=null){
-//                ModelMeta modelMeta = ModelMeta.getModelMeta(clazz);
-//                List<byte[]> list = jedis.hmget(key,fields);
-//                jedis.close();
-//                if (list==null||list.size()==0){
-//                    return null;
-//                }
-//                int index=0;
-//                for(byte[] value:list){
-//                    byte[] field = fields[index++];
-//                    for(ModelMeta.ModelColumnMeta modelColumnMeta:modelMeta.getColumnMetaSet()){
-//                        if(field.length==modelColumnMeta.binary.length){
-//                            int i;
-//                            for( i=0;i<field.length;i++){
-//                                if(field[i]!=modelColumnMeta.binary[i]){
-//                                    break;
-//                                }
-//                            }
-//                            if(i==field.length){//属于同一个熟悉
-//                                FieldAccessor fieldAccessor=modelColumnMeta.fieldAccessor;
-//                                fieldAccessor.setProperty(result, BinaryUtil.getValue(value,modelColumnMeta.fieldType));
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            return result;
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
 
     public static Object findByKey(Object id,Class<?> clazz){
         try {
