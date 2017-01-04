@@ -2,13 +2,11 @@ package cn.superid.webapp.forms;
 
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 
 /**
  * Created by xiaofengxu on 16/12/30.
  */
 @ApiModel
-@Data
 public class SearchAffairMemberConditions {
     @ApiModelProperty(notes = "成员用户名关键字、角色title关键字，接受缩写")
     private String key;
@@ -28,4 +26,51 @@ public class SearchAffairMemberConditions {
     @ApiModelProperty(notes = "是否包含子事务，不填默认不包含")
     private boolean includeSubAffair;
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public String getSortColumn() {
+        return sortColumn;
+    }
+
+    public void setSortColumn(String sortColumn) {
+        this.sortColumn = sortColumn;
+    }
+
+    public boolean isReverseSort() {
+        return isReverseSort;
+    }
+
+    public void setIsReverseSort(boolean isReverseSort) {
+        this.isReverseSort = isReverseSort;
+    }
+
+    public boolean isIncludeSubAffair() {
+        return includeSubAffair;
+    }
+
+    public void setIncludeSubAffair(boolean includeSubAffair) {
+        this.includeSubAffair = includeSubAffair;
+    }
 }
