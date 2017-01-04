@@ -310,7 +310,7 @@ public class UserService implements IUserService {
         resultUserInfo.setNickNames(userEntity.getNicknames());
         resultUserInfo.setAvatar(userEntity.getAvatar());
         resultUserInfo.setSuperId(userEntity.getSuperid());
-        resultUserInfo.setIsAuthenticated(userEntity.getIsAuthenticated());
+        resultUserInfo.setIsAuthenticated(userEntity.isAuthenticated());
         resultUserInfo.setGender(userEntity.getGender());
         resultUserInfo.setAddress(userEntity.getAddress());
 
