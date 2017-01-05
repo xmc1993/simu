@@ -451,6 +451,12 @@ public class UserController {
         return SimpleResponse.ok(affairMemberService.getAffairMember());
     }
 
+    @ApiOperation(value = "得到用户的公开性",response = String.class,notes = "")
+    @RequestMapping(value="/get_public_property",method = RequestMethod.POST)
+    public SimpleResponse getPublicProperty() throws Exception{
+        return SimpleResponse.ok(userService.getPublicProperty(userService.currentUserId()));
+    }
+
 
     @RequestMapping(value = "/rollback",method = RequestMethod.POST)
     @NotLogin

@@ -61,5 +61,5 @@ public interface IUserService {
 
      public void rollbackTest();
 
-     public String getPublicProperty(long userId);
+     public List<String> getPublicProperty(long userId);
 }
