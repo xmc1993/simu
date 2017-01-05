@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -372,9 +373,31 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String getPublicProperty(long userId) {
-
-        return null;
+    public List<String> getPublicProperty(long userId) {
+        List<String> result = new ArrayList<>();
+        UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
+        if(userPrivateInfoEntity == null){
+            return result;
+        }
+        Field[] fields = UserPrivateInfoEntity.class.getDeclaredFields();
+        for(Field f : fields){
+            if(f.getName().equals("id") | f.getName().equals("userId")){
+                continue;
+            }else{
+                //TODO:这边有一个坑,如果是isXXX这种格式的属性,这里会获取错误,用自己的方法,方便改
+                boolean vaule = false;
+                try{
+                    vaule = (Boolean)ObjectUtil.getFieldValueByName(f.getName(),userPrivateInfoEntity);
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return result;
+                }
+                if(vaule == true){
+                    result.add(f.getName());
+                }
+            }
+        }
+        return result;
     }
 
 
