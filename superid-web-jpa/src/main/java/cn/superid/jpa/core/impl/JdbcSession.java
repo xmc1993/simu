@@ -44,7 +44,7 @@ public class JdbcSession extends AbstractSession {
 
     public synchronized Connection getJdbcConnection() {
         try {
-            if (jdbcConnection == null) {
+            if (jdbcConnection == null||jdbcConnection.isClosed()) {
                 jdbcConnection = jdbcSessionFactory.createJdbcConnection();
             }
         } catch (Exception e) {
