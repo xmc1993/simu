@@ -18,10 +18,10 @@ public class UserPrivateInfoEntity extends ExecutableModel {
     private long id;
     private long userId;
     private boolean personalTags;
-    private boolean actualName;
-    private boolean identityCard;
-    private boolean phoneNumber;
-    private boolean mail;
+    private boolean realname;
+    private boolean idCard;
+    private boolean mobile;
+    private boolean email;
     private boolean birthday;
 
     @Id
@@ -42,44 +42,36 @@ public class UserPrivateInfoEntity extends ExecutableModel {
         this.userId = userId;
     }
 
-    public boolean isPersonalTags() {
-        return personalTags;
+    public boolean isRealname() {
+        return realname;
     }
 
-    public void setPersonalTags(boolean personalTags) {
-        this.personalTags = personalTags;
+    public void setRealname(boolean realname) {
+        this.realname = realname;
     }
 
-    public boolean isActualName() {
-        return actualName;
+    public boolean isIdCard() {
+        return idCard;
     }
 
-    public void setActualName(boolean actualName) {
-        this.actualName = actualName;
+    public void setIdCard(boolean idCard) {
+        this.idCard = idCard;
     }
 
-    public boolean isIdentityCard() {
-        return identityCard;
+    public boolean isMobile() {
+        return mobile;
     }
 
-    public void setIdentityCard(boolean identityCard) {
-        this.identityCard = identityCard;
+    public void setMobile(boolean mobile) {
+        this.mobile = mobile;
     }
 
-    public boolean isPhoneNumber() {
-        return phoneNumber;
+    public boolean isEmail() {
+        return email;
     }
 
-    public void setPhoneNumber(boolean phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public boolean isMail() {
-        return mail;
-    }
-
-    public void setMail(boolean mail) {
-        this.mail = mail;
+    public void setEmail(boolean email) {
+        this.email = email;
     }
 
     public boolean isBirthday() {
@@ -88,5 +80,13 @@ public class UserPrivateInfoEntity extends ExecutableModel {
 
     public void setBirthday(boolean birthday) {
         this.birthday = birthday;
+    }
+
+    public boolean isPersonalTags() {
+        return personalTags;
+    }
+
+    public void setPersonalTags(boolean personalTags) {
+        this.personalTags = personalTags;
     }
 }
