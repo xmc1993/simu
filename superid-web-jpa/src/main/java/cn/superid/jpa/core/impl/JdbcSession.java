@@ -189,11 +189,11 @@ public class JdbcSession extends AbstractSession {
     public boolean update(final Object entity) {
         try {
             final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
-            boolean isSharding = modelMeta.getPatitionColumn() != null;
+            boolean isPartition = modelMeta.getPartitionColumn() != null;
             Object partitionId = null;
 
-            if (isSharding) {
-                partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
+            if (isPartition) {
+                partitionId = modelMeta.getPartitionColumn().fieldAccessor.getProperty(entity);
                 if (NumberUtil.isUndefined(partitionId)) {
                     throw new JdbcRuntimeException("you should update with partition id");
                 }
@@ -205,7 +205,7 @@ public class JdbcSession extends AbstractSession {
                 PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
                 int i = setStatementAllField(modelMeta, preparedStatement, entity, true);
                 Object id = idAccessor.getProperty(entity);
-                if (isSharding) {
+                if (isPartition) {
                     preparedStatement.setObject(i, partitionId);
                     i = i + 1;
 
@@ -225,7 +225,7 @@ public class JdbcSession extends AbstractSession {
                 }
                 int i = setStatementAllField(modelMeta, batchStatement, entity, true);
 
-                if (isSharding) {
+                if (isPartition) {
                     batchStatement.setObject(i, partitionId);
                     i = i + 1;
 
@@ -247,8 +247,8 @@ public class JdbcSession extends AbstractSession {
         try {
 
             final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
-            if (modelMeta.getPatitionColumn() != null) {
-                throw new JdbcRuntimeException(" This method don't support partition entity:" + modelMeta.getPatitionColumn().columnName);
+            if (modelMeta.getPartitionColumn() != null) {
+                throw new JdbcRuntimeException(" This method don't support partition entity:" + modelMeta.getPartitionColumn().columnName);
             }
 
             final FieldAccessor idAccessor = modelMeta.getIdAccessor();
@@ -294,13 +294,13 @@ public class JdbcSession extends AbstractSession {
         try {
             ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             FieldAccessor idAccessor = modelMeta.getIdAccessor();
-            boolean isSharding = modelMeta.getPatitionColumn() != null;
+            boolean isSharding = modelMeta.getPartitionColumn() != null;
             Object partitionId = null;
 
             if (isSharding) {
-                partitionId = modelMeta.getPatitionColumn().fieldAccessor.getProperty(entity);
+                partitionId = modelMeta.getPartitionColumn().fieldAccessor.getProperty(entity);
                 if (NumberUtil.isUndefined(partitionId)) {
-                    throw new JdbcRuntimeException("you should delete with partition column value:" + modelMeta.getPatitionColumn().columnName);
+                    throw new JdbcRuntimeException("you should delete with partition column value:" + modelMeta.getPartitionColumn().columnName);
                 }
             }
 
@@ -459,7 +459,7 @@ public class JdbcSession extends AbstractSession {
             ModelMeta modelMeta = ModelMeta.getModelMeta(cls);
             String sql = modelMeta.getFindByIdSql();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(modelMeta);
-            ModelMeta.ModelColumnMeta partitionColumn = modelMeta.getPatitionColumn();
+            ModelMeta.ModelColumnMeta partitionColumn = modelMeta.getPartitionColumn();
 
             PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql);
             int i = getIndexParamBaseOrdinal();

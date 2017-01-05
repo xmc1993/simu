@@ -62,7 +62,7 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
     public ConditionalDao<T> partitionId(Object value){return
-            and(ModelMeta.getModelMeta(this.clazz).getPatitionColumn().columnName,"=",value);
+            and(ModelMeta.getModelMeta(this.clazz).getPartitionColumn().columnName,"=",value);
     }
 
 

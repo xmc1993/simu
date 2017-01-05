@@ -44,7 +44,7 @@ public class ModelMeta {
         public FieldAccessor fieldAccessor;
     }
 
-    private static List<String> registedKeys = new ArrayList<>();
+    private static List<String> registeredKeys = new ArrayList<>();
 
     /**
      * init column meta and cache it
@@ -96,12 +96,6 @@ public class ModelMeta {
 
 
         this.columnMetas = columnMetas;
-        if(this.idColumnMeta!=null){
-            initInsertSql();
-            initUpdateSql();
-            initFindByIdSql();
-            initDeleteSql();
-        }
         return columnMetas;
     }
 
@@ -109,10 +103,13 @@ public class ModelMeta {
 
 
     public String getInsertSql() {
+        if(this.insertSql==null){
+            initInsertSql();
+        }
         return this.insertSql;
     }
 
-    public void initInsertSql() {//init insert sql
+    private synchronized void initInsertSql() {//init insert sql
         boolean first = true;
         StringBuilder sql = new StringBuilder("INSERT INTO ");
         sql.append(this.getTableName());
@@ -141,10 +138,13 @@ public class ModelMeta {
     }
 
     public String getUpdateSql() {
+        if(this.updateSql==null){
+            initUpdateSql();
+        }
         return updateSql;
     }
 
-    public void initUpdateSql() {
+    private synchronized void initUpdateSql() {
         boolean first = true;
 
         StringBuilder sql = new StringBuilder("UPDATE ");
@@ -172,10 +172,13 @@ public class ModelMeta {
     }
 
     public String getDeleteSql() {
+        if(deleteSql==null){
+            initDeleteSql();
+        }
         return deleteSql;
     }
 
-    public void initDeleteSql() {
+    private synchronized void initDeleteSql() {
         StringBuilder sql = new StringBuilder("DELETE FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
@@ -194,10 +197,13 @@ public class ModelMeta {
     }
 
     public String getFindByIdSql() {
+        if(findByIdSql==null){
+            initFindByIdSql();
+        }
         return findByIdSql;
     }
 
-    public void initFindByIdSql() {
+    private synchronized void initFindByIdSql() {
         StringBuilder sql = new StringBuilder("SELECT * FROM ");
         sql.append(this.getTableName());
         sql.append(" WHERE ");
@@ -244,10 +250,10 @@ public class ModelMeta {
             if(StringUtil.isEmpty(key)){
                 key = tableName;
             }
-            if(registedKeys.contains(key)){//key不能重复
+            if(registeredKeys.contains(key)){//key不能重复
                 throw new RuntimeException(tableName+" key is Repeated");
             }
-            registedKeys.add(key);
+            registeredKeys.add(key);
             this.key = BinaryUtil.toBytes(key+':');
         }
     }
@@ -298,7 +304,7 @@ public class ModelMeta {
         return key;
     }
 
-    public ModelColumnMeta getPatitionColumn(){
+    public ModelColumnMeta getPartitionColumn(){
         return this.partitionColumn;
     }
 
@@ -311,7 +317,7 @@ public class ModelMeta {
     }
 
     /**
-     * 获取redis hmget的filed
+     * 获取redis hmget的field
      * @return
      */
     private ReentrantLock lockFieldsInit =new ReentrantLock();

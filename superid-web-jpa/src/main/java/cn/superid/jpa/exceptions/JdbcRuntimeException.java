@@ -2,6 +2,8 @@ package cn.superid.jpa.exceptions;
 
 /**
  *  on 15/1/26.
+ *  use RuntimeException instead SQLException because we can handle exception by SpringMVC or other framework default,
+ *  so the code will be clean (^_-)
  */
 public class JdbcRuntimeException extends RuntimeException {
 
