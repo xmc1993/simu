@@ -4,7 +4,7 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.jpa.util.BinaryUtil;
+import cn.superid.jpa.redis.BinaryUtil;
 import cn.superid.jpa.util.ParameterBindings;
 
 import java.io.Serializable;
