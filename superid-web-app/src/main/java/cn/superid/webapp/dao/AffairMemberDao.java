@@ -86,6 +86,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
     }
 
+    //TODO 以大于某一项做起始点,然后获取数据效率更高,当取首页时,才需要给total
     @Override
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
         StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");

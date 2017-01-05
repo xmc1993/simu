@@ -185,7 +185,6 @@ public class JdbcSession extends AbstractSession {
     }
 
 
-    //TODO 调用缓存，比较大字段有没有被改动，如果没有改动，则无视大字段
     @Override
     public boolean update(final Object entity) {
         try {
@@ -527,24 +526,25 @@ public class JdbcSession extends AbstractSession {
 
     /**
      * @param cls
-     * @param queryString
+     * @param queryString should not append (limit ? , ?) string,limit string generate in this method
      * @param parameterBindings
      * @param pagination
-     * @return
+     * @return list, the total number is set in pagination
      */
     @Override
     public List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination) {
         //查询总量
         int fromIndex = queryString.indexOf(" from");
         int lastOrderIndex = queryString.lastIndexOf(" order by");
-        int lastRightBacketIndex = queryString.lastIndexOf(")");
-        if (lastOrderIndex < lastRightBacketIndex) throw new JdbcRuntimeException("分页必须order");
+        int lastRightBracketIndex = queryString.lastIndexOf(")");
+        if (lastOrderIndex < lastRightBracketIndex) {
+            throw new JdbcRuntimeException("Pagination query need order by one column");
+        }
         StringBuilder countSb = new StringBuilder("select count(1)");
         countSb.append(queryString.substring(fromIndex, lastOrderIndex));
         Integer count = (Integer) findOneByNativeSql(Integer.class, countSb.toString(), parameterBindings);
         pagination.setTotal(count);
 
-        Integer count1 = (Integer) findOneByNativeSql(Integer.class, countSb.toString(), parameterBindings);
 
         //按分页查询列表
         StringBuilder querySb = new StringBuilder(queryString);
