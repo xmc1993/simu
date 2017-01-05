@@ -31,5 +31,11 @@ public class NoticeServiceTest {
         boolean result = updateChatCacheService.disableAffair(123L);
         System.out.println("The result is:" + result);
     }
+
+    @Test
+    public void testAffairMoveApplyAccepted() throws TException {
+        boolean res = noticeService.affairMoveApplyAccepted(1911L, 7620L, "", 0L, "");
+        System.out.println(res);
+    }
 }
 

@@ -16,7 +16,7 @@ import java.io.IOException;
 public class SendMessageTemplate {
     private static final Integer PORT_DISTANCE = 7; //shrift-server相对于backend-server的端口值差
     private static final int UPDATE_CACHE = 15;//更新缓存(数据类型)
-    private static final int SYSTEM = 10;//系统通知(消息类型)
+    private static final int MSG = 0;//系统通知(消息类型)
 
     /**
      * 向eternal模块发送C2c消息
@@ -30,10 +30,10 @@ public class SendMessageTemplate {
         if(c2c.getType() == UPDATE_CACHE){
             ParamVo paramVo = new Gson().fromJson(c2c.getParams(), ParamVo.class);
             affairId = paramVo.getAffairId();
-        }else if (c2c.getType() == SYSTEM){
+        }else if (c2c.getType() == MSG){
             affairId = c2c.getChat().getAid();
         }
-
+        System.out.println(c2c.getChat().getAid() + "---------------");
         //根据hash算法得到要取得连接的url
         String url;
         try {
@@ -53,12 +53,16 @@ public class SendMessageTemplate {
             client = ThriftPool.getClient(host + ":" + port);
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return false;
         } catch (TTransportException e) {
             e.printStackTrace();
+            return false;
         } catch (KeeperException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         if(client == null){
             throw new IllegalArgumentException("不存在与参数中host&port对应的连接。");

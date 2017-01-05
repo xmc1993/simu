@@ -131,7 +131,7 @@ public interface IAffairMemberService {
      * @param inviteUserId
      * @return
      */
-    int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles);
+    int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles);
 
 
     /**
@@ -142,7 +142,7 @@ public interface IAffairMemberService {
      * @param inviteUserId
      * @return
      */
-    int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<AddAffairRoleForm> roles);
+    int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles);
 
     /**
      * 同意别人邀请自己进入事务的请求

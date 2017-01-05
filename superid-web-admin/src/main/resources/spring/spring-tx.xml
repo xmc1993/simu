@@ -7,10 +7,10 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
-    <bean roleId="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
           destroy-method="close">
         <property name="url" value="${jdbc.url}"/>
-        <property name="realname" value="${jdbc.user}"/>
+        <property name="username" value="${jdbc.user}"/>
         <property name="password" value="${jdbc.password}"/>
         <property name="driverClassName" value="${jdbc.driverClass}"/>
         <property name="maxActive" value="${jdbc.maxActive}"/>
@@ -32,13 +32,13 @@
         <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
         <!-- 关闭abanded连接时输出错误日志 -->
     </bean>
-    <bean roleId="jdbcSessionFactory"
+    <bean id="jdbcSessionFactory"
           class="cn.superid.jpa.core.impl.JdbcSessionFactory">
         <constructor-arg ref="dataSource"/>
     </bean>
 
     <!--Transaction Config-->
-    <bean roleId="transactionManager" class="cn.superid.db.TransactionManager">
+    <bean id="transactionManager" class="cn.superid.db.TransactionManager">
     </bean>
 
     <!--<bean roleId="hibernateTransactionManager"-->

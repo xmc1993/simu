@@ -24,12 +24,15 @@ public class AdminController {
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     @NotLogin
     public SimpleResponse login(@RequestBody UserForm userForm){
+        /*
         AdminEntity adminEntity = adminService.login(userForm.getUserName(),userForm.getPassword());
         if(adminEntity!=null)
             String token = JwtUtil.createJwt(adminEntity.getName(),adminEntity.getId(),adminEntity.getName(),10000L,)
             return SimpleResponse.ok("success");
         else
             return SimpleResponse.error("fail");
+            */
+        return null;
     }
 
 }

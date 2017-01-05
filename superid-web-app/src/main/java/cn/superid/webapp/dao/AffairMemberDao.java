@@ -1,5 +1,6 @@
 package cn.superid.webapp.dao;
 
+import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
@@ -20,17 +21,17 @@ import java.util.List;
  * Created by xiaofengxu on 16/12/30.
  */
 @Component
-public class AffairMemberDao implements IAffairMemberDao{
+public class AffairMemberDao implements IAffairMemberDao {
 
     @Override
     public List<AffairRoleCard> searchAffairRoles(long allianceId, long affairId, SearchAffairRoleConditions conditions) {//TODO  先简单点来,等我redis再改善点,取出所有roleId,然后在内存里面查。。。。
 
 
-        if(conditions.getLimit()<10||conditions.getLimit()>100) conditions.setLimit(20);
+        if (conditions.getLimit() < 10 || conditions.getLimit() > 100) conditions.setLimit(20);
 
 
         boolean hasKey = StringUtil.notEmpty(conditions.getKey());
-        String key = "%"+conditions.getKey()+"%";
+        String key = "%" + conditions.getKey() + "%";
 
 
         StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title,r.title_abbr,u.username,u.superid,u.name_abbr,u.avatar,ta.id as affairMemberId" +
@@ -51,30 +52,30 @@ public class AffairMemberDao implements IAffairMemberDao{
         parameterBindings.addIndexBinding(allianceId);
         parameterBindings.addIndexBinding(affairId);
 
-        if(conditions.getActive()!=null){
-            if(conditions.getActive()){
+        if (conditions.getActive() != null) {
+            if (conditions.getActive()) {
                 sql.append(" and am.state=0 ");
-            }else{
+            } else {
                 sql.append(" and am.state>0 ");
             }
         }
         sql.append(" )  ta  join role r  join affair a join user u on a.id = r.belong_affair_id and ta.role_id = r.id and r.user_id = u.id where 1=1 ");
 
-        if(hasKey){
+        if (hasKey) {
             sql.append(" and ( r.title like ? or r.title_abbr like ? or u.superid like ? or u.username like ? or u.name_abbr like ? ) ");
-            parameterBindings.addIndexBinding(key,5);
+            parameterBindings.addIndexBinding(key, 5);
         }
-        if(conditions.getInAlliance()!=null){//判断是不是同一个盟
-            if(conditions.getInAlliance()){
+        if (conditions.getInAlliance() != null) {//判断是不是同一个盟
+            if (conditions.getInAlliance()) {
                 sql.append(" and r.alliance_id = ?");
                 parameterBindings.addIndexBinding(allianceId);
-            }else{
+            } else {
                 sql.append(" and r.alliance_id <> ?");
                 parameterBindings.addIndexBinding(allianceId);
             }
         }
 
-        if(StringUtil.notEmpty(conditions.getLastTitlePY())){//以最后一个拼音往后取
+        if (StringUtil.notEmpty(conditions.getLastTitlePY())) {//以最后一个拼音往后取
             sql.append(" and r.title_abbr > ?");
             parameterBindings.addIndexBinding(conditions.getLastTitlePY());
         }
@@ -82,9 +83,10 @@ public class AffairMemberDao implements IAffairMemberDao{
         sql.append(" order by r.title_abbr asc limit ? ");
         parameterBindings.addIndexBinding(conditions.getLimit());
 
-        return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sql.toString(),parameterBindings.getIndexParametersArray());
+        return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
     }
 
+    //TODO 以大于某一项做起始点,然后获取数据效率更高,当取首页时,才需要给total
     @Override
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
         StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
@@ -116,7 +118,7 @@ public class AffairMemberDao implements IAffairMemberDao{
         sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
         if (conditions.isAllianceUser()) {
             sb.append("join (select  user_id from alliance_user where alliance_id= ? ) au on au.user_id=r.user_id");
-        }else{
+        } else {
             sb.append("where r.user_id not in (select  user_id from alliance_user where alliance_id= ? )");
         }
         p.addIndexBinding(allianceId);
@@ -141,14 +143,12 @@ public class AffairMemberDao implements IAffairMemberDao{
         }
         if (conditions.isReverseSort()) sb.append(" desc ");
         else sb.append(" asc ");
-        sb.append(" limit ? , ?");
-        if(conditions.getCount() <= 100 && conditions.getCount() >= 10)
+        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
             conditions.setCount(20);
-        if(conditions.getPage() <1)
+        if (conditions.getPage() < 1)
             conditions.setPage(1);
-        p.addIndexBinding(conditions.getCount()*(conditions.getPage()-1));
-        p.addIndexBinding(conditions.getCount()*(conditions.getPage()));
-        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p);
+        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount());
+        return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
     }
 
 }

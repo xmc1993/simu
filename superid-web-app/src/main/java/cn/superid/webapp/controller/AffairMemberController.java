@@ -78,11 +78,12 @@ public class AffairMemberController {
         return new SimpleResponse(code, null);
     }
 
+    @ApiOperation(value = "邀请加入事务",response = String.class)
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, @RequestBody AddAffairRoleFormVO roles) {
-        List<AddAffairRoleForm> allianceRoles = roles.getAllianceRoles();
-        List<AddAffairRoleForm> outAllianceRoles = roles.getOutAllianceRoles();
+        List<Long> allianceRoles = roles.getAllianceRoles();
+        List<Long> outAllianceRoles = roles.getOutAllianceRoles();
         //邀请盟内
         int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),allianceRoles);
         if(code != 0){

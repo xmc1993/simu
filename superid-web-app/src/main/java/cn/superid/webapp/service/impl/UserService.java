@@ -320,19 +320,19 @@ public class UserService implements IUserService {
             //TODO 标签还没弄
         }
 
-        if (userPrivateInfoEntity.isActualName()) {
+        if (userPrivateInfoEntity.isRealname()) {
             resultUserInfo.setRealname(userEntity.getRealname());
         }
 
-        if (userPrivateInfoEntity.isIdentityCard()) {
+        if (userPrivateInfoEntity.isIdCard()) {
             resultUserInfo.setIdCard(userEntity.getIdCard());
         }
 
-        if (userPrivateInfoEntity.isPhoneNumber()) {
+        if (userPrivateInfoEntity.isMobile()) {
             resultUserInfo.setMobile(userEntity.getMobile());
         }
 
-        if (userPrivateInfoEntity.isMail()) {
+        if (userPrivateInfoEntity.isEmail()) {
             resultUserInfo.setEmail(userEntity.getEmail());
         }
 
@@ -369,6 +369,12 @@ public class UserService implements IUserService {
             StringBuilder incorrectSql = new StringBuilder("update user set userame = 'tms' where id=1899");
             UserEntity.getSession().execute(incorrectSql.toString());
             */
+    }
+
+    @Override
+    public String getPublicProperty(long userId) {
+
+        return null;
     }
 
 
