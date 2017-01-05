@@ -373,31 +373,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<String> getPublicProperty(long userId) {
+    public UserPrivateInfoEntity getPublicProperty(long userId) {
         List<String> result = new ArrayList<>();
-        UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-        if(userPrivateInfoEntity == null){
-            return result;
-        }
-        Field[] fields = UserPrivateInfoEntity.class.getDeclaredFields();
-        for(Field f : fields){
-            if(f.getName().equals("id") | f.getName().equals("userId")){
-                continue;
-            }else{
-                //TODO:这边有一个坑,如果是isXXX这种格式的属性,这里会获取错误,用自己的方法,方便改
-                boolean vaule = false;
-                try{
-                    vaule = (Boolean)ObjectUtil.getFieldValueByName(f.getName(),userPrivateInfoEntity);
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return result;
-                }
-                if(vaule == true){
-                    result.add(f.getName());
-                }
-            }
-        }
-        return result;
+        return UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
     }
 
 

@@ -452,7 +452,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "得到用户的公开性",response = String.class,notes = "")
-    @RequestMapping(value="/get_public_property",method = RequestMethod.POST)
+    @RequestMapping(value="/get_public_property",method = RequestMethod.GET)
     public SimpleResponse getPublicProperty() throws Exception{
         return SimpleResponse.ok(userService.getPublicProperty(userService.currentUserId()));
     }
