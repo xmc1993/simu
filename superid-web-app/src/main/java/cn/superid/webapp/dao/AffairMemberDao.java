@@ -86,9 +86,8 @@ public class AffairMemberDao implements IAffairMemberDao {
         return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
     }
 
-    //TODO 以大于某一项做起始点,然后获取数据效率更高,当取首页时,才需要给total
     @Override
-    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
+    public List<AffairMemberSearchVo>  searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination) {
         StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
@@ -143,11 +142,6 @@ public class AffairMemberDao implements IAffairMemberDao {
         }
         if (conditions.isReverseSort()) sb.append(" desc ");
         else sb.append(" asc ");
-        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
-            conditions.setCount(20);
-        if (conditions.getPage() < 1)
-            conditions.setPage(1);
-        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount());
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
     }
 

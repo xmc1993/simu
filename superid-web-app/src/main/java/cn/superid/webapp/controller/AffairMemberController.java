@@ -1,8 +1,10 @@
 package cn.superid.webapp.controller;
 
+import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
+import cn.superid.webapp.controller.VO.ListVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
@@ -15,6 +17,7 @@ import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
+import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -70,7 +73,7 @@ public class AffairMemberController {
                 //添加affairMember
                 affairMemberService.addMember(targetAllianceId, targetAffairId, roleId, AffairPermissionRoleType.OWNER);
                 //检测是否已经是事务成员,是的话就更新,不是就添加affairUser
-                affairUserService.addAffairUser(targetAllianceId,targetAffairId,userService.currentUserId(),roleId);
+                affairUserService.addAffairUser(targetAllianceId, targetAffairId, userService.currentUserId(), roleId);
                 return SimpleResponse.ok(null);
             }
         }
@@ -78,19 +81,19 @@ public class AffairMemberController {
         return new SimpleResponse(code, null);
     }
 
-    @ApiOperation(value = "邀请加入事务",response = String.class)
+    @ApiOperation(value = "邀请加入事务", response = String.class)
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
     public SimpleResponse inviteToEnterAffair(long affairMemberId, @RequestBody AddAffairRoleFormVO roles) {
         List<Long> allianceRoles = roles.getAllianceRoles();
         List<Long> outAllianceRoles = roles.getOutAllianceRoles();
         //邀请盟内
-        int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),allianceRoles);
-        if(code != 0){
+        int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), GlobalValue.currentRoleId(), userService.currentUserId(), allianceRoles);
+        if (code != 0) {
             return new SimpleResponse(code, null);
         }
         //邀请盟外
-        code = affairMemberService.inviteOutAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(),GlobalValue.currentAffairId(),GlobalValue.currentRoleId(),userService.currentUserId(),outAllianceRoles);
+        code = affairMemberService.inviteOutAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), GlobalValue.currentRoleId(), userService.currentUserId(), outAllianceRoles);
         return new SimpleResponse(code, null);
 
     }
@@ -112,7 +115,14 @@ public class AffairMemberController {
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
-        return SimpleResponse.ok(affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions));
+        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
+            conditions.setCount(20);
+        if (conditions.getPage() < 1)
+            conditions.setPage(1);
+        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount(), conditions.isNeedTotal());
+        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions, pagination);
+        ListVO<AffairMemberSearchVo> listVO = new ListVO<>(list, conditions.getPage(), conditions.getCount(), pagination.getTotal());
+        return SimpleResponse.ok(listVO);
     }
 
 }

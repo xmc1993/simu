@@ -29,6 +29,9 @@ public class SearchAffairMemberConditions {
     @ApiModelProperty(notes = "盟内成员或者盟外成员,不填默认为盟内成员")
     private boolean isAllianceUser=true;
 
+    @ApiModelProperty(notes = "是否需要返回列表总数（分页使用），默认为TRUE，建议在前端已知总数时填FALSE减轻服务器重复计算压力")
+    private boolean needTotal=true;
+
     public String getKey() {
         return key;
     }
@@ -83,5 +86,13 @@ public class SearchAffairMemberConditions {
 
     public void setIsAllianceUser(boolean isAllianceUser) {
         this.isAllianceUser = isAllianceUser;
+    }
+
+    public boolean isNeedTotal() {
+        return needTotal;
+    }
+
+    public void setNeedTotal(boolean needTotal) {
+        this.needTotal = needTotal;
     }
 }
