@@ -12,21 +12,13 @@ import java.util.Map;
 //登录后返回给前端的信息
 public class LoginUserInfoVO {
     private long id;
-    private String realname;
     private String username;
-    private int gender;
-    private Timestamp birthday ;
     private String avatar;
-    private String mobile;
-    private String email;
-    private int publicType;
     private long homepageAffairId;
     private long personalRoleId;
     private long personalAllianceId;
     private String superid;
-    private String address;
     private boolean isAuthenticated;
-    private String idCard = "";
     private Map<Long,List<Object>> members;
 
 
@@ -38,60 +30,12 @@ public class LoginUserInfoVO {
         this.id = id;
     }
 
-    public String getRealname() {
-        return realname;
-    }
-
-    public void setRealname(String realname) {
-        this.realname = realname;
-    }
-
-    public int getGender() {
-        return gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
-    public Timestamp getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Timestamp birthday) {
-        this.birthday = birthday;
-    }
-
     public String getAvatar() {
         return avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getPublicType() {
-        return publicType;
-    }
-
-    public void setPublicType(int publicType) {
-        this.publicType = publicType;
     }
 
     public long getHomepageAffairId() {
@@ -126,30 +70,12 @@ public class LoginUserInfoVO {
         this.members = members;
     }
 
-
-
     public String getSuperid() {
         return superid;
     }
 
     public void setSuperid(String superid) {
         this.superid = superid;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
     }
 
     public String getUsername() {
