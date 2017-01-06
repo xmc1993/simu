@@ -49,6 +49,7 @@ public class ExceptionResolver extends SimpleMappingExceptionResolver {
         } catch (Exception e) {
             // ignorex
         }
+        ex.printStackTrace();
         LOG.error(ex.getMessage());
         return mv;
 
