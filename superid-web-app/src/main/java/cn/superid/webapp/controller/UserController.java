@@ -342,13 +342,13 @@ public class UserController {
     /**
      * 修改用户信息
      */
-    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户 json传参")
+    @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(EditUserBaseInfo userBaseInfo){
-        if(userBaseInfo == null){
+    public  SimpleResponse editBase(EditUserDetailForm editUserDetailForm){
+        if(editUserDetailForm == null){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }
-        return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
+        return new SimpleResponse(userService.editBaseInfo(editUserDetailForm));
     }
 
 

@@ -14,6 +14,7 @@ public class EditUserDetailForm extends ExecutableModel {
     private String idCard;//身份证
     private String address;
     private String username;
+    private String nicknames;
     private Integer gender;
     private String realname;
     private Timestamp birthday;
@@ -64,5 +65,13 @@ public class EditUserDetailForm extends ExecutableModel {
 
     public void setBirthday(Timestamp birthday) {
         this.birthday = birthday;
+    }
+
+    public String getNicknames() {
+        return nicknames;
+    }
+
+    public void setNicknames(String nicknames) {
+        this.nicknames = nicknames;
     }
 }

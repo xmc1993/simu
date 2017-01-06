@@ -248,19 +248,19 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean editBaseInfo(EditUserBaseInfo userBaseInfo) {
+    public boolean editBaseInfo(EditUserDetailForm userDetailForm) {
         UserBaseInfo update = UserBaseInfo.dao.findById(currentUserId());//有缓存的实体可以先获取再更新
         if (update == null) {
             return false;
         } else {
-            update.copyPropertiesFromAndSkipNull(userBaseInfo);
-            update.update();
-            //更新缩写
+            update.copyPropertiesFromAndSkipNull(userDetailForm);
             UserEntity userEntity = UserEntity.dao.findById(currentUserId());
-            if (userEntity != null) {
-                userEntity.setNameAbbr(PingYinUtil.getFirstSpell(update.getUsername()));
-                userEntity.update();
+            if(userEntity == null){
+                return  false;
             }
+            userEntity.copyPropertiesFromAndSkipNull(userDetailForm);
+            userEntity.setNameAbbr(PingYinUtil.getFirstSpell(update.getUsername()));
+            userEntity.update();
         }
         return true;
     }
@@ -310,49 +310,8 @@ public class UserService implements IUserService {
 
     @Override
     public ResultUserInfo getUserInfo(long userId) {
-        long thisUserId = currentUserId();
-        UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(userId);
-        if (userBaseInfo.getPublicType() == PublicType.ALL || (userBaseInfo.getPublicType() == PublicType.TO_ALLIANCE && allianceService.inSameAlliance(userId, thisUserId))) {//如果公开或者对盟内成员公开
-            return ResultUserInfo.dao.id(userId).selectOne();
-        }
 
-        ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
-        UserEntity userEntity = UserEntity.dao.findById(userId);
-        UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-//        resultUserInfo.setNickNames(userEntity.getNicknames());
-        resultUserInfo.setAvatar(userEntity.getAvatar());
-        resultUserInfo.setSuperId(userEntity.getSuperid());
-        resultUserInfo.setIsAuthenticated(userEntity.isAuthenticated());
-        resultUserInfo.setGender(userEntity.getGender());
-        resultUserInfo.setAddress(userEntity.getAddress());
-
-        //TODO 盟和角色没搞
-
-        if (userPrivateInfoEntity.isPersonalTags()) {
-            //TODO 标签还没弄
-        }
-
-        if (userPrivateInfoEntity.isRealname()) {
-            resultUserInfo.setRealname(userEntity.getRealname());
-        }
-
-        if (userPrivateInfoEntity.isIdCard()) {
-            resultUserInfo.setIdCard(userEntity.getIdCard());
-        }
-
-        if (userPrivateInfoEntity.isMobile()) {
-            resultUserInfo.setMobile(userEntity.getMobile());
-        }
-
-        if (userPrivateInfoEntity.isEmail()) {
-            resultUserInfo.setEmail(userEntity.getEmail());
-        }
-
-        if (userPrivateInfoEntity.isBirthday()) {
-            resultUserInfo.setBirthday(userEntity.getBirthday());
-        }
-        //resultUserInfo.copyPropertiesFrom(userBaseInfo);
-        return resultUserInfo;
+        return null;
     }
 
 
