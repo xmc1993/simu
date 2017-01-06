@@ -1,10 +1,12 @@
 package cn.superid.webapp.service;
 
 import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
+import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.UserPrivateInfoEntity;
 import cn.superid.webapp.service.vo.AllianceRolesVO;
 
 import java.util.List;
@@ -44,7 +46,7 @@ public interface IUserService {
 
      boolean editDetailInfo(EditUserDetailForm editUserDetailForm);
 
-     boolean changePublicType(int publicType);
+     boolean changePublicType(ChangePublicTypeForm form);
 
      ResultUserInfo getUserInfo(long userId);
 
@@ -61,5 +63,5 @@ public interface IUserService {
 
      public void rollbackTest();
 
-     public List<String> getPublicProperty(long userId);
+     public UserPrivateInfoEntity getPublicProperty(long userId);
 }

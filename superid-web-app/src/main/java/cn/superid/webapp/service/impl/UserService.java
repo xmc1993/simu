@@ -2,6 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.*;
+import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.*;
@@ -292,9 +293,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean changePublicType(int publicType) {
-
-        return UserBaseInfo.dao.id(currentUserId()).set("publicType", publicType) > 0;
+    public boolean changePublicType(ChangePublicTypeForm form) {
+        return UserPrivateInfoEntity.dao.partitionId(currentUserId()).setByObject(form)>0;
     }
 
     @Override
@@ -373,31 +373,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<String> getPublicProperty(long userId) {
+    public UserPrivateInfoEntity getPublicProperty(long userId) {
         List<String> result = new ArrayList<>();
-        UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-        if(userPrivateInfoEntity == null){
-            return result;
-        }
-        Field[] fields = UserPrivateInfoEntity.class.getDeclaredFields();
-        for(Field f : fields){
-            if(f.getName().equals("id") | f.getName().equals("userId")){
-                continue;
-            }else{
-                //TODO:这边有一个坑,如果是isXXX这种格式的属性,这里会获取错误,用自己的方法,方便改
-                boolean vaule = false;
-                try{
-                    vaule = (Boolean)ObjectUtil.getFieldValueByName(f.getName(),userPrivateInfoEntity);
-                }catch (Exception e){
-                    e.printStackTrace();
-                    return result;
-                }
-                if(vaule == true){
-                    result.add(f.getName());
-                }
-            }
-        }
-        return result;
+        return UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
     }
 
 
