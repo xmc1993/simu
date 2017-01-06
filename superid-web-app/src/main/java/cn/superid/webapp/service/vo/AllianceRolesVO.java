@@ -8,8 +8,10 @@ package cn.superid.webapp.service.vo;
 public class AllianceRolesVO {
     private long allianceId;
     private String allianceName;
+    private String logoUrl;
     private long roleId;
     private String roleName;
+    private int publicType;
 
     public long getAllianceId() {
         return allianceId;
@@ -41,5 +43,21 @@ public class AllianceRolesVO {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public int getPublicType() {
+        return publicType;
+    }
+
+    public void setPublicType(int publicType) {
+        this.publicType = publicType;
     }
 }

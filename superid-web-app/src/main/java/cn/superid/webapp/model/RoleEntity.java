@@ -29,6 +29,7 @@ public class RoleEntity extends ExecutableModel {
     private int state;
     private Timestamp createTime;
     private Timestamp modifyTime;
+    private int publicType;
 
     @Id
     @Column(name = "id")
@@ -128,5 +129,13 @@ public class RoleEntity extends ExecutableModel {
 
     public void setTitleAbbr(String titleAbbr) {
         this.titleAbbr = titleAbbr;
+    }
+
+    public int getPublicType() {
+        return publicType;
+    }
+
+    public void setPublicType(int publicType) {
+        this.publicType = publicType;
     }
 }
