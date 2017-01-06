@@ -6,6 +6,7 @@ import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
@@ -71,6 +72,7 @@ public class RoleService implements IRoleService {
         roleEntity.setState(ValidState.Valid);
         roleEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         roleEntity.setTitleAbbr(PingYinUtil.getFirstSpell(title));
+        roleEntity.setPublicType(PublicType.PRIVATE);
         roleEntity.save();
         return roleEntity;
     }

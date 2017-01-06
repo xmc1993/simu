@@ -211,9 +211,15 @@ public class AffairMemberService implements IAffairMemberService {
         for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
-        List<RoleEntity> roleEntities = RoleEntity.dao.in("id", roleIds).selectList("id", "userId", "allianceId", "title");
-        for (RoleEntity role : roleEntities) {
-            if (role == null) {
+        if((roleIds == null||(roleIds.length==0))){
+            return ResponseCode.OK;
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        if((null == roleEntities)||(roleEntities.size()==0)){
+            return ResponseCode.RoleNotExist;
+        }
+        for ( RoleEntity role: roleEntities) {
+            if(role == null){
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟外角色
@@ -248,7 +254,7 @@ public class AffairMemberService implements IAffairMemberService {
             //增加affairUser
             affairUserService.addAffairUser(allianceId, affairId, invitationEntity.getBeInvitedUserId(), invitationEntity.getBeInvitedRoleId());
         }
-        return 0;
+        return ResponseCode.OK;
     }
 
 
@@ -259,9 +265,15 @@ public class AffairMemberService implements IAffairMemberService {
         for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
-        List<RoleEntity> roleEntities = RoleEntity.dao.in("id", roleIds).selectList("id", "userId", "allianceId", "title");
-        for (RoleEntity role : roleEntities) {
-            if (role == null) {
+        if((roleIds == null||(roleIds.length==0))){
+            return ResponseCode.OK;
+        }
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        if((null == roleEntities)||(roleEntities.size()==0)){
+            return ResponseCode.RoleNotExist;
+        }
+        for (RoleEntity role: roleEntities) {
+            if(role == null){
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟内角色
@@ -302,7 +314,7 @@ public class AffairMemberService implements IAffairMemberService {
             }
         }
 
-        return 0;
+        return ResponseCode.OK;
     }
 
     @Override

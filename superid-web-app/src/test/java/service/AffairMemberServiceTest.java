@@ -25,22 +25,21 @@ public class AffairMemberServiceTest {
     private IAffairMemberService affairMemberService;
     private long testAllianceId = 2198;
     private long testAffairId = 7620;
-//
-//    @Test
-//    public void addMemberTest() {
-//
-//    }
-//
-//    @Test
-//    public void addCreatorTest() {
-//
-//    }
-//
-//    @Test
-//    public void modifyAffairMemberPermissionsTest() {
-//
-//    }
-//
+
+    @Test
+    public void addMemberTest() {
+    }
+
+    @Test
+    public void addCreatorTest() {
+
+    }
+
+    @Test
+    public void modifyAffairMemberPermissionsTest() {
+
+    }
+
 //    @Test
 //    public void applyForEnterAffairTest() {
 //
