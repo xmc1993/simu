@@ -27,7 +27,6 @@ public class ResultUserInfo extends ExecutableModel{
     private int isVideo = 0;
     private String realname = "";
     private String username = "";
-    private String nickNames = "";
     private Timestamp birthday;
     private int age = 0;
     private String email = "";
@@ -44,6 +43,7 @@ public class ResultUserInfo extends ExecutableModel{
     private double faith;
     private int gender;
     private UserPrivateInfoEntity userPrivateInfoEntity;
+    private List<String> nickNames ;
 
     public Long getId() {
         return id;
@@ -115,14 +115,6 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setRealname(String realname) {
         this.realname = realname;
-    }
-
-    public String getNickNames() {
-        return nickNames;
-    }
-
-    public void setNickNames(String nickNames) {
-        this.nickNames = nickNames;
     }
 
     public Timestamp getBirthday() {
@@ -260,5 +252,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setUserPrivateInfoEntity(UserPrivateInfoEntity userPrivateInfoEntity) {
         this.userPrivateInfoEntity = userPrivateInfoEntity;
+    }
+
+    @Transient
+    public List<String> getNickNames() {
+        return nickNames;
+    }
+
+    public void setNickNames(List<String> nickNames) {
+        this.nickNames = nickNames;
     }
 }

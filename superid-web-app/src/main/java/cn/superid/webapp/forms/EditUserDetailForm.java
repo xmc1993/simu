@@ -11,23 +11,12 @@ import java.sql.Timestamp;
  */
 @ApiModel
 public class EditUserDetailForm extends ExecutableModel {
-    private Integer age;//年龄
     private String idCard;//身份证
-    private Integer marriageStatus;//结婚状态
-    private Integer educationLevel;
-    private String school;
     private String address;
-    private String detailAddress;
-    private String description;//描述
-
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+    private String username;
+    private Integer gender;
+    private String realname;
+    private Timestamp birthday;
 
     public String getIdCard() {
         return idCard;
@@ -35,29 +24,6 @@ public class EditUserDetailForm extends ExecutableModel {
 
     public void setIdCard(String idCard) {
         this.idCard = idCard;
-    }
-
-    public Integer getMarriageStatus() {
-        return marriageStatus;
-    }
-    public void setMarriageStatus(Integer marriageStatus) {
-        this.marriageStatus = marriageStatus;
-    }
-
-    public Integer getEducationLevel() {
-        return educationLevel;
-    }
-
-    public void setEducationLevel(Integer educationLevel) {
-        this.educationLevel = educationLevel;
-    }
-
-    public String getSchool() {
-        return school;
-    }
-
-    public void setSchool(String school) {
-        this.school = school;
     }
 
     public String getAddress() {
@@ -68,19 +34,35 @@ public class EditUserDetailForm extends ExecutableModel {
         this.address = address;
     }
 
-    public String getDetailAddress() {
-        return detailAddress;
+    public String getUsername() {
+        return username;
     }
 
-    public void setDetailAddress(String detailAddress) {
-        this.detailAddress = detailAddress;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getDescription() {
-        return description;
+    public Integer getGender() {
+        return gender;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public String getRealname() {
+        return realname;
+    }
+
+    public void setRealname(String realname) {
+        this.realname = realname;
+    }
+
+    public Timestamp getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Timestamp birthday) {
+        this.birthday = birthday;
     }
 }

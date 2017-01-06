@@ -248,7 +248,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean editBaseInfo(@RequestParam EditUserBaseInfo userBaseInfo) {
+    public boolean editBaseInfo(EditUserBaseInfo userBaseInfo) {
         UserBaseInfo update = UserBaseInfo.dao.findById(currentUserId());//有缓存的实体可以先获取再更新
         if (update == null) {
             return false;
@@ -319,7 +319,7 @@ public class UserService implements IUserService {
         ResultUserInfo resultUserInfo = new ResultUserInfo();//只返回基本信息
         UserEntity userEntity = UserEntity.dao.findById(userId);
         UserPrivateInfoEntity userPrivateInfoEntity = UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
-        resultUserInfo.setNickNames(userEntity.getNicknames());
+//        resultUserInfo.setNickNames(userEntity.getNicknames());
         resultUserInfo.setAvatar(userEntity.getAvatar());
         resultUserInfo.setSuperId(userEntity.getSuperid());
         resultUserInfo.setIsAuthenticated(userEntity.isAuthenticated());

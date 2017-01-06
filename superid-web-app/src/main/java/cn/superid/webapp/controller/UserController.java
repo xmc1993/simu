@@ -344,9 +344,9 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户 json传参")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(@RequestBody EditUserBaseInfo userBaseInfo){
+    public  SimpleResponse editBase(EditUserBaseInfo userBaseInfo){
         if(userBaseInfo == null){
-            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
+            return new SimpleResponse(ResponseCode.BadRequest,null);
         }
         return new SimpleResponse(userService.editBaseInfo(userBaseInfo));
     }
@@ -382,6 +382,7 @@ public class UserController {
         UserEntity user = userService.getCurrentUser();
         user.copyPropertiesTo(resultUserInfo);
         resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userId).selectOne());
+        resultUserInfo.setNickNames(Arrays.asList(user.getNicknames().split(",")));
         return SimpleResponse.ok(resultUserInfo);
     }
 
