@@ -115,17 +115,15 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    @NotLogin
     public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
-//        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
-//            conditions.setCount(20);
-//        if (conditions.getPage() < 1)
-//            conditions.setPage(1);
-//        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount(), conditions.isNeedTotal());
-//        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions, pagination);
-//        ListVO<AffairMemberSearchVo> listVO = new ListVO<>(list, conditions.getPage(), conditions.getCount(), pagination.getTotal());
-//        return SimpleResponse.ok(listVO);
-        throw new RuntimeException("test");
+        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
+            conditions.setCount(20);
+        if (conditions.getPage() < 1)
+            conditions.setPage(1);
+        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount(), conditions.isNeedTotal());
+        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions, pagination);
+        ListVO<AffairMemberSearchVo> listVO = new ListVO<>(list, conditions.getPage(), conditions.getCount(), pagination.getTotal());
+        return SimpleResponse.ok(listVO);
     }
 
 }
