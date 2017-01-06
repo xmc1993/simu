@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
@@ -212,5 +213,5 @@ public interface IAffairMemberService {
      * @param conditions
      * @return
      */
-    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions);
+    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
 }

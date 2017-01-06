@@ -44,7 +44,7 @@ public class JdbcSession extends AbstractSession {
 
     public synchronized Connection getJdbcConnection() {
         try {
-            if (jdbcConnection == null||jdbcConnection.isClosed()) {
+            if (jdbcConnection == null || jdbcConnection.isClosed()) {
                 jdbcConnection = jdbcSessionFactory.createJdbcConnection();
             }
         } catch (Exception e) {
@@ -526,25 +526,28 @@ public class JdbcSession extends AbstractSession {
 
     /**
      * @param cls
-     * @param queryString should not append (limit ? , ?) string,limit string generate in this method
+     * @param queryString       should not append (limit ? , ?) string,limit string generate in this method
      * @param parameterBindings
      * @param pagination
      * @return list, the total number is set in pagination
      */
     @Override
     public List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination) {
-        //查询总量
-        int fromIndex = queryString.indexOf(" from");
+        //验证sql是否带了order排序
         int lastOrderIndex = queryString.lastIndexOf(" order by");
         int lastRightBracketIndex = queryString.lastIndexOf(")");
         if (lastOrderIndex < lastRightBracketIndex) {
             throw new JdbcRuntimeException("Pagination query need order by one column");
         }
-        StringBuilder countSb = new StringBuilder("select count(1)");
-        countSb.append(queryString.substring(fromIndex, lastOrderIndex));
-        Integer count = (Integer) findOneByNativeSql(Integer.class, countSb.toString(), parameterBindings);
-        pagination.setTotal(count);
 
+        //查询总量
+        if (pagination.isNeedTotal()) {
+            int fromIndex = queryString.indexOf(" from");
+            StringBuilder countSb = new StringBuilder("select count(1)");
+            countSb.append(queryString.substring(fromIndex, lastOrderIndex));
+            Integer count = (Integer) findOneByNativeSql(Integer.class, countSb.toString(), parameterBindings);
+            pagination.setTotal(count);
+        } else pagination.setTotal(-1);
 
         //按分页查询列表
         StringBuilder querySb = new StringBuilder(queryString);
@@ -553,6 +556,9 @@ public class JdbcSession extends AbstractSession {
         parameterBindings.addIndexBinding(pagination.getSize());
         List list = findListByNativeSql(cls, querySb.toString(), parameterBindings);
 
+        if (list.size() < pagination.getSize() && pagination.getPage() == 1 && pagination.getTotal() > list.size()) {
+            pagination.setTotal(list.size());
+        }
         return list;
     }
 

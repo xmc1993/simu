@@ -2,6 +2,7 @@ package cn.superid.webapp.forms;
 
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.model.UserPrivateInfoEntity;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -16,24 +17,24 @@ import java.util.Map;
 public class ResultUserInfo extends ExecutableModel{
 
     public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
-    private Long id;
-    private String superId;
-    private boolean isAuthenticated;
-    private String avatar;
-    private int state;
-    private String videoUrl;
-    private String videoImg;
-    private int isVideo;
-    private String realname;
-    private String username;
-    private String nickNames;
+    private Long id = 0L;
+    private String superId = "";
+    private boolean isAuthenticated = false;
+    private String avatar = "";
+    private int state = 0;
+    private String videoUrl = "";
+    private String videoImg = "";
+    private int isVideo = 0;
+    private String realname = "";
+    private String username = "";
+    private String nickNames = "";
     private Timestamp birthday;
-    private int age;
-    private String email;
-    private String mobile;
-    private Long personalRoleId;
-    private String idCard;
-    private int marriageStatus;
+    private int age = 0;
+    private String email = "";
+    private String mobile = "";
+    private Long personalRoleId = 0L;
+    private String idCard = "";
+    private int marriageStatus = 0;
     private int educationLevel;
     private String school;
     private Timestamp createTime;
@@ -42,7 +43,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String description;//描述
     private double faith;
     private int gender;
-    private Map<Long, List<Object>> members;
+    private UserPrivateInfoEntity userPrivateInfoEntity;
 
     public Long getId() {
         return id;
@@ -244,20 +245,20 @@ public class ResultUserInfo extends ExecutableModel{
         this.gender = gender;
     }
 
-    @Transient
-    public Map<Long, List<Object>> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Map<Long, List<Object>> members) {
-        this.members = members;
-    }
-
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Transient
+    public UserPrivateInfoEntity getUserPrivateInfoEntity() {
+        return userPrivateInfoEntity;
+    }
+
+    public void setUserPrivateInfoEntity(UserPrivateInfoEntity userPrivateInfoEntity) {
+        this.userPrivateInfoEntity = userPrivateInfoEntity;
     }
 }

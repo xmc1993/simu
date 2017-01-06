@@ -22,7 +22,7 @@ public interface IUserService {
 
      boolean checkVerifyCode(String code,String token);
 
-     UserEntity createUser(UserEntity userEntity);
+     UserEntity createUser(String token , String password , String username);
 
      UserEntity findByToken(String token);
 
