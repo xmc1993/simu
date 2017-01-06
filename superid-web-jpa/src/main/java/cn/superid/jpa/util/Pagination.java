@@ -8,6 +8,7 @@ public class Pagination {
     private int size =10;
     private int total = 0;
 
+
     public int getPage() {
         return page;
     }
