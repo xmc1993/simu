@@ -1,5 +1,6 @@
 package service;
 
+import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -24,22 +25,21 @@ public class AffairMemberServiceTest {
     private IAffairMemberService affairMemberService;
     private long testAllianceId = 2198;
     private long testAffairId = 7620;
-//
-//    @Test
-//    public void addMemberTest() {
-//
-//    }
-//
-//    @Test
-//    public void addCreatorTest() {
-//
-//    }
-//
-//    @Test
-//    public void modifyAffairMemberPermissionsTest() {
-//
-//    }
-//
+
+    @Test
+    public void addMemberTest() {
+    }
+
+    @Test
+    public void addCreatorTest() {
+
+    }
+
+    @Test
+    public void modifyAffairMemberPermissionsTest() {
+
+    }
+
 //    @Test
 //    public void applyForEnterAffairTest() {
 //
@@ -104,8 +104,9 @@ public class AffairMemberServiceTest {
         conditions.setIncludeSubAffair(true);
         conditions.setSortColumn("level");
         conditions.setCount(190);
-        conditions.setPage(0);
-        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions);
+        conditions.setPage(1);
+        Pagination pagination=new Pagination(conditions.getPage(),conditions.getCount(),conditions.isNeedTotal());
+        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions,pagination);
         System.out.println(list);
     }
 

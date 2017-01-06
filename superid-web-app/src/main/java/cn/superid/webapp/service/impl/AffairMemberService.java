@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import clojure.lang.Obj;
+import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.ArrayUtil;
@@ -207,16 +208,22 @@ public class AffairMemberService implements IAffairMemberService {
     public int inviteAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
         Object[] roleIds = new Object[roles.size()];
-        for(int i=0;i<roles.size();i++){
+        for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
+        if((roleIds == null||(roleIds.length==0))){
+            return ResponseCode.OK;
+        }
         List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        if((null == roleEntities)||(roleEntities.size()==0)){
+            return ResponseCode.RoleNotExist;
+        }
         for ( RoleEntity role: roleEntities) {
             if(role == null){
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟外角色
-            if(!(allianceId == role.getAllianceId())){
+            if (!(allianceId == role.getAllianceId())) {
                 return ResponseCode.RoleNotInAlliance;
             }
             beInvitedRoleId = role.getId();
@@ -247,7 +254,7 @@ public class AffairMemberService implements IAffairMemberService {
             //增加affairUser
             affairUserService.addAffairUser(allianceId, affairId, invitationEntity.getBeInvitedUserId(), invitationEntity.getBeInvitedRoleId());
         }
-        return 0;
+        return ResponseCode.OK;
     }
 
 
@@ -255,16 +262,22 @@ public class AffairMemberService implements IAffairMemberService {
     public int inviteOutAllianceRoleToEnterAffair(long allianceId, long affairId, long inviteRoleId, long inviteUserId, List<Long> roles) {
         long beInvitedRoleId;
         Object[] roleIds = new Object[roles.size()];
-        for(int i=0;i<roles.size();i++){
+        for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
+        if((roleIds == null||(roleIds.length==0))){
+            return ResponseCode.OK;
+        }
         List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
+        if((null == roleEntities)||(roleEntities.size()==0)){
+            return ResponseCode.RoleNotExist;
+        }
         for (RoleEntity role: roleEntities) {
             if(role == null){
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟内角色
-            if(allianceId == role.getAllianceId()){
+            if (allianceId == role.getAllianceId()) {
                 return ResponseCode.RoleIsInAlliance;
             }
             beInvitedRoleId = role.getId();
@@ -301,7 +314,7 @@ public class AffairMemberService implements IAffairMemberService {
             }
         }
 
-        return 0;
+        return ResponseCode.OK;
     }
 
     @Override
@@ -438,7 +451,7 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions) {
-        return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions);
+    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination) {
+        return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions, pagination);
     }
 }

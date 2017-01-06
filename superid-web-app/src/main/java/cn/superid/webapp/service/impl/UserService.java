@@ -148,7 +148,18 @@ public class UserService implements IUserService {
 
     @Override
 //    @Transactional  TODO 支持分布式事务再开启
-    public UserEntity createUser(UserEntity userEntity) {
+    public UserEntity createUser(String token , String password , String username) {
+        UserEntity userEntity=new UserEntity();
+        if(StringUtil.isEmail(token)){
+            userEntity.setEmail(token);
+        }else if(StringUtil.isMobile(token)){
+            userEntity.setCountryCode(MobileUtil.getCountryCode(token));
+            userEntity.setMobile(MobileUtil.getMobile(token));
+        }
+        userEntity.setPassword(PasswordEncryptor.encode(password));
+        userEntity.setRealname(username);
+        userEntity.setUsername(username);
+        userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         userEntity.save();
 
         String superIdCode = cn.superid.jpa.util.StringUtil.generateId(userEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
@@ -341,7 +352,6 @@ public class UserService implements IUserService {
             resultUserInfo.setBirthday(userEntity.getBirthday());
         }
         //resultUserInfo.copyPropertiesFrom(userBaseInfo);
-        resultUserInfo.setMembers(affairMemberService.getAffairMember());
         return resultUserInfo;
     }
 
@@ -377,6 +387,5 @@ public class UserService implements IUserService {
         List<String> result = new ArrayList<>();
         return UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
     }
-
 
 }

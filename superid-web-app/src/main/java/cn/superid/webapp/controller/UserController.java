@@ -9,6 +9,7 @@ import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.UserPrivateInfoEntity;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IRoleService;
@@ -191,18 +192,7 @@ public class UserController {
         if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
             return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
         }
-        UserEntity userEntity=new UserEntity();
-        if(StringUtil.isEmail(token)){
-            userEntity.setEmail(token);
-        }else if(StringUtil.isMobile(token)){
-            userEntity.setCountryCode(MobileUtil.getCountryCode(token));
-            userEntity.setMobile(MobileUtil.getMobile(token));
-        }
-        userEntity.setPassword(PasswordEncryptor.encode(password));
-        userEntity.setRealname(username);
-        userEntity.setUsername(username);
-        userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        UserEntity result = userService.createUser(userEntity);
+        UserEntity result = userService.createUser(token,password,username);
         if(result!=null){
             return SimpleResponse.ok(result);
         }else{
@@ -385,21 +375,14 @@ public class UserController {
         return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
     }
 
-    @ApiOperation(value = "获取用户的详细消息", response = LoginUserInfoVO.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
-    @RequestMapping(value = "/user_info", method = RequestMethod.POST)
-    public  SimpleResponse getUserInfo(Long userId){
-        LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
-        if(userId==null||userId==userService.currentUserId()){
-            UserEntity user = userService.getCurrentUser();
-
-            user.copyPropertiesTo(loginUserInfoVO);
-            loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
-            return SimpleResponse.ok(loginUserInfoVO);
-        }else{
-            ResultUserInfo resultUserInfo=userService.getUserInfo(userId);
-            resultUserInfo.copyPropertiesTo(loginUserInfoVO);
-            return new SimpleResponse(loginUserInfoVO==null?-1:0,loginUserInfoVO);
-        }
+    @ApiOperation(value = "获取自己的详细消息", response = LoginUserInfoVO.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
+    @RequestMapping(value = "/user_info", method = RequestMethod.GET)
+    public  SimpleResponse getUserInfo(){
+        ResultUserInfo resultUserInfo = new ResultUserInfo();
+        UserEntity user = userService.getCurrentUser();
+        user.copyPropertiesTo(resultUserInfo);
+        resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userId).selectOne());
+        return SimpleResponse.ok(resultUserInfo);
     }
 
     /**

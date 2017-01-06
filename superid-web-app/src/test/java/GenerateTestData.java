@@ -34,7 +34,8 @@ public class GenerateTestData {
             userEntity.setRealname("大哥 "+i+" 代目");
             userEntity.setPassword(PasswordEncryptor.encode("123456"));
             userEntity.setMobile(String.valueOf(l+i));
-            UserEntity result = userService.createUser(userEntity);
+//            UserEntity result = userService.createUser(userEntity);
+            UserEntity result = null;
             affairMemberService.addMember(allianceId,affairId,result.getPersonalRoleId(),null);
         }
     }

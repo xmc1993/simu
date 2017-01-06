@@ -44,8 +44,8 @@ public class UserServiceTest{
         userEntity.setRealname("汤茂思");
         userEntity.setPassword(PasswordEncryptor.encode("123456"));
         userEntity.setMobile("15958586666");
-        UserEntity result = userService.createUser(userEntity);
-        return  result;
+//        UserEntity result = userService.createUser(userEntity);
+        return  null;
     }
 
     @Test
