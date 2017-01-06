@@ -388,5 +388,4 @@ public class UserService implements IUserService {
         return UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
     }
 
-
 }
