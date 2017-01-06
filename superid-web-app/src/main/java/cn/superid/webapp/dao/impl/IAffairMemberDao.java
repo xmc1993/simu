@@ -1,5 +1,6 @@
 package cn.superid.webapp.dao.impl;
 
+import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -30,6 +31,6 @@ public interface IAffairMemberDao {
      * @param conditions
      * @return
      */
-    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions);
+    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
 
 }
