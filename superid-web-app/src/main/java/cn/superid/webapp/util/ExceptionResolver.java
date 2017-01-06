@@ -49,7 +49,7 @@ public class ExceptionResolver extends SimpleMappingExceptionResolver {
         } catch (Exception e) {
             // ignorex
         }
-        LOG.error(ex.getMessage());
+        LOG.error(ex.getMessage(),ex);
         return mv;
 
     }
