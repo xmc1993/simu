@@ -1,6 +1,7 @@
 package cn.superid.webapp.service;
 
 import cn.superid.webapp.controller.VO.UserAllianceRolesVO;
+import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.forms.EditUserBaseInfo;
 import cn.superid.webapp.forms.EditUserDetailForm;
 import cn.superid.webapp.forms.ResultUserInfo;
@@ -45,7 +46,7 @@ public interface IUserService {
 
      boolean editDetailInfo(EditUserDetailForm editUserDetailForm);
 
-     boolean changePublicType(int publicType);
+     boolean changePublicType(ChangePublicTypeForm form);
 
      ResultUserInfo getUserInfo(long userId);
 

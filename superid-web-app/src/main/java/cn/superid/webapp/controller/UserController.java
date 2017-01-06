@@ -5,6 +5,7 @@ import cn.superid.utils.MobileUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.controller.VO.LoginUserInfoVO;
+import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
@@ -384,12 +385,6 @@ public class UserController {
         return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
     }
 
-    @ApiOperation(value = "设置详细信息公开性", response = String.class)
-    @RequestMapping(value = "/change_public_type", method = RequestMethod.POST)
-    public  SimpleResponse changePublicType(int publicType){
-        return new SimpleResponse(userService.changePublicType(publicType));
-    }
-
     @ApiOperation(value = "获取用户的详细消息", response = LoginUserInfoVO.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
     @RequestMapping(value = "/user_info", method = RequestMethod.POST)
     public  SimpleResponse getUserInfo(Long userId){
@@ -453,8 +448,14 @@ public class UserController {
 
     @ApiOperation(value = "得到用户的公开性",response = String.class,notes = "")
     @RequestMapping(value="/get_public_property",method = RequestMethod.GET)
-    public SimpleResponse getPublicProperty() throws Exception{
+    public SimpleResponse getPublicProperty(){
         return SimpleResponse.ok(userService.getPublicProperty(userService.currentUserId()));
+    }
+
+    @ApiOperation(value = "设置详细信息公开性", response = String.class)
+    @RequestMapping(value = "/change_public_type", method = RequestMethod.POST)
+    public  SimpleResponse changePublicType(ChangePublicTypeForm publicType){
+        return new SimpleResponse(userService.changePublicType(publicType));
     }
 
 

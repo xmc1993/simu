@@ -2,6 +2,7 @@ package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.*;
+import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.*;
@@ -292,9 +293,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean changePublicType(int publicType) {
-
-        return UserBaseInfo.dao.id(currentUserId()).set("publicType", publicType) > 0;
+    public boolean changePublicType(ChangePublicTypeForm form) {
+        return UserPrivateInfoEntity.dao.partitionId(currentUserId()).setByObject(form)>0;
     }
 
     @Override
