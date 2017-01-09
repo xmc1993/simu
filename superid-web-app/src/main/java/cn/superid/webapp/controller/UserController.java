@@ -344,7 +344,7 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(@RequestBody EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editBase(EditUserDetailForm editUserDetailForm){
         if(editUserDetailForm == null){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }
