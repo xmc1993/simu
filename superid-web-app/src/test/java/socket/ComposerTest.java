@@ -14,18 +14,12 @@ public class ComposerTest {
     @Test
     public void testSeparatedPackage
             () throws Exception {
-        Composer composer = new Composer(new Callback() {
+        Composer composer = new Composer() {
             @Override
-            public void callBack(byte[] bytes) {
-                try {
-                    String s = new String(bytes, "utf-8");
-                    System.out.println(s);
-                    System.out.println("-----------------------");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+            public void onMessage(byte[] bytes) {
+
             }
-        });
+        };
         String resource = "    /**\n" +
                 "     * Returns an array containing all of the elements in this list\n" +
                 "     * in proper sequence (from first to last element).\n" +
@@ -114,9 +108,9 @@ public class ComposerTest {
 
     @Test
     public void testCombinePackage() throws Exception {
-        Composer composer = new Composer(new Callback() {
+        Composer composer = new Composer() {
             @Override
-            public void callBack(byte[] bytes) {
+            public void onMessage(byte[] bytes) {
                 try {
                     String s = new String(bytes, "utf-8");
                     System.out.println(s);
@@ -125,7 +119,7 @@ public class ComposerTest {
                     e.printStackTrace();
                 }
             }
-        });
+        };
         String resource1 = "dasdsagdaskdsgkafdkgfdl ldashkfgdslgfldalsflsahdlfjadhsfhjkasdlhfhlshjfjhlha bljkjdfsahfjhfhlhls";
         String resource2 =                 "    // Positional Access Operations\n" +
                 "\n" +
