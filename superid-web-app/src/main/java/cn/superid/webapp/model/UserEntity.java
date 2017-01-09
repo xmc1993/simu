@@ -23,7 +23,7 @@ public class UserEntity extends ExecutableModel {
     private String videoUrl = "";
     private String videoImg = "";
     private int isVideo;
-    private String nicknames = "";
+    private String nicknames;
     private boolean isAuthenticated;
     private String realname = "";//真实姓名
     private String username = "";//用户姓名
@@ -124,7 +124,7 @@ public class UserEntity extends ExecutableModel {
         return nicknames;
     }
 
-    public void setNicknames(String nickNames) {
+    public void setNicknames(String nicknames) {
         this.nicknames = nicknames;
     }
 

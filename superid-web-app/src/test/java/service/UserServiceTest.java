@@ -78,7 +78,7 @@ public class UserServiceTest{
         JUnit4ClassRunner.setSessionAttr("userId",testUser.getId());
         EditUserBaseInfo editUserBaseInfo = new EditUserBaseInfo();
         editUserBaseInfo.setAvatar("test");
-        userService.editBaseInfo(editUserBaseInfo);
+//        userService.editBaseInfo(editUserBaseInfo);
         UserBaseInfo userBaseInfo=UserBaseInfo.dao.findById(testUser.getId());
         Assert.assertTrue(userBaseInfo.getAvatar().equals("test"));
         Assert.assertTrue(userBaseInfo.getUsername().equals(testUser.getRealname()));

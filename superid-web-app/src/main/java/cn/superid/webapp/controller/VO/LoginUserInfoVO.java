@@ -19,6 +19,7 @@ public class LoginUserInfoVO {
     private long personalAllianceId;
     private String superid;
     private boolean isAuthenticated;
+    private int gender;
     private Map<Long,List<Object>> members;
 
 
@@ -92,5 +93,13 @@ public class LoginUserInfoVO {
 
     public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 }

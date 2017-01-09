@@ -36,7 +36,7 @@ public interface IUserService {
 
      long currentUserId();
 
-     boolean editBaseInfo(EditUserBaseInfo userBaseInfo);
+     boolean editBaseInfo(EditUserDetailForm userBaseInfo);
 
      boolean changeToken(String token);
 

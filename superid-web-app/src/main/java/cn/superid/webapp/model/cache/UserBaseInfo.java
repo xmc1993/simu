@@ -20,7 +20,6 @@ public class UserBaseInfo extends ExecutableModel{
     private int gender;
     private Timestamp birthday;
     private String username;
-    private int publicType;
 
     @Id
     public long getId() {
@@ -63,11 +62,4 @@ public class UserBaseInfo extends ExecutableModel{
         this.username = username;
     }
 
-    public int getPublicType() {
-        return publicType;
-    }
-
-    public void setPublicType(int publicType) {
-        this.publicType = publicType;
-    }
 }
