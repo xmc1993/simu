@@ -38,6 +38,7 @@ public class AnnouncementService implements IAnnouncementService{
     private static final int THUMB_LENTH = 200 ;
     private static final int SNAPSHOT_INTERVAL = 30 ;
 
+
     @Override
     public EditDistanceForm compareTwoBlocks(List<TotalBlock> present, List<TotalBlock> history) {
         List<Integer> delete = new ArrayList<>();

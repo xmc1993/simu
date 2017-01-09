@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by xmc1993 on 16/12/5.
  */
-public class Composer {
+public abstract class Composer {
     private final static Integer ST_LENGTH = 1;// state that we should read length
     private final static Integer ST_DATA = 2;// state that we should read length
     private final static Integer ST_ERROR = 3;// state that something wrong has happened
@@ -18,15 +18,13 @@ public class Composer {
     private int state = ST_LENGTH;
     private int maxLength = DEFAULT_MAX_LENGTH;
     private byte[] buf = null;
-    private Callback callback;
 
-    public Composer(Callback callback) {
-        this.callback = callback;
+
+    public Composer() {
     }
 
-    public Composer(int maxLength, Callback callback) {
+    public Composer(int maxLength) {
         this.maxLength = maxLength;
-        this.callback = callback;
     }
 
 
@@ -209,10 +207,12 @@ public class Composer {
         if (this.left == 0) {
             byte[] bytes = this.buf;
             this.reset();
-            callback.callBack(bytes);
+            onMessage(bytes);
         }
 
         return offset + size; //给出当前数据包没有读完部分的offset
     }
+
+    public abstract void onMessage(byte[] bytes);
 
 }
