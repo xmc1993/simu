@@ -6,11 +6,11 @@ import java.io.UnsupportedEncodingException;
  * Created by xmc1993 on 16/12/5.
  */
 public abstract class Composer {
-    private final static Integer ST_LENGTH = 1;// state that we should read length
-    private final static Integer ST_DATA = 2;// state that we should read length
-    private final static Integer ST_ERROR = 3;// state that something wrong has happened
-    private final static Integer DEFAULT_MAX_LENGTH = -1;// default max package size: unlimited
-    private final static Integer LEFT_SHIFT_BITS = 1 << 7;
+    private final static int ST_LENGTH = 1;// state that we should read length
+    private final static int ST_DATA = 2;// state that we should read data
+    private final static int ST_ERROR = 3;// state that something wrong has happened
+    private final static int DEFAULT_MAX_LENGTH = -1;// default max package size: unlimited
+    private final static int LEFT_SHIFT_BITS = 1 << 7;
 
     private int offset = 0;
     private int left = 0;
