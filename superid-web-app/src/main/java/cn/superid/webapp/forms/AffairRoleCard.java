@@ -7,11 +7,11 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * Created by xiaofengxu on 16/12/30.
  */
 @ApiModel
-public class AffairRoleCard {//盟角色卡片
+public class AffairRoleCard {//事务角色卡片
     private long roleId;
-    private String title;
-    private String name;
-    private String superId;
+    private String roleTitle;
+    private String username;
+    private String userId;
     private int gender;
     private long affairMemberId;
     private String avatar;
@@ -30,12 +30,12 @@ public class AffairRoleCard {//盟角色卡片
         this.roleId = roleId;
     }
 
-    public String getTitle() {
-        return title;
+    public String getRoleTitle() {
+        return roleTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setRoleTitle(String roleTitle) {
+        this.roleTitle = roleTitle;
     }
 
     public int getGender() {
@@ -86,20 +86,20 @@ public class AffairRoleCard {//盟角色卡片
         this.permissions = permissions;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getSuperId() {
-        return superId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setSuperId(String superId) {
-        this.superId = superId;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getTitleAbbr() {

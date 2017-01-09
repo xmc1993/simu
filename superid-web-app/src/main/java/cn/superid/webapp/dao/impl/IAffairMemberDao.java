@@ -33,4 +33,12 @@ public interface IAffairMemberDao {
      */
     List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
 
+    /**
+     * 获取事务所有角色
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
+    List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId);
+
 }

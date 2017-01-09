@@ -38,4 +38,6 @@ public interface IRoleService {
      */
     public List<AllianceRolesVO> getUserAllianceRoles();
 
+
+
 }

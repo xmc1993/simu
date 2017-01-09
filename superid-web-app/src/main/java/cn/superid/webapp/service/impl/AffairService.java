@@ -603,6 +603,11 @@ public class AffairService implements IAffairService {
         return result;
     }
 
+    @Override
+    public boolean affairExist(long allianceId, long affairId) {
+        return AffairEntity.dao.partitionId(allianceId).id(affairId).exists();
+    }
+
     private int shiftAffair(long allianceId, long affairId, long targetAffairId) {
         //检测不能在把父事务放到子事务底下
         AffairEntity targetAffair = AffairEntity.dao.partitionId(allianceId).id(targetAffairId).selectOne("level", "path");

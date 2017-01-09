@@ -7,6 +7,7 @@ import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
 import cn.superid.webapp.controller.VO.ListVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
+import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -16,6 +17,7 @@ import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
@@ -40,6 +42,8 @@ public class AffairMemberController {
     private IAffairUserService affairUserService;
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IAffairService affairService;
 
     @ApiOperation(value = "同意进入事务申请", response = AffairMemberEntity.class, notes = "拥有同意申请的权限")
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
@@ -108,9 +112,16 @@ public class AffairMemberController {
     }
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
-    @RequestMapping(value = "/get_role_cards", method = RequestMethod.GET)
-    public SimpleResponse getAffairRoleCards(long affairMemberId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), searchAffairRoleConditions));
+    @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
+    public SimpleResponse getAffairRoleCards(long allianceId,long affairId, long roleId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        boolean affairExist = affairService.affairExist(allianceId,affairId);
+        if(!affairExist){
+            return new SimpleResponse(ResponseCode.AffairNotExist,null);
+        }
+        //检测当前角色能不能搜索或者查看当前事务的信息
+
+
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(allianceId, affairId, searchAffairRoleConditions));
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")

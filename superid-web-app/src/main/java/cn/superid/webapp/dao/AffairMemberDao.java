@@ -34,8 +34,8 @@ public class AffairMemberDao implements IAffairMemberDao {
         String key = "%" + conditions.getKey() + "%";
 
 
-        StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title,r.title_abbr,u.username,u.superid,u.name_abbr,u.avatar,ta.id as affairMemberId" +
-                ",ta.permissions,a.name as belongAffairName from ");
+        StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender,ta.id as affairMemberId" +
+                ",ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName from ");
         ParameterBindings parameterBindings = new ParameterBindings();
 //        sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id in (0 ");//查出满足所有要求的affairmember
 //        parameterBindings.addIndexBinding(allianceId);
@@ -59,20 +59,19 @@ public class AffairMemberDao implements IAffairMemberDao {
                 sql.append(" and am.state>0 ");
             }
         }
-        sql.append(" )  ta  join role r  join affair a join user u on a.id = r.belong_affair_id and ta.role_id = r.id and r.user_id = u.id where 1=1 ");
+        sql.append(" )  ta  join role r  join affair a join user u join alliance on a.id = r.belong_affair_id and ta.role_id = r.id and r.user_id = u.id and alliance.id = r.alliance_id where 1=1 ");
 
         if (hasKey) {
-            sql.append(" and ( r.title like ? or r.title_abbr like ? or u.superid like ? or u.username like ? or u.name_abbr like ? ) ");
-            parameterBindings.addIndexBinding(key, 5);
+            sql.append(" and ( r.title like ? or r.title_abbr like ? or u.username like ? or u.name_abbr like ? ) ");
+            parameterBindings.addIndexBinding(key, 4);
         }
         if (conditions.getInAlliance() != null) {//判断是不是同一个盟
             if (conditions.getInAlliance()) {
                 sql.append(" and r.alliance_id = ?");
-                parameterBindings.addIndexBinding(allianceId);
             } else {
                 sql.append(" and r.alliance_id <> ?");
-                parameterBindings.addIndexBinding(allianceId);
             }
+            parameterBindings.addIndexBinding(allianceId);
         }
 
         if (StringUtil.notEmpty(conditions.getLastTitlePY())) {//以最后一个拼音往后取
@@ -80,7 +79,7 @@ public class AffairMemberDao implements IAffairMemberDao {
             parameterBindings.addIndexBinding(conditions.getLastTitlePY());
         }
 
-        sql.append(" order by r.title_abbr asc limit ? ");
+        sql.append(" order by am.modify_time asc limit ? ");
         parameterBindings.addIndexBinding(conditions.getLimit());
 
         return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
@@ -143,6 +142,21 @@ public class AffairMemberDao implements IAffairMemberDao {
         if (conditions.isReverseSort()) sb.append(" desc ");
         else sb.append(" asc ");
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
+    }
+
+    @Override
+    public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId) {
+        StringBuilder sb = new StringBuilder("select am.role_id, r.title as roleTitle,r.belong_affair_id as homepageAffairId, b.homepageAffairName, r.user_id, u.username,u.gender,u.avatar from affair_member am " +
+                "join role r on r.id = am.role_id " +
+                "join user u on u.id = r.user_id " +
+                "join (select a.id as affairId ,a.name as homepageAffairName , alliance.name as allianceName from affair a \n" +
+                "      join alliance on alliance.id = a.alliance_id) b on b.affairId = r.belong_affair_id \n" +
+                "where am.alliance_id = ? and am.affair_id = ?");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(affairId);
+        List<AffairRoleCard> cards = AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sb.toString(),p);
+        return cards;
     }
 
 }

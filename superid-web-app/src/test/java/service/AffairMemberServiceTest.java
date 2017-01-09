@@ -110,12 +110,12 @@ public class AffairMemberServiceTest {
         System.out.println(list);
     }
 
-//    @Test
-//    public void searchAffairMembers2() {
-//        SearchAffairMemberConditions conditions = new SearchAffairMemberConditions();
-//        conditions.setIncludeSubAffair(true);
-//        conditions.setKey("z");
-//        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions);
-//        System.out.println(list);
-//    }
+    @Test
+    public void searchAffairRoles() {
+        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
+        conditions.setInAlliance(true);
+        List<AffairRoleCard> list = affairMemberService.searchAffairRoleCards(testAllianceId,testAffairId,conditions);
+        System.out.println(list);
+    }
+
 }

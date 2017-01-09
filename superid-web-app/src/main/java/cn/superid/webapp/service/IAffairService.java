@@ -163,4 +163,12 @@ public interface IAffairService {
      */
     List<AffairInfo> getOutAllianceAffair();
 
+    /**
+     * 好多地方用到,先抽出来
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
+    boolean affairExist(long allianceId,long affairId);
+
 }

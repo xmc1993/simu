@@ -379,7 +379,7 @@ public class AnnouncementService implements IAnnouncementService{
 //        for(SimpleAnnouncementVO s : result){
 //            UserNameAndRoleNameVO name = roleService.getUserNameAndRoleName(s.getCreatorId());
 //            s.setRoleTitle(name.getRoleTitle());
-//            s.setRealname(name.getUserName());
+//            s.setRealname(name.getUsername());
 //            s.setAvatar(name.getAvatar());
 //        }
         //显示以前的扮演人
@@ -402,7 +402,7 @@ public class AnnouncementService implements IAnnouncementService{
 //            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
 //            if(userNameAndRoleNameVO != null){
 //                result.setRoleTitle(userNameAndRoleNameVO.getRoleTitle());
-//                result.setRealname(userNameAndRoleNameVO.getUserName());
+//                result.setRealname(userNameAndRoleNameVO.getUsername());
 //                result.setAvatar(userNameAndRoleNameVO.getAvatar());
 //            }
             //显示老user

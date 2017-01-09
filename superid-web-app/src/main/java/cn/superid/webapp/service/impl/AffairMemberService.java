@@ -454,4 +454,9 @@ public class AffairMemberService implements IAffairMemberService {
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination) {
         return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions, pagination);
     }
+
+    @Override
+    public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId, long roleId) {
+        return affairMemberDao.getAllAffairRoles(allianceId,affairId);
+    }
 }
