@@ -328,4 +328,6 @@ public class UserEntity extends ExecutableModel {
     public void setAuthenticated(boolean authenticated) {
         isAuthenticated = authenticated;
     }
+
+
 }

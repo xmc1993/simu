@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -259,6 +260,9 @@ public class UserService implements IUserService {
                 return  false;
             }
             userEntity.copyPropertiesFromAndSkipNull(userDetailForm);
+            if(userDetailForm.getBirthday() != null){
+                userEntity.setBirthday(new Timestamp(userDetailForm.getBirthday()));
+            }
             userEntity.setNameAbbr(PingYinUtil.getFirstSpell(update.getUsername()));
             userEntity.update();
         }

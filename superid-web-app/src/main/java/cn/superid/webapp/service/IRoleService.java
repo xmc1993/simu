@@ -2,6 +2,7 @@ package cn.superid.webapp.service;
 
 import cn.superid.webapp.controller.VO.SearchUserVO;
 import cn.superid.webapp.controller.forms.AddAllianceUserForm;
+import cn.superid.webapp.controller.forms.RolePublicTypeForm;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
@@ -37,5 +38,7 @@ public interface IRoleService {
      * @return
      */
     public List<AllianceRolesVO> getUserAllianceRoles();
+
+    public boolean editPublicType(List<RolePublicTypeForm> roles);
 
 }
