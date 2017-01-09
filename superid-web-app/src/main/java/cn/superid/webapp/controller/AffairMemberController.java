@@ -126,4 +126,10 @@ public class AffairMemberController {
         return SimpleResponse.ok(listVO);
     }
 
+    @ApiOperation(value = "获取一个用户所有member", notes = "")
+    @RequestMapping(value = "/get_member", method = RequestMethod.GET)
+    public SimpleResponse getMember() {
+        return SimpleResponse.ok(affairMemberService.getAffairMember());
+    }
+
 }

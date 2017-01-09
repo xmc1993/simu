@@ -344,7 +344,7 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editBase(@RequestBody EditUserDetailForm editUserDetailForm){
         if(editUserDetailForm == null){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }
@@ -365,17 +365,7 @@ public class UserController {
     }
 
 
-
-    @ApiOperation(value = "编辑详细信息", response = String.class, notes = "json传参")
-    @RequestMapping(value = "/edit_detail", method = RequestMethod.POST)
-    public  SimpleResponse editDetail(@RequestBody EditUserDetailForm editUserDetailForm){
-        if(editUserDetailForm == null){
-            return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
-        }
-        return new SimpleResponse(userService.editDetailInfo(editUserDetailForm));
-    }
-
-    @ApiOperation(value = "获取自己的详细消息", response = LoginUserInfoVO.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
+    @ApiOperation(value = "获取自己的详细消息", response = ResultUserInfo.class,notes = "如果获取本人信息,则不需要传userId,表单传参")
     @RequestMapping(value = "/user_info", method = RequestMethod.GET)
     public  SimpleResponse getUserInfo(){
         ResultUserInfo resultUserInfo = new ResultUserInfo();
