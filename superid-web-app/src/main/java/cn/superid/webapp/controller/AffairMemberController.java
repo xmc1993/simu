@@ -113,10 +113,16 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(long allianceId,long affairId, long roleId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-        boolean affairExist = affairService.affairExist(allianceId,affairId);
-        if(!affairExist){
-            return new SimpleResponse(ResponseCode.AffairNotExist,null);
+    public SimpleResponse getAffairRoleCards(@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        Long allianceId = searchAffairRoleConditions.getAllianceId();
+        Long affairId = searchAffairRoleConditions.getAffairId();
+        Long roleId = searchAffairRoleConditions.getRoleId();
+        if ((allianceId == null) || (affairId == null) || (roleId == null)) {
+            return new SimpleResponse(ResponseCode.NeedParams, null);
+        }
+        boolean affairExist = affairService.affairExist(allianceId, affairId);
+        if (!affairExist) {
+            return new SimpleResponse(ResponseCode.AffairNotExist, null);
         }
         //检测当前角色能不能搜索或者查看当前事务的信息
 

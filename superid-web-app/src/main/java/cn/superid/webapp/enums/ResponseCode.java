@@ -9,6 +9,7 @@ public interface ResponseCode {
     int Unauthorized = 401;
     int Forbidden = 403;
     int NotAcceptable = 406;
+    int NeedParams = 407;
     int CatchException = 2500;
     int DataBaseException = 2600;
     int Error = -1;

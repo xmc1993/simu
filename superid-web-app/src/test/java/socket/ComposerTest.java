@@ -1,6 +1,5 @@
 package socket;
 
-import cn.superid.webapp.notice.tcp.Callback;
 import cn.superid.webapp.notice.tcp.Composer;
 import org.junit.Test;
 

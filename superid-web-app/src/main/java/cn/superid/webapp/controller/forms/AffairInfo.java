@@ -1,6 +1,8 @@
 package cn.superid.webapp.controller.forms;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by njuTms on 16/11/14.
@@ -9,6 +11,8 @@ public class AffairInfo {
     private long id;
     private String superid = "";
     private String name = "";
+    private long roleId;
+    private String roleTitle;
     private String description = "";
     private int publicType;
     private String logoUrl = "";
@@ -23,6 +27,7 @@ public class AffairInfo {
     private Object overView;
 
     private String tags = "";
+
     public long getId() {
         return id;
     }
@@ -37,6 +42,22 @@ public class AffairInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRoleTitle() {
+        return roleTitle;
+    }
+
+    public void setRoleTitle(String roleTitle) {
+        this.roleTitle = roleTitle;
     }
 
     public int getIsPersonal() {
@@ -150,4 +171,5 @@ public class AffairInfo {
     public void setSuperid(String superid) {
         this.superid = superid;
     }
+
 }

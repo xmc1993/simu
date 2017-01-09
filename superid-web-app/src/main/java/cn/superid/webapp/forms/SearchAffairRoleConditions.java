@@ -8,6 +8,9 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  */
 @ApiModel
 public class SearchAffairRoleConditions {
+    private long allianceId;
+    private long affairId;
+    private long roleId;
     private String key;
     private String lastTitlePY;
     private int limit;
@@ -17,6 +20,30 @@ public class SearchAffairRoleConditions {
     private Boolean inAlliance;
     @ApiModelProperty(notes = "事务id,逗号隔开,如果是本事务可以不要传")
     private String affairIds;
+
+    public long getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
+    public long getAffairId() {
+        return affairId;
+    }
+
+    public void setAffairId(long affairId) {
+        this.affairId = affairId;
+    }
+
+    public long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
+    }
 
     public String getKey() {
         return key;

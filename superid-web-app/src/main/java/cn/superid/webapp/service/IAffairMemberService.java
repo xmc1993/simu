@@ -202,6 +202,14 @@ public interface IAffairMemberService {
 
     public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId);
 
+    /**
+     * 获取自己在这个事务中的affairMember
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
+    public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId,long affairId);
+
 
     List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 

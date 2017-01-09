@@ -17,7 +17,6 @@ import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
 import cn.superid.webapp.utils.SmsType;
-import cn.superid.webapp.utils.TimeUtil;
 import cn.superid.webapp.utils.token.TokenUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -215,17 +213,17 @@ public class UserController {
         return SimpleResponse.ok("success");
     }
 
-    @ApiOperation(value = "重置密码", httpMethod = "POST", response = SimpleResponse.class, notes = "重置密码,表单传参")
+    @ApiOperation(value = "忘记密码", httpMethod = "POST", response = SimpleResponse.class, notes = "忘记密码,表单传参")
     @NotLogin
-    @RequestMapping(value = "/reset_pwd", method = RequestMethod.POST)
-    public SimpleResponse resetPwd(String verifyCode,String newPwd){
+    @RequestMapping(value = "/forget_pwd", method = RequestMethod.POST)
+    public SimpleResponse forgetPwd(String verifyCode,String newPwd){
         if(StringUtil.isEmpty(verifyCode) | StringUtil.isEmpty(newPwd)){
             return new SimpleResponse(ResponseCode.BadRequest,"params cannot be null");
         }
         if(!userService.checkVerifyCode(verifyCode,null)){
             return new SimpleResponse(ResponseCode.ErrorVerifyCode,"验证码不正确");
         }
-        return new SimpleResponse(userService.resetPwd(newPwd,(String) auth.getSessionAttr("token")));
+        return new SimpleResponse(userService.forgetPwd(newPwd,(String) auth.getSessionAttr("token")));
     }
 
     @ApiOperation(value = "修改手机或者邮箱号码",response = SimpleResponse.class, notes = "表单传参")
@@ -301,8 +299,6 @@ public class UserController {
 
         LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
         userEntity.copyPropertiesTo(loginUserInfoVO);
-        //获取user的所有affairMember
-        loginUserInfoVO.setMembers(affairMemberService.getAffairMember());
 
         return SimpleResponse.ok(loginUserInfoVO);
     }

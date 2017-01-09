@@ -42,7 +42,7 @@ public interface IUserService {
 
      boolean changePwd(String oldPwd,String newPwd);
 
-     boolean resetPwd(String newPwd,String token);
+     boolean forgetPwd(String newPwd, String token);
 
      boolean editDetailInfo(EditUserDetailForm editUserDetailForm);
 

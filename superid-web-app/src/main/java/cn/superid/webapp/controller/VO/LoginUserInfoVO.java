@@ -20,7 +20,6 @@ public class LoginUserInfoVO {
     private String superid;
     private boolean isAuthenticated;
     private int gender;
-    private Map<Long,List<Object>> members;
 
 
     public long getId() {
@@ -61,14 +60,6 @@ public class LoginUserInfoVO {
 
     public void setPersonalAllianceId(long personalAllianceId) {
         this.personalAllianceId = personalAllianceId;
-    }
-
-    public Map<Long, List<Object>> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Map<Long, List<Object>> members) {
-        this.members = members;
     }
 
     public String getSuperid() {

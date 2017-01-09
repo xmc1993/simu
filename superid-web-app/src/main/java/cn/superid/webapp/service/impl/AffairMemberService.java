@@ -421,6 +421,18 @@ public class AffairMemberService implements IAffairMemberService {
         return getMaps(affairMemberVOList);
     }
 
+    @Override
+    public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId, long affairId) {
+        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? and r.affair_id = ?) b on a.role_id = b.id ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(userService.currentUserId());
+        p.addIndexBinding(affairId);
+        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
+
+        return getMaps(affairMemberVOList);
+    }
+
     private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList) {
         Map<Long, List<Object>> members = new HashedMap();
         for (AffairMemberVO a : affairMemberVOList) {

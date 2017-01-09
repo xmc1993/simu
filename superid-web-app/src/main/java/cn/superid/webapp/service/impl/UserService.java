@@ -290,7 +290,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean resetPwd(String newPwd, String token) {
+    public boolean forgetPwd(String newPwd, String token) {
         UserEntity userEntity = findByToken(token);
         if (userEntity == null) {
             return false;
