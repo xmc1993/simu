@@ -9,6 +9,7 @@ public class Pagination {
     private int total = -1;
     private boolean needTotal = true;
 
+
     public int getPage() {
         return page;
     }

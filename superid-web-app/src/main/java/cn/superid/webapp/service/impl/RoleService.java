@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.forms.RolePublicTypeForm;
 import cn.superid.webapp.dao.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.PingYinUtil;
@@ -163,5 +164,14 @@ public class RoleService implements IRoleService {
             }
         }
         return allianceRolesVOs;
+    }
+
+    @Override
+    public boolean editPublicType(List<RolePublicTypeForm> roles) {
+        boolean result = true;
+        for(RolePublicTypeForm r :roles){
+            result = RoleEntity.dao.id(r.getRoleId()).partitionId(r.getAllianceId()).set("public_type",r.getPublicType()) > 0;
+        }
+        return result;
     }
 }

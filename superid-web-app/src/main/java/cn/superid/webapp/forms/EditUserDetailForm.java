@@ -17,7 +17,7 @@ public class EditUserDetailForm extends ExecutableModel {
     private String nicknames;
     private Integer gender;
     private String realname;
-    private Timestamp birthday;
+    private Long birthday;
 
     public String getIdCard() {
         return idCard;
@@ -59,11 +59,11 @@ public class EditUserDetailForm extends ExecutableModel {
         this.realname = realname;
     }
 
-    public Timestamp getBirthday() {
+    public Long getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Timestamp birthday) {
+    public void setBirthday(Long birthday) {
         this.birthday = birthday;
     }
 

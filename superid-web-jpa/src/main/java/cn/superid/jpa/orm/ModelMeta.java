@@ -26,12 +26,12 @@ public class ModelMeta {
 
     private boolean cacheable  =false;
     private byte[] key =null;
-    private byte[][] fields;
-    private List<ModelColumnMeta> columnMetas;
+    private byte[][] fieldNameBytes;
+    private List<ModelColumnMeta> columnMetaList;
     private ModelColumnMeta idColumnMeta;
     private ModelColumnMeta partitionColumn;
     /**
-     * column info of orm model class, ignore all fields with @javax.sql.Transient
+     * column info of orm model class, ignore all fieldNameBytes with @javax.sql.Transient
      */
     public static class ModelColumnMeta {
         public boolean isId = false;
@@ -40,7 +40,6 @@ public class ModelMeta {
         public String columnName;
         public byte[] binary;
         public Class<?> fieldType;
-        public boolean nullable;
         public FieldAccessor fieldAccessor;
     }
 
@@ -50,7 +49,7 @@ public class ModelMeta {
      * init column meta and cache it
      * @return
      */
-    private List<ModelColumnMeta> getColumnMetas() {
+    private List<ModelColumnMeta> getColumnMetaList() {
         Field[] fields = modelCls.getDeclaredFields();
         List<ModelColumnMeta> columnMetas = new ArrayList<>(fieldsNum);
         for (Field field : fields) {
@@ -71,16 +70,13 @@ public class ModelMeta {
             javax.persistence.Column columnAnno = fieldAccessor.getPropertyAnnotation(javax.persistence.Column.class);
             if (columnAnno == null) {
                 columnMeta.columnName = StringUtil.underscoreName(field.getName());
-                columnMeta.nullable = true;
             } else {
-                columnMeta.nullable = columnAnno.nullable();
                 if (StringUtil.isEmpty(columnAnno.name())) {
                     columnMeta.columnName = StringUtil.underscoreName(field.getName());
                 } else {
                     columnMeta.columnName = columnAnno.name();
                 }
             }
-
 
 
             if (fieldAccessor.getPropertyAnnotation(javax.persistence.Id.class) != null) {
@@ -95,7 +91,7 @@ public class ModelMeta {
         }
 
 
-        this.columnMetas = columnMetas;
+        this.columnMetaList = columnMetas;
         return columnMetas;
     }
 
@@ -115,7 +111,7 @@ public class ModelMeta {
         sql.append(this.getTableName());
         sql.append(" (");
 
-        for(ModelColumnMeta columnMeta:columnMetas){
+        for(ModelColumnMeta columnMeta: columnMetaList){
             if(first){
                 first =false;
             }else{
@@ -151,7 +147,7 @@ public class ModelMeta {
         sql.append(this.getTableName());
         sql.append(" SET ");
 
-        for(ModelColumnMeta columnMeta:columnMetas){
+        for(ModelColumnMeta columnMeta: columnMetaList){
              if(!columnMeta.isId&&!columnMeta.isPartition){// id and partitionId can't set
                  if(first){
                      first = false;
@@ -241,7 +237,7 @@ public class ModelMeta {
             }
             tableSchema = table.schema();
         }
-        columnMetas = getColumnMetas();
+        columnMetaList = getColumnMetaList();
 
         Cacheable cacheable = modelCls.getAnnotation(Cacheable.class);
         if(cacheable!=null){
@@ -271,11 +267,11 @@ public class ModelMeta {
     }
 
     public List<ModelColumnMeta> getColumnMetaSet() {
-        return columnMetas;
+        return columnMetaList;
     }
 
     public Iterator<ModelColumnMeta> iterateColumnMetas() {
-        return columnMetas.iterator();
+        return columnMetaList.iterator();
     }
 
     public ModelColumnMeta getIdColumnMeta() {
@@ -322,18 +318,18 @@ public class ModelMeta {
      */
     private ReentrantLock lockFieldsInit =new ReentrantLock();
     public  byte[][] getCachedFields(){
-        if(fields==null){
+        if(fieldNameBytes ==null){
             lockFieldsInit.lock();
-            fields = new byte[columnMetas.size()][];
+            fieldNameBytes = new byte[columnMetaList.size()][];
             int i=0;
-            fields[i++] = RedisUtil.getHmFeature();
-            for(ModelColumnMeta modelColumnMeta:columnMetas){
+            fieldNameBytes[i++] = RedisUtil.getHmFeature();
+            for(ModelColumnMeta modelColumnMeta: columnMetaList){
                 if(!modelColumnMeta.isId){
-                    fields[i++] = modelColumnMeta.binary;
+                    fieldNameBytes[i++] = modelColumnMeta.binary;
                 }
             }
             lockFieldsInit.unlock();
         }
-        return fields;
+        return fieldNameBytes;
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Created by jizhenya on 16/9/28.
+ * {"blocks":[{"data":{},"depth":0,"entityRanges":[],"inlineStyleRanges":[],"key":"1dpia","text":"CreateAnnouncement. ","type":"unstyled"}],"entityMap":{}}
  */
 public class TotalBlock {
 
