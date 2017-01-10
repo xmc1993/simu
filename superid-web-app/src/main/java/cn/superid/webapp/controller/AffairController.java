@@ -156,7 +156,7 @@ public class AffairController {
     public SimpleResponse getAffairInfo(long affairMemberId) {
         long allianceId = GlobalValue.currentAllianceId();
         long affairId = GlobalValue.currentAffairId();
-        AffairInfo affairInfo = affairService.getAffairInfo(allianceId, affairId, affairMemberId);
+        AffairInfo affairInfo = affairService.getAffairInfo(allianceId, affairId);
         return SimpleResponse.ok(affairInfo);
 
     }
