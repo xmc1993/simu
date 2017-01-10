@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -341,11 +342,11 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editBase(@RequestBody EditUserDetailForm editUserDetailForm){
         if(editUserDetailForm == null){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }
-        return new SimpleResponse(userService.editBaseInfo(editUserDetailForm));
+        return SimpleResponse.ok(userService.editBaseInfo(editUserDetailForm));
     }
 
 
