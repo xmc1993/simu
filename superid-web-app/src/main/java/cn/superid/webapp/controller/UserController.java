@@ -428,6 +428,17 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
+    @ApiOperation(value = "修改superId", response = String.class)
+    @RequestMapping(value = "/modify_superId", method = RequestMethod.POST)
+    public SimpleResponse modifySuperId(String superId){
+        boolean isModified = userService.modifySuperId(superId);
+        if(isModified){
+            return SimpleResponse.ok(null);
+        }
+        else {
+            return SimpleResponse.error(null);
+        }
+    }
 
     @RequestMapping(value = "/rollback",method = RequestMethod.POST)
     @NotLogin
