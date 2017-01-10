@@ -372,7 +372,8 @@ public class UserController {
         UserPrivateInfoForm userPrivateInfoForm = new UserPrivateInfoForm();
         userPrivateInfoForm.copyPropertiesFromAndSkipNull(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
         resultUserInfo.setUserPrivateInfoForm(userPrivateInfoForm);
-        resultUserInfo.setNickNames(Arrays.asList(user.getNicknames().split(",")));
+
+        resultUserInfo.setNickNames(user.getNicknames() == null ? null : Arrays.asList(user.getNicknames().split(",")));
         return SimpleResponse.ok(resultUserInfo);
     }
 
