@@ -127,7 +127,7 @@ public class UserController {
      * @return
      */
     @NotLogin
-    @ApiOperation(value = "获取身份验证码,目前用于重置密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @ApiOperation(value = "获取身份验证码,目前用于忘记密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
     @RequestMapping(value = "/get_reset_code", method = RequestMethod.GET)
     public SimpleResponse getResetCode(HttpServletRequest request,String token){
         try{
