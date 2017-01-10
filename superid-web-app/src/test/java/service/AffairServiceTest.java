@@ -10,6 +10,7 @@ import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
@@ -183,11 +184,14 @@ public class AffairServiceTest {
         System.out.println(matcher.matches());
         */
         StringBuilder sb = new StringBuilder("");
+        StringBuilder sql = new StringBuilder("select * from affair where path in ( -1");
+        ParameterBindings param = new ParameterBindings();
         List<Expr> exprs = new ArrayList<>();
         String path = "/1-1-2-11";
         int level = 4;
-        Object[] paths = new Object[level];
+        String[] paths = new String[level];
         String[] indexs = path.split("-");
+
         paths[0] = indexs[0];
         sb.append(indexs[0]);
         if(indexs.length>1){
@@ -196,8 +200,16 @@ public class AffairServiceTest {
                 paths[i] = sb.toString();
             }
         }
+        for(String p : paths){
+            sql.append(", ?");
+            param.addIndexBinding(p);
+        }
+        sql.append(")");
+        //List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",paths).selectList("id","path");
 
-        List<AffairEntity> affairEntities = AffairEntity.dao.partitionId(1185).in("path",paths).selectList("id","path");
+
+
+        List<AffairEntity> affairEntities = AffairEntity.getSession().findListByNativeSql(AffairEntity.class,sql.toString(),param);
         System.out.println();
     }
 }

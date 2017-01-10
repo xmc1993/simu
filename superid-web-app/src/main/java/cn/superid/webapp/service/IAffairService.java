@@ -143,7 +143,7 @@ public interface IAffairService {
      * @param affairId
      * @return
      */
-    AffairInfo getAffairInfo(long allianceId, long affairId, long roleId);
+    AffairInfo getAffairInfo(long allianceId, long affairId);
 
     /**
      * 切换角色
@@ -170,5 +170,6 @@ public interface IAffairService {
      * @return
      */
     boolean affairExist(long allianceId,long affairId);
+
 
 }
