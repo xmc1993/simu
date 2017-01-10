@@ -17,12 +17,12 @@ public class UserPrivateInfoEntity extends ExecutableModel {
     public final static ConditionalDao<UserPrivateInfoEntity> dao = new ConditionalDao<>(UserPrivateInfoEntity.class);
     private long id;
     private long userId;
-    private boolean personalTags;
-    private boolean realname;
-    private boolean idCard;
-    private boolean mobile;
-    private boolean email;
-    private boolean birthday;
+    private int personalTags;
+    private int realname;
+    private int idCard;
+    private int mobile;
+    private int email;
+    private int birthday;
 
     @Id
     public long getId() {
@@ -42,51 +42,51 @@ public class UserPrivateInfoEntity extends ExecutableModel {
         this.userId = userId;
     }
 
-    public boolean isRealname() {
-        return realname;
-    }
-
-    public void setRealname(boolean realname) {
-        this.realname = realname;
-    }
-
-    public boolean isIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(boolean idCard) {
-        this.idCard = idCard;
-    }
-
-    public boolean isMobile() {
-        return mobile;
-    }
-
-    public void setMobile(boolean mobile) {
-        this.mobile = mobile;
-    }
-
-    public boolean isEmail() {
-        return email;
-    }
-
-    public void setEmail(boolean email) {
-        this.email = email;
-    }
-
-    public boolean isBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(boolean birthday) {
-        this.birthday = birthday;
-    }
-
-    public boolean isPersonalTags() {
+    public int getPersonalTags() {
         return personalTags;
     }
 
-    public void setPersonalTags(boolean personalTags) {
+    public void setPersonalTags(int personalTags) {
         this.personalTags = personalTags;
+    }
+
+    public int getRealname() {
+        return realname;
+    }
+
+    public void setRealname(int realname) {
+        this.realname = realname;
+    }
+
+    public int getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(int idCard) {
+        this.idCard = idCard;
+    }
+
+    public int getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(int mobile) {
+        this.mobile = mobile;
+    }
+
+    public int getEmail() {
+        return email;
+    }
+
+    public void setEmail(int email) {
+        this.email = email;
+    }
+
+    public int getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(int birthday) {
+        this.birthday = birthday;
     }
 }

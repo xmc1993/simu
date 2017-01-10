@@ -564,6 +564,7 @@ public class AffairService implements IAffairService {
         permissions = "*";
 
         affairInfo.setPermissions(permissions);
+        affairInfo.setRoleId(roleId);
 
         affairInfo.setCovers(affairEntity.getCovers());
 

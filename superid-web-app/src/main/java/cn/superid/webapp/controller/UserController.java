@@ -367,7 +367,7 @@ public class UserController {
         ResultUserInfo resultUserInfo = new ResultUserInfo();
         UserEntity user = userService.getCurrentUser();
         user.copyPropertiesTo(resultUserInfo);
-        resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userId).selectOne());
+        resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
         resultUserInfo.setNickNames(Arrays.asList(user.getNicknames().split(",")));
         return SimpleResponse.ok(resultUserInfo);
     }
