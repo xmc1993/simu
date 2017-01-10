@@ -1,9 +1,9 @@
-package cn.superid.webapp.notice.tcp;
+package cn.superid.webapp.notice.chat.Constant;
 
 /**
  * Created by jessiechen on 09/01/17.
  */
-public interface ChatType {
+public interface MessageType {
     int SYSTEM = 1;
     int FRIEND_CHAT = 2;//好友私聊
     int GROUP = 3;//群聊

@@ -1,27 +1,36 @@
 package socket;
 
+import cn.superid.webapp.notice.chat.Constant.C2CType;
+import cn.superid.webapp.notice.chat.proto.C2C;
+import cn.superid.webapp.notice.chat.proto.Message;
 import cn.superid.webapp.notice.tcp.Composer;
+import com.baidu.bjf.remoting.protobuf.Codec;
+import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Created by xmc1993 on 16/12/6.
  */
 public class ComposerTest {
 
+    private final static Codec<C2C> codec = ProtobufProxy
+            .create(C2C.class);
+
     @Test
-    public void testSeparatedPackage
-            () throws Exception {
+    public void testSeparatedPackage() throws Exception {
         Composer composer = new Composer() {
             @Override
-            public void onMessage(byte[] bytes) {
-                System.out.println("on message:" + new String(bytes, StandardCharsets.UTF_8));
+            public void onMessage(C2C c2C) {
+                System.out.println("on message:" + c2C);
             }
         };
-        String resource = "{\"fromId\":}";
-        byte[] compose = composer.compose(resource.getBytes("utf-8"));
+        Message message = new Message();
+        message.content = "hi";
+        C2C c2c = new C2C(C2CType.MARK_READ_TIME, "mookRequestId");
+        c2c.setChat(message);
+        byte[] compose = composer.compose(codec.encode(c2c));
 
         byte[] bytes = new byte[5];
         int length = compose.length;
@@ -39,14 +48,10 @@ public class ComposerTest {
     public void testCombinePackage() throws Exception {
         Composer composer = new Composer() {
             @Override
-            public void onMessage(byte[] bytes) {
-                try {
-                    String s = new String(bytes, "utf-8");
-                    System.out.println(s);
-                    System.out.println("--------------不同包的分隔符---------");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+            public void onMessage(C2C c2c) {
+                System.out.println("on message:" + c2c);
+                System.out.println("--------------不同消息的分隔符---------");
+
             }
         };
         String resource1 = "dasdsagdaskdsgkafdkgfdl ldashkfgdslgfldalsflsahdlfjadhsfhjkasdlhfhlshjfjhlha bljkjdfsahfjhfhlhls";

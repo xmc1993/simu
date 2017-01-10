@@ -1,4 +1,4 @@
-package cn.superid.webapp.notice.tcp;
+package cn.superid.webapp.notice.chat.proto;
 
 import com.baidu.bjf.remoting.protobuf.FieldType;
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;

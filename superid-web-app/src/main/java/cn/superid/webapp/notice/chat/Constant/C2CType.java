@@ -1,12 +1,12 @@
-package cn.superid.webapp.notice.tcp;
+package cn.superid.webapp.notice.chat.Constant;
 
 /**
  * Created by jessiechen on 09/01/17.
  */
 public interface C2CType {
-    int MSG = 0;
-    int PING = 1;
-    int PONG = 2;
+    int MSG = 0;  //普通消息
+    int PING = 1; //ping
+    int PONG = 2;  //pong
     int BUMPED = 3;//用户被挤掉
     int NEW_LOGIN = 4;//某个用户新设备登录
     int STATUS = 5;//查询当前用户登录设备情况

@@ -1,6 +1,13 @@
 package cn.superid.webapp.notice.tcp;
 
+import cn.superid.webapp.notice.chat.proto.C2C;
+import com.baidu.bjf.remoting.protobuf.Codec;
+import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * Created by xmc1993 on 16/12/5.
@@ -19,6 +26,8 @@ public abstract class Composer {
     private int maxLength = DEFAULT_MAX_LENGTH;
     private byte[] buf = null;
 
+    private final static Codec<C2C> codec = ProtobufProxy
+            .create(C2C.class);
 
     public Composer() {
     }
@@ -207,12 +216,16 @@ public abstract class Composer {
         if (this.left == 0) {
             byte[] bytes = this.buf;
             this.reset();
-            onMessage(bytes);
+            try {
+                onMessage(codec.decode(bytes));
+            } catch (IOException e) {
+                System.out.println("wrong format message:" + Arrays.toString(bytes));
+            }
         }
 
         return offset + size; //给出当前数据包没有读完部分的offset
     }
 
-    public abstract void onMessage(byte[] bytes);
+    public abstract void onMessage(C2C c2c) throws IOException;
 
 }
