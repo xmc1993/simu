@@ -1,6 +1,6 @@
 package model;
 
-import cn.superid.jpa.annotation.Cacheable;
+import cn.superid.jpa.annotation.CacheField;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 
@@ -21,6 +21,7 @@ public class User  extends ExecutableModel{
     private String details;
 
     @Id
+    @CacheField(order = 1)
     public int getId() {
         return id;
     }
@@ -29,6 +30,7 @@ public class User  extends ExecutableModel{
         this.id = id;
     }
 
+    @CacheField(order = 2)
     public String getName() {
         return name;
     }
@@ -37,6 +39,7 @@ public class User  extends ExecutableModel{
         this.name = name;
     }
 
+    @CacheField(order = 3)
     public int getAge() {
         return age;
     }

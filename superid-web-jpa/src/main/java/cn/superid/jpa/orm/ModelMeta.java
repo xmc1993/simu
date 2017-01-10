@@ -50,6 +50,7 @@ public class ModelMeta {
      * @return
      */
     private List<ModelColumnMeta> getColumnMetaList() {
+
         Field[] fields = modelCls.getDeclaredFields();
         List<ModelColumnMeta> columnMetas = new ArrayList<>(fieldsNum);
         for (Field field : fields) {

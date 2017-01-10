@@ -55,8 +55,6 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.save();
-
-
         return affairMemberEntity;
     }
 
