@@ -122,7 +122,7 @@ public class AffairService implements IAffairService {
 
 
         Map<String, Object> result = new HashedMap();
-        result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId(), member.getRoleId()));
+        result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId()));
         result.put("affairMemberId", member.getId());
         result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
         return result;
@@ -536,7 +536,9 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public AffairInfo getAffairInfo(long allianceId, long affairId, long roleId) {
+    public AffairInfo getAffairInfo(long allianceId, long affairId) {
+        long userId = userService.currentUserId();
+
         AffairInfo affairInfo = new AffairInfo();
 
         AffairEntity affairEntity = AffairEntity.dao.findById(affairId, allianceId);
@@ -554,18 +556,6 @@ public class AffairService implements IAffairService {
         //TODO 还没有标签
         affairInfo.setTags("");
 
-        String permissions = null;
-        AffairMemberEntity affairMemberEntity = affairMemberService.getAffairMemberInfo(allianceId, affairId, roleId);
-        if (affairMemberEntity != null) {
-            //TODO 暂时写个桩,将权限都定为*
-            //permissions = affairMemberEntity.getPermissions();
-        }
-
-        permissions = "*";
-
-        affairInfo.setPermissions(permissions);
-        affairInfo.setRoleId(roleId);
-
         affairInfo.setCovers(affairEntity.getCovers());
 
 
@@ -574,15 +564,29 @@ public class AffairService implements IAffairService {
         if (homepageAffairId == affairId) {
             affairInfo.setIsHomepage(true);
         } else {
-            affairInfo.setIsHomepage(false)
-            ;
+            affairInfo.setIsHomepage(false);
         }
 
-        AffairUserEntity affairUserEntity = AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userService.currentUserId()).selectOne("is_stuck");
+        AffairUserEntity affairUserEntity = AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userId).selectOne("is_stuck");
         if (affairUserEntity != null) {
             affairInfo.setIsStuck(affairUserEntity.getIsStuck());
         }
 
+        //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
+        AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId,affairId,userId);
+        if(lastOperateRole != null){
+            //有的话就把roleId和roleName返回给前端
+            long tempRoleId = lastOperateRole.getRoleId();
+            long tempAllianceId = lastOperateRole.getAllianceId();
+            affairInfo.setRoleId(tempRoleId);
+            affairInfo.setRoleTitle(RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title").getTitle());
+        }
+        else {
+            //没有affairUser的话就返回该用户在这个盟里最先创建的角色
+            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).asc("create_time").selectOne("id","title");
+            affairInfo.setRoleTitle(roleEntity.getTitle());
+            affairInfo.setRoleId(roleEntity.getId());
+        }
         return affairInfo;
     }
 
@@ -606,8 +610,9 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean affairExist(long allianceId, long affairId) {
-        return AffairEntity.dao.partitionId(allianceId).id(affairId).exists();
+        return AffairEntity.dao.partitionId(allianceId).id(affairId).state(ValidState.Valid).exists();
     }
+
 
     private int shiftAffair(long allianceId, long affairId, long targetAffairId) {
         //检测不能在把父事务放到子事务底下
