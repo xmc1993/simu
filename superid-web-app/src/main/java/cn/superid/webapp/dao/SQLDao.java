@@ -54,11 +54,11 @@ public class SQLDao {
             "on a.modifier_id = b.id and b.user_id = c.id where a.title like ? or b.title = ? or c.username = ? ";
 
     //查找公告
-    public static String SEARCH_ANNOUNCEMENT_CONTAIN_CHILD = "select a.id as announcementId , a.modify_time , a.affair_id from (select id,modifier_id,modify_time,title,affair_id from announcement where alliance_id = ?) a " +
+    public static String SEARCH_ANNOUNCEMENT_CONTAIN_CHILD = "select a.id as announcementId , a.modify_time , a.affair_id from (select id,modifier_id,modify_time,title,affair_id from announcement where alliance_id = ? ) a " +
             "join ( select id , user_id , title from role where alliance_id = ? ) b " +
             "join ( select id , username from user ) c " +
-            "join (select id from affair where alliance = ? and path like ? ) d"+
-            "on a.modifier_id = b.id and b.user_id = c.id and a.affair_id = d.id where a.title like ? or b.title = ? or c.username = ? ";
+            "join (select id from affair where alliance_id = ? and path like ? ) d "+
+            " on a.modifier_id = b.id and b.user_id = c.id and a.affair_id = d.id where a.title like ? or b.title = ? or c.username = ? ";
 
     //得到要显示的公告id
     public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id,is_top from announcement a where alliance_id = ? and state = 0 ) a " +
