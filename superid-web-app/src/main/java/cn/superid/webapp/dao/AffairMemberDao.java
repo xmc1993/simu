@@ -144,6 +144,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
     }
 
+    /*
     @Override
     public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId) {
         StringBuilder sb = new StringBuilder("select am.role_id, r.title as roleTitle,r.belong_affair_id as homepageAffairId, b.homepageAffairName, r.user_id, u.username,u.gender,u.avatar from affair_member am " +
@@ -158,5 +159,6 @@ public class AffairMemberDao implements IAffairMemberDao {
         List<AffairRoleCard> cards = AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sb.toString(),p);
         return cards;
     }
+    */
 
 }

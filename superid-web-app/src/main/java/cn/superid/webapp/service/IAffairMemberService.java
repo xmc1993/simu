@@ -224,5 +224,4 @@ public interface IAffairMemberService {
     List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
 
 
-    List<AffairRoleCard> getAllAffairRoles(long allianceId,long affairId,long roleId);
 }
