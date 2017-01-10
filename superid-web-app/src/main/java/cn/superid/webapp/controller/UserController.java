@@ -6,6 +6,7 @@ import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
+import cn.superid.webapp.controller.forms.UserPrivateInfoForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
@@ -367,7 +368,9 @@ public class UserController {
         ResultUserInfo resultUserInfo = new ResultUserInfo();
         UserEntity user = userService.getCurrentUser();
         user.copyPropertiesTo(resultUserInfo);
-        resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
+        UserPrivateInfoForm userPrivateInfoForm = new UserPrivateInfoForm();
+        userPrivateInfoForm.copyPropertiesFromAndSkipNull(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
+        resultUserInfo.setUserPrivateInfoForm(userPrivateInfoForm);
         resultUserInfo.setNickNames(Arrays.asList(user.getNicknames().split(",")));
         return SimpleResponse.ok(resultUserInfo);
     }

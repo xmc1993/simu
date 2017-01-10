@@ -2,6 +2,7 @@ package cn.superid.webapp.forms;
 
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.controller.forms.UserPrivateInfoForm;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
 
 import javax.persistence.Table;
@@ -42,7 +43,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String description;//描述
     private double faith;
     private int gender;
-    private UserPrivateInfoEntity userPrivateInfoEntity;
+    private UserPrivateInfoForm userPrivateInfoForm;
     private List<String> nickNames ;
 
     public Long getId() {
@@ -246,12 +247,12 @@ public class ResultUserInfo extends ExecutableModel{
     }
 
     @Transient
-    public UserPrivateInfoEntity getUserPrivateInfoEntity() {
-        return userPrivateInfoEntity;
+    public UserPrivateInfoForm getUserPrivateInfoForm() {
+        return userPrivateInfoForm;
     }
 
-    public void setUserPrivateInfoEntity(UserPrivateInfoEntity userPrivateInfoEntity) {
-        this.userPrivateInfoEntity = userPrivateInfoEntity;
+    public void setUserPrivateInfoForm(UserPrivateInfoForm userPrivateInfoForm) {
+        this.userPrivateInfoForm = userPrivateInfoForm;
     }
 
     @Transient
