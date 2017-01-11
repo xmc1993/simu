@@ -65,7 +65,7 @@ public class UserController {
         return SimpleResponse.ok("isLogin");
     }
 
-    @ApiOperation(value = "根据userid,获得用户头像", httpMethod = "GET", response = String.class)
+    @ApiOperation(value = "根据userid,获得用户头像,此方法用于只知道userId,不知道头像的时候", httpMethod = "GET", response = String.class)
     @RequestMapping(value = "/avatar/{userId}", method = RequestMethod.GET)
     public Object getAvatar(@PathVariable String userId){
         return new RedirectView(userService.getAvatarByUserId(Long.parseLong(userId)));
