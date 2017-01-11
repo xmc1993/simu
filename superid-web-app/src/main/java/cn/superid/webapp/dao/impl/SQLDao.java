@@ -1,4 +1,4 @@
-package cn.superid.webapp.dao;
+package cn.superid.webapp.dao.impl;
 
 /**
  * Created by jizhenya on 16/11/23.
@@ -43,34 +43,6 @@ public class SQLDao {
             "join" +
             "(select r.id as role_id,r.title,r.alliance_id,r.public_type from role r where r.user_id = ?) t2 " +
             "on t1.id = t2.alliance_id";
-
-    /**
-     * announcementService相关的sql语句
-     */
-    //查找公告
-    public static String SEARCH_ANNOUNCEMENT = "select a.id as announcementId , a.modify_time , a.affair_id from (select id,modifier_id,modify_time,title,affair_id from announcement where alliance_id = ? and affair_id = ? ) a " +
-            "join ( select id , user_id , title from role where alliance_id = ? ) b " +
-            "join ( select id , username from user ) c " +
-            "on a.modifier_id = b.id and b.user_id = c.id where a.title like ? or b.title = ? or c.username = ? ";
-
-    //查找公告
-    public static String SEARCH_ANNOUNCEMENT_CONTAIN_CHILD = "select a.id as announcementId , a.modify_time , a.affair_id from (select id,modifier_id,modify_time,title,affair_id from announcement where alliance_id = ? ) a " +
-            "join ( select id , user_id , title from role where alliance_id = ? ) b " +
-            "join ( select id , username from user ) c " +
-            "join (select id from affair where alliance_id = ? and path like ? ) d "+
-            " on a.modifier_id = b.id and b.user_id = c.id and a.affair_id = d.id where a.title like ? or b.title = ? or c.username = ? ";
-
-    //得到要显示的公告id
-    public static String GET_ANNOUNCEMENT_ID = "select a.* from (select id as announcementId,modify_time,affair_id,is_top from announcement a where alliance_id = ? and state = 0 ) a " +
-            "join (select id from affair where alliance_id = ? and path like ? ) b on a.affair_id = b.id ";
-
-    //查询历史某个时间点的公告列表
-    public static String GET_ANNOUNCEMENT_HISTORY_LIST = "select a.*,b.name as affairName from (" +
-            "select announcement_id as id,max(version) as version,title,affair_id,thumb_content as content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
-            "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
-            "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
-            "on a.affair_id = b.id";
-
 
     /**
      * affairUserService相关的sql语句

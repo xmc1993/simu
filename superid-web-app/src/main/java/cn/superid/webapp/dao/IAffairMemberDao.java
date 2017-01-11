@@ -1,4 +1,4 @@
-package cn.superid.webapp.dao.impl;
+package cn.superid.webapp.dao;
 
 import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.forms.AffairRoleCard;
