@@ -321,11 +321,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public boolean deleteDraft(long draftId , long allianceId) {
         int result = AnnouncementDraftEntity.dao.partitionId(allianceId).id(draftId).remove();
-        if(result < 1){
-            return false;
-        }else{
-            return true;
-        }
+        return result<1;
 
     }
 
