@@ -30,7 +30,7 @@ public class RoleController {
     }
 
     @ApiOperation(value = "", response = String.class, notes = "")
-    @RequestMapping(value = "/edit_public_type",method = RequestMethod.GET)
+    @RequestMapping(value = "/edit_public_type",method = RequestMethod.POST)
     public SimpleResponse editPublicType(List<RolePublicTypeForm> roles){
         if(roles == null){
             return SimpleResponse.error(null);
