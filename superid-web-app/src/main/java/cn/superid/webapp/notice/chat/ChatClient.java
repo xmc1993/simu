@@ -285,7 +285,7 @@ public class ChatClient {
             while (consumeMessageThreadSignal) {
                 if (!socket.isClosed() && socket.isConnected() && !socket.isInputShutdown()) {//不在这里判断连接是否中断，socket不可靠
                     try {
-                        if ((k = inputStream.read(buff, 0, buff.length)) != -1) {
+                        if ((k = inputStream.read(buff, 0, buff.length)) != -1) {//当在close方法里关闭了inputStream,这里就会报Exception，而consumeMessageThreadSignal又被关闭，所以线程会退出
                             byte[] resultBuff = new byte[k];
                             System.arraycopy(buff, 0, resultBuff, 0, k); // copy previous bytes
                             System.out.println("message listener thread:" + Arrays.toString(resultBuff));
