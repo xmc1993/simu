@@ -136,7 +136,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         PrintWriter writer = response.getWriter();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", ResponseCode.Unauthorized);
-        jsonObject.put("data", "need login");
+        jsonObject.put("data", null);
         writer.write(jsonObject.toJSONString());
     }
 
@@ -145,7 +145,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         PrintWriter writer = response.getWriter();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", ResponseCode.Forbidden);
-        jsonObject.put("data", "permission denied");
+        jsonObject.put("data", null);
         writer.write(jsonObject.toJSONString());
     }
 

@@ -1,10 +1,10 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.webapp.dao.SQLDao;
+import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.controller.forms.*;
-import cn.superid.webapp.dao.impl.IAnnouncementDao;
+import cn.superid.webapp.dao.IAnnouncementDao;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.RoleCache;
@@ -37,221 +37,6 @@ public class AnnouncementService implements IAnnouncementService{
 
     private static final int THUMB_LENTH = 200 ;
     private static final int SNAPSHOT_INTERVAL = 30 ;
-
-
-    @Override
-    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present, List<TotalBlock> history) {
-        List<Integer> delete = new ArrayList<>();
-        List<InsertForm> insert = new ArrayList<>();
-        List<ReplaceForm> replace = new ArrayList<>();
-        EditDistanceForm result = new EditDistanceForm();
-
-        //如果被减数为空,则回到过去,每段都是插入
-        if(present.size() == 0){
-            insert.add(new InsertForm(0,history));
-            result.setDelete(delete);
-            result.setInsert(insert);
-            result.setReplace(replace);
-            return result;
-        }
-
-        //如果被减数为空,则每段都是删除
-        if(history.size() == 0){
-            for(int i = 0 ; i < present.size() ; i++){
-                delete.add(i+1);
-            }
-            result.setDelete(delete);
-            result.setInsert(insert);
-            result.setReplace(replace);
-            return result;
-        }
-
-        //如果都不为空,需要矩阵比较
-        int m = present.size();
-        int n = history.size();
-        int[][] matrix = new int[m+1][n+1];
-        TotalBlock b1,b2;
-
-
-        //初始化
-        for(int i = 0 ; i <= m ; i ++){
-            matrix[i][0] = i;
-        }
-        for(int j = 0 ; j <= n ; j++){
-            matrix[0][j] = j;
-        }
-        for(int i = 1 ; i <= m ; i++){
-            TotalBlock p = present.get(i-1);
-            for(int j = 1 ; j <= n ; j++){
-                int temp = 0 ;
-                TotalBlock h = history.get(j-1);
-                if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
-                    //两者相同,不增加距离
-                    temp = 0;
-                }else{
-                    temp = 1;
-                }
-
-                int min = matrix[i-1][j]+1;
-                if(min > (matrix[i][j-1] + 1)){
-                    min = matrix[i][j-1] + 1;
-                }
-                if(min > (matrix[i-1][j-1]+temp)){
-                    min = matrix[i-1][j-1]+temp;
-                }
-                matrix[i][j] = min;
-            }
-        }
-
-        //矩阵生成完毕,现在需要根据matrix[i][j]的值逆推得到操作过程
-        int x = n , y = m;
-        int count = 0 ;
-        while(count < matrix[m][n]){
-            TotalBlock p = present.get(y-1);
-            TotalBlock h = history.get(x-1);
-            int temp = 0;
-            if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
-                temp = 0;
-            }else{
-                temp = 1;
-            }
-
-            int which = 0;
-            int min = matrix[y-1][x]+1;
-            if(min > (matrix[y][x-1] + 1)){
-                min = matrix[y][x-1] + 1;
-                which = 1;
-            }
-            if(min > (matrix[y-1][x-1]+temp)){
-                min = matrix[y-1][x-1]+temp;
-                which = 2;
-            }
-            switch (which){
-                case 0:
-                    //从上方变化而来,比原来多一步删除操作
-                    delete.add(y);
-                    y = y - 1;
-                    count++;
-                    break;
-                case 1:
-                    //从左边变化来,比原来多一步增加操作
-                    List<TotalBlock> one = new ArrayList<>();
-                    int location = 0;
-                    for(int i = 0 ; i < insert.size() ;i++){
-                        InsertForm in = insert.get(i);
-                        if(in.getPosition() == y){
-                            one = in.getContent();
-                            location = i;
-                            break;
-                        }
-                    }
-                    one.add(0,history.get(x));
-                    if(location != 0){
-                        insert.set(location,new InsertForm(y,one));
-                    }else{
-                        insert.add(new InsertForm(y,one));
-                    }
-                    x = x - 1;
-                    count++;
-                    break;
-                case 2:
-                    if(temp == 1){
-                        //说明进行了一步替换
-                        replace.add(new ReplaceForm(y,history.get(x)));
-                        x = x - 1;
-                        y = y - 1;
-                        count++;
-                    }else{
-                        //没变说明未进行操作
-                        x = x - 1;
-                        y = y - 1;
-                    }
-                    break;
-            }
-        }
-
-        result.setDelete(delete);
-        result.setInsert(insert);
-        result.setReplace(replace);
-        return result;
-    }
-
-    @Override
-    public EditDistanceForm compareTwoPapers(ContentState present, ContentState history) {
-        return compareTwoBlocks(present.getBlocks(),history.getBlocks());
-    }
-
-    public String caulatePaper(String content , String operations){
-
-        ContentState total = JSON.parseObject(content,ContentState.class);
-        List<TotalBlock> blocks = total.getBlocks();
-
-        EditDistanceForm ope = JSON.parseObject(operations,EditDistanceForm.class);
-
-        //该方法处理逻辑:先处理替换,再处理删除,但不真正执行,只是记录下要删除的key,防止打乱add的location,然后执行add方法,最后执行delete
-        for(ReplaceForm r : ope.getReplace()){
-            if(blocks.size()<r.getPosition()){
-                if(r.getPosition() == 1){
-                    //直接插入
-                    blocks.add(r.getContent());
-                }
-            }else{
-                //完成替换
-                blocks.set(r.getPosition()-1,r.getContent());
-            }
-        }
-        List<TotalBlock> deletes = new ArrayList<>();
-        //得到要删除的key
-        for(Integer i : ope.getDelete()){
-            deletes.add(blocks.get(i-1));
-        }
-
-        List<TotalBlock> adds = new ArrayList<>();
-        //因为插入也会使location变动,所以先记录是跟在谁后面
-        for(InsertForm insert : ope.getInsert()){
-            if(insert.getPosition() == 0){
-                adds.add(null);
-            }else{
-                adds.add(blocks.get(insert.getPosition()-1));
-            }
-
-        }
-
-        //执行insert,因为和上面次序一致,所以可以直接用
-        for(int i = 0 ; i < ope.getInsert().size() ; i++){
-            InsertForm insert = ope.getInsert().get(i);
-            List<TotalBlock> bs = insert.getContent();
-            if(adds.get(i) == null){
-                //表示是在开头插入
-                blocks.addAll(0,bs);
-            }else{
-                int location = blocks.indexOf(adds.get(i))+1;
-                blocks.addAll(location,bs);
-            }
-
-
-        }
-
-        //第三步,执行删除
-        blocks.removeAll(deletes);
-
-        total.setBlocks(blocks);
-
-        return JSONObject.toJSONString(total);
-
-    }
-
-    @Override
-    public List<Block> getBlock(ContentState content) {
-        List<Block> result = new ArrayList<>();
-        int i = 0;
-        for(TotalBlock t : content.getBlocks()){
-            result.add(new Block(t.getKey(),t.getText(),i));
-            i++;
-        }
-
-        return result;
-    }
 
     @Override
     public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId) {
@@ -510,35 +295,8 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild) {
-        StringBuilder sql = null;
-        ParameterBindings p = new ParameterBindings();
-        AffairEntity affairEntity = AffairEntity.dao.findById(affairId,allianceId);
-        if(affairEntity == null){
-            return null;
-        }
 
-
-        if(containChild == true){
-            sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT_CONTAIN_CHILD);
-            p.addIndexBinding(allianceId);
-            p.addIndexBinding(allianceId);
-            p.addIndexBinding(allianceId);
-            p.addIndexBinding(affairEntity.getPath()+"%");
-            p.addIndexBinding("%"+content+"%");
-            p.addIndexBinding(content);
-            p.addIndexBinding(content);
-        }else{
-            sql = new StringBuilder(SQLDao.SEARCH_ANNOUNCEMENT);
-            p.addIndexBinding(allianceId);
-            p.addIndexBinding(affairId);
-            p.addIndexBinding(allianceId);
-            p.addIndexBinding("%"+content+"%");
-            p.addIndexBinding(content);
-            p.addIndexBinding(content);
-        }
-
-
-        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementIdVO.class,sql.toString(),p);
+        return announcementDao.searchAnnouncement(content,affairId,allianceId,containChild);
     }
 
     @Override
@@ -563,11 +321,7 @@ public class AnnouncementService implements IAnnouncementService{
     @Override
     public boolean deleteDraft(long draftId , long allianceId) {
         int result = AnnouncementDraftEntity.dao.partitionId(allianceId).id(draftId).remove();
-        if(result < 1){
-            return false;
-        }else{
-            return true;
-        }
+        return result<1;
 
     }
 
@@ -611,17 +365,7 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
-        StringBuilder sql = new StringBuilder(SQLDao.GET_ANNOUNCEMENT_HISTORY_LIST);
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        p.addIndexBinding(time);
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        p.addIndexBinding(time);
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+        return announcementDao.getAnnouncementHistoryList(affairId,allianceId,count,time);
     }
 
     @Override
@@ -686,6 +430,220 @@ public class AnnouncementService implements IAnnouncementService{
         }
 
 
+
+        return result;
+    }
+
+    @Override
+    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present, List<TotalBlock> history) {
+        List<Integer> delete = new ArrayList<>();
+        List<InsertForm> insert = new ArrayList<>();
+        List<ReplaceForm> replace = new ArrayList<>();
+        EditDistanceForm result = new EditDistanceForm();
+
+        //如果被减数为空,则回到过去,每段都是插入
+        if(present.size() == 0){
+            insert.add(new InsertForm(0,history));
+            result.setDelete(delete);
+            result.setInsert(insert);
+            result.setReplace(replace);
+            return result;
+        }
+
+        //如果被减数为空,则每段都是删除
+        if(history.size() == 0){
+            for(int i = 0 ; i < present.size() ; i++){
+                delete.add(i+1);
+            }
+            result.setDelete(delete);
+            result.setInsert(insert);
+            result.setReplace(replace);
+            return result;
+        }
+
+        //如果都不为空,需要矩阵比较
+        int m = present.size();
+        int n = history.size();
+        int[][] matrix = new int[m+1][n+1];
+        TotalBlock b1,b2;
+
+
+        //初始化
+        for(int i = 0 ; i <= m ; i ++){
+            matrix[i][0] = i;
+        }
+        for(int j = 0 ; j <= n ; j++){
+            matrix[0][j] = j;
+        }
+        for(int i = 1 ; i <= m ; i++){
+            TotalBlock p = present.get(i-1);
+            for(int j = 1 ; j <= n ; j++){
+                int temp = 0 ;
+                TotalBlock h = history.get(j-1);
+                if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
+                    //两者相同,不增加距离
+                    temp = 0;
+                }else{
+                    temp = 1;
+                }
+
+                int min = matrix[i-1][j]+1;
+                if(min > (matrix[i][j-1] + 1)){
+                    min = matrix[i][j-1] + 1;
+                }
+                if(min > (matrix[i-1][j-1]+temp)){
+                    min = matrix[i-1][j-1]+temp;
+                }
+                matrix[i][j] = min;
+            }
+        }
+
+        //矩阵生成完毕,现在需要根据matrix[i][j]的值逆推得到操作过程
+        int x = n , y = m;
+        int count = 0 ;
+        while(count < matrix[m][n]){
+            TotalBlock p = present.get(y-1);
+            TotalBlock h = history.get(x-1);
+            int temp = 0;
+            if(p.getKey().equals(h.getKey()) && p.getText().equals(h.getText())){
+                temp = 0;
+            }else{
+                temp = 1;
+            }
+
+            int which = 0;
+            int min = matrix[y-1][x]+1;
+            if(min > (matrix[y][x-1] + 1)){
+                min = matrix[y][x-1] + 1;
+                which = 1;
+            }
+            if(min > (matrix[y-1][x-1]+temp)){
+                min = matrix[y-1][x-1]+temp;
+                which = 2;
+            }
+            switch (which){
+                case 0:
+                    //从上方变化而来,比原来多一步删除操作
+                    delete.add(y);
+                    y = y - 1;
+                    count++;
+                    break;
+                case 1:
+                    //从左边变化来,比原来多一步增加操作
+                    List<TotalBlock> one = new ArrayList<>();
+                    int location = 0;
+                    for(int i = 0 ; i < insert.size() ;i++){
+                        InsertForm in = insert.get(i);
+                        if(in.getPosition() == y){
+                            one = in.getContent();
+                            location = i;
+                            break;
+                        }
+                    }
+                    one.add(0,history.get(x));
+                    if(location != 0){
+                        insert.set(location,new InsertForm(y,one));
+                    }else{
+                        insert.add(new InsertForm(y,one));
+                    }
+                    x = x - 1;
+                    count++;
+                    break;
+                case 2:
+                    if(temp == 1){
+                        //说明进行了一步替换
+                        replace.add(new ReplaceForm(y,history.get(x)));
+                        x = x - 1;
+                        y = y - 1;
+                        count++;
+                    }else{
+                        //没变说明未进行操作
+                        x = x - 1;
+                        y = y - 1;
+                    }
+                    break;
+            }
+        }
+
+        result.setDelete(delete);
+        result.setInsert(insert);
+        result.setReplace(replace);
+        return result;
+    }
+
+    @Override
+    public EditDistanceForm compareTwoPapers(ContentState present, ContentState history) {
+        return compareTwoBlocks(present.getBlocks(),history.getBlocks());
+    }
+
+    public String caulatePaper(String content , String operations){
+
+        ContentState total = JSON.parseObject(content,ContentState.class);
+        List<TotalBlock> blocks = total.getBlocks();
+
+        EditDistanceForm ope = JSON.parseObject(operations,EditDistanceForm.class);
+
+        //该方法处理逻辑:先处理替换,再处理删除,但不真正执行,只是记录下要删除的key,防止打乱add的location,然后执行add方法,最后执行delete
+        for(ReplaceForm r : ope.getReplace()){
+            if(blocks.size()<r.getPosition()){
+                if(r.getPosition() == 1){
+                    //直接插入
+                    blocks.add(r.getContent());
+                }
+            }else{
+                //完成替换
+                blocks.set(r.getPosition()-1,r.getContent());
+            }
+        }
+        List<TotalBlock> deletes = new ArrayList<>();
+        //得到要删除的key
+        for(Integer i : ope.getDelete()){
+            deletes.add(blocks.get(i-1));
+        }
+
+        List<TotalBlock> adds = new ArrayList<>();
+        //因为插入也会使location变动,所以先记录是跟在谁后面
+        for(InsertForm insert : ope.getInsert()){
+            if(insert.getPosition() == 0){
+                adds.add(null);
+            }else{
+                adds.add(blocks.get(insert.getPosition()-1));
+            }
+
+        }
+
+        //执行insert,因为和上面次序一致,所以可以直接用
+        for(int i = 0 ; i < ope.getInsert().size() ; i++){
+            InsertForm insert = ope.getInsert().get(i);
+            List<TotalBlock> bs = insert.getContent();
+            if(adds.get(i) == null){
+                //表示是在开头插入
+                blocks.addAll(0,bs);
+            }else{
+                int location = blocks.indexOf(adds.get(i))+1;
+                blocks.addAll(location,bs);
+            }
+
+
+        }
+
+        //第三步,执行删除
+        blocks.removeAll(deletes);
+
+        total.setBlocks(blocks);
+
+        return JSONObject.toJSONString(total);
+
+    }
+
+    @Override
+    public List<Block> getBlock(ContentState content) {
+        List<Block> result = new ArrayList<>();
+        int i = 0;
+        for(TotalBlock t : content.getBlocks()){
+            result.add(new Block(t.getKey(),t.getText(),i));
+            i++;
+        }
 
         return result;
     }

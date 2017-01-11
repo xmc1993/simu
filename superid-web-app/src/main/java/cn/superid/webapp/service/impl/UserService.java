@@ -157,6 +157,7 @@ public class UserService implements IUserService {
             userEntity.setEmail(token);
         }else if(StringUtil.isMobile(token)){
             userEntity.setCountryCode(MobileUtil.getCountryCode(token));
+            userEntity.setAddress(CountryCode.getAddress(userEntity.getCountryCode()));
             userEntity.setMobile(MobileUtil.getMobile(token));
         }
         userEntity.setPassword(PasswordEncryptor.encode(password));

@@ -1,10 +1,10 @@
-package cn.superid.webapp.dao;
+package cn.superid.webapp.dao.impl;
 
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
-import cn.superid.webapp.dao.impl.IAffairMemberDao;
+import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
