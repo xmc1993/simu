@@ -27,4 +27,9 @@ public class SimpleMessageHandler extends MessageHandler {
         System.out.println("连接中断");
     }
 
+    @Override
+    public void loginFail() {
+        System.out.println("登陆失败！！！");
+    }
+
 }

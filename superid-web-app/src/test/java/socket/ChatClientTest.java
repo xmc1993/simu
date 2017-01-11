@@ -24,11 +24,11 @@ public class ChatClientTest {
     private String host = "localhost";
     private int port = 10110;
 
-    @Before
-    public void loginServer() throws Exception {
-        ChatClient chatClient = ChatClient.getSingleInstance();
-        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
-    }
+//    @Before
+//    public void loginServer() throws Exception {
+//        ChatClient chatClient = ChatClient.getSingleInstance();
+//        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
+//    }
 
 //    @Test
 //    public void sendNormalMsg() throws Exception {
@@ -43,23 +43,27 @@ public class ChatClientTest {
 //        }
 //    }
 
-//    @Test
-//    public void sendQueryMessage() throws Exception {
-//        ChatClient chatClient = ChatClient.getSingleInstance();
-//        while (true) {
-//            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);
-//            chatClient.messageQuery(10, new Date(), message, new MessageAsyncRequestHandler());
-//            Thread.sleep(2000);
-//        }
-//    }
-
     @Test
-    public void unreadMessageCount() throws Exception {
+    public void sendQueryMessage() throws Exception {
         ChatClient chatClient = ChatClient.getSingleInstance();
+        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
+        Thread.sleep(3000);
         while (true) {
             Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);
-            chatClient.getUnreadMessageCount(message, new MessageAsyncRequestHandler());
+            chatClient.messageQuery(10, new Date(), message, new MessageAsyncRequestHandler());
             Thread.sleep(2000);
         }
     }
+
+//    @Test
+//    public void unreadMessageCount() throws Exception {
+//        ChatClient chatClient = ChatClient.getSingleInstance();
+//        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
+//        Thread.sleep(3000);
+//        while (true) {
+//            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);
+//            chatClient.getUnreadMessageCount(message, new MessageAsyncRequestHandler());
+//            Thread.sleep(2000);
+//        }
+//    }
 }

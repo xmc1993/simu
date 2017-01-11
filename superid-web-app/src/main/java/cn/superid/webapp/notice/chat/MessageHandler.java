@@ -19,4 +19,7 @@ public abstract class MessageHandler {
     //与服务器的物理连接中断
     public abstract void handleDisconnect();
 
+    //登陆服务器失败
+    public abstract void loginFail();
+
 }
