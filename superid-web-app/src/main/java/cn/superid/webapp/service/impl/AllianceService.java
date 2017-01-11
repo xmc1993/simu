@@ -66,7 +66,7 @@ public class AllianceService  implements IAllianceService {
         RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getRoleTitle(), allianceEntity.getId(),
                 allianceCreateForm.getUserId(), 0L, AffairPermissionRoleType.OWNER, 1);
 
-        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(), allianceCreateForm.getName()
+        AffairEntity affairEntity = affairService.createRootAffair(allianceEntity.getId(), allianceCreateForm.getUserId(), allianceCreateForm.getName()
                 , roleEntity.getId(), allianceCreateForm.getIsPersonal() ? 1 : 0, allianceEntity.getCode());
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId", affairEntity.getId());//更新所属事务
