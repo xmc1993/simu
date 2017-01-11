@@ -15,40 +15,7 @@ import java.util.Map;
  */
 public interface IAnnouncementService {
 
-    //公告接口第一部分:比对公告内容等方法
-
-    /**
-     * 比较两个段落列表
-     * @param present
-     * @param history
-     * @return
-     */
-    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present , List<TotalBlock> history );
-
-    /**
-     * 比较两篇文章
-     * @param present
-     * @param history
-     * @return
-     */
-    public EditDistanceForm compareTwoPapers(ContentState present , ContentState history);
-
-    /**
-     * 根据一篇文章和一个delta生成新的文章
-     * @param content
-     * @param operations
-     * @return
-     */
-    public String caulatePaper(String content , String operations);
-
-    /**
-     * 从文章得到段落列表
-     * @param content
-     * @return
-     */
-    public List<Block> getBlock(ContentState content);
-
-    //公告接口第二部分:公告的保存,发布,删除
+    //公告接口第一部分:公告的保存,发布,删除
 
     /**
      * 保存公告
@@ -128,7 +95,7 @@ public interface IAnnouncementService {
      */
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);
 
-    //公告接口第三部分:公告草稿部分
+    //公告接口第二部分:公告草稿部分
 
     /**
      * 得到一个角色在一个事务中的草稿
@@ -171,7 +138,7 @@ public interface IAnnouncementService {
     public long saveDraft(String delta , long draftId , long allianceId , long affairId , long roleId , int publicType , String title , long taskId , String entityMap , int editMode);
 
 
-    //公告接口第四部分:历史节点公告还原部分
+    //公告接口第三部分:历史节点公告还原部分
 
     /**
      * 得到历史某个时间点上的公告列表
@@ -191,4 +158,38 @@ public interface IAnnouncementService {
      * @return
      */
     public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId);
+
+
+    //公告接口第四部分:比对公告内容等方法
+
+    /**
+     * 比较两个段落列表
+     * @param present
+     * @param history
+     * @return
+     */
+    public EditDistanceForm compareTwoBlocks(List<TotalBlock> present , List<TotalBlock> history );
+
+    /**
+     * 比较两篇文章
+     * @param present
+     * @param history
+     * @return
+     */
+    public EditDistanceForm compareTwoPapers(ContentState present , ContentState history);
+
+    /**
+     * 根据一篇文章和一个delta生成新的文章
+     * @param content
+     * @param operations
+     * @return
+     */
+    public String caulatePaper(String content , String operations);
+
+    /**
+     * 从文章得到段落列表
+     * @param content
+     * @return
+     */
+    public List<Block> getBlock(ContentState content);
 }

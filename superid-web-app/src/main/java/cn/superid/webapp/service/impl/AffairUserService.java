@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.webapp.dao.SQLDao;
+import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.model.AffairUserEntity;
 import cn.superid.webapp.service.IAffairUserService;

@@ -1,10 +1,10 @@
-package cn.superid.webapp.dao;
+package cn.superid.webapp.dao.impl;
 
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
-import cn.superid.webapp.dao.impl.IAffairMemberDao;
+import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -144,6 +144,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
     }
 
+    /*
     @Override
     public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId) {
         StringBuilder sb = new StringBuilder("select am.role_id, r.title as roleTitle,r.belong_affair_id as homepageAffairId, b.homepageAffairName, r.user_id, u.username,u.gender,u.avatar from affair_member am " +
@@ -158,5 +159,6 @@ public class AffairMemberDao implements IAffairMemberDao {
         List<AffairRoleCard> cards = AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sb.toString(),p);
         return cards;
     }
+    */
 
 }

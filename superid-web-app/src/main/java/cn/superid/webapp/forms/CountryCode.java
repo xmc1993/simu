@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class CountryCode {
     private static List<CountryCode> countryCodes = null ;
-    private static String fileName = "/Users/njuTms/Documents/countryCode.xlsx";
+    private static String fileName = "resources/countryCode.xlsx";
 
 
     private String name;
@@ -62,7 +63,7 @@ public class CountryCode {
             return countryCodes;
         countryCodes = new ArrayList<>();
         try {
-            InputStream input = new FileInputStream(fileName);  //建立输入流
+            InputStream input = CountryCode.class.getClassLoader().getResourceAsStream("countryCode.xlsx");  //建立输入流
             Workbook wb = new XSSFWorkbook(input);
             Sheet sheet = wb.getSheetAt(0);
             Iterator<Row> rows = sheet.rowIterator(); //获得第一个表单的迭代器
@@ -101,7 +102,17 @@ public class CountryCode {
         return countryCodes;
     }
 
-    public static void main(String[] args){
-        getCountryCodes();
+    public static String getAddress(String code){
+        if((countryCodes == null)){
+            getCountryCodes();
+        }
+        String result = "";
+        for(CountryCode c : countryCodes){
+            if(c.getCode().equals((code))){
+                result = c.getName();
+                break;
+            }
+        }
+        return result;
     }
 }

@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.webapp.dao.SQLDao;
+import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;
@@ -567,11 +567,6 @@ public class AffairService implements IAffairService {
             affairInfo.setIsHomepage(false);
         }
 
-        AffairUserEntity affairUserEntity = AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userId).selectOne("is_stuck");
-        if (affairUserEntity != null) {
-            affairInfo.setIsStuck(affairUserEntity.getIsStuck());
-        }
-
         //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
         AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId,affairId,userId);
         if(lastOperateRole != null){
@@ -580,12 +575,14 @@ public class AffairService implements IAffairService {
             long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
             affairInfo.setRoleTitle(RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title").getTitle());
+            affairInfo.setIsStuck(lastOperateRole.getIsStuck());
         }
         else {
             //没有affairUser的话就返回该用户在这个盟里最先创建的角色
             RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).asc("create_time").selectOne("id","title");
             affairInfo.setRoleTitle(roleEntity.getTitle());
             affairInfo.setRoleId(roleEntity.getId());
+            affairInfo.setIsStuck(false);
         }
         return affairInfo;
     }

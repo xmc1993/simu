@@ -6,6 +6,7 @@ import cn.superid.utils.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.controller.VO.LoginUserInfoVO;
 import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
+import cn.superid.webapp.controller.forms.UserPrivateInfoForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
@@ -24,9 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,7 +126,7 @@ public class UserController {
      * @return
      */
     @NotLogin
-    @ApiOperation(value = "获取身份验证码,目前用于重置密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
+    @ApiOperation(value = "获取身份验证码,目前用于忘记密码,不需要登录", httpMethod = "GET", response = String.class, notes = "获取身份验证码,一般用于与登录注册无关的系统验证")
     @RequestMapping(value = "/get_reset_code", method = RequestMethod.GET)
     public SimpleResponse getResetCode(HttpServletRequest request,String token){
         try{
@@ -340,11 +339,11 @@ public class UserController {
      */
     @ApiOperation(value = "修改用户信息", response = String.class,notes = "修改用户")
     @RequestMapping(value = "/edit_base", method = RequestMethod.POST)
-    public  SimpleResponse editBase(EditUserDetailForm editUserDetailForm){
+    public  SimpleResponse editBase(@RequestBody EditUserDetailForm editUserDetailForm){
         if(editUserDetailForm == null){
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }
-        return new SimpleResponse(userService.editBaseInfo(editUserDetailForm));
+        return SimpleResponse.ok(userService.editBaseInfo(editUserDetailForm));
     }
 
 
@@ -367,8 +366,11 @@ public class UserController {
         ResultUserInfo resultUserInfo = new ResultUserInfo();
         UserEntity user = userService.getCurrentUser();
         user.copyPropertiesTo(resultUserInfo);
-        resultUserInfo.setUserPrivateInfoEntity(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
-        resultUserInfo.setNickNames(Arrays.asList(user.getNicknames().split(",")));
+        UserPrivateInfoForm userPrivateInfoForm = new UserPrivateInfoForm();
+        userPrivateInfoForm.copyPropertiesFromAndSkipNull(UserPrivateInfoEntity.dao.partitionId(userService.currentUserId()).selectOne());
+        resultUserInfo.setUserPrivateInfoForm(userPrivateInfoForm);
+
+        resultUserInfo.setNickNames(user.getNicknames() == null ? null : Arrays.asList(user.getNicknames().split(",")));
         return SimpleResponse.ok(resultUserInfo);
     }
 
@@ -428,6 +430,17 @@ public class UserController {
         return new SimpleResponse(userService.changePublicType(publicType));
     }
 
+    @ApiOperation(value = "修改superId", response = String.class)
+    @RequestMapping(value = "/modify_superId", method = RequestMethod.POST)
+    public SimpleResponse modifySuperId(String superId){
+        boolean isModified = userService.modifySuperId(superId);
+        if(isModified){
+            return SimpleResponse.ok(null);
+        }
+        else {
+            return SimpleResponse.error(null);
+        }
+    }
 
     @RequestMapping(value = "/rollback",method = RequestMethod.POST)
     @NotLogin

@@ -1,13 +1,10 @@
 package cn.superid.webapp.service.impl;
 
-import clojure.lang.Obj;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
-import cn.superid.utils.ArrayUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
-import cn.superid.webapp.controller.forms.AddAffairRoleForm;
-import cn.superid.webapp.dao.impl.IAffairMemberDao;
+import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
@@ -16,14 +13,12 @@ import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
-import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import cn.superid.webapp.service.vo.AffairMemberVO;
-import cn.superid.webapp.service.vo.AffairUserVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -465,8 +460,10 @@ public class AffairMemberService implements IAffairMemberService {
         return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions, pagination);
     }
 
+    /*
     @Override
     public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId, long roleId) {
         return affairMemberDao.getAllAffairRoles(allianceId,affairId);
     }
+    */
 }

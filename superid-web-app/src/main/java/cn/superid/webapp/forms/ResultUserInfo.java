@@ -2,13 +2,13 @@ package cn.superid.webapp.forms;
 
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.webapp.controller.forms.UserPrivateInfoForm;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by xiaofengxu on 16/9/6.
@@ -18,7 +18,7 @@ public class ResultUserInfo extends ExecutableModel{
 
     public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
     private Long id = 0L;
-    private String superId = "";
+    private String superid = "";
     private boolean isAuthenticated = false;
     private String avatar = "";
     private int state = 0;
@@ -42,7 +42,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String description;//描述
     private double faith;
     private int gender;
-    private UserPrivateInfoEntity userPrivateInfoEntity;
+    private UserPrivateInfoForm userPrivateInfoForm;
     private List<String> nickNames ;
 
     public Long getId() {
@@ -53,12 +53,12 @@ public class ResultUserInfo extends ExecutableModel{
         this.id = id;
     }
 
-    public String getSuperId() {
-        return superId;
+    public String getSuperid() {
+        return superid;
     }
 
-    public void setSuperId(String superId) {
-        this.superId = superId;
+    public void setSuperid(String superid) {
+        this.superid = superid;
     }
 
     public boolean getIsAuthenticated() {
@@ -246,12 +246,12 @@ public class ResultUserInfo extends ExecutableModel{
     }
 
     @Transient
-    public UserPrivateInfoEntity getUserPrivateInfoEntity() {
-        return userPrivateInfoEntity;
+    public UserPrivateInfoForm getUserPrivateInfoForm() {
+        return userPrivateInfoForm;
     }
 
-    public void setUserPrivateInfoEntity(UserPrivateInfoEntity userPrivateInfoEntity) {
-        this.userPrivateInfoEntity = userPrivateInfoEntity;
+    public void setUserPrivateInfoForm(UserPrivateInfoForm userPrivateInfoForm) {
+        this.userPrivateInfoForm = userPrivateInfoForm;
     }
 
     @Transient
