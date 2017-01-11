@@ -50,7 +50,7 @@ public interface IUserService {
 
      ResultUserInfo getUserInfo(long userId);
 
-
+     String getAvatarByUserId(long userId);
 
      /**
       * 用户修改superid前检测是否已存在该id

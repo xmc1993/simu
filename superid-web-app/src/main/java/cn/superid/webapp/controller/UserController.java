@@ -11,6 +11,7 @@ import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IRoleService;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,11 +65,10 @@ public class UserController {
         return SimpleResponse.ok("isLogin");
     }
 
-    @ApiOperation(value = "根据userid,获得", httpMethod = "GET", response = String.class)
+    @ApiOperation(value = "根据userid,获得用户头像,此方法用于只知道userId,不知道头像的时候", httpMethod = "GET", response = String.class)
     @RequestMapping(value = "/avatar/{userId}", method = RequestMethod.GET)
-    public SimpleResponse getAvatar(@PathVariable String userId){
-//        this.userId = userId;
-        return SimpleResponse.ok("isLogin");
+    public Object getAvatar(@PathVariable String userId){
+        return new RedirectView(userService.getAvatarByUserId(Long.parseLong(userId)));
     }
 
     /**

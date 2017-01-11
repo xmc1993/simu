@@ -365,4 +365,9 @@ public class UserService implements IUserService {
         return UserPrivateInfoEntity.dao.partitionId(userId).selectOne();
     }
 
+    @Override
+    public String getAvatarByUserId(long userId) {
+        UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(userId);
+        return userBaseInfo==null?null:userBaseInfo.getAvatar();
+    }
 }
