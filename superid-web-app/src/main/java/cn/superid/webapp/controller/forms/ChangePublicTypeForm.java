@@ -8,58 +8,58 @@ import com.wordnik.swagger.annotations.ApiModel;
 @ApiModel
 public class ChangePublicTypeForm {
 
-    private Boolean personalTags;
-    private Boolean realname;
-    private Boolean idCard;
-    private Boolean mobile;
-    private Boolean email;
-    private Boolean birthday;
+    private Integer personalTags;
+    private Integer realname;
+    private Integer idCard;
+    private Integer mobile;
+    private Integer email;
+    private Integer birthday;
 
-    public Boolean getPersonalTags() {
+    public Integer getPersonalTags() {
         return personalTags;
     }
 
-    public void setPersonalTags(Boolean personalTags) {
+    public void setPersonalTags(Integer personalTags) {
         this.personalTags = personalTags;
     }
 
-    public Boolean getRealname() {
+    public Integer getRealname() {
         return realname;
     }
 
-    public void setRealname(Boolean realname) {
+    public void setRealname(Integer realname) {
         this.realname = realname;
     }
 
-    public Boolean getIdCard() {
+    public Integer getIdCard() {
         return idCard;
     }
 
-    public void setIdCard(Boolean idCard) {
+    public void setIdCard(Integer idCard) {
         this.idCard = idCard;
     }
 
-    public Boolean getMobile() {
+    public Integer getMobile() {
         return mobile;
     }
 
-    public void setMobile(Boolean mobile) {
+    public void setMobile(Integer mobile) {
         this.mobile = mobile;
     }
 
-    public Boolean getEmail() {
+    public Integer getEmail() {
         return email;
     }
 
-    public void setEmail(Boolean email) {
+    public void setEmail(Integer email) {
         this.email = email;
     }
 
-    public Boolean getBirthday() {
+    public Integer getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Boolean birthday) {
+    public void setBirthday(Integer birthday) {
         this.birthday = birthday;
     }
 }
