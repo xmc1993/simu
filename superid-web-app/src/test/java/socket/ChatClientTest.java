@@ -1,28 +1,65 @@
 package socket;
 
 import cn.superid.webapp.notice.chat.ChatClient;
+import cn.superid.webapp.notice.chat.Constant.MessageSubType;
+import cn.superid.webapp.notice.chat.Constant.MessageType;
+import cn.superid.webapp.notice.chat.MessageAsyncRequestHandler;
 import cn.superid.webapp.notice.chat.SimpleMessageHandler;
+import cn.superid.webapp.notice.chat.proto.Message;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.Date;
+
 
 /**
  * Created by jessiechen on 10/01/17.
  */
 public class ChatClientTest {
-    private long userId = 1912;
-    private long roleId = 3676;
-    private long toUserId = 1911;
-    private long toRoleId = 3675;
+    long userId = 1912l;
+    long roleId = 3676l;
+    long toUserId = 1911l;
+    long toRoleId = 3675l;
+    long affairId = 7620l;
     private String host = "localhost";
     private int port = 10110;
 
+    @Before
+    public void loginServer() throws Exception {
+        ChatClient chatClient = ChatClient.getSingleInstance();
+        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
+    }
+
+//    @Test
+//    public void sendNormalMsg() throws Exception {
+//        ChatClient chatClient = ChatClient.getSingleInstance();
+//        int counter = 1;
+//        while (true) {
+//            String name = "test";
+//            String content = "count" + counter++;
+//            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, name, content);
+//            chatClient.sendMessage(message, new MessageAsyncRequestHandler());
+//            Thread.sleep(2000);
+//        }
+//    }
+
+//    @Test
+//    public void sendQueryMessage() throws Exception {
+//        ChatClient chatClient = ChatClient.getSingleInstance();
+//        while (true) {
+//            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);
+//            chatClient.messageQuery(10, new Date(), message, new MessageAsyncRequestHandler());
+//            Thread.sleep(2000);
+//        }
+//    }
+
     @Test
-    public void connectServer() {
-        try {
-            ChatClient.connectChatServer(host, port, userId, "xxx", new SimpleMessageHandler());
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void unreadMessageCount() throws Exception {
+        ChatClient chatClient = ChatClient.getSingleInstance();
+        while (true) {
+            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);
+            chatClient.getUnreadMessageCount(message, new MessageAsyncRequestHandler());
+            Thread.sleep(2000);
         }
     }
 }
