@@ -27,7 +27,7 @@ public interface IAffairMemberService {
      */
     AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions);//type为
 
-    AffairMemberEntity addCreator(long allianceId, long affairId, long roleId);
+    AffairMemberEntity addCreator(long allianceId, long affairId, long userId, long roleId);
 
     /**
      * @param allianceId
