@@ -151,5 +151,10 @@ public class AllianceService  implements IAllianceService {
     public boolean verifyAllianceName(String name) {
         return AllianceEntity.dao.eq("name",name).exists();
     }
+
+    @Override
+    public boolean isCertificated(long allianceId) {
+        return AllianceEntity.dao.id(allianceId).state(CertificationState.Normal).exists();
+    }
 }
 
