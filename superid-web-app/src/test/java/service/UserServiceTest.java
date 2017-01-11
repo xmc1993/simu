@@ -10,6 +10,7 @@ import cn.superid.webapp.forms.ResultUserInfo;
 import cn.superid.webapp.model.AllianceEntity;
 import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.model.UserPrivateInfoEntity;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
@@ -22,9 +23,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import util.JUnit4ClassRunner;
+import util.Timer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by zp on 2016/8/9.
@@ -196,6 +200,19 @@ public class UserServiceTest{
         endTime = System.currentTimeMillis();
         System.out.println(endTime-beginTime);
 
+    }
+
+    @Test
+    public void getDRDSId(){//共享实例10000 305638ms
+        Timer timer= new Timer();
+        int size =10000;
+        Set<Long> set = new HashSet<>();
+
+        for(int i=0;i<size;i++){
+            set.add(UserPrivateInfoEntity.dao.getDRDSAutoId());
+        }
+        Assert.assertTrue(set.size()==size);
+        timer.end();
     }
 
 
