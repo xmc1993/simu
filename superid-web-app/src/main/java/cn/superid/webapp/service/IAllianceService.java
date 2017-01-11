@@ -34,5 +34,12 @@ public interface IAllianceService {
 
     public boolean verifyAllianceName(String name);
 
+    /**
+     * 该盟是否已验证
+     * @param allianceId
+     * @return
+     */
+    boolean isCertificated(long allianceId);
+
 
 }
