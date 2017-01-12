@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,6 +145,7 @@ public class ChatClient {
     }
 
     private void loginServer(long userId, String token) throws IOException {
+        loginSuccess=true;
         String requestId = generateRequestId(userId);
         ConnectParam connectParam = new ConnectParam(userId, AGENT, token);
         C2C c2c = new C2C(C2CType.SIGN_IN, requestId);
@@ -193,7 +193,6 @@ public class ChatClient {
                         connectChatServer(c2c.getData(), port, userId, token, null);
                         break;
                     case C2CType.RESPONSE:
-                        System.out.println("onMessage success" + c2c.getType());
                         AsyncRequestHandler success = requestCache.get(c2c.getRequestId());
                         if (success != null) {
                             success.onSuccess(c2c);
@@ -288,7 +287,7 @@ public class ChatClient {
                         if ((k = inputStream.read(buff, 0, buff.length)) != -1) {//当在close方法里关闭了inputStream,这里就会报Exception，而consumeMessageThreadSignal又被关闭，所以线程会退出
                             byte[] resultBuff = new byte[k];
                             System.arraycopy(buff, 0, resultBuff, 0, k); // copy previous bytes
-                            System.out.println("message listener thread:" + Arrays.toString(resultBuff));
+                           // System.out.println("message listener thread:" + Arrays.toString(resultBuff));
                             composer.feed(resultBuff);
                         }
                     } catch (Exception e) {
