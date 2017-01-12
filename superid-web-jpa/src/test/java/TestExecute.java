@@ -1,10 +1,12 @@
 
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import junit.framework.TestCase;
+import model.BaseUser;
 import model.Role;
 import model.User;
 import org.junit.Assert;
@@ -350,10 +352,36 @@ public class TestExecute extends TestCase {
         }
         session.executeBatch();
         session.endBatch();
-
     }
 
     @org.junit.Test
-    public void testId(){
+    public void testRedisBatch(){
+        List<User> users = User.dao.gt("id",0).selectList();
+
+        final Integer[] ids = new Integer[users.size()];
+        int i=0;
+        for(User user:users){
+            BaseUser baseUser = new BaseUser();
+            user.copyPropertiesTo(baseUser);
+            RedisUtil.save(baseUser);
+            ids[i++] = user.getId();
+        }
+
+        Timer.compair(new Execution() {
+            @Override
+            public void execute() {
+                List<BaseUser> result =(List<BaseUser>) RedisUtil.batchGet(ids, BaseUser.class,"name");
+            }
+        }, new Execution() {
+            @Override
+            public void execute() {
+                List<BaseUser> result = new ArrayList<BaseUser>();
+                for(int i=0;i<ids.length;i++){
+                    result.add(BaseUser.dao.findById(ids[i]));
+                }
+            }
+        },300);
+
+
     }
 }

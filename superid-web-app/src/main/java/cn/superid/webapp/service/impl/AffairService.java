@@ -122,6 +122,7 @@ public class AffairService implements IAffairService {
 
 
         Map<String, Object> result = new HashedMap();
+        //FBI AffairEntity本来就有,生成这个AffairInfo不能根据当前的AffairEntity吗
         result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId()));
         result.put("affairMemberId", member.getId());
         result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
@@ -560,12 +561,13 @@ public class AffairService implements IAffairService {
 
 
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
-        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
-        if (homepageAffairId == affairId) {
-            affairInfo.setIsHomepage(true);
-        } else {
-            affairInfo.setIsHomepage(false);
-        }
+        //FBI 主页事务只有一个,为什么每个事务需要去判断主页事务
+//        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
+//        if (homepageAffairId == affairId) {
+//            affairInfo.setIsHomepage(true);
+//        } else {
+//            affairInfo.setIsHomepage(false);
+//        }
 
         //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
         AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId,affairId,userId);
