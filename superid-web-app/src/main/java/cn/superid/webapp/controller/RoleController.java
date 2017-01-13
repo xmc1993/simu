@@ -1,6 +1,7 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.webapp.controller.forms.RolePublicTypeForm;
+import cn.superid.webapp.controller.forms.RolePublicTypeListForm;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.service.IRoleService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +33,10 @@ public class RoleController {
 
     @ApiOperation(value = "", response = String.class, notes = "")
     @RequestMapping(value = "/edit_public_type",method = RequestMethod.POST)
-    public SimpleResponse editPublicType(List<RolePublicTypeForm> roles){
+    public SimpleResponse editPublicType(@RequestBody RolePublicTypeListForm roles){
         if(roles == null){
             return SimpleResponse.error(null);
         }
-        return new SimpleResponse(ResponseCode.OK,roleService.editPublicType(roles));
+        return new SimpleResponse(ResponseCode.OK,roleService.editPublicType(roles.getRoles()));
     }
 }
