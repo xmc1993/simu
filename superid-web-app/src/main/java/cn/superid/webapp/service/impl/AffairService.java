@@ -125,7 +125,11 @@ public class AffairService implements IAffairService {
         //FBI AffairEntity本来就有,生成这个AffairInfo不能根据当前的AffairEntity吗
         result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId()));
         result.put("affairMemberId", member.getId());
-        result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), RoleCache.dao.findById(createAffairForm.getOperationRoleId()).getTitle()));
+        RoleCache _role = RoleCache.dao.findById(createAffairForm.getOperationRoleId());
+        if (_role == null) {
+            return null;
+        }
+        result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), _role.getTitle()));
         return result;
     }
 
@@ -576,7 +580,11 @@ public class AffairService implements IAffairService {
             long tempRoleId = lastOperateRole.getRoleId();
             long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
-            affairInfo.setRoleTitle(RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title").getTitle());
+            RoleEntity _title = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
+            if (_title == null) {
+                return null;
+            }
+            affairInfo.setRoleTitle(_title.getTitle());
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
         }
         else {

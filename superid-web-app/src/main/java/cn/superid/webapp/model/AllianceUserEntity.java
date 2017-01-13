@@ -13,7 +13,7 @@ import javax.persistence.Table;
  */
 @Table(name = "alliance_user")
 public class AllianceUserEntity extends ExecutableModel{
-    public final static ConditionalDao<AllianceUserEntity> dao = new ConditionalDao<>(AllianceUserEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AllianceUserEntity.class);
     private long id;
     private long allianceId;
     private long userId;

@@ -10,7 +10,7 @@ import javax.persistence.Id;
  * Created by xiaofengxu on 16/9/2.
  */
 public class AffairLog extends ExecutableModel {
-    public final static ConditionalDao<AffairLog> dao = new ConditionalDao<>(AffairLog.class);
+    public final static ConditionalDao dao = new ConditionalDao(AffairLog.class);
     private long id;
     private long affairId;
     private int type;

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user_private_info")
 public class UserPrivateInfoEntity extends ExecutableModel {
-    public final static ConditionalDao<UserPrivateInfoEntity> dao = new ConditionalDao<>(UserPrivateInfoEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(UserPrivateInfoEntity.class);
     private long id;
     private long userId;
     private int personalTags;

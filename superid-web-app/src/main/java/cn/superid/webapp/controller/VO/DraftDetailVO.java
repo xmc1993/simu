@@ -6,7 +6,7 @@ import cn.superid.jpa.orm.ConditionalDao;
  * Created by jizhenya on 16/12/16.
  */
 public class DraftDetailVO {
-    public final static ConditionalDao<DraftDetailVO> dao = new ConditionalDao<>(DraftDetailVO.class);
+    public final static ConditionalDao dao = new ConditionalDao(DraftDetailVO.class);
 
     private String content;
     private String title;

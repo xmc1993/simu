@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "discuss_group_member")
 public class DiscussGroupMemberEntity extends ExecutableModel {
-    public final static ConditionalDao<DiscussGroupMemberEntity> dao = new ConditionalDao<>(DiscussGroupMemberEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(DiscussGroupMemberEntity.class);
     private long id;
     private long roleId;
     private int state;

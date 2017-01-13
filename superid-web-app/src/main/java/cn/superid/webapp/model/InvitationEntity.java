@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "invitation")
 public class InvitationEntity extends ExecutableModel {
-    public final static ConditionalDao<InvitationEntity> dao = new ConditionalDao<>(InvitationEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(InvitationEntity.class);
     private long id;
     private long allianceId;
     private long affairId;

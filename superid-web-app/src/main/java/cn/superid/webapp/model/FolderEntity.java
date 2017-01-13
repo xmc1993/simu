@@ -15,7 +15,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "folder")
 public class FolderEntity extends ExecutableModel {
-    public final static ConditionalDao<FolderEntity> dao = new ConditionalDao<>(FolderEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(FolderEntity.class);
     private long id;
     private String name;
     private String path;

@@ -22,7 +22,7 @@ public class AffairUserEntity extends ExecutableModel {
     private long allianceId;
     private boolean isStuck = false;
 
-    public final static ConditionalDao<AffairUserEntity> dao = new ConditionalDao<>(AffairUserEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AffairUserEntity.class);
 
     @Id
     @Column(name = "id")

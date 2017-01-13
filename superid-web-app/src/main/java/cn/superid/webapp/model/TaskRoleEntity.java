@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "task_role")
 public class TaskRoleEntity extends ExecutableModel {
 
-    public final static ConditionalDao<TaskRoleEntity> dao = new ConditionalDao<>(TaskRoleEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(TaskRoleEntity.class);
 
     private long id;
     private long taskId;
