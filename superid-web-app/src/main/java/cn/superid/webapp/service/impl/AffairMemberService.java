@@ -415,6 +415,7 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
+
     public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId, long affairId) {
         StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? and r.affair_id = ?) b on a.role_id = b.id ");
         ParameterBindings p = new ParameterBindings();

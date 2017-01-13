@@ -8,13 +8,13 @@ import java.util.List;
 /**
  * Created by xiaofengxu on 16/9/18.
  */
-public class ConditionalDao<T> extends Dao<T> {
+public class ConditionalDao extends Dao{
 
 
     public ConditionalDao(Class clazz){
         this.clazz =clazz;
     }
-    public ConditionalDao<T> and(String column, String op, Object value){
+    public ConditionalDao and(String column, String op, Object value){
         where.get().append(" and ");
         where.get().append(column);
         where.get().append(op);
@@ -23,14 +23,14 @@ public class ConditionalDao<T> extends Dao<T> {
         return this;
     }
 
-    public ConditionalDao<T>  join (Class<?> table){
+    public ConditionalDao  join (Class<?> table){
         from.get().append(ModelMeta.getModelMeta(this.clazz).getTableName() + " a");
         from.get().append(" join ");
         from.get().append(ModelMeta.getModelMeta(table).getTableName() + " b");
         return this;
     }
 
-    public ConditionalDao<T> on (String leftParam , String rightParam ){
+    public ConditionalDao on (String leftParam , String rightParam ){
         from.get().append(" on ");
         from.get().append("a."+leftParam);
         from.get().append(" = ");
@@ -39,54 +39,54 @@ public class ConditionalDao<T> extends Dao<T> {
 
     }
 
-    public ConditionalDao<T> eq(String column, Object value){
+    public ConditionalDao eq(String column, Object value){
         return and(StringUtil.underscoreName(column),"=",value);
     }
 
-    public ConditionalDao<T> neq(String column, Object value){
+    public ConditionalDao neq(String column, Object value){
         return and(StringUtil.underscoreName(column),"<>",value);
     }
 
-    public ConditionalDao<T> lk(String colum, Object value){return and(colum," LIKE ",value);}
+    public ConditionalDao lk(String colum, Object value){return and(colum," LIKE ",value);}
 
 
-    public ConditionalDao<T> id(Object value){
+    public ConditionalDao id(Object value){
         return and("id","=",value);
     }
-    public ConditionalDao<T> key(Object value){
+    public ConditionalDao key(Object value){
         return id(value);
     }
 
-    public ConditionalDao<T> state(Object value){
+    public ConditionalDao state(Object value){
         return and("state","=",value);
     }
 
-    public ConditionalDao<T> partitionId(Object value){return
+    public ConditionalDao partitionId(Object value){return
             and(ModelMeta.getModelMeta(this.clazz).getPartitionColumn().columnName,"=",value);
     }
 
 
-    public ConditionalDao<T> gt(String column, Object value){
+    public ConditionalDao gt(String column, Object value){
         return and(column,">",value);
     }
 
-    public ConditionalDao<T> lt(String column, Object value){
+    public ConditionalDao lt(String column, Object value){
         return and(column,"<",value);
     }
 
-    public ConditionalDao<T> ne(String column, Object value){
+    public ConditionalDao ne(String column, Object value){
         return and(column,"<>",value);
     }
 
-    public ConditionalDao<T> le(String column, Object value){
+    public ConditionalDao le(String column, Object value){
         return and(column,"<=",value);
     }
 
-    public ConditionalDao<T> ge(String column, Object value){
+    public ConditionalDao ge(String column, Object value){
         return and(column,">=",value);
     }
 
-    private ConditionalDao<T> inOrNotIn(String column, Object[] values,String op){//
+    private ConditionalDao inOrNotIn(String column, Object[] values,String op){//
         where.get().append(" and ");
         where.get().append(column);
         where.get().append(op);
@@ -106,21 +106,21 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
 
-    public ConditionalDao<T> in(String column, Object[] values){
+    public ConditionalDao in(String column, Object[] values){
        return inOrNotIn(StringUtil.underscoreName(column),values," in ");
     }
 
-    public ConditionalDao<T> notIn(String column, Object[] values){
+    public ConditionalDao notIn(String column, Object[] values){
         return inOrNotIn(StringUtil.underscoreName(column),values," not in ");
     }
 
-    public ConditionalDao<T> limit(int limit){
+    public ConditionalDao limit(int limit){
         where.get().append(" limit ");
         parameterBindings.get().addIndexBinding(limit);
         return this;
     }
 
-    public ConditionalDao<T> asc(String col){
+    public ConditionalDao asc(String col){
         where.get().append(" ORDER BY ");
         where.get().append(StringUtil.underscoreName(col));
         where.get().append(" ASC ");
@@ -128,7 +128,7 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
 
-    public ConditionalDao<T> desc(String col){
+    public ConditionalDao desc(String col){
         where.get().append(" ORDER BY ");
         where.get().append(StringUtil.underscoreName(col));
         where.get().append(" desc ");
@@ -136,25 +136,25 @@ public class ConditionalDao<T> extends Dao<T> {
     }
 
 
-    public ConditionalDao<T> orderBy(String orderBy){
+    public ConditionalDao orderBy(String orderBy){
         where.get().append(" ORDER BY ");
         where.get().append(StringUtil.underscoreName(orderBy));
         return  this;
     }
 
-    public ConditionalDao<T> groupBy(String groupBy){
+    public ConditionalDao groupBy(String groupBy){
         where.get().append(" GROUP BY ");
         where.get().append(StringUtil.underscoreName(groupBy));
         return  this;
     }
 
-    public ConditionalDao<T> offset(int offset){
+    public ConditionalDao offset(int offset){
         where.get().append(" offset ");
         parameterBindings.get().addIndexBinding(offset);
         return this;
     }
 
-    public ConditionalDao<T> or(List<Expr> exprs){
+    public ConditionalDao or(List<Expr> exprs){
         if(exprs==null||exprs.size()==0){
             return this;
         }
@@ -162,7 +162,7 @@ public class ConditionalDao<T> extends Dao<T> {
         return this.or(exprs1);
     }
 
-    public ConditionalDao<T> or(Expr... exprs){
+    public ConditionalDao or(Expr... exprs){
         where.get().append(" and (");
         boolean init =true;
         for(Expr expr:exprs){

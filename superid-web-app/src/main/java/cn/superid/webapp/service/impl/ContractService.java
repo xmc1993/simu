@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -391,7 +392,7 @@ public class ContractService implements IContractService {
         if(role == null ){
             return null;
         }
-        List<Object> list = ContractTemplateEntity.dao.join(AffairEntity.class).on("affair_id","id").eq("alliance_id",allianceId).selectListByJoin(ContractTemplateForm.class,"a.id","b.name as affair_name","a.title","a.thumb_content");
+        List<Object> list = ContractTemplateEntity.dao.join(AffairEntity.class).on("affair_id","id").eq("alliance_id",allianceId).selectList(ContractTemplateForm.class,"a.id","b.name as affair_name","a.title","a.thumb_content");
         if(list == null){
             return null;
         }
@@ -581,12 +582,14 @@ public class ContractService implements IContractService {
         contractEntity.setState(2);
         contractEntity.update();
 
+        RoleEntity roleEntity =RoleEntity.dao.findById(operationRoleId,allianceId);
+
         ContractLogEntity contractLogEntity = new ContractLogEntity();
         contractLogEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         contractLogEntity.setContractId(contractId);
         contractLogEntity.setHasDetail(1);
         contractLogEntity.setDetail(content);
-        contractLogEntity.setMessage(RoleEntity.dao.findById(operationRoleId,allianceId).getTitle() + "修改了合同内容");
+        contractLogEntity.setMessage(roleEntity.getTitle() + "修改了合同内容");
         contractLogEntity.save();
         return contractEntity;
     }
@@ -603,7 +606,8 @@ public class ContractService implements IContractService {
         }
         else {
             for(Long contractId : contractIds){
-                if(ContractEntity.dao.findById(contractId).getState()==state){
+                ContractEntity contractEntity  = ContractEntity.dao.findById(contractId);
+                if(contractEntity.getState()==state){
                     fitContractIds.add(contractId);
                 }
             }

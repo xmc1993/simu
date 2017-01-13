@@ -152,7 +152,7 @@ public class AffairController {
 
     @ApiOperation(value = "获取事务首页必要的信息", response = String.class, notes = "publicType事务公开性:0完全公开 1盟内可见 2成员可见")
     @RequestMapping(value = "/affair_info", method = RequestMethod.POST)
-    @RequiredPermissions(affair = AffairPermissions.AffairInfo)
+//    @RequiredPermissions(affair = AffairPermissions.AffairInfo)
     public SimpleResponse getAffairInfo(long affairMemberId) {
         long allianceId = GlobalValue.currentAllianceId();
         long affairId = GlobalValue.currentAffairId();

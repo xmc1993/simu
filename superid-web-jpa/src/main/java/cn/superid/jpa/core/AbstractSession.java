@@ -241,24 +241,24 @@ public abstract class AbstractSession implements Session {
     }
 
     @Override
-    public Object generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
+    public <T> T generateHashMapFromEntity(HashMap<String, Object> hashMap, Object entity) {
         ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity, hashMap.get(modelColumnMeta.fieldName));
         }
-        return entity;
+        return (T)entity;
     }
 
     @Override
-    public Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap, Object entity) {
+    public <T> T generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap, Object entity) {
         ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             FieldAccessor fieldAccessor = modelColumnMeta.fieldAccessor;
             fieldAccessor.setProperty(entity,BinaryUtil.getValue(hashMap.get(modelColumnMeta.binary),fieldAccessor.getPropertyType()));
 
         }
-        return entity;
+        return (T) entity;
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.Map;
  * used for cacheable
  */
 
-public class CacheableDao<T> extends ConditionalDao<T> {
+public class CacheableDao extends ConditionalDao {
 
     /**
      * cached id for getById from redis
@@ -37,14 +37,14 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     }
 
     @Override
-    public CacheableDao<T> id(Object value) {
+    public CacheableDao id(Object value) {
         key.set(value);
         super.id(value);
         return this;
     }
 
     @Override
-    public T findById(Object id) {
+    public <T> T findById(Object id) {
         Object cached = RedisUtil.findByKey(id,clazz);
         if(cached!=null){
             return (T) cached;
@@ -58,7 +58,7 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
 
 
-    public T selectOne(String... params) {
+    public <T> T selectOne(String... params) {
         ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
@@ -221,31 +221,8 @@ public class CacheableDao<T> extends ConditionalDao<T> {
 
 
 
-
-
     @Override
-    public T findOneByNativeSql(String sql, Object... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List findListByNativeSql(String sql, Object... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public T findOneByNativeSql(String sql, ParameterBindings parameterBindings) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List findListByNativeSql(String sql, ParameterBindings parameterBindings) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-
-    @Override
-    public T findById(Object id, Object partitionId) {
+    public <T> T findById(Object id, Object partitionId) {
         Object cached = RedisUtil.findByKey(id,clazz);
         if(cached!=null){
             return (T) cached;
@@ -259,70 +236,4 @@ public class CacheableDao<T> extends ConditionalDao<T> {
     }
 
 
-    @Override
-    public Object selectOneByJoin(Class target, String... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public int count() {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public int sum(String param) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List<Integer> sumList(String param) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List selectByPagination(Pagination pagination, String... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List selectList(String... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public List<Object> selectListByJoin(Class target, String... params) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public int set(Expr... exprs) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public int set(Map map) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-
-    @Override
-    public int set(String setSql, ParameterBindings setParams) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-
-    @Override
-    public long getDRDSAutoId() {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public int execute(String sql, ParameterBindings parameterBindings1) {
-        throw new JdbcRuntimeException("Not Support");
-    }
-
-    @Override
-    public boolean exists() {
-        throw new JdbcRuntimeException("Not Support");
-    }
 }
