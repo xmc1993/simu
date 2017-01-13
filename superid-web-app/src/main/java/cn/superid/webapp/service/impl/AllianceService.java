@@ -4,6 +4,7 @@ import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.enums.state.CertificationState;
+import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.forms.AllianceCertificationForm;
 import cn.superid.webapp.forms.AllianceCreateForm;
 import cn.superid.webapp.model.AffairEntity;
@@ -106,7 +107,7 @@ public class AllianceService  implements IAllianceService {
         allianceCertificationEntity.setAllianceId(allianceId);
         allianceCertificationEntity.copyPropertiesFrom(allianceCertificationForm);
         allianceCertificationEntity.setRoleId(roleId);
-        allianceCertificationEntity.setCheckState(CertificationState.WaitCertificated);
+        allianceCertificationEntity.setCheckState(DealState.ToCheck);
         allianceCertificationEntity.save();
 
         AllianceEntity.dao.id(allianceId).set("verified", CertificationState.WaitCertificated);

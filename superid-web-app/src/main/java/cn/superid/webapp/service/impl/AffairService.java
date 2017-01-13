@@ -118,7 +118,7 @@ public class AffairService implements IAffairService {
         AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId", folderId);
 
 
-        AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), userService.currentUserId(),createAffairForm.getOperationRoleId());//作为创建者
+        AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), userService.currentUserId(), createAffairForm.getOperationRoleId());//作为创建者
 
 
         Map<String, Object> result = new HashedMap();
@@ -139,7 +139,7 @@ public class AffairService implements IAffairService {
      * @return
      */
     @Override
-    public AffairEntity createRootAffair(long allianceId, long userId ,String name, long roleId, int type, String logo) {
+    public AffairEntity createRootAffair(long allianceId, long userId, String name, long roleId, int type, String logo) {
 
         AffairEntity affairEntity = new AffairEntity();
         affairEntity.setType(type);
@@ -549,7 +549,6 @@ public class AffairService implements IAffairService {
         affairInfo.setName(affairEntity.getName());
         affairInfo.setShortName(affairEntity.getShortName());
         affairInfo.setPublicType(affairEntity.getPublicType());
-        affairInfo.setIsPersonal(affairEntity.getType());
 //        affairInfo.setIsStuck(affairEntity.getIsStuck());
         affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
@@ -558,33 +557,36 @@ public class AffairService implements IAffairService {
         affairInfo.setTags("");
 
         affairInfo.setCovers(affairEntity.getCovers());
-
-
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
-        //FBI 主页事务只有一个,为什么每个事务需要去判断主页事务
-//        long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
-//        if (homepageAffairId == affairId) {
-//            affairInfo.setIsHomepage(true);
-//        } else {
-//            affairInfo.setIsHomepage(false);
-//        }
 
         //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
-        AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId,affairId,userId);
-        if(lastOperateRole != null){
+        AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId, affairId, userId);
+        if (lastOperateRole != null) {
             //有的话就把roleId和roleName返回给前端
             long tempRoleId = lastOperateRole.getRoleId();
             long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
             affairInfo.setRoleTitle(RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title").getTitle());
+            affairInfo.setAllianceId(tempAllianceId);
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
-        }
-        else {
+
+            AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();
+            if (affairMemberEntity != null) {
+                affairInfo.setAffairMemberId(affairMemberEntity.getId());
+                affairInfo.setPermissions(affairMemberEntity.getPermissions());
+            }else {
+                affairInfo.setAffairMemberId(0L);
+                affairInfo.setPermissions("");
+            }
+
+        } else {
             //没有affairUser的话就返回该用户在这个盟里最先创建的角色
-            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).asc("create_time").selectOne("id","title");
+            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
             affairInfo.setRoleTitle(roleEntity.getTitle());
             affairInfo.setRoleId(roleEntity.getId());
             affairInfo.setIsStuck(false);
+            affairInfo.setAffairMemberId(0L);
+            affairInfo.setPermissions("");
         }
         return affairInfo;
     }

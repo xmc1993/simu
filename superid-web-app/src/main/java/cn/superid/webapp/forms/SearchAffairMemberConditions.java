@@ -32,6 +32,8 @@ public class SearchAffairMemberConditions {
     @ApiModelProperty(notes = "是否需要返回列表总数（分页使用），默认为TRUE，建议在前端已知总数时填FALSE减轻服务器重复计算压力")
     private boolean needTotal=true;
 
+
+
     public String getKey() {
         return key;
     }

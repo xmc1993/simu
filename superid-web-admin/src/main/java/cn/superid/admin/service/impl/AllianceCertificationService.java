@@ -1,5 +1,7 @@
 package cn.superid.admin.service.impl;
 
+import cn.superid.admin.form.CertificationState;
+import cn.superid.admin.form.DealState;
 import cn.superid.admin.model.AdminEntity;
 import cn.superid.admin.model.AllianceCertificationEntity;
 import cn.superid.admin.model.AllianceEntity;
@@ -18,7 +20,7 @@ public class AllianceCertificationService implements IAllianceCertificationServi
 
     @Override
     public List<AllianceCertificationEntity> showUncheckedCertification() {
-        return AllianceCertificationEntity.dao.eq("check_state",0).selectList("id","company_name","alliance_id");
+        return AllianceCertificationEntity.dao.eq("check_state", DealState.ToCheck).selectList("id","company_name","alliance_id");
     }
 
     @Override
@@ -28,12 +30,12 @@ public class AllianceCertificationService implements IAllianceCertificationServi
 
     @Override
     public boolean agreeCertification(long id,long allianceId,String dealReason,String userName) {
-        AllianceEntity.dao.id(allianceId).set("verified",0);
-        return AllianceCertificationEntity.dao.id(id).partitionId(allianceId).set("check_reason",dealReason,"check_admin",userName,"check_state",1)>0;
+        AllianceEntity.dao.id(allianceId).set("verified",CertificationState.Normal);
+        return AllianceCertificationEntity.dao.id(id).partitionId(allianceId).set("check_reason",dealReason,"check_admin",userName,"check_state",DealState.Agree)>0;
     }
 
     @Override
     public boolean rejectCertification(long id,long allianceId,String dealReason,String userName) {
-        return AllianceCertificationEntity.dao.id(id).partitionId(allianceId).set("check_reason",dealReason,"check_admin",userName,"check_state",2)>0;
+        return AllianceCertificationEntity.dao.id(id).partitionId(allianceId).set("check_reason",dealReason,"check_admin",userName,"check_state",DealState.Reject)>0;
     }
 }
