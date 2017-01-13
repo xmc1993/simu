@@ -16,16 +16,18 @@ public class AffairInfo {
     private String description = "";
     private int publicType;
     private String logoUrl = "";
-    private boolean isHomepage;
-    private int isPersonal;
     private String shortName;
     private boolean isStuck;
     private int guestLimit;
     private Timestamp modifyTime;
     private String covers = "";
     private Object overView;
-
     private String tags = "";
+
+    //以下字段已跟cto确认返回
+    private long allianceId;
+    private long affairMemberId;
+    private String permissions;
 
     public long getId() {
         return id;
@@ -59,14 +61,6 @@ public class AffairInfo {
         this.roleTitle = roleTitle;
     }
 
-    public int getIsPersonal() {
-        return isPersonal;
-    }
-
-    public void setIsPersonal(int isPersonal) {
-        this.isPersonal = isPersonal;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -91,12 +85,20 @@ public class AffairInfo {
         this.logoUrl = logoUrl;
     }
 
-    public boolean getIsHomepage() {
-        return isHomepage;
+    public long getAllianceId() {
+        return allianceId;
     }
 
-    public void setIsHomepage(boolean homepage) {
-        isHomepage = homepage;
+    public void setAllianceId(long allianceId) {
+        this.allianceId = allianceId;
+    }
+
+    public String getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
     }
 
     public String getCovers() {
@@ -163,4 +165,11 @@ public class AffairInfo {
         this.superid = superid;
     }
 
+    public long getAffairMemberId() {
+        return affairMemberId;
+    }
+
+    public void setAffairMemberId(long affairMemberId) {
+        this.affairMemberId = affairMemberId;
+    }
 }
