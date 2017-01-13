@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -113,13 +114,8 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-        Long allianceId = searchAffairRoleConditions.getAllianceId();
-        Long affairId = searchAffairRoleConditions.getAffairId();
-        Long roleId = searchAffairRoleConditions.getRoleId();
-        if ((allianceId == null) || (affairId == null) || (roleId == null)) {
-            return new SimpleResponse(ResponseCode.NeedParams, null);
-        }
+    public SimpleResponse getAffairRoleCards(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+
         boolean affairExist = affairService.affairExist(allianceId, affairId);
         if (!affairExist) {
             return new SimpleResponse(ResponseCode.AffairNotExist, null);
@@ -132,13 +128,13 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
+    public SimpleResponse getAffairMembers(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchAffairMemberConditions conditions) {
         if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
             conditions.setCount(20);
         if (conditions.getPage() < 1)
             conditions.setPage(1);
         Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount(), conditions.isNeedTotal());
-        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), conditions, pagination);
+        List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(allianceId, affairId, conditions, pagination);
         ListVO<AffairMemberSearchVo> listVO = new ListVO<>(list, conditions.getPage(), conditions.getCount(), pagination.getTotal());
         return SimpleResponse.ok(listVO);
     }
