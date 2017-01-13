@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "role")
 @Cacheable( key = "rl")
 public class RoleCache extends ExecutableModel {
-    public final static CacheableDao<RoleCache> dao = new CacheableDao<>(RoleCache.class);
+    public final static CacheableDao dao = new CacheableDao(RoleCache.class);
     private long id;
     private long userId;
     private long allianceId;

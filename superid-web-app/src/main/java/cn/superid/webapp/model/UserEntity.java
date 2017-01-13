@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "user")
 public class UserEntity extends ExecutableModel {
-    public final static ConditionalDao<UserEntity> dao = new ConditionalDao<>(UserEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(UserEntity.class);
 
     private long id;
     private String superid = "";

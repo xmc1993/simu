@@ -5,26 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
     <!-- 加解密的实现类 -->
 
-    <!--<bean id="springAuthenticator" class="cn.superid.webapp.security.SpringAuthenticator">-->
-    <!--</bean>-->
-    <!--<bean id="springAuthenticator" class="cn.superid.shiro.ShiroAuthenticator"/>-->
-
-    <!--<bean id="mongoUtils" class="cn.superid.webapp.db_components.MongoUtils">-->
-        <!--<constructor-arg name="mongoServerUris" value="${mongoServerUris}"/>-->
-        <!--<constructor-arg name="dbName" value="${mongo.dbName}"/>-->
-        <!--<constructor-arg name="user" value="${mongo.user}"/>-->
-        <!--<constructor-arg name="password" value="${mongo.password}"/>-->
-    <!--</bean>-->
-
-    <!--ElasticSearch Client Factory-->
-    <!--为了测试时启动快速，可以注释掉-->
-    <!--<bean id="elasticSerachClient" class="cn.superid.webapp.utils.ESFactory"/>-->
-
-    <!-- end -->
-
-    <!--<bean class="cn.superid.webapp.search.impl.SearchService">-->
-        <!--<constructor-arg value="${searchservice.url}"/>-->
-    <!--</bean>-->
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 
@@ -38,26 +18,6 @@
         <property name="testOnBorrow" value="${redis.testOnBorrow}" />
     </bean>
 
-    <!--&lt;!&ndash; spring data redis &ndash;&gt;-->
-    <!--<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
-        <!--<property name="usePool" value="true"></property>-->
-        <!--<property name="hostName" value="${redis.host}" />-->
-        <!--<property name="port" value="${redis.port}" />-->
-        <!--<property name="password" value="${redis.pass}" />-->
-        <!--<property name="timeout" value="${redis.timeout}" />-->
-        <!--<property name="database" value="${redis.default.db}"/>-->
-        <!--<constructor-arg index="0" ref="jedisPoolConfig" />-->
-    <!--</bean>-->
-
-    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">-->
-        <!--<property name="connectionFactory" ref="connectionFactory" />-->
-    <!--</bean>-->
-
-    <!--<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">-->
-        <!--<property name="connectionFactory" ref="connectionFactory" />-->
-    <!--</bean>-->
-
-
 
     <bean id="redisUtil" class="cn.superid.jpa.redis.RedisUtil">
         <constructor-arg index="0" ref="jedisPoolConfig" />
@@ -67,31 +27,5 @@
         <constructor-arg name="timeout" value="${redis.timeout}"/>
     </bean>
 
-    <!--<bean class="cn.superid.webapp.swagger.MySwaggerConfig" ></bean>-->
-    <!--<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />-->
-    <!--<bean class="cn.superid.webapp.oss.impl.MongoStoreService"/>-->
-    <!--<bean id="chatMessageDao" class="cn.superid.webapp.chat.impl.NewChatMessageDao">-->
-        <!--<property name="obWebApiUrl" value="${ob.webapi_url}"/>-->
-    <!--</bean>-->
-
-    <!--<bean class="cn.superid.webapp.components.SmsDao">-->
-        <!--<property name="apiUid" value="zoowii"/>-->
-        <!--<property name="apiKey" value="2760aea8635143b24809"/>-->
-    <!--</bean>-->
-    <!--<bean class="cn.superid.webapp.components.AliSmsDao">-->
-        <!--<property name="apiUrl" value="${alisms.api_url}"/>-->
-        <!--<property name="appKey" value="${alisms.api_key}"/>-->
-        <!--<property name="appSecret" value="${alisms.api_secret}"/>-->
-    <!--</bean>-->
-
-    <!--<bean class="cn.superid.webapp.components.DirectEmailDao" id="emailDao"/>-->
-    <!--<bean class="cn.superid.webapp.components.SendCloudEmailDao" id="emailDao">-->
-        <!--<property name="url" value="${sendcloud.url}"/>-->
-        <!--<property name="apiUser" value="${sendcloud.api_user}"/>-->
-        <!--<property name="apiKey" value="${sendcloud.api_key}"/>-->
-    <!--</bean>-->
-
-    <!-- id generator service beans -->
-    <!-- end id generator service beans -->
 
 </beans>

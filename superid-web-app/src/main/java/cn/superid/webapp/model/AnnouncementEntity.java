@@ -3,8 +3,6 @@ package cn.superid.webapp.model;
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.utils.TimeUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -18,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "announcement")
 public class AnnouncementEntity extends ExecutableModel {
 
-    public final static ConditionalDao<AnnouncementEntity> dao = new ConditionalDao<>(AnnouncementEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AnnouncementEntity.class);
 
     private long id;
     private long affairId = 0;

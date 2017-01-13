@@ -13,7 +13,7 @@ import java.sql.Timestamp;
  */
 @Table(name = "alliance")
 public class AllianceEntity extends ExecutableModel {
-    public final static ConditionalDao<AllianceEntity> dao = new ConditionalDao<>(AllianceEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AllianceEntity.class);
     private long id;
     private String name = "";
     private long ownerRoleId = 0;

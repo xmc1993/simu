@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "affair_member")
 @Cacheable( key = "afm")
 public class AffairMemberCache extends ExecutableModel {
-    public final static CacheableDao<AffairMemberCache> dao = new CacheableDao<>(AffairMemberCache.class);
+    public final static CacheableDao dao = new CacheableDao(AffairMemberCache.class);
     private long id;
     private long affairId;
     private long allianceId;

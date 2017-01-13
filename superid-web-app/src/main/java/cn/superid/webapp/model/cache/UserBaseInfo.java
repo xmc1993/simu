@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "user")
 @Cacheable(key = "us")
 public class UserBaseInfo extends ExecutableModel{
-    public final static CacheableDao<UserBaseInfo> dao = new CacheableDao<>(UserBaseInfo.class);
+    public final static CacheableDao dao = new CacheableDao(UserBaseInfo.class);
     private long id;
     private String avatar;
     private int gender;

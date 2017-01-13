@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "announcement_snapshot")
 public class AnnouncementSnapshotEntity extends ExecutableModel {
 
-    public final static ConditionalDao<AnnouncementSnapshotEntity> dao = new ConditionalDao<>(AnnouncementSnapshotEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AnnouncementSnapshotEntity.class);
 
     private long id;
     private int version = 0;

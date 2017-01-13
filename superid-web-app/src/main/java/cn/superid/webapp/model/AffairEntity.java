@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Table(name = "affair")
 public class AffairEntity extends ExecutableModel {
-    public final static ConditionalDao<AffairEntity> dao = new ConditionalDao<>(AffairEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AffairEntity.class);
     private long id;
     private long parentId = 0;
     private String superid = "";
