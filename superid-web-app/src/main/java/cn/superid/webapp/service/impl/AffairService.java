@@ -118,7 +118,7 @@ public class AffairService implements IAffairService {
         AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId", folderId);
 
 
-        AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), createAffairForm.getOperationRoleId());//作为创建者
+        AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), userService.currentUserId(),createAffairForm.getOperationRoleId());//作为创建者
 
 
         Map<String, Object> result = new HashedMap();
@@ -138,7 +138,7 @@ public class AffairService implements IAffairService {
      * @return
      */
     @Override
-    public AffairEntity createRootAffair(long allianceId, String name, long roleId, int type, String logo) {
+    public AffairEntity createRootAffair(long allianceId, long userId ,String name, long roleId, int type, String logo) {
 
         AffairEntity affairEntity = new AffairEntity();
         affairEntity.setType(type);
@@ -158,7 +158,7 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId", folderId);
         try {
-            affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), roleId);//加入根事务
+            affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), userId, roleId);//加入根事务
             //在affair_user表中记录默认角色
         } catch (Exception e) {
             e.printStackTrace();

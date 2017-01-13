@@ -65,9 +65,7 @@ public class UserServiceTest{
 
     @Test
     public void testCreateUser(){
-        UserEntity result = addUser();
-        Assert.assertFalse(result==null);
-        Assert.assertTrue(result.getPersonalRoleId()!=0);
+        userService.createUser("+86 15358381990","a12345","汤茂思");
     }
 
 

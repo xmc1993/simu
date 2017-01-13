@@ -2,6 +2,7 @@ package cn.superid.webapp.enums;
 
 /**
  * Created by jizhenya on 16/11/29.
+ * SuperId长度
  */
 public class SuperIdNumber {
 

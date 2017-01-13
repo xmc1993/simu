@@ -103,6 +103,19 @@ public class JdbcSession extends AbstractSession {
         }
     }
 
+    private void close(PreparedStatement preparedStatement){
+        try {
+            if(preparedStatement!=null){
+                LOG.debug(preparedStatement.toString());
+                preparedStatement.close();
+            }
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
+        } finally {
+            close();
+        }
+    }
+
     @Override
     public void shutdown() {
         try {
@@ -142,10 +155,10 @@ public class JdbcSession extends AbstractSession {
             final ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
             String sql = modelMeta.getInsertSql();
             if (!isInBatch) {
-                PreparedStatement preparedStatement = getJdbcConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                setStatementAllField(modelMeta, preparedStatement, entity, false);
+                PreparedStatement preparedStatement = null;
                 try {
-
+                    preparedStatement = getJdbcConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    setStatementAllField(modelMeta, preparedStatement, entity, false);
                     int changedCount = preparedStatement.executeUpdate();
                     if (changedCount < 1) {
                         throw new JdbcRuntimeException("No record affected when save entity");
@@ -167,9 +180,7 @@ public class JdbcSession extends AbstractSession {
                         }
                     }
                 } finally {
-                    LOG.debug(preparedStatement.toString());
-                    preparedStatement.close();
-                    close();
+                    close(preparedStatement);
                 }
             } else {
                 if (batchStatement == null) {
@@ -215,9 +226,7 @@ public class JdbcSession extends AbstractSession {
                 try {
                     return preparedStatement.executeUpdate() > 0;
                 } finally {
-                    LOG.debug(preparedStatement.toString());
-                    preparedStatement.close();
-                    close();
+                    close(preparedStatement);
                 }
             } else {
                 if (batchStatement == null) {
@@ -281,8 +290,7 @@ public class JdbcSession extends AbstractSession {
                 int i = preparedStatement.executeUpdate();
                 return i > 0;
             } finally {
-                preparedStatement.close();
-                close();
+                close(preparedStatement);
             }
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -321,8 +329,7 @@ public class JdbcSession extends AbstractSession {
                     preparedStatement.setObject(i, id);
                     preparedStatement.executeUpdate();
                 } finally {
-                    preparedStatement.close();
-                    close();
+                    close(preparedStatement);
                 }
             } else {
                 if (batchStatement == null) {
@@ -356,6 +363,8 @@ public class JdbcSession extends AbstractSession {
                 this.batchStatement.close();
             } catch (SQLException e) {
                 throw new JdbcRuntimeException(e);
+            }finally {
+                close();
             }
         }
         this.batchStatement = null;
@@ -484,8 +493,7 @@ public class JdbcSession extends AbstractSession {
                     resultSet.close();
                 }
             } finally {
-                preparedStatement.close();
-                close();
+                close(preparedStatement);
             }
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
@@ -594,71 +602,52 @@ public class JdbcSession extends AbstractSession {
 
     @Override
     public int execute(String sql) {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = getJdbcConnection().prepareStatement(sql);
-            return preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new JdbcRuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new JdbcRuntimeException(e);
-                }
-            }
-            close();
-        }
-
+       return execute(sql,new Object[0]);
     }
 
     @Override
     public int execute(String sql, ParameterBindings parameterBindings) {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = getJdbcConnection().prepareStatement(sql);
-            parameterBindings.appendToStatement(preparedStatement);
-            return preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new JdbcRuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
-                try {
-
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                    throw new JdbcRuntimeException(e);
-                }
-            }
-            close();
-        }
+        return execute(sql,parameterBindings.getIndexParametersArray());
     }
 
 
     @Override
     public int execute(String sql, Object[] params) {
-        PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = getJdbcConnection().prepareStatement(sql);
-            int i = getIndexParamBaseOrdinal();
-            for (Object p : params) {
-                preparedStatement.setObject(i, p);
-                i++;
-            }
-            return preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new JdbcRuntimeException(e);
-        } finally {
-            if (preparedStatement != null) {
+            if(!isInBatch){
+                PreparedStatement preparedStatement = null;
                 try {
-
-                    preparedStatement.close();
+                    preparedStatement = getJdbcConnection().prepareStatement(sql);
+                    if(params!=null&&params.length>0){
+                        int i = getIndexParamBaseOrdinal();
+                        for (Object p : params) {
+                            preparedStatement.setObject(i, p);
+                            i++;
+                        }
+                    }
+                    return preparedStatement.executeUpdate();
                 } catch (SQLException e) {
                     throw new JdbcRuntimeException(e);
+                } finally {
+                    close(preparedStatement);
                 }
+            }else{
+                if(batchStatement==null){
+                    batchStatement = getJdbcConnection().prepareStatement(sql);
+                }
+                if(params!=null&&params.length>0){
+                    int i = getIndexParamBaseOrdinal();
+                    for (Object p : params) {
+                        batchStatement.setObject(i, p);
+                        i++;
+                    }
+                    batchStatement.addBatch();
+                }
+                return 1;
+
             }
-            close();
+        } catch (SQLException e) {
+            throw new JdbcRuntimeException(e);
         }
     }
 }

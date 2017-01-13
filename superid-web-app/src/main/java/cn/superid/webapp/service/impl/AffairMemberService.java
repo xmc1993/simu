@@ -50,15 +50,13 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberEntity.save();
-
-
         return affairMemberEntity;
     }
 
 
     @Override
-    public AffairMemberEntity addCreator(long allianceId, long affairId, long roleId) {
-        affairUserService.addAffairUser(allianceId, affairId, userService.currentUserId(), roleId);
+    public AffairMemberEntity addCreator(long allianceId, long affairId, long userId, long roleId) {
+        affairUserService.addAffairUser(allianceId, affairId, userId, roleId);
         return addMember(allianceId, affairId, roleId, AffairPermissionRoleType.OWNER);
     }
 

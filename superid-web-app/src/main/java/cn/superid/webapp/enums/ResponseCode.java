@@ -36,4 +36,7 @@ public interface ResponseCode {
     int RoleNotExist = 201; //角色不存在
     int RoleNotInAlliance = 202; //暂定小学弟专用,邀请事务角色时,邀请的角色不是盟内角色
     int RoleIsInAlliance = 203; //暂定小学弟专用,邀请事务角色时,邀请的角色是盟内角色
+
+    //Alliance
+    int NeedCertification = 301; //邀请盟成员的时候判断该盟是否已验证
 }

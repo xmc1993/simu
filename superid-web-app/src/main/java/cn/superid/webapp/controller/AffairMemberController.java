@@ -131,7 +131,7 @@ public class AffairMemberController {
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
     public SimpleResponse getAffairMembers(long affairMemberId, @RequestBody SearchAffairMemberConditions conditions) {
         if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
             conditions.setCount(20);

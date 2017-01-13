@@ -1,4 +1,5 @@
 
+import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
@@ -10,6 +11,7 @@ import org.junit.Assert;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -328,5 +330,26 @@ public class TestExecute extends TestCase {
 
         User user1 = User.dao.findById(user.getId());
         Assert.assertTrue(user1.getName().equals(user.getName()));
+    }
+
+    @org.junit.Test
+    public void testExecuteBatch(){
+        Session session =User.getSession();
+
+        List<Object> users = new ArrayList<>();
+        for(int i=0;i<10;i++){
+            User user = new User();
+            user.setName("zp"+i);
+            users.add(user);
+        }
+        session.saveBatch(users);//批量保存userlist
+
+        session.startBatch();
+        for(int i=0;i<10;i++){
+            User.execute("update user set name=? where name=?", new ParameterBindings("jzy"+i,"zp"+i));//批量修改
+        }
+        session.executeBatch();
+        session.endBatch();
+
     }
 }
