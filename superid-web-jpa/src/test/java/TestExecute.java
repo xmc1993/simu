@@ -1,12 +1,10 @@
 
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import junit.framework.TestCase;
-import model.BaseUser;
 import model.Role;
 import model.User;
 import org.junit.Assert;
@@ -43,7 +41,8 @@ public class TestExecute extends TestCase {
         User user = User.dao.findById(1);
         user.setAge(25);
         user.update();
-        Assert.assertTrue(User.dao.findById(1).getAge() == 25);
+        User _user = User.dao.findById(1);
+        Assert.assertTrue(_user.getAge() == 25);
     }
 
 
@@ -139,11 +138,13 @@ public class TestExecute extends TestCase {
         user.setName("tms");
         user.save();
         User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
+        User _user = User.dao.findById(user.getId());
+        Assert.assertTrue(((User) _user).getAge() == 38);
 
 
         User.dao.eq("name", "xxf").set(" age = age + 1 ", null);
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 39);
+        Object __user = User.dao.findById(user.getId());
+        Assert.assertTrue(((User) __user).getAge() == 39);
 
     }
 
@@ -213,7 +214,8 @@ public class TestExecute extends TestCase {
             Assert.assertTrue(e instanceof JdbcRuntimeException);
             e.printStackTrace();
         }
-        Assert.assertTrue(Role.dao.findById(role.getId(),user.getId()).getTitle().equals("开发人员"));
+        Role _role = Role.dao.findById(role.getId(), user.getId());
+        Assert.assertTrue(((Role) _role).getTitle().equals("开发人员"));
 
         role.delete();
 

@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "file")
 public class FileEntity extends ExecutableModel {
 
-    public final static ConditionalDao<FileEntity> dao = new ConditionalDao<>(FileEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(FileEntity.class);
     private long id;
     private String name;
     private String path;

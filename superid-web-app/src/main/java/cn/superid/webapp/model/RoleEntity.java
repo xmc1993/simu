@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Table(name = "role")
 @Cacheable
 public class RoleEntity extends ExecutableModel {
-    public final static ConditionalDao<RoleEntity> dao = new ConditionalDao<>(RoleEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(RoleEntity.class);
     private long id;
     private long userId;
     private long allianceId;

@@ -3,7 +3,6 @@ package cn.superid.webapp.model;
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
-import org.springframework.security.access.method.P;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,7 +15,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "friends_application")
 public class FriendsApplicationEntity extends ExecutableModel {
-    public final static ConditionalDao<FriendsApplicationEntity> dao = new ConditionalDao<>(FriendsApplicationEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(FriendsApplicationEntity.class);
     private long id;
     private long fromUserId;
     private long toUserId;

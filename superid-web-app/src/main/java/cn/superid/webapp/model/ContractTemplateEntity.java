@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Table(name = "contract_template")
 public class ContractTemplateEntity extends ExecutableModel {
 
-    public final static ConditionalDao<ContractTemplateEntity> dao = new ConditionalDao<>(ContractTemplateEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(ContractTemplateEntity.class);
     private long id;
     private String title;
     private String content;

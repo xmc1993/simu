@@ -14,8 +14,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 /**
@@ -479,9 +479,9 @@ public class ContractService implements IContractService {
 
         //TODO:把人从讨论组删除
         ContractEntity contract = ContractEntity.dao.findById(contractId);
-        DiscussGroupMemberEntity.dao.eq("roleId",roleId).eq("groupId",contract.getDiscussGroupId()).selectOne().delete();
-
-
+        ContractEntity _contract = DiscussGroupMemberEntity.dao.eq("roleId", roleId).eq("groupId", contract.getDiscussGroupId()).selectOne();
+        if(null == _contract) return false;
+        _contract.delete();
 
         //第三步，增加log
         recorcSimpleLog(contractId, roleService.getNameByRoleId(operationRoleId) + "将"+roleService.getNameByRoleId(roleId)+"移除出合同");

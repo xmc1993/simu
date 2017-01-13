@@ -67,7 +67,8 @@ public class SQLResolve {
         List<UserEntity> userEntities = UserEntity.getSession().findListByNativeSql(UserEntity.class,sb.toString());
         long allianceId ;
         for(UserEntity userEntity : userEntities){
-            allianceId = RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id").getAllianceId();
+            RoleEntity _role = RoleEntity.dao.id(userEntity.getPersonalRoleId()).selectOne("alliance_id");
+            allianceId = _role.getAllianceId();
             UserEntity.dao.id(userEntity.getId()).set("personal_alliance_id",allianceId);
         }
 

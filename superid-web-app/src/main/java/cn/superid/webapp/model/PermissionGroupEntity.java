@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Table(name = "permission_group")
 
 public class PermissionGroupEntity extends ExecutableModel{
-    public final static ConditionalDao<PermissionGroupEntity> dao = new ConditionalDao<>(PermissionGroupEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(PermissionGroupEntity.class);
     private long id;
     private String name;
     private long affairId;

@@ -11,7 +11,7 @@ import javax.persistence.Table;
  */
 @Table(name = "admin")
 public class AdminEntity extends ExecutableModel{
-    public static ConditionalDao<AdminEntity> dao = new ConditionalDao<>(AdminEntity.class);
+    public static ConditionalDao dao = new ConditionalDao(AdminEntity.class);
 
     private long id;
     private String name;

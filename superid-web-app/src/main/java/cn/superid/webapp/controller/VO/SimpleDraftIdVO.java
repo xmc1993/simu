@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  */
 public class SimpleDraftIdVO {
 
-    public final static ConditionalDao<SimpleDraftIdVO> dao = new ConditionalDao<>(SimpleDraftIdVO.class);
+    public final static ConditionalDao dao = new ConditionalDao(SimpleDraftIdVO.class);
 
     private long id;
     private Timestamp modifyTime;
