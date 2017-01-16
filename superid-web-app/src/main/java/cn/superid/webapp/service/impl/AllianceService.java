@@ -122,7 +122,8 @@ public class AllianceService  implements IAllianceService {
 
     @Override
     public long getDefaultRoleIdFromAlliance(long allianceId) {
-        long roleId = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).eq("type", 1).selectOne("id").getId();
+        RoleEntity _role = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).eq("type", 1).selectOne("id");
+        long roleId = _role.getId();
         return roleId;
     }
 

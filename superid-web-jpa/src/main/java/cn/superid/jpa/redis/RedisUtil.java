@@ -1,14 +1,16 @@
 package cn.superid.jpa.redis;
 import cn.superid.jpa.exceptions.JedisRuntimeException;
 import cn.superid.jpa.orm.ExecutableModel;
+import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.StringUtil;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -19,7 +21,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RedisUtil {
 
     protected static ReentrantLock lockJedis = new ReentrantLock();
-
     protected static Logger logger = Logger.getLogger(RedisUtil.class);
     private static JedisPool jedisPool = null;
     private String host ="192.168.1.100";
@@ -28,8 +29,6 @@ public class RedisUtil {
     private int dbIndex =0;
     private String password =null;
     private static byte[] hmFeature = {'0'};//check is real hashmap not empty or hset one field
-
-
 
     /**
      * 初始化Redis连接池
@@ -83,6 +82,42 @@ public class RedisUtil {
     }
 
 
+    public static Object batchGet(Object[] ids, Class<?> clazz, String... fields){
+        Jedis jedis = getJedis();
+        if(jedis!=null){
+            ModelMeta modelMeta = ModelMeta.getModelMeta(clazz);
+            byte[][] byteFields;
+            if(fields==null||fields.length==0){
+                byteFields = modelMeta.getCachedFields();
+                fields = modelMeta.getFieldNames(false);
+            }else{
+                byteFields = BinaryUtil.toBytesArray(fields);
+            }
+
+            List<Object> result = new ArrayList<>(ids.length);
+            Pipeline pipeline= jedis.pipelined();
+            List<Response<List<byte[]>>> list = new ArrayList<>(ids.length);
+            Response<List<byte[]>> response;
+            for(int i=0,length=ids.length;i<length;i++){
+                byte[] key = generateKey(modelMeta.getKey(),BinaryUtil.getBytes(ids[i]));
+                response =pipeline.hmget(key,byteFields);
+                list.add(response);
+            }
+            pipeline.sync();
+            int i=0;
+            for(Response<List<byte[]>> rsp:list){
+               Object o=  generateObjectByBytes(modelMeta,rsp.get(),fields);
+               modelMeta.getIdAccessor().setProperty(o,ids[i++]);
+               result.add(o);
+            }
+            return result;
+
+        }
+        return null;
+    }
+
+
+
     public static Long delete(byte[] key){
         Jedis jedis = getJedis();
         if(jedis!=null){
@@ -104,6 +139,29 @@ public class RedisUtil {
     }
 
 
+    /**
+     *
+     * @param modelMeta
+     * @param list
+     * @param fields order map list
+     * @return
+     */
+    public static Object generateObjectByBytes(ModelMeta modelMeta,List<byte[]> list,String... fields){
+        try {
+            if(!isPOJO(list)){
+                return null;
+            }
+            Object result = modelMeta.getModelCls().newInstance();
+            int i=1;
+            for(String field:fields){
+                FieldAccessor fieldAccessor = FieldAccessor.getFieldAccessor(modelMeta.getModelCls(),field);
+                fieldAccessor.setProperty(result,BinaryUtil.getValue(list.get(i++),fieldAccessor.getPropertyType()));
+            }
+            return result;
+        } catch (Exception e) {
+            throw new JedisRuntimeException(e);
+        }
+    }
 
     public static Object findByKey(Object id,Class<?> clazz){
         try {
@@ -151,7 +209,7 @@ public class RedisUtil {
 
 
 
-    public static byte[] generateKey(byte[] key,byte[] idByte){
+    public static byte[] generateKey(byte[] key, byte[] idByte){
         byte[] result= new byte[idByte.length+key.length];
         for(int j=0;j<result.length;j++){
             if(j<key.length){

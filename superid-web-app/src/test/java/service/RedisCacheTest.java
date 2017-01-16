@@ -24,7 +24,8 @@ public class RedisCacheTest {
 
         UserBaseInfo.dao.id(104).set("username","xxf");
         UserBaseInfo var = UserBaseInfo.dao.findById(104);
-        Assert.assertTrue(UserBaseInfo.dao.findById(104).getUsername().equals("xxf"));
+        UserBaseInfo _userBase = UserBaseInfo.dao.findById(104);
+        Assert.assertTrue(_userBase.getUsername().equals("xxf"));
 
         final UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(104L);
         Assert.assertTrue(userBaseInfo.getUsername().equals("xxf"));
@@ -36,10 +37,12 @@ public class RedisCacheTest {
         Assert.assertTrue(username.equals("xxf"));
 
         UserBaseInfo.dao.id(104).set("username","aaa");
-        Assert.assertTrue(UserBaseInfo.dao.findById(104).getUsername().equals("aaa"));
+        UserBaseInfo userBase_1 = UserBaseInfo.dao.findById(104);
+        Assert.assertTrue(userBase_1.getUsername().equals("aaa"));
 
         UserBaseInfo.dao.id(104).set("username","jzy","avatar","test");
-        Assert.assertTrue(UserBaseInfo.dao.findById(104).getAvatar().equals("test" ));
+        UserBaseInfo userBase_2 = UserBaseInfo.dao.findById(104);
+        Assert.assertTrue(userBase_2.getAvatar().equals("test" ));
 
         UserBaseInfo userBaseInfo1 = new UserBaseInfo();
         userBaseInfo1.setBirthday(TimeUtil.getCurrentSqlTime());

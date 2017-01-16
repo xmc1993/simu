@@ -6,7 +6,6 @@ import cn.superid.jpa.orm.ExecutableModel;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -31,7 +30,7 @@ public class AllianceCertificationEntity extends ExecutableModel<AllianceCertifi
     private Timestamp createTime;
     private Timestamp modifyTime;
 
-    public static ConditionalDao<AllianceCertificationEntity> dao = new ConditionalDao<>(AllianceCertificationEntity.class);
+    public static ConditionalDao dao = new ConditionalDao(AllianceCertificationEntity.class);
 
     @Id
     public long getId() {

@@ -41,7 +41,8 @@ public class TestExecute extends TestCase {
         User user = User.dao.findById(1);
         user.setAge(25);
         user.update();
-        Assert.assertTrue(User.dao.findById(1).getAge() == 25);
+        User _user = User.dao.findById(1);
+        Assert.assertTrue(_user.getAge() == 25);
     }
 
 
@@ -110,6 +111,8 @@ public class TestExecute extends TestCase {
         User user1 = new User();
         User.getSession().generateHashMapFromEntity(hashMap, user1);
 
+
+
         Assert.assertTrue(user1.getAge() == 18);
 
     }
@@ -135,11 +138,13 @@ public class TestExecute extends TestCase {
         user.setName("tms");
         user.save();
         User.dao.eq("name", "tms").set("name", "xxf", "age", 38);//把tms改成xxf，年龄改为38
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 38);
+        User _user = User.dao.findById(user.getId());
+        Assert.assertTrue(((User) _user).getAge() == 38);
 
 
         User.dao.eq("name", "xxf").set(" age = age + 1 ", null);
-        Assert.assertTrue(User.dao.findById(user.getId()).getAge() == 39);
+        Object __user = User.dao.findById(user.getId());
+        Assert.assertTrue(((User) __user).getAge() == 39);
 
     }
 
@@ -169,6 +174,7 @@ public class TestExecute extends TestCase {
         pagination.setPage(1);
         pagination.setSize(20);
         List<User> users = User.dao.eq("name", "xxf").selectByPagination(pagination);
+
         Assert.assertFalse(users.size() > pagination.getTotal());
 
     }
@@ -208,7 +214,8 @@ public class TestExecute extends TestCase {
             Assert.assertTrue(e instanceof JdbcRuntimeException);
             e.printStackTrace();
         }
-        Assert.assertTrue(Role.dao.findById(role.getId(),user.getId()).getTitle().equals("开发人员"));
+        Role _role = Role.dao.findById(role.getId(), user.getId());
+        Assert.assertTrue(((Role) _role).getTitle().equals("开发人员"));
 
         role.delete();
 
@@ -351,5 +358,37 @@ public class TestExecute extends TestCase {
         session.executeBatch();
         session.endBatch();
 
+//        BaseUser.dao.partitionId("a").id("a").selectOne();
     }
+//
+//    @org.junit.Test
+//    public void testRedisBatch(){
+//        List<User> users = User.dao.gt("id",0).selectList();
+//
+//        final Integer[] ids = new Integer[users.size()];
+//        int i=0;
+//        for(User user:users){
+//            BaseUser baseUser = new BaseUser();
+//            user.copyPropertiesTo(baseUser);
+//            RedisUtil.save(baseUser);
+//            ids[i++] = user.getId();
+//        }
+//
+//        Timer.compair(new Execution() {
+//            @Override
+//            public void execute() {
+//                List<BaseUser> result =(List<BaseUser>) RedisUtil.batchGet(ids, BaseUser.class,"name");
+//            }
+//        }, new Execution() {
+//            @Override
+//            public void execute() {
+//                List<BaseUser> result = new ArrayList<BaseUser>();
+//                for(int i=0;i<ids.length;i++){
+//                    result.add(BaseUser.dao.findById(ids[i]));
+//                }
+//            }
+//        },300);
+//
+//
+//    }
 }

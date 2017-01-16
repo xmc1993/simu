@@ -11,7 +11,6 @@ import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
-import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.IAuth;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IRoleService;

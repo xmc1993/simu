@@ -64,25 +64,25 @@ public interface Session {
 
     void refresh(Object entity);
 
-    Object find(Class<?> cls, Object id);
+    <T> T find(Class<?> cls, Object id);
 
-    Object find(Class<?> cls, Object id,Object partitionId);
+    <T> T find(Class<?> cls, Object id,Object partitionId);
 
 
     void delete(Object entity);
 
     void flush();
 
-    Object findOneByNativeSql(Class<?> cls, String queryString, Object... params);
+    <T> T findOneByNativeSql(Class<?> cls, String queryString, Object... params);
 
 
-    List findListByNativeSql(Class<?> cls, String queryString, Object... params);
+    <T> T findListByNativeSql(Class<?> cls, String queryString, Object... params);
 
-    List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination);
+    <T> T findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination);
 
-    Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+    <T> T findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
 
-    List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
+    <T> T findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings);
 
     int execute(String sql);
 
@@ -97,9 +97,9 @@ public interface Session {
 
     HashMap<byte[], byte[]> generateHashByteMap(Object entity);
 
-    Object generateHashMapFromEntity(HashMap<String, Object> hashMap,Object entity);
+    <T> T generateHashMapFromEntity(HashMap<String, Object> hashMap,Object entity);
 
-    Object generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap,Object entity);
+    <T> T generateEntityFromHashMap(HashMap<byte[], byte[]> hashMap,Object entity);
 
     byte[][] generateZipMap(Object entity);
 

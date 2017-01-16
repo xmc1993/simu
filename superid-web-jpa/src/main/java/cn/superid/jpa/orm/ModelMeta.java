@@ -1,10 +1,13 @@
 package cn.superid.jpa.orm;
 
+import cn.superid.jpa.annotation.CacheField;
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.PartitionId;
 import cn.superid.jpa.redis.RedisUtil;
 import cn.superid.jpa.redis.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
+import org.apache.commons.collections.map.HashedMap;
+
 import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -30,6 +33,7 @@ public class ModelMeta {
     private List<ModelColumnMeta> columnMetaList;
     private ModelColumnMeta idColumnMeta;
     private ModelColumnMeta partitionColumn;
+    private Map<String,String> cacheFieldMap;
     /**
      * column info of orm model class, ignore all fieldNameBytes with @javax.sql.Transient
      */
@@ -52,6 +56,10 @@ public class ModelMeta {
     private List<ModelColumnMeta> getColumnMetaList() {
 
         Field[] fields = modelCls.getDeclaredFields();
+
+        if(this.cacheable){
+            cacheFieldMap = new HashedMap(fields.length*2);
+        }
         List<ModelColumnMeta> columnMetas = new ArrayList<>(fieldsNum);
         for (Field field : fields) {
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
@@ -86,6 +94,15 @@ public class ModelMeta {
             }else if(fieldAccessor.getPropertyAnnotation(PartitionId.class)!=null){
                 columnMeta.isPartition = true;
                 this.partitionColumn = columnMeta;
+            }
+
+            if(this.cacheable){
+              CacheField cacheField =  fieldAccessor.getPropertyAnnotation(CacheField.class);
+              if(cacheField!=null){
+                  String index = String.valueOf(cacheField.order());
+                  cacheFieldMap.put(columnMeta.fieldName,index);
+                  cacheFieldMap.put(index,columnMeta.fieldName);
+              }
             }
 
             columnMetas.add(columnMeta);
@@ -332,5 +349,18 @@ public class ModelMeta {
             lockFieldsInit.unlock();
         }
         return fieldNameBytes;
+    }
+
+    public String[] getFieldNames(boolean withId) {
+        int length = withId?columnMetaList.size():columnMetaList.size()-1;
+        String[] fields = new String[length];
+        int i=0;
+        for(ModelColumnMeta modelColumnMeta:columnMetaList){
+            if(!withId&&modelColumnMeta.isId){
+                continue;
+            }
+            fields[i++] = modelColumnMeta.fieldName;
+        }
+        return fields;
     }
 }

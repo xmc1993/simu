@@ -29,7 +29,8 @@ public class FieldAccessor {
         if(fieldAccessor==null) {
             synchronized (fieldAccessorCache) {
                 if(!fieldAccessorCache.containsKey(key)) {
-                    fieldAccessorCache.put(key, new FieldAccessor(cls, name));
+                    fieldAccessor = new FieldAccessor(cls,name);
+                    fieldAccessorCache.put(key, fieldAccessor);
                 }
             }
         }

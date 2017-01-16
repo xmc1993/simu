@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Table(name = "task")
 public class TaskEntity extends ExecutableModel{
 
-    public final static ConditionalDao<TaskEntity> dao = new ConditionalDao<>(TaskEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(TaskEntity.class);
     private long id;
     private long affairId;
     private long allianceId;

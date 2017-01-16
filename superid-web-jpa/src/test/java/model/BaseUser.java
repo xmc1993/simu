@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Table(name = "user")
 @Cacheable(key = "us")
 public class BaseUser  extends ExecutableModel {
-    public static CacheableDao<BaseUser> dao = new CacheableDao<>(BaseUser.class);
+    public static CacheableDao dao = new CacheableDao(BaseUser.class);
     private int id;
     private String name;
     private int age;

@@ -3,7 +3,6 @@ package cn.superid.webapp.forms;
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.webapp.controller.forms.UserPrivateInfoForm;
-import cn.superid.webapp.model.UserPrivateInfoEntity;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -16,7 +15,7 @@ import java.util.List;
 @Table(name="user")
 public class ResultUserInfo extends ExecutableModel{
 
-    public final static ConditionalDao<ResultUserInfo> dao = new ConditionalDao<>(ResultUserInfo.class);
+    public final static ConditionalDao dao = new ConditionalDao(ResultUserInfo.class);
     private Long id = 0L;
     private String superid = "";
     private boolean isAuthenticated = false;

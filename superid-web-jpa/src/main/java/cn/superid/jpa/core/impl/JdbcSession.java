@@ -463,7 +463,7 @@ public class JdbcSession extends AbstractSession {
      */
 
     @Override
-    public Object find(Class<?> cls, Object id, Object partitionId) {
+    public <T> T find(Class<?> cls, Object id, Object partitionId) {
         try {
             ModelMeta modelMeta = ModelMeta.getModelMeta(cls);
             String sql = modelMeta.getFindByIdSql();
@@ -485,7 +485,7 @@ public class JdbcSession extends AbstractSession {
                 try {
                     List result = handler.handle(resultSet);
                     if (result.size() > 0) {
-                        return result.get(0);
+                        return (T)result.get(0);
                     } else {
                         return null;
                     }
@@ -509,7 +509,7 @@ public class JdbcSession extends AbstractSession {
      * @return
      */
     @Override
-    public Object find(Class<?> cls, Object id) {
+    public <T> T find(Class<?> cls, Object id) {
         return find(cls, id, null);
     }
 
@@ -519,11 +519,11 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public List findListByNativeSql(Class<?> cls, String queryString, Object... params) {
+    public <T> T findListByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMeta.getModelMeta(cls));
-            return runner.query(getJdbcConnection(), queryString, handler, params);
+            return (T)runner.query(getJdbcConnection(), queryString, handler, params);
         } catch (SQLException e) {
             throw new JdbcRuntimeException(e);
         } finally {
@@ -540,7 +540,7 @@ public class JdbcSession extends AbstractSession {
      * @return list, the total number is set in pagination
      */
     @Override
-    public List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination) {
+    public <T> T findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings, Pagination pagination) {
         //验证sql是否带了order排序
         int lastOrderIndex = queryString.lastIndexOf(" order by");
         int lastRightBracketIndex = queryString.lastIndexOf(")");
@@ -567,18 +567,18 @@ public class JdbcSession extends AbstractSession {
         if (list.size() < pagination.getSize() && pagination.getPage() == 1 && pagination.getTotal() > list.size()) {
             pagination.setTotal(list.size());
         }
-        return list;
+        return (T) list;
     }
 
 
     @Override
-    public Object findOneByNativeSql(Class<?> cls, String queryString, Object... params) {
+    public <T> T findOneByNativeSql(Class<?> cls, String queryString, Object... params) {
         try {
             QueryRunner runner = new QueryRunner();
             ResultSetHandler<List<Object>> handler = getListResultSetHandler(ModelMeta.getModelMeta(cls));
             List<Object> result = runner.query(getJdbcConnection(), queryString, handler, params);
             if (result.size() > 0) {
-                return result.get(0);
+                return (T)result.get(0);
             } else {
                 return null;
             }
@@ -590,13 +590,13 @@ public class JdbcSession extends AbstractSession {
     }
 
     @Override
-    public Object findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+    public <T> T findOneByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
         return findOneByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
     @Override
-    public List findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
-        return findListByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
+    public <T> T findListByNativeSql(Class<?> cls, String queryString, ParameterBindings parameterBindings) {
+        return (T) findListByNativeSql(cls, queryString, parameterBindings.getIndexParametersArray() != null ? parameterBindings.getIndexParametersArray() : new Object[0]);
     }
 
 

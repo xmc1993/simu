@@ -8,4 +8,6 @@ public class JedisRuntimeException extends RuntimeException
     public JedisRuntimeException(String message) {
         super(message);
     }
+
+    public JedisRuntimeException(Throwable cause){ super(cause);}
 }

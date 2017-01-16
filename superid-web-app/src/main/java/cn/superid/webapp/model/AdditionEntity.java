@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @Table(name = "addition")
 public class AdditionEntity extends ExecutableModel {
 
-    public final static ConditionalDao<AdditionEntity> dao = new ConditionalDao<>(AdditionEntity.class);
+    public final static ConditionalDao dao = new ConditionalDao(AdditionEntity.class);
     private long id;
     private long contractId;
     private String content;
