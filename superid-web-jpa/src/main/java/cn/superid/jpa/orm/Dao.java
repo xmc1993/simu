@@ -75,9 +75,6 @@ public class Dao {
 
 
 
-
-
-
     public <T> T findById(Object id,Object partitionId){
         return  (T) getSession().find(this.clazz,id,partitionId);
     }
@@ -370,8 +367,6 @@ public class Dao {
     public int execute(String sql,ParameterBindings parameterBindings1){
         return getSession().execute(sql,parameterBindings1);
     }
-
-
 
     /**
         check  meet the conditions

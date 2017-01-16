@@ -61,7 +61,6 @@ public interface IUserService {
 
      public boolean modifySuperId(String superId);
 
-     public void rollbackTest();
 
      public UserPrivateInfoEntity getPublicProperty(long userId);
 }

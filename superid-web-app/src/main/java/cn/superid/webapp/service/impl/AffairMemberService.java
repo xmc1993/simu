@@ -484,10 +484,8 @@ public class AffairMemberService implements IAffairMemberService {
         List<SimpleRoleCard> simpleRoleCards = RoleEntity.getSession().findListByNativeSql(SimpleRoleCard.class,sql,p);
         affairUserInfoVO.setSimpleRoleCards(simpleRoleCards);
 
-
         return affairUserInfoVO;
     }
-
     /*
     @Override
     public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId, long roleId) {

@@ -6,6 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by xiaofengxu on 16/9/21.
  */
@@ -23,9 +27,23 @@ public class TestRedis {
 
 
         ModelMeta modelMeta = ModelMeta.getModelMeta(BaseUser.class);
-        byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(100000));
-        long a = RedisTemplate.delete(redisKey);
-        System.out.print(a);
+        byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(1036));
+//        long a = RedisTemplate.delete(redisKey);
+//        System.out.print(a);
+
+
+        Jedis jedis =RedisTemplate.getJedis();
+        jedis.del(redisKey);
+
+//        BaseUser.dao.findById(1036);
+
+        Map<byte[], byte[]> map = jedis.hgetAll(redisKey);
+
+
+        for(byte[] key:map.keySet()){
+            System.out.println(BinaryUtil.toString(key));
+            System.out.println(BinaryUtil.toString(map.get(key)));
+        }
 
 
 //        Long a = RedisTemplate.delete(RedisTemplate.generateKey())

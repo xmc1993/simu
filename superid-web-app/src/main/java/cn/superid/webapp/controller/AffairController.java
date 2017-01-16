@@ -218,10 +218,5 @@ public class AffairController {
         return null;
     }
 
-    @RequestMapping(value = "/get_affair_users", method = RequestMethod.GET)
-    public SimpleResponse getAllAffairUsers(long allianceId, long affairId) {
-        List<AffairUserVO> result = affairUserService.getAllAffairUsers(allianceId, affairId);
-        return SimpleResponse.ok(result);
-    }
 
 }

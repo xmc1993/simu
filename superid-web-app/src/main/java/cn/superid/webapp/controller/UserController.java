@@ -96,7 +96,6 @@ public class UserController {
                 return new SimpleResponse(ResponseCode.HasRegistered,"此账号已被注册");
             }
 
-
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.registerCode));
         }
     }
@@ -445,16 +444,4 @@ public class UserController {
         }
     }
 
-    @RequestMapping(value = "/rollback",method = RequestMethod.POST)
-    @NotLogin
-    public SimpleResponse rollbackTest(){
-        try{
-            userService.rollbackTest();
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            return SimpleResponse.error("");
-        }
-
-        return SimpleResponse.ok("");
-    }
 }

@@ -82,7 +82,6 @@ public class AllianceUserService implements IAllianceUserService {
                 invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
                 invitationEntity.save();
             }
-
             //TODO 给被邀请人发送消息通知
         }
         return true;
@@ -116,7 +115,6 @@ public class AllianceUserService implements IAllianceUserService {
         affairUserService.addAffairUser(allianceId,invitationEntity.getAffairId(),invitationEntity.getBeInvitedUserId(),beInvitedRoleId);
         //添加affairMember,暂定为参与人
         affairMemberService.addMember(allianceId,invitationEntity.getAffairId(),beInvitedRoleId, AffairPermissionRoleType.PARTICIPANT);
-
 
         invitationEntity.setDealReason(dealReason);
         invitationEntity.setState(DealState.Agree);

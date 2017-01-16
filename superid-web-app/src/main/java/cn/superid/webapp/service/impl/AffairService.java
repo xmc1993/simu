@@ -185,7 +185,8 @@ public class AffairService implements IAffairService {
             throw new Exception("找不到该事务");
         }
         //不包含自己
-        List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).eq("parentId", affairId).selectList("id", "allianceId", "name", "level", "path");
+        List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).
+                eq("parentId", affairId).selectList("id", "allianceId", "name", "level", "path");
 
         return result;
     }
@@ -577,11 +578,6 @@ public class AffairService implements IAffairService {
                 affairInfo.setRoleTitle("");
             }
             affairInfo.setAllianceId(tempAllianceId);
-            RoleEntity role = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
-            if (role == null) {
-                return null;
-            }
-            affairInfo.setRoleTitle(role.getTitle());
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
 
             AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();

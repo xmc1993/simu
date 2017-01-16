@@ -43,7 +43,8 @@ public class AffairUserService implements IAffairUserService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(affairId);
         p.addIndexBinding(allianceId);
-        List<AffairUserVO> results = AffairUserEntity.getSession().findListByNativeSql(AffairUserVO.class, SQLDao.GET_AFFAIR_USERS.toString(), p);
+        List<AffairUserVO> results = AffairUserEntity.getSession().
+                findListByNativeSql(AffairUserVO.class, SQLDao.GET_AFFAIR_USERS.toString(), p);
         return results;
     }
 }

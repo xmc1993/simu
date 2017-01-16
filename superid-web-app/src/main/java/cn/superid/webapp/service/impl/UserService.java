@@ -350,19 +350,6 @@ public class UserService implements IUserService {
         return UserEntity.dao.id(currentUserId()).set("superid", superId) > 0;
     }
 
-    @Override
-    @Transactional
-    public void rollbackTest() {
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding("汤茂思");
-        p.addIndexBinding(1899L);
-        StringBuilder correctSql = new StringBuilder("update user set username = ? where id= ?");
-        UserEntity.getSession().execute(correctSql.toString(), p);
-        /*
-            StringBuilder incorrectSql = new StringBuilder("update user set userame = 'tms' where id=1899");
-            UserEntity.getSession().execute(incorrectSql.toString());
-            */
-    }
 
     @Override
     public UserPrivateInfoEntity getPublicProperty(long userId) {
