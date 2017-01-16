@@ -87,7 +87,8 @@ public class AffairMemberDao implements IAffairMemberDao {
 
     @Override
     public List<AffairMemberSearchVo>  searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination) {
-        StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
+        StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair" +
+                " from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         if (conditions.isIncludeSubAffair()) {
@@ -104,7 +105,16 @@ public class AffairMemberDao implements IAffairMemberDao {
             sb.append("=? ) am ");
             p.addIndexBinding(affairId);
         }
-        sb.append("join (select id,user_id,belong_affair_id,title from role) r on am.role_id=r.id ");
+        sb.append("join (select id,user_id,belong_affair_id,title from role where alliance_id= ?) r on am.role_id=r.id ");
+        p.addIndexBinding(allianceId);
+        sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
+        p.addIndexBinding(allianceId);
+        sb.append("join (select id,name from affair where alliance_id= ?) a on r.belong_affair_id=a.id ");
+        p.addIndexBinding(allianceId);
+        sb.append("join (select user_id from alliance_user where state= ? and alliance_id= ? ) au on au.user_id=r.user_id ");
+        if(conditions.isAllianceUser())p.addIndexBinding(0);
+        else p.addIndexBinding(1);
+        p.addIndexBinding(allianceId);
         sb.append("join (select id,username,superid,gender from user ");
         if (cn.superid.jpa.util.StringUtil.notEmpty(conditions.getKey())) {
             sb.append("where username like ? or name_abbr like ? ");
@@ -112,15 +122,6 @@ public class AffairMemberDao implements IAffairMemberDao {
             p.addIndexBinding("%" + conditions.getKey() + "%");
         }
         sb.append(") u on r.user_id=u.id ");
-        sb.append("join (select id,name from affair) a on r.belong_affair_id=a.id ");
-        sb.append("join (select id, level from affair where alliance_id= ? )a2 on am.affair_id=a2.id ");
-        if (conditions.isAllianceUser()) {
-            sb.append("join (select  user_id from alliance_user where alliance_id= ? ) au on au.user_id=r.user_id");
-        } else {
-            sb.append("where r.user_id not in (select  user_id from alliance_user where alliance_id= ? )");
-        }
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(allianceId);
         sb.append(" order by ");
         switch (conditions.getSortColumn()) {
             case "name":
