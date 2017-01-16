@@ -23,22 +23,22 @@ import java.util.List;
 public class AffairMemberServiceTest {
     @Autowired
     private IAffairMemberService affairMemberService;
-    private long testAllianceId = 2198;
-    private long testAffairId = 7620;
+    private long testAllianceId = 2400;
+    private long testAffairId = 8195;
 
-    @Test
-    public void addMemberTest() {
-    }
-
-    @Test
-    public void addCreatorTest() {
-
-    }
-
-    @Test
-    public void modifyAffairMemberPermissionsTest() {
-
-    }
+//    @Test
+//    public void addMemberTest() {
+//    }
+//
+//    @Test
+//    public void addCreatorTest() {
+//
+//    }
+//
+//    @Test
+//    public void modifyAffairMemberPermissionsTest() {
+//
+//    }
 
 //    @Test
 //    public void applyForEnterAffairTest() {
@@ -105,17 +105,19 @@ public class AffairMemberServiceTest {
         conditions.setSortColumn("level");
         conditions.setCount(190);
         conditions.setPage(1);
+        conditions.setNeedTotal(true);
+        conditions.setKey("汤");
         Pagination pagination=new Pagination(conditions.getPage(),conditions.getCount(),conditions.isNeedTotal());
         List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions,pagination);
         System.out.println(list);
     }
 
-    @Test
-    public void searchAffairRoles() {
-        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
-        conditions.setInAlliance(true);
-        List<AffairRoleCard> list = affairMemberService.searchAffairRoleCards(testAllianceId,testAffairId,conditions);
-        System.out.println(list);
-    }
+//    @Test
+//    public void searchAffairRoles() {
+//        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
+//        conditions.setInAlliance(true);
+//        List<AffairRoleCard> list = affairMemberService.searchAffairRoleCards(testAllianceId,testAffairId,conditions);
+//        System.out.println(list);
+//    }
 
 }
