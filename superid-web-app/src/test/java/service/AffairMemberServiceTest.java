@@ -75,28 +75,28 @@ public class AffairMemberServiceTest {
 //
 //    }
 //
-    @Test
-    public void testSearchAffairRoles() throws Exception {
-        RoleEntity role = RoleEntity.dao.findById(3528L, 2198);
-
-        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
-
-        List<AffairRoleCard> list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-
-        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-
-        conditions.setActive(true);
-        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-
-        conditions.setInAlliance(true);
-        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-
-
-        conditions.setKey("zp");
-        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-
-
-    }
+//    @Test
+//    public void testSearchAffairRoles() throws Exception {
+//        RoleEntity role = RoleEntity.dao.findById(3528L, 2198);
+//
+//        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
+//
+//        List<AffairRoleCard> list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+//
+//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+//
+//        conditions.setActive(true);
+//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+//
+//        conditions.setInAlliance(true);
+//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+//
+//
+//        conditions.setKey("zp");
+//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+//
+//
+//    }
 
     @Test
     public void searchAffairMembers1() {
@@ -107,6 +107,7 @@ public class AffairMemberServiceTest {
         conditions.setPage(1);
         conditions.setNeedTotal(true);
         conditions.setKey("汤");
+        conditions.setIsAllianceUser(true);
         Pagination pagination=new Pagination(conditions.getPage(),conditions.getCount(),conditions.isNeedTotal());
         List<AffairMemberSearchVo> list = affairMemberService.searchAffairMembers(testAllianceId, testAffairId, conditions,pagination);
         System.out.println(list);

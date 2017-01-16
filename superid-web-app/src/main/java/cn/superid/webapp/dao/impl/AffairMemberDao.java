@@ -111,6 +111,10 @@ public class AffairMemberDao implements IAffairMemberDao {
         p.addIndexBinding(allianceId);
         sb.append("join (select id,name from affair where alliance_id= ?) a on r.belong_affair_id=a.id ");
         p.addIndexBinding(allianceId);
+        sb.append("join (select user_id from alliance_user where state= ? and alliance_id= ? ) au on au.user_id=r.user_id ");
+        if(conditions.isAllianceUser())p.addIndexBinding(0);
+        else p.addIndexBinding(1);
+        p.addIndexBinding(allianceId);
         sb.append("join (select id,username,superid,gender from user ");
         if (cn.superid.jpa.util.StringUtil.notEmpty(conditions.getKey())) {
             sb.append("where username like ? or name_abbr like ? ");
