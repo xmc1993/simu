@@ -1,16 +1,20 @@
 
+import cn.superid.jpa.cache.impl.RedisTemplate;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import junit.framework.TestCase;
+import model.BaseUser;
 import model.Role;
 import model.User;
 import org.junit.Assert;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -360,35 +364,51 @@ public class TestExecute extends TestCase {
 
 //        BaseUser.dao.partitionId("a").id("a").selectOne();
     }
-//
-//    @org.junit.Test
-//    public void testRedisBatch(){
-//        List<User> users = User.dao.gt("id",0).selectList();
-//
-//        final Integer[] ids = new Integer[users.size()];
-//        int i=0;
-//        for(User user:users){
-//            BaseUser baseUser = new BaseUser();
-//            user.copyPropertiesTo(baseUser);
-//            RedisUtil.save(baseUser);
-//            ids[i++] = user.getId();
+
+
+    @org.junit.Test
+    public void testIsNull(){
+//        User user = User.dao.isNotNull("name").selectOne();
+//        Assert.assertTrue(user!=null);
+
+//        User user = new User();
+//        Timer timer = new Timer();
+//        String c ="asasasasasas";
+//        int b=0;
+//        for(int i=0;i<100000000;i++){
+//            a = BinaryUtil.getBytes(c);
 //        }
-//
-//        Timer.compair(new Execution() {
-//            @Override
-//            public void execute() {
-//                List<BaseUser> result =(List<BaseUser>) RedisUtil.batchGet(ids, BaseUser.class,"name");
-//            }
-//        }, new Execution() {
-//            @Override
-//            public void execute() {
-//                List<BaseUser> result = new ArrayList<BaseUser>();
-//                for(int i=0;i<ids.length;i++){
-//                    result.add(BaseUser.dao.findById(ids[i]));
-//                }
-//            }
-//        },300);
-//
-//
-//    }
+//        System.out.print(a);
+//        timer.end();
+    }
+
+    @org.junit.Test
+    public void testRedisBatch(){
+        List<User> users = User.dao.gt("id",0).selectList();
+
+        final Integer[] ids = new Integer[users.size()];
+        int i=0;
+        for(User user:users){
+            BaseUser baseUser = new BaseUser();
+            user.copyPropertiesTo(baseUser);
+            RedisTemplate.save(baseUser);
+            ids[i++] = user.getId();
+        }
+
+        Timer.compair(new Execution() {
+            @Override
+            public void execute() {
+                List<BaseUser> result =(List<BaseUser>) RedisTemplate.batchGet(ids, BaseUser.class,"name");
+            }
+        }, new Execution() {
+            @Override
+            public void execute() {
+                List<BaseUser> result = new ArrayList<BaseUser>();
+                for(int i=0;i<ids.length;i++){
+                }
+            }
+        },300);
+
+
+    }
 }

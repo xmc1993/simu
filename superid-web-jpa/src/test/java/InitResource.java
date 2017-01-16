@@ -1,5 +1,5 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-import cn.superid.jpa.redis.RedisUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
 import com.alibaba.druid.pool.DruidDataSource;
 import redis.clients.jedis.JedisPoolConfig;
 
@@ -22,6 +22,6 @@ public class InitResource  {
         jedisPoolConfig.setMaxIdle(100);
         jedisPoolConfig.setMaxTotal(300);
         jedisPoolConfig.setTestOnBorrow(true);
-        new RedisUtil(jedisPoolConfig,"192.168.1.100",6378,2000,null);
+        new RedisTemplate(jedisPoolConfig,"192.168.1.100",6378,2000,null);
     }
 }

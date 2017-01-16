@@ -19,7 +19,7 @@
     </bean>
 
 
-    <bean id="redisUtil" class="cn.superid.jpa.redis.RedisUtil">
+    <bean id="redisUtil" class="cn.superid.jpa.cache.impl.RedisTemplate">
         <constructor-arg index="0" ref="jedisPoolConfig" />
         <constructor-arg  name="host" value="${redis.host}" />
         <constructor-arg name="password" value="${redis.pass}"/>

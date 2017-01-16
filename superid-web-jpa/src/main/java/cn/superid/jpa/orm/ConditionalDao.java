@@ -65,7 +65,6 @@ public class ConditionalDao extends Dao{
             and(ModelMeta.getModelMeta(this.clazz).getPartitionColumn().columnName,"=",value);
     }
 
-
     public ConditionalDao gt(String column, Object value){
         return and(column,">",value);
     }
@@ -85,6 +84,21 @@ public class ConditionalDao extends Dao{
     public ConditionalDao ge(String column, Object value){
         return and(column,">=",value);
     }
+
+    public ConditionalDao isNull(String column){
+        where.get().append(" and ");
+        where.get().append(column);
+        where.get().append(" is null ");
+        return this;
+    }
+
+    public ConditionalDao isNotNull(String column){
+        where.get().append(" and ");
+        where.get().append(column);
+        where.get().append(" is not null ");
+        return this;
+    }
+
 
     private ConditionalDao inOrNotIn(String column, Object[] values,String op){//
         where.get().append(" and ");

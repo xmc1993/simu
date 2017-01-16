@@ -1,6 +1,6 @@
 package service;
 
-import cn.superid.jpa.redis.RedisUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 
 import cn.superid.webapp.utils.TimeUtil;
@@ -30,7 +30,7 @@ public class RedisCacheTest {
         final UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(104L);
         Assert.assertTrue(userBaseInfo.getUsername().equals("xxf"));
 
-        UserBaseInfo getFromRedis =(UserBaseInfo) RedisUtil.findByKey(104L,UserBaseInfo.class);
+        UserBaseInfo getFromRedis =(UserBaseInfo) RedisTemplate.findByKey(104L,UserBaseInfo.class);
         Assert.assertTrue(getFromRedis.getUsername().equals("xxf"));
 
         String username =(String) UserBaseInfo.dao.findFieldByKey(104,"username",String.class);

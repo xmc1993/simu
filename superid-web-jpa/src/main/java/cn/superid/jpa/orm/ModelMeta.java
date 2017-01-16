@@ -3,8 +3,8 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.annotation.CacheField;
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.jpa.redis.BinaryUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
 
@@ -340,7 +340,7 @@ public class ModelMeta {
             lockFieldsInit.lock();
             fieldNameBytes = new byte[columnMetaList.size()][];
             int i=0;
-            fieldNameBytes[i++] = RedisUtil.getHmFeature();
+            fieldNameBytes[i++] = RedisTemplate.getHmFeature();
             for(ModelColumnMeta modelColumnMeta: columnMetaList){
                 if(!modelColumnMeta.isId){
                     fieldNameBytes[i++] = modelColumnMeta.binary;

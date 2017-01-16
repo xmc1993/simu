@@ -1,9 +1,10 @@
 package cn.superid.jpa.core;
 
+import cn.superid.jpa.cache.ICache;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
-import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.jpa.redis.BinaryUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.util.BinaryUtil;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,15 @@ public abstract class AbstractSession implements Session {
 
     protected final Queue<Object> txStack = new ConcurrentLinkedQueue<Object>();
 
+    public static ICache cache;
+
+    public static ICache getCache() {
+        return cache;
+    }
+
+    public static void setCache(ICache cache) {
+        AbstractSession.cache = cache;
+    }
 
     @Override
     public int getIndexParamBaseOrdinal() {
@@ -228,7 +238,7 @@ public abstract class AbstractSession implements Session {
         ModelMeta meta = ModelMeta.getModelMeta(entity.getClass());
         //给定HashMap初始大小 防止过度分配空间浪费
         HashMap<byte[], byte[]> hashMap = new HashMap<>(meta.getColumnMetaSet().size());
-        hashMap.put(RedisUtil.getHmFeature(),RedisUtil.getHmFeature());
+        hashMap.put(RedisTemplate.getHmFeature(), RedisTemplate.getHmFeature());
         for (ModelMeta.ModelColumnMeta modelColumnMeta : meta.getColumnMetaSet()) {
             if(modelColumnMeta.isId){
                 continue;

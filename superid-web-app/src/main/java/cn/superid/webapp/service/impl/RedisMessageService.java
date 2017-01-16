@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.redis.RedisUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
 import cn.superid.webapp.forms.Message;
 import cn.superid.webapp.service.IRedisMessageService;
 import com.google.gson.Gson;
@@ -27,7 +27,7 @@ public class RedisMessageService implements IRedisMessageService {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                Jedis jedis = RedisUtil.getJedis();
+                Jedis jedis = RedisTemplate.getJedis();
                 if(jedis != null) {
                     jedis.publish(channel.getBytes(), msg.getBytes());
                     jedis.close();

@@ -3,15 +3,15 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
-import cn.superid.jpa.redis.RedisUtil;
-import cn.superid.jpa.redis.BinaryUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.ParameterBindings;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class ExecutableModel<T>  implements Serializable,Executable{
+public abstract class ExecutableModel implements Serializable{
 
 
     public static Session getSession() {
@@ -20,7 +20,6 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     }
 
 
-    @Override
     public void save() {
         save(getSession());
     }
@@ -33,12 +32,11 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
         session.save(this);
         ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
-            RedisUtil.save(this);
+            RedisTemplate.save(this);
         }
     }
 
 
-    @Override
     public void update() {
         update(getSession());
     }
@@ -46,16 +44,15 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public void update(Session session) {
         ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
-            RedisUtil.save(this);
+            RedisTemplate.save(this);
         }
         session.update(this);
     }
 
-    @Override
     public void delete() {
         ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         if(meta.isCacheable()){
-            RedisUtil.delete(this.generateKey());
+            RedisTemplate.delete(this.generateKey());
         }
         delete(getSession());
     }
@@ -119,7 +116,7 @@ public abstract class ExecutableModel<T>  implements Serializable,Executable{
     public byte[] generateKey(){
         ModelMeta meta = ModelMeta.getModelMeta(this.getClass());
         Object id= BinaryUtil.getBytes(meta.getIdAccessor().getProperty(this));
-        return  RedisUtil.generateKey(meta.getKey(),BinaryUtil.getBytes(id));
+        return  RedisTemplate.generateKey(meta.getKey(),BinaryUtil.getBytes(id));
     }
 
 }

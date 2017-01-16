@@ -1,13 +1,11 @@
 package cn.superid.jpa.orm;
 
-import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.redis.BinaryUtil;
-import cn.superid.jpa.redis.RedisUtil;
+import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.*;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by xiaofengxu on 16/9/28.
@@ -45,13 +43,13 @@ public class CacheableDao extends ConditionalDao {
 
     @Override
     public <T> T findById(Object id) {
-        Object cached = RedisUtil.findByKey(id,clazz);
+        Object cached = RedisTemplate.findByKey(id,clazz);
         if(cached!=null){
             return (T) cached;
         }
         T getFromSQl = super.findById(id);
         if(getFromSQl!=null){
-            RedisUtil.save((ExecutableModel) getFromSQl);
+            RedisTemplate.save((ExecutableModel) getFromSQl);
         }
         return getFromSQl;
     }
@@ -62,9 +60,9 @@ public class CacheableDao extends ConditionalDao {
         ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
-            byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
-            List<byte[]> result =RedisUtil.findByKey(redisKey,BinaryUtil.toBytesArray(params));
-            if(RedisUtil.isPOJO(result)){
+            byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
+            List<byte[]> result = RedisTemplate.findByKey(redisKey,BinaryUtil.toBytesArray(params));
+            if(RedisTemplate.isPOJO(result)){
                 Object cached = null;
                 try {
                     cached = this.clazz.newInstance();
@@ -93,7 +91,7 @@ public class CacheableDao extends ConditionalDao {
 
     public Object findFieldByKey(Object key,String field,Class<?> clazz){
         ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
-        List<byte[]> result = RedisUtil.findByKey(RedisUtil.generateKey(modelMeta.getKey(),BinaryUtil.getBytes(key)),BinaryUtil.getBytes(field));
+        List<byte[]> result = RedisTemplate.findByKey(RedisTemplate.generateKey(modelMeta.getKey(),BinaryUtil.getBytes(key)),BinaryUtil.getBytes(field));
         if(result!=null&&result.size()>0){
             byte[] bytes = result.get(0);
             if(bytes!=null){
@@ -126,8 +124,8 @@ public class CacheableDao extends ConditionalDao {
         ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
-            byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
-            RedisUtil.delete(redisKey);
+            byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
+            RedisTemplate.delete(redisKey);
         }else{
             throw  new RuntimeException("Cacheable model should operation by id");
         }
@@ -139,16 +137,16 @@ public class CacheableDao extends ConditionalDao {
         ModelMeta modelMeta = ModelMeta.getModelMeta(this.clazz);
         Object id = key.get();
         if(id!=null){
-            byte[] redisKey = RedisUtil.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
+            byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(key.get()));
             int i=0;
             byte[] field =null;
             byte[] value;
             if(params.length==2){
                 field = BinaryUtil.getBytes(params[0]);
                 value = BinaryUtil.getBytes(params[1]);
-                RedisUtil.hset(redisKey,field,value);
+                RedisTemplate.hset(redisKey,field,value);
             }else{//设置多个属性
-                Jedis jedis = RedisUtil.getJedis();
+                Jedis jedis = RedisTemplate.getJedis();
 
                 if(jedis!=null){
                     Pipeline pipeline =jedis.pipelined();
@@ -182,8 +180,8 @@ public class CacheableDao extends ConditionalDao {
         StringBuilder builder = where.get();
         ModelMeta meta = ModelMeta.getModelMeta(from.getClass());
 
-        byte[] redisKey = RedisUtil.generateKey(meta.getKey(), BinaryUtil.getBytes(id));
-        Jedis jedis = RedisUtil.getJedis();
+        byte[] redisKey = RedisTemplate.generateKey(meta.getKey(), BinaryUtil.getBytes(id));
+        Jedis jedis = RedisTemplate.getJedis();
         Pipeline pipeline =jedis.pipelined();
 
         ParameterBindings pb = new ParameterBindings();
@@ -223,17 +221,21 @@ public class CacheableDao extends ConditionalDao {
 
     @Override
     public <T> T findById(Object id, Object partitionId) {
-        Object cached = RedisUtil.findByKey(id,clazz);
+        Object cached = RedisTemplate.findByKey(id,clazz);
         if(cached!=null){
             return (T) cached;
         }
         T getFromSQl = super.findById(id, partitionId);
         if(getFromSQl!=null){
-            RedisUtil.save((ExecutableModel) getFromSQl);
+            RedisTemplate.save((ExecutableModel) getFromSQl);
         }
 
         return getFromSQl;
     }
+
+
+
+
 
 
 

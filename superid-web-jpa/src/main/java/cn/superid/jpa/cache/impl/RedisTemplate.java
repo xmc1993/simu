@@ -1,16 +1,15 @@
-package cn.superid.jpa.redis;
+package cn.superid.jpa.cache.impl;
 import cn.superid.jpa.exceptions.JedisRuntimeException;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
+import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.log4j.Logger;
 import redis.clients.jedis.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -18,12 +17,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author zp
  *
  */
-public class RedisUtil {
+public class RedisTemplate {
 
+    public final static String OK ="OK";
     protected static ReentrantLock lockJedis = new ReentrantLock();
-    protected static Logger logger = Logger.getLogger(RedisUtil.class);
+    protected static Logger logger = Logger.getLogger(RedisTemplate.class);
     private static JedisPool jedisPool = null;
-    private String host ="192.168.1.100";
+    private String host ="localhost";
     private int port = 6378;
     private int timeout =2000;
     private int dbIndex =0;
@@ -34,7 +34,7 @@ public class RedisUtil {
      * 初始化Redis连接池
      */
 
-    public RedisUtil(JedisPoolConfig jedisPoolConfig,String host,int port,int timeout,String password ){
+    public RedisTemplate(JedisPoolConfig jedisPoolConfig, String host, int port, int timeout, String password ){
         this.host = host;
         this.port = port;
         this.timeout = timeout;
@@ -45,7 +45,7 @@ public class RedisUtil {
         jedisPool = new JedisPool(jedisPoolConfig,host,port,timeout,password);
     }
 
-    public RedisUtil(JedisPoolConfig jedisPoolConfig ){
+    public RedisTemplate(JedisPoolConfig jedisPoolConfig ){
         jedisPool = new JedisPool(jedisPoolConfig,this.host,this.port,this.timeout,this.password);
     }
 
@@ -96,6 +96,7 @@ public class RedisUtil {
 
             List<Object> result = new ArrayList<>(ids.length);
             Pipeline pipeline= jedis.pipelined();
+            pipeline.multi();
             List<Response<List<byte[]>>> list = new ArrayList<>(ids.length);
             Response<List<byte[]>> response;
             for(int i=0,length=ids.length;i<length;i++){
@@ -103,6 +104,7 @@ public class RedisUtil {
                 response =pipeline.hmget(key,byteFields);
                 list.add(response);
             }
+            Response<List<Object>> txresult= pipeline.exec();//提交事务
             pipeline.sync();
             int i=0;
             for(Response<List<byte[]>> rsp:list){
@@ -171,7 +173,7 @@ public class RedisUtil {
                 ModelMeta modelMeta = ModelMeta.getModelMeta(clazz);
                 List<byte[]> list = jedis.hmget(generateKey(modelMeta.getKey(),BinaryUtil.getBytes(id)),modelMeta.getCachedFields());
                 jedis.close();
-                if(!RedisUtil.isPOJO(list)){
+                if(!RedisTemplate.isPOJO(list)){
                     return null;
                 }
                 int index=1;
@@ -221,6 +223,7 @@ public class RedisUtil {
         return result;
     }
 
+
     public static byte[] getHmFeature(){
         return hmFeature;
     }
@@ -234,6 +237,39 @@ public class RedisUtil {
             }
         }
         return false;
+    }
+
+    public static int update(ExecutableModel entity,String... fields){
+        ModelMeta modelMeta = ModelMeta.getModelMeta(entity.getClass());
+        Object id = modelMeta.getIdAccessor().getProperty(entity);
+        if(id!=null){
+            byte[] redisKey = RedisTemplate.generateKey(modelMeta.getKey(), BinaryUtil.getBytes(id));
+            int i=0;
+            byte[] field =null;
+            byte[] value;
+            int length=fields.length;
+            if(length==1){
+                field = BinaryUtil.getBytes(fields[0]);
+                value = BinaryUtil.getBytes(FieldAccessor.getFieldAccessor(entity.getClass(),fields[0]).getProperty(entity));
+                return RedisTemplate.hset(redisKey,field,value).intValue();
+            }else{//设置多个属性
+                Jedis jedis = RedisTemplate.getJedis();
+                if(jedis!=null){
+                    Pipeline pipeline =jedis.pipelined();
+                    for(i=0;i<length;i++){
+                        field = BinaryUtil.getBytes(fields[i]);
+                        value = BinaryUtil.getBytes(FieldAccessor.getFieldAccessor(entity.getClass(),fields[i]).getProperty(entity));
+                        pipeline.hset(redisKey,field,value);
+                    }
+                    pipeline.sync();
+                    jedis.close();
+                }
+            }
+
+        }else{
+            throw  new RuntimeException("is is null");
+        }
+        return 1;
     }
 
 

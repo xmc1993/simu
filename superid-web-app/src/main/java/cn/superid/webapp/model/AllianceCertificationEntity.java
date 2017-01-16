@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * Created by xiaofengxu on 16/9/30.
  */
 @Table(name = "alliance_certification")
-public class AllianceCertificationEntity extends ExecutableModel<AllianceCertificationEntity> {
+public class AllianceCertificationEntity extends ExecutableModel {
 
     private long id;
     private long allianceId;
