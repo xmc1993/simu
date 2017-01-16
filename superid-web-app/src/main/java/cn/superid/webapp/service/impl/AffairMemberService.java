@@ -3,12 +3,16 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
+import cn.superid.utils.ObjectUtil;
+import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.controller.forms.SimpleRoleCard;
 import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.InvitationType;
+import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
@@ -24,6 +28,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -459,6 +464,28 @@ public class AffairMemberService implements IAffairMemberService {
     @Override
     public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination) {
         return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions, pagination);
+    }
+
+    @Override
+    public AffairUserInfoVO getAffairUserInfo(long allianceId, long userId) {
+        UserEntity userEntity = UserEntity.dao.findById(userId);
+        if(null == userEntity){
+            return null;
+        }
+        AffairUserInfoVO affairUserInfoVO = new AffairUserInfoVO();
+        userEntity.copyPropertiesTo(affairUserInfoVO);
+
+        String sql = "select r.id as roleId, r.title as roleTitle, r.belong_affair_id , a.name as belongAffairName from role r " +
+                "join affair a on a.id = r.belong_affair_id " +
+                "where r.alliance_id = ? and r.user_id = ?";
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(userId);
+        List<SimpleRoleCard> simpleRoleCards = RoleEntity.getSession().findListByNativeSql(SimpleRoleCard.class,sql,p);
+        affairUserInfoVO.setSimpleRoleCards(simpleRoleCards);
+
+
+        return affairUserInfoVO;
     }
 
     /*

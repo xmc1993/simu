@@ -20,6 +20,7 @@ import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -286,8 +287,12 @@ public class UserService implements IUserService {
     @Override
     public boolean changeToken(String token) {
         long userId = currentUserId();
-        String column = StringUtil.isEmail(token)?"email":"mobile";
-        int result =  UserEntity.dao.id(userId).set(column,token);
+        int result ;
+        if(StringUtil.isEmail(token)){
+            result =  UserEntity.dao.id(userId).set("email",token);
+        }else {
+            result = UserEntity.dao.id(userId).set("mobile",MobileUtil.getMobile(token));
+        }
         return result>0;
     }
 

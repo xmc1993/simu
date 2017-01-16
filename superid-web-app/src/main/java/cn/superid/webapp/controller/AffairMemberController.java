@@ -5,6 +5,7 @@ import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.annotation.NotLogin;
 import cn.superid.webapp.annotation.RequiredPermissions;
 import cn.superid.webapp.controller.VO.AddAffairRoleFormVO;
+import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.VO.ListVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.enums.ResponseCode;
@@ -143,6 +144,17 @@ public class AffairMemberController {
     @RequestMapping(value = "/get_member", method = RequestMethod.GET)
     public SimpleResponse getMember() {
         return SimpleResponse.ok(affairMemberService.getAffairMember());
+    }
+
+    @ApiOperation(value = "获取一个用户在一个事务中的信息", response = AffairUserInfoVO.class, notes = "")
+    @RequestMapping(value = "/get_affair_user_info", method = RequestMethod.GET)
+    public SimpleResponse getAffairUserInfo(@RequestParam() Long allianceId, @RequestParam() Long userId) {
+        AffairUserInfoVO affairUserInfoVO = affairMemberService.getAffairUserInfo(allianceId, userId);
+        if(affairUserInfoVO != null){
+            return SimpleResponse.ok(affairUserInfoVO);
+        }else {
+            return new SimpleResponse(ResponseCode.Error,null);
+        }
     }
 
 }

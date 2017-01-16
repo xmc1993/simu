@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -150,15 +151,11 @@ public class AffairController {
     }
 
 
-    @ApiOperation(value = "获取事务首页必要的信息", response = String.class, notes = "publicType事务公开性:0完全公开 1盟内可见 2成员可见")
+    @ApiOperation(value = "获取事务首页必要的信息", response = AffairInfo.class, notes = "publicType事务公开性:0完全公开 1盟内可见 2成员可见")
     @RequestMapping(value = "/affair_info", method = RequestMethod.POST)
-//    @RequiredPermissions(affair = AffairPermissions.AffairInfo)
-    public SimpleResponse getAffairInfo(long affairMemberId) {
-        long allianceId = GlobalValue.currentAllianceId();
-        long affairId = GlobalValue.currentAffairId();
+    public SimpleResponse getAffairInfo(@RequestParam() Long allianceId, @RequestParam() Long affairId) {
         AffairInfo affairInfo = affairService.getAffairInfo(allianceId, affairId);
         return SimpleResponse.ok(affairInfo);
-
     }
 
 

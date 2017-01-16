@@ -570,7 +570,16 @@ public class AffairService implements IAffairService {
             long tempRoleId = lastOperateRole.getRoleId();
             long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
+<<<<<<< HEAD
+            RoleEntity tempRole = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
+            if(tempRole!= null){
+                affairInfo.setRoleTitle(tempRole.getTitle());
+            }else {
+                affairInfo.setRoleTitle("");
+            }
+=======
 
+>>>>>>> 5a8dd6b372d41803d6447ec5eb5dab7c17008389
             affairInfo.setAllianceId(tempAllianceId);
             RoleEntity role = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
             if (role == null) {

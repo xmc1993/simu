@@ -1,5 +1,7 @@
 package cn.superid.webapp.controller.forms;
 
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ public class AffairInfo {
     private String superid = "";
     private String name = "";
     private long roleId;
+    @ApiModelProperty(notes = "用于右上角显示的角色")
     private String roleTitle;
     private String description = "";
     private int publicType;
