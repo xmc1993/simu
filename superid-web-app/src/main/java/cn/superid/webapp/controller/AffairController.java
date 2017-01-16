@@ -51,18 +51,19 @@ public class AffairController {
      */
     @ApiOperation(value = "添加事务", response = boolean.class, notes = "凡是事务内所有操作都需要affairMemberId;返回新建的事务id")
     @RequiredPermissions(affair = AffairPermissions.CREATE_AFFAIR)
-    @RequestMapping(value = "/create_affair", method = RequestMethod.POST)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
     public SimpleResponse createAffair(String name, int publicType, Long affairMemberId, String logo, String description) {
         CreateAffairForm createAffairForm = new CreateAffairForm();
         createAffairForm.setPublicType(publicType);
         createAffairForm.setOperationRoleId(GlobalValue.currentRoleId());
-        createAffairForm.setAffairId(GlobalValue.currentAffairId());
+        createAffairForm.setParentAffairId(GlobalValue.currentAffairId());
         createAffairForm.setAllianceId(GlobalValue.currentAllianceId());
         createAffairForm.setName(name);
         createAffairForm.setLogo(logo);
         createAffairForm.setDescription(description);
+        createAffairForm.validate();
         try {
-            Map<String, Object> result = affairService.createAffair(createAffairForm);
+            AffairInfo result = affairService.createAffair(createAffairForm);
             return SimpleResponse.ok(result);
         } catch (Exception e) {
             e.printStackTrace();

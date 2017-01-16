@@ -18,7 +18,7 @@ public interface IAffairService {
     String getPermissions(String permissions, int permissionLevel, long affairId) throws Exception;
 
 
-    Map<String, Object> createAffair(CreateAffairForm createAffairForm) throws Exception;
+    AffairInfo createAffair(CreateAffairForm createAffairForm) throws Exception;
 
 
     AffairEntity createRootAffair(long allianceId, long userId,String name, long roleId, int type, String logo);
