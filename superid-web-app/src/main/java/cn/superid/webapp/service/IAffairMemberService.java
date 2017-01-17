@@ -200,17 +200,6 @@ public interface IAffairMemberService {
     int countAffairMember(long allianceId, long affairId);
 
 
-    public Map<Long, List<Object>> getAffairMember();
-
-    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId);
-
-    /**
-     * 获取自己在这个事务中的affairMember
-     * @param allianceId
-     * @param affairId
-     * @return
-     */
-    public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId,long affairId);
 
 
     List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
@@ -227,4 +216,9 @@ public interface IAffairMemberService {
 
 
     AffairUserInfoVO getAffairUserInfo(long allianceId,long userId);
+
+    AffairRoleCard getRoleCard(long allianceId,long roleId,long affairId);
+
+    AffairRoleCard getDirectorCard(long allianceId,long affairId);
+
 }

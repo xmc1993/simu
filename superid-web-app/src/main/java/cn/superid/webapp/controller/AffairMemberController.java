@@ -9,10 +9,8 @@ import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.VO.ListVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.forms.AffairRoleCard;
-import cn.superid.webapp.forms.SearchAffairMemberConditions;
-import cn.superid.webapp.forms.SearchAffairRoleConditions;
-import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.forms.*;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -114,7 +112,7 @@ public class AffairMemberController {
         return SimpleResponse.ok(StringUtil.join(ids, ","));
     }
 
-    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
+    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = GetRoleCardsMap.class, notes = "获取的是一个list<GetRoleCardsMap>")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
     public SimpleResponse getAffairRoleCards(@RequestParam() Long roleId,  @RequestParam() Long affairId,@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
         RoleCache roleCache = RoleCache.dao.findById(roleId);//权限判断
@@ -134,11 +132,6 @@ public class AffairMemberController {
         return SimpleResponse.ok(listVO);
     }
 
-    @ApiOperation(value = "获取一个用户所有member", notes = "")
-    @RequestMapping(value = "/get_member", method = RequestMethod.GET)
-    public SimpleResponse getMember() {
-        return SimpleResponse.ok(affairMemberService.getAffairMember());
-    }
 
     @ApiOperation(value = "获取一个用户在一个事务中的信息", response = AffairUserInfoVO.class, notes = "")
     @RequestMapping(value = "/get_affair_user_info", method = RequestMethod.GET)
@@ -150,5 +143,13 @@ public class AffairMemberController {
             return new SimpleResponse(ResponseCode.Error,null);
         }
     }
+
+    @ApiOperation(value = "获取某个事务责任人的角色卡片", response = AffairRoleCard.class, notes = "")
+    @RequestMapping(value = "/get_director_card", method = RequestMethod.GET)
+    public SimpleResponse getDirectorCard(@RequestParam() long allianceId, @RequestParam() long affairId) {
+        return SimpleResponse.ok(affairMemberService.getDirectorCard(allianceId,affairId));
+    }
+
+
 
 }

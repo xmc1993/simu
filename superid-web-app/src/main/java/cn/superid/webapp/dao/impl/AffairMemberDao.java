@@ -30,8 +30,8 @@ public class AffairMemberDao implements IAffairMemberDao {
         String key = "%" + conditions.getKey() + "%";
 
 
-        StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender,ta.id as affairMemberId" +
-                ",ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName,ta.type from ");
+        StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender," +
+                "ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName,ta.type from ");
         ParameterBindings parameterBindings = new ParameterBindings();
 
         sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id =? ");//查出满足所有要求的affairmember
@@ -131,22 +131,5 @@ public class AffairMemberDao implements IAffairMemberDao {
         else sb.append(" asc ");
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
     }
-
-    /*
-    @Override
-    public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId) {
-        StringBuilder sb = new StringBuilder("select am.role_id, r.title as roleTitle,r.belong_affair_id as homepageAffairId, b.homepageAffairName, r.user_id, u.username,u.gender,u.avatar from affair_member am " +
-                "join role r on r.id = am.role_id " +
-                "join user u on u.id = r.user_id " +
-                "join (select a.id as affairId ,a.name as homepageAffairName , alliance.name as allianceName from affair a \n" +
-                "      join alliance on alliance.id = a.alliance_id) b on b.affairId = r.belong_affair_id \n" +
-                "where am.alliance_id = ? and am.affair_id = ?");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(affairId);
-        List<AffairRoleCard> cards = AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class,sb.toString(),p);
-        return cards;
-    }
-    */
 
 }

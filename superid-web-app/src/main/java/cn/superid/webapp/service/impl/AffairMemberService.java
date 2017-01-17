@@ -4,6 +4,7 @@ import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.ObjectUtil;
+import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.forms.SimpleRoleCard;
@@ -19,6 +20,8 @@ import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
+import cn.superid.webapp.model.cache.RoleCache;
+import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairUserService;
@@ -401,51 +404,6 @@ public class AffairMemberService implements IAffairMemberService {
         return AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
     }
 
-    @Override
-    public Map<Long, List<Object>> getAffairMember() {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
-        return getMaps(affairMemberVOList);
-    }
-
-    @Override
-    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId) {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? ) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(userService.currentUserId());
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
-
-        return getMaps(affairMemberVOList);
-    }
-
-    @Override
-
-    public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId, long affairId) {
-        StringBuilder sb = new StringBuilder("select a.* , b.title from affair_member a join (select id,user_id,title from role where alliance_id = ? and user_id = ? and r.affair_id = ?) b on a.role_id = b.id ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(userService.currentUserId());
-        p.addIndexBinding(affairId);
-        List<AffairMemberVO> affairMemberVOList = AffairMemberEntity.getSession().findListByNativeSql(AffairMemberVO.class, sb.toString(), p);
-
-        return getMaps(affairMemberVOList);
-    }
-
-    private Map<Long, List<Object>> getMaps(List<AffairMemberVO> affairMemberVOList) {
-        Map<Long, List<Object>> members = new HashedMap();
-        for (AffairMemberVO a : affairMemberVOList) {
-            List<Object> user = new ArrayList<>();
-            user.add(a.getAffairId());
-            SimpleRoleVO role = new SimpleRoleVO(a.getRoleId(), a.getTitle());
-            user.add(role);
-            members.put(a.getId(), user);
-        }
-        return members;
-    }
-
 
 
     @Override
@@ -520,10 +478,55 @@ public class AffairMemberService implements IAffairMemberService {
 
         return affairUserInfoVO;
     }
-    /*
-    @Override
-    public List<AffairRoleCard> getAllAffairRoles(long allianceId, long affairId, long roleId) {
-        return affairMemberDao.getAllAffairRoles(allianceId,affairId);
+
+
+
+
+    private AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId,boolean needMemberInfo) {
+        AffairRoleCard affairRoleCard = new AffairRoleCard();
+        if(needMemberInfo){
+            AffairMemberEntity affairMemberEntity = this.getAffairMemberInfo(allianceId,affairId,roleId);
+            if(affairMemberEntity==null){
+                return null;
+            }
+            affairRoleCard.setPermissions(affairMemberEntity.getPermissions());
+            affairRoleCard.setType(affairMemberEntity.getType());
+        }
+
+        RoleEntity roleEntity = RoleEntity.dao.findById(roleId,allianceId);
+
+        affairRoleCard.setRoleId(roleEntity.getId());
+        affairRoleCard.setRoleTitle(roleEntity.getTitle());
+        affairRoleCard.setBelongAffairId(roleEntity.getBelongAffairId());
+
+        AffairEntity belongAffair = AffairEntity.dao.partitionId(allianceId).id(roleEntity.getBelongAffairId()).selectOne("name");
+        affairRoleCard.setBelongAffairName(belongAffair.getName());
+
+
+        UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(roleEntity.getUserId());
+        affairRoleCard.setAvatar(userBaseInfo.getAvatar());
+        affairRoleCard.setGender(userBaseInfo.getGender());
+        affairRoleCard.setNameAbbr(PingYinUtil.getFirstSpell(userBaseInfo.getUsername()));
+        affairRoleCard.setUsername(userBaseInfo.getUsername());
+        affairRoleCard.setUserId(userBaseInfo.getId());
+
+        return affairRoleCard;
     }
-    */
+
+    @Override
+    public AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId) {
+        return getRoleCard(allianceId,affairId,roleId,true);
+    }
+
+    @Override
+    public AffairRoleCard getDirectorCard(long allianceId, long affairId) {
+        AffairEntity affairEntity = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("ownerRoleId");
+        if(affairEntity==null){
+            return  null;
+        }
+        AffairRoleCard affairRoleCard= getRoleCard(allianceId,affairId,affairEntity.getOwnerRoleId());
+        affairRoleCard.setType(AffairMemberType.Official);
+        affairRoleCard.setPermissions("*");
+        return affairRoleCard;
+    }
 }
