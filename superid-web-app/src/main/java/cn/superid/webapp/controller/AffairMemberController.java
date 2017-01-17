@@ -25,12 +25,12 @@ import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by njuTms on 16/9/14.
@@ -115,16 +115,19 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-
-        boolean affairExist = affairService.affairExist(allianceId, affairId);
-        if (!affairExist) {
-            return new SimpleResponse(ResponseCode.AffairNotExist, null);
+    public SimpleResponse getAffairRoleCards(@RequestParam() Long allianceId,  @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        //TODO 权限检查
+        Map<String,List<AffairRoleCard>>  map= new HashMap<>();
+        String affairIds = searchAffairRoleConditions.getAffairIds();
+        if(StringUtil.isEmpty(affairIds)){
+            return new SimpleResponse(ResponseCode.NeedParams,null);
+        }else{
+            String[] affairList = affairIds.split(",");
+            for(String id:affairList){
+                map.put(id,affairMemberService.searchAffairRoleCards(allianceId, Long.parseLong(id), searchAffairRoleConditions));
+            }
         }
-        //检测当前角色能不能搜索或者查看当前事务的信息
-
-
-        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(allianceId, affairId, searchAffairRoleConditions));
+        return SimpleResponse.ok(map);
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")

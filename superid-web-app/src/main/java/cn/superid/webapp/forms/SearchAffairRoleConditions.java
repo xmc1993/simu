@@ -17,6 +17,7 @@ public class SearchAffairRoleConditions {
     private Boolean inAlliance;
     @ApiModelProperty(notes = "事务id,逗号隔开,如果是本事务可以不要传")
     private String affairIds;
+    private boolean needCount;
 
     public String getKey() {
         return key;
@@ -65,5 +66,13 @@ public class SearchAffairRoleConditions {
 
     public void setAffairIds(String affairIds) {
         this.affairIds = affairIds;
+    }
+
+    public boolean isNeedCount() {
+        return needCount;
+    }
+
+    public void setNeedCount(boolean needCount) {
+        this.needCount = needCount;
     }
 }

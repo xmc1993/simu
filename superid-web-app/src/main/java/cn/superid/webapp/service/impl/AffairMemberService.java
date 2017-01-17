@@ -14,6 +14,7 @@ import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.InvitationType;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
@@ -445,20 +446,21 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
-//        long[] affairIds;
-//        if(StringUtil.isEmpty(conditions.getAffairIds())){
-//            affairIds = new long[1];
-//            affairIds[1] =affairId;
-//        }else{
-//            String[] ids =conditions.getAffairIds().split(",");
-//            affairIds = new long[ids.length];
-//            for(int i=0;i<ids.length;i++){//TODO 判断id是不是当前id的子事务,并且
-//                affairIds[i] = Long.parseLong(ids[i]);
-//            }
-//        }
+    public GetRoleCardsMap searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
+        if (conditions.getLimit() < 10 || conditions.getLimit() > 100) conditions.setLimit(20);
 
-        return affairMemberDao.searchAffairRoles(allianceId, affairId, conditions);
+        long[] affairIds;
+        if(StringUtil.isEmpty(conditions.getAffairIds())){
+            affairIds = new long[1];
+            affairIds[1] =affairId;
+        }else{
+            String[] ids =conditions.getAffairIds().split(",");
+            affairIds = new long[ids.length];
+            for(int i=0;i<ids.length;i++){//TODO 判断id是不是当前id的子事务,并且
+                affairIds[i] = Long.parseLong(ids[i]);
+            }
+        }
+        return new GetRoleCardsMap();
     }
 
     @Override

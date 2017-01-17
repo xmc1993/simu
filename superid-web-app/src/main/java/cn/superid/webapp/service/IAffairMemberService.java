@@ -4,6 +4,7 @@ import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -212,7 +213,7 @@ public interface IAffairMemberService {
     public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId,long affairId);
 
 
-    List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
+    GetRoleCardsMap searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 
 
     /**

@@ -27,8 +27,6 @@ public class AffairMemberDao implements IAffairMemberDao {
     public List<AffairRoleCard> searchAffairRoles(long allianceId, long affairId, SearchAffairRoleConditions conditions) {//TODO  先简单点来,等我redis再改善点,取出所有roleId,然后在内存里面查。。。。
 
 
-        if (conditions.getLimit() < 10 || conditions.getLimit() > 100) conditions.setLimit(20);
-
 
         boolean hasKey = StringUtil.notEmpty(conditions.getKey());
         String key = "%" + conditions.getKey() + "%";
@@ -37,15 +35,6 @@ public class AffairMemberDao implements IAffairMemberDao {
         StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender,ta.id as affairMemberId" +
                 ",ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName from ");
         ParameterBindings parameterBindings = new ParameterBindings();
-//        sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id in (0 ");//查出满足所有要求的affairmember
-//        parameterBindings.addIndexBinding(allianceId);
-
-//
-//        for(int i=0;i<affairIds.length;i++){
-//            sql.append(",?");
-//            parameterBindings.addIndexBinding(affairIds[i]);
-//        }
-//        sql.append(") ");
 
         sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id =? ");//查出满足所有要求的affairmember
 
