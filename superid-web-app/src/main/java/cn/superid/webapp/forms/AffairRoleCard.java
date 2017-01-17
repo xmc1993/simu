@@ -21,6 +21,7 @@ public class AffairRoleCard {//事务角色卡片
     private String permissions;
     private String titleAbbr;
     private String nameAbbr;
+    private int type;
 
     public long getRoleId() {
         return roleId;
@@ -116,5 +117,13 @@ public class AffairRoleCard {//事务角色卡片
 
     public void setNameAbbr(String nameAbbr) {
         this.nameAbbr = nameAbbr;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

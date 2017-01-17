@@ -460,6 +460,10 @@ public class AffairMemberService implements IAffairMemberService {
                 affairIds[i] = Long.parseLong(ids[i]);
             }
         }
+        for(long id:affairIds){
+            List<AffairRoleCard> affairRoleCards = affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+        }
+
         return new GetRoleCardsMap();
     }
 
