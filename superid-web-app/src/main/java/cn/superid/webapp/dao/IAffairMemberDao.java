@@ -34,5 +34,4 @@ public interface IAffairMemberDao {
      */
     List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
 
-    List<AffairEntity> getChildAffairs(long allianceId, long affairId,String... columns);
 }

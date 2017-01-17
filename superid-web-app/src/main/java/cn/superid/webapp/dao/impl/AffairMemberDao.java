@@ -4,6 +4,7 @@ import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
+import cn.superid.webapp.dao.IAffairDao;
 import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
@@ -11,6 +12,7 @@ import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -22,15 +24,8 @@ import java.util.List;
  */
 @Component
 public class AffairMemberDao implements IAffairMemberDao {
-
-    @Override
-    public List<AffairEntity> getChildAffairs(long allianceId, long affairId, String... columns) {
-        AffairEntity currentAffair = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("path");
-        if(currentAffair==null){
-            return null;
-        }
-        return AffairEntity.dao.partitionId(allianceId).lk("path",currentAffair.getPath()+"%").selectList(columns);
-    }
+    @Autowired
+    private IAffairDao affairDao;
 
     @Override
     public List<AffairRoleCard> searchAffairRoles(long allianceId, long affairId, SearchAffairRoleConditions conditions) {//TODO  先简单点来,等我redis再改善点,取出所有roleId,然后在内存里面查。。。。
@@ -50,7 +45,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         }else{
             sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id in (0 ");//查出满足所有要求的affairmember
             parameterBindings.addIndexBinding(allianceId);
-            List<AffairEntity> list = getChildAffairs(allianceId,affairId,"id");
+            List<AffairEntity> list = affairDao.getChildAffairs(allianceId,affairId,"id");
             for(AffairEntity affairEntity:list){
                 sql.append(",?");
                 parameterBindings.addIndexBinding(affairEntity.getId());
@@ -88,7 +83,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         sql.append(" order by am.modify_time asc limit ? ");
         parameterBindings.addIndexBinding(conditions.getLimit());
 
-        return (List<AffairRoleCard>) AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
+        return  AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
     }
 
     @Override

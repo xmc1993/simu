@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -377,8 +378,13 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int countAffairMember(long allianceId, long affairId) {
-        return AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
+    public int countAffairMember(long allianceId, long affairId,Integer type) {
+        ConditionalDao dao = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId);
+        if(type==null){
+            return dao.count();
+        }else{
+            return dao.eq("type",type).count();
+        }
     }
 
 
@@ -417,8 +423,8 @@ public class AffairMemberService implements IAffairMemberService {
                         }
                     }
                 }else{
-                    officialCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",id).eq("type",AffairMemberType.Official).count();
-                    guestCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",id).eq("type",AffairMemberType.Guest).count();
+                    officialCount = this.countAffairMember(allianceId,affairId,AffairMemberType.Official);
+                    guestCount = this.countAffairMember(allianceId,affairId,AffairMemberType.Guest);
 
                 }
                 getRoleCardsMap.setOfficialCount(officialCount);

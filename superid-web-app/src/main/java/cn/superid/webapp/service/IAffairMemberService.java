@@ -188,7 +188,7 @@ public interface IAffairMemberService {
      * @param affairId
      * @return
      */
-    int countAffairMember(long allianceId, long affairId);
+    int countAffairMember(long allianceId, long affairId,Integer type);
 
 
 
