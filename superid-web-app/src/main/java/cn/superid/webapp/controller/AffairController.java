@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * Created by xiaofengxu on 16/8/24.
  */
+
 @Controller
 @RequestMapping("/affair")
 public class AffairController {

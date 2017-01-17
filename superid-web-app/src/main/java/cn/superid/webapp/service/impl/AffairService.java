@@ -110,7 +110,6 @@ public class AffairService implements IAffairService {
         AffairInfo affairInfo = new AffairInfo();
         affairInfo.setId(affairEntity.getId());
         affairInfo.setSuperid(affairEntity.getSuperid());
-        affairInfo.setAllianceId(allianceId);
         affairInfo.setName(affairEntity.getName());
         affairInfo.setShortName(affairEntity.getShortName());
         affairInfo.setDescription(affairEntity.getDescription());
@@ -559,7 +558,7 @@ public class AffairService implements IAffairService {
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
 
         //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
-        AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId, affairId, userId);
+        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);
         if (lastOperateRole != null) {
             //有的话就把roleId和roleName返回给前端
             long tempRoleId = lastOperateRole.getRoleId();
@@ -571,7 +570,7 @@ public class AffairService implements IAffairService {
             } else {
                 affairInfo.setRoleTitle("");
             }
-            affairInfo.setAllianceId(tempAllianceId);
+            affairInfo.setRoleAllianceId(tempAllianceId);
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
 
             AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();
@@ -585,7 +584,7 @@ public class AffairService implements IAffairService {
 
         } else {
             //没有affairUser的话就返回该用户在这个盟里最先创建的角色
-            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
+            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
             affairInfo.setRoleTitle(roleEntity.getTitle());
             affairInfo.setRoleId(roleEntity.getId());
             affairInfo.setIsStuck(false);

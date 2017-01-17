@@ -23,6 +23,7 @@ public class AffairMemberEntity extends ExecutableModel {
     private String permissions; //事务内的权限
     private Timestamp createTime;
     private Timestamp modifyTime;
+    private int type;
 
 
     @Id
@@ -93,5 +94,11 @@ public class AffairMemberEntity extends ExecutableModel {
         this.modifyTime = modifyTime;
     }
 
+    public int getType() {
+        return type;
+    }
 
+    public void setType(int type) {
+        this.type = type;
+    }
 }

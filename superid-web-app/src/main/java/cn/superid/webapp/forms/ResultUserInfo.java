@@ -17,6 +17,7 @@ public class ResultUserInfo extends ExecutableModel{
 
     public final static ConditionalDao dao = new ConditionalDao(ResultUserInfo.class);
     private Long id = 0L;
+    private Long homepageAffairId;
     private String superid = "";
     private boolean isAuthenticated = false;
     private String avatar = "";
@@ -242,6 +243,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getHomepageAffairId() {
+        return homepageAffairId;
+    }
+
+    public void setHomepageAffairId(Long homepageAffairId) {
+        this.homepageAffairId = homepageAffairId;
     }
 
     @Transient

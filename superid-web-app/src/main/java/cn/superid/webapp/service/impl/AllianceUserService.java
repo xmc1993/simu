@@ -63,6 +63,9 @@ public class AllianceUserService implements IAllianceUserService {
                 existedInvitation.setPermissions(addAllianceUserForm.getPermissions());
                 existedInvitation.setModifyTime(TimeUtil.getCurrentSqlTime());
                 existedInvitation.update();
+
+                //TODO:暂时开放
+                agreeInvitationToAlliance(existedInvitation.getId(),allianceId,"自动同意");
             }
             //生成一份新的邀请
             else {
@@ -81,9 +84,14 @@ public class AllianceUserService implements IAllianceUserService {
                 invitationEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
                 invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
                 invitationEntity.save();
+
+                //TODO:暂时开放
+                agreeInvitationToAlliance(invitationEntity.getId(),allianceId,"自动同意");
             }
             //TODO 给被邀请人发送消息通知
         }
+
+
         return true;
     }
 
@@ -92,9 +100,9 @@ public class AllianceUserService implements IAllianceUserService {
         InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId,allianceId);
         long beInvitedUserId = invitationEntity.getBeInvitedUserId();
         //检测是否是本人,或许可以不要?
-        if(userService.currentUserId() != beInvitedUserId){
-            return false;
-        }
+//        if(userService.currentUserId() != beInvitedUserId){
+//            return false;
+//        }
         long beInvitedRoleId = invitationEntity.getBeInvitedRoleId();
         //如果roleId是0,说明是新增的角色
         if(0 == beInvitedRoleId) {

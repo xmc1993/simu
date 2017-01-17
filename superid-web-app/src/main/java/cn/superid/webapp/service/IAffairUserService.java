@@ -17,7 +17,7 @@ public interface IAffairUserService {
      * @param userId
      * @return
      */
-    public AffairUserEntity isAffairUser(long allianceId,long affairId,long userId);
+    public AffairUserEntity getAffairUser(long allianceId, long affairId, long userId);
 
     /**
      * 先判断是否是该事务成员,如果是就更新,不是就添加
@@ -29,13 +29,5 @@ public interface IAffairUserService {
     public AffairUserEntity addAffairUser(long allianceId,long affairId,long userId,long roleId);
 
 
-
-    /**
-     * 获取某个事务中的所有成员,返回类型见AffairUserVO
-     * @param allianceId
-     * @param affairId
-     * @return
-     */
-    public List<AffairUserVO> getAllAffairUsers(long allianceId,long affairId);
 
 }

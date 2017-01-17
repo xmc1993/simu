@@ -9,11 +9,10 @@ import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.VO.ListVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.enums.ResponseCode;
-import cn.superid.webapp.forms.AffairRoleCard;
-import cn.superid.webapp.forms.SearchAffairMemberConditions;
-import cn.superid.webapp.forms.SearchAffairRoleConditions;
-import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.forms.*;
+import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
@@ -25,12 +24,12 @@ import cn.superid.webapp.service.vo.AffairMemberSearchVo;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by njuTms on 16/9/14.
@@ -113,18 +112,11 @@ public class AffairMemberController {
         return SimpleResponse.ok(StringUtil.join(ids, ","));
     }
 
-    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
+    @ApiOperation(value = "获取事务内的所有角色,分布加载", response = GetRoleCardsMap.class, notes = "获取的是一个list<GetRoleCardsMap>")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-
-        boolean affairExist = affairService.affairExist(allianceId, affairId);
-        if (!affairExist) {
-            return new SimpleResponse(ResponseCode.AffairNotExist, null);
-        }
-        //检测当前角色能不能搜索或者查看当前事务的信息
-
-
-        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(allianceId, affairId, searchAffairRoleConditions));
+    public SimpleResponse getAffairRoleCards(@RequestParam() Long roleId,  @RequestParam() Long affairId,@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        RoleCache roleCache = RoleCache.dao.findById(roleId);//权限判断
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(roleCache.getAllianceId(),affairId,searchAffairRoleConditions));
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
@@ -140,11 +132,6 @@ public class AffairMemberController {
         return SimpleResponse.ok(listVO);
     }
 
-    @ApiOperation(value = "获取一个用户所有member", notes = "")
-    @RequestMapping(value = "/get_member", method = RequestMethod.GET)
-    public SimpleResponse getMember() {
-        return SimpleResponse.ok(affairMemberService.getAffairMember());
-    }
 
     @ApiOperation(value = "获取一个用户在一个事务中的信息", response = AffairUserInfoVO.class, notes = "")
     @RequestMapping(value = "/get_affair_user_info", method = RequestMethod.GET)
@@ -156,5 +143,13 @@ public class AffairMemberController {
             return new SimpleResponse(ResponseCode.Error,null);
         }
     }
+
+    @ApiOperation(value = "获取某个事务责任人的角色卡片", response = AffairRoleCard.class, notes = "")
+    @RequestMapping(value = "/get_director_card", method = RequestMethod.GET)
+    public SimpleResponse getDirectorCard(@RequestParam() long allianceId, @RequestParam() long affairId) {
+        return SimpleResponse.ok(affairMemberService.getDirectorCard(allianceId,affairId));
+    }
+
+
 
 }
