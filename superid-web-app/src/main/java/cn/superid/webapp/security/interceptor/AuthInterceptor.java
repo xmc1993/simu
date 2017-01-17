@@ -175,7 +175,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         int[] affairPermissions = requiredPermissions.affair();//检查事务权限
         if(affairPermissions!=null&&affairPermissions.length!=0){
-            Long affairMemberId = Long.parseLong(request.getParameter("affairMemberId"));
+            String ams =request.getParameter("affairMemberId");
+            if(ams==null){
+                return notPermitted;
+            }
+            Long affairMemberId = Long.parseLong(ams);
             if(affairMemberId==null){
                 return notPermitted;
             }

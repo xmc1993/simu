@@ -367,7 +367,7 @@ public class AffairMemberService implements IAffairMemberService {
                 paths[i] = sb.toString();
             }
         }
-        return (List<Long>) AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
+        return  AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
     }
 
 
@@ -435,6 +435,7 @@ public class AffairMemberService implements IAffairMemberService {
         return affairMemberDao.searchAffairMembers(allianceId, affairId, conditions, pagination);
     }
 
+    //TODO  根据盟要求公开的信息来展示
     @Override
     public AffairUserInfoVO getAffairUserInfo(long allianceId, long userId) {
         UserEntity userEntity = UserEntity.dao.findById(userId);

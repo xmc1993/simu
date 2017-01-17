@@ -44,14 +44,6 @@ public class SQLDao {
             "(select r.id as role_id,r.title,r.alliance_id,r.public_type from role r where r.user_id = ?) t2 " +
             "on t1.id = t2.alliance_id order by alliance_id";
 
-    /**
-     * affairUserService相关的sql语句
-     */
-    //获取某个事务下的所有成员及其对应的需要显示的字段
-    public static String GET_AFFAIR_USERS = "select t1.id as user_id,t1.username,t1.superid,t1.gender,t2.id as role_id,t2.title,t2.belong_affair_id ,t2.name as belong_affair_name from " +
-            "(select * from user u where u.id in (select au.user_id from affair_user au where au.affair_id = ? )) t1 " +
-            "left join (select r.id,r.title,r.belong_affair_id,r.user_id,a.name from role r join affair a on a.id = r.belong_affair_id where r.alliance_id = ? and r.state = 0) t2 " +
-            "on t1.id=t2.user_id";
 
 
 

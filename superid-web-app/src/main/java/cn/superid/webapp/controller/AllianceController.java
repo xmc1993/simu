@@ -94,6 +94,7 @@ public class AllianceController {
         return new SimpleResponse(allianceService.validName(code));
     }
 
+
     @ApiOperation(value = "填写盟真实信息", response =Long.class)
     @RequiredPermissions(alliance = AlliancePermissions.EditAllianceInfo)
     @RequestMapping(value = "/add_certification", method = RequestMethod.POST)
@@ -124,7 +125,7 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.verifyAllianceName(name));
     }
 
-    @ApiOperation(value = "获取一个用户底下所有盟信息", response =Long.class)
+    @ApiOperation(value = "获取一个用 户底下所有盟信息", response =Long.class)
     @RequestMapping(value = "/alliance_list",method = RequestMethod.GET)
     public SimpleResponse getAllianceList(){
         return SimpleResponse.ok(allianceService.getAllianceList());
