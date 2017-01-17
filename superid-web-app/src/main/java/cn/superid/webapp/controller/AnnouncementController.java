@@ -123,7 +123,7 @@ public class AnnouncementController {
 
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    @RequiredPermissions()
+    @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
     public SimpleResponse save(Long announcementId , String contentState){
 
         if(announcementId == null ){
@@ -196,71 +196,11 @@ public class AnnouncementController {
 
     @ApiOperation(value = "删除公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/delete_announcement", method = RequestMethod.POST)
-    @RequiredPermissions()
+    @RequiredPermissions(affair = AffairPermissions.INVALID_ANNOUNCEMENT)
     public SimpleResponse deleteAnnouncement(Long announcementId){
         if(announcementId == null ){
             return SimpleResponse.error("参数不正确");
         }
         return SimpleResponse.ok(announcementService.deleteAnnouncement(announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId()));
     }
-
-    @ApiOperation(value = "查看事务底下公告列表(不含task)",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/announcement_list", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getAnnouncementList(){
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(GlobalValue.currentAllianceId()).eq("affair_id",GlobalValue.currentAffairId()).eq("task_id",0).state(1).selectList();
-        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
-
-        return SimpleResponse.ok(result);
-    }
-
-    @ApiOperation(value = "查看事务底下公告列表(含task)",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/announcement_list_contain_task", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getAnnouncementListContainTask(){
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.partitionId(GlobalValue.currentAllianceId()).eq("affair_id",GlobalValue.currentAffairId()).state(1).selectList();
-        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
-        return SimpleResponse.ok(result);
-    }
-
-    @ApiOperation(value = "查看事务及其子事务底下公告",response = String.class, notes = "拥有权限")
-    @RequestMapping(value = "/announcement_list_contain_child", method = RequestMethod.POST)
-    @RequiredPermissions()
-    public SimpleResponse getAnnouncementListContainChild(){
-        AffairEntity affair = AffairEntity.dao.findById(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId());
-        StringBuilder sql = new StringBuilder("select a.* from announcement a join affair b where a.affair_id = b.id and b.path like ? ");
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(affair.getPath()+"%");
-        List<AnnouncementEntity> announcementEntities = AnnouncementEntity.dao.getSession().findListByNativeSql(AnnouncementEntity.class,sql.toString(),p);
-        List<AnnouncementListForm> result = transformEntityToForm(announcementEntities);
-        return SimpleResponse.ok(result);
-    }
-
-    private List<AnnouncementListForm> transformEntityToForm(List<AnnouncementEntity> announcementEntities){
-        List<AnnouncementListForm> result = new ArrayList<>();
-        if(announcementEntities != null){
-            for(AnnouncementEntity a : announcementEntities){
-                AnnouncementListForm announcementForm = new AnnouncementListForm();
-                announcementForm.setId(a.getId());
-                announcementForm.setModifyTime(a.getModifyTime());
-                announcementForm.setPublicType(a.getPublicType());
-                announcementForm.setModifierId(a.getModifierId());
-                announcementForm.setIsTop(a.getIsTop());
-                announcementForm.setState(a.getState());
-                announcementForm.setThumbContent(a.getThumbContent());
-                announcementForm.setVersion(a.getVersion());
-                announcementForm.setCreatorId(a.getModifierId());
-                announcementForm.setCreateTime(a.getCreateTime());
-                announcementForm.setTitle(a.getTitle());
-                result.add(announcementForm);
-            }
-        }
-        return result;
-    }
-
-
-
-
-
-
 }
