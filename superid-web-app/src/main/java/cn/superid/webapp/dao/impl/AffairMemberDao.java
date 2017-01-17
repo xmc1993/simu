@@ -108,7 +108,7 @@ public class AffairMemberDao implements IAffairMemberDao {
             }
 
         } else {
-            sb.append("=? ) am ");
+            sb.append("= ? ) am ");
             p.addIndexBinding(affairId);
         }
         sb.append("join (select id,user_id,belong_affair_id,title from role where alliance_id= ?) r on am.role_id=r.id ");

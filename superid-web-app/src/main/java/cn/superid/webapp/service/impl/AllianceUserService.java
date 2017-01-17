@@ -84,6 +84,8 @@ public class AllianceUserService implements IAllianceUserService {
             }
             //TODO 给被邀请人发送消息通知
         }
+
+
         return true;
     }
 
