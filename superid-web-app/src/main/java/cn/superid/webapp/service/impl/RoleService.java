@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.forms.RolePublicTypeForm;
 import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
@@ -21,6 +22,7 @@ import cn.superid.webapp.service.vo.AllianceRolesVO;
 import cn.superid.webapp.service.vo.UserNameAndRoleNameVO;
 import cn.superid.webapp.utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -164,6 +166,14 @@ public class RoleService implements IRoleService {
             }
         }
         return allianceRolesVOs;
+    }
+
+    @Override
+    public List<SimpleRoleVO> getRoles() {
+        StringBuilder sb = new StringBuilder("select id as roleId,title as roleName from role where user_id = ? ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(userService.currentUserId());
+        return SimpleRoleVO.dao.findListByNativeSql(sb.toString(),p);
     }
 
     @Override
