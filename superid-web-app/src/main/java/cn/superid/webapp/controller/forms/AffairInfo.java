@@ -31,7 +31,7 @@ public class AffairInfo {
     private boolean isStuck;
 
     //以下字段已跟cto确认返回
-    private long allianceId;
+    private long roleAllianceId;
     private long affairMemberId;
     private String permissions;
 
@@ -89,14 +89,6 @@ public class AffairInfo {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
-    }
-
-    public long getAllianceId() {
-        return allianceId;
-    }
-
-    public void setAllianceId(long allianceId) {
-        this.allianceId = allianceId;
     }
 
     public String getPermissions() {
@@ -177,5 +169,13 @@ public class AffairInfo {
 
     public void setAffairMemberId(long affairMemberId) {
         this.affairMemberId = affairMemberId;
+    }
+
+    public long getRoleAllianceId() {
+        return roleAllianceId;
+    }
+
+    public void setRoleAllianceId(long roleAllianceId) {
+        this.roleAllianceId = roleAllianceId;
     }
 }
