@@ -1,5 +1,7 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.dao.IAffairDao;
+import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;
@@ -48,6 +50,8 @@ public class AffairService implements IAffairService {
     private ITaskService taskService;
     @Autowired
     private IAffairUserService affairUserService;
+    @Autowired
+    private IAffairDao affairDao;
 
 
     @Override
@@ -329,7 +333,7 @@ public class AffairService implements IAffairService {
     public boolean modifyAffairInfo(long allianceId, long affairId, ModifyAffairInfoForm modifyAffairInfoForm) {
         Integer isHomepage = modifyAffairInfoForm.getIsHomepage();
         Integer isStuck = modifyAffairInfoForm.getIsStuck();
-        modifyAffairInfoForm.setIsHomepage(null);//FBI Warning 别建这么多类,鹏哥的setByObject不是这么用的
+        modifyAffairInfoForm.setIsHomepage(null);
         modifyAffairInfoForm.setIsStuck(null);
         modifyAffairInfoForm.setNameAbbr(PingYinUtil.getFirstSpell(modifyAffairInfoForm.getName()));
         int isUpdate = AffairEntity.dao.partitionId(allianceId).id(affairId).setByObject(modifyAffairInfoForm);
@@ -346,14 +350,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId, String... params) {
-        AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path");
-        if (affairEntity == null) {
-            return null;
-        }
-        String basePath = affairEntity.getPath();
-
-        List<AffairEntity> result = AffairEntity.dao.partitionId(allianceId).lk("path", basePath + "-%").selectList(params);
-        return result;
+        return affairDao.getChildAffairs(allianceId,affairId,params);
     }
 
     @Override
@@ -396,8 +393,8 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public AffairOverviewVO affairOverview(long allianceId, long affairId) {
-        int member = affairMemberService.countAffairMember(allianceId, affairId);
+    public Map<String, Object> affairOverview(long allianceId, long affairId) {
+        int member = affairMemberService.countAffairMember(allianceId, affairId,null);
         int file = FileEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
         int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
         //TODO:事务这块待确定

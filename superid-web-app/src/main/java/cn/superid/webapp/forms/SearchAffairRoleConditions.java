@@ -18,6 +18,7 @@ public class SearchAffairRoleConditions {
     @ApiModelProperty(notes = "事务id,逗号隔开,如果是本事务可以不要传")
     private String affairIds;
     private boolean needCount;
+    private boolean containChild;
 
     public String getKey() {
         return key;
@@ -74,5 +75,13 @@ public class SearchAffairRoleConditions {
 
     public void setNeedCount(boolean needCount) {
         this.needCount = needCount;
+    }
+
+    public boolean isContainChild() {
+        return containChild;
+    }
+
+    public void setContainChild(boolean containChild) {
+        this.containChild = containChild;
     }
 }
