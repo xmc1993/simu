@@ -4,7 +4,6 @@ import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;
-import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.enums.*;
 import cn.superid.webapp.enums.state.AffairMoveState;
@@ -24,7 +23,6 @@ import cn.superid.webapp.service.vo.GetRoleVO;
 
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -556,7 +554,7 @@ public class AffairService implements IAffairService {
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
 
         //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
-        AffairUserEntity lastOperateRole = affairUserService.isAffairUser(allianceId, affairId, userId);
+        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);
         if (lastOperateRole != null) {
             //有的话就把roleId和roleName返回给前端
             long tempRoleId = lastOperateRole.getRoleId();

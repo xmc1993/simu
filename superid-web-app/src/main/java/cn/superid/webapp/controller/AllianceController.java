@@ -85,7 +85,6 @@ public class AllianceController {
         CreateAllianceResultVO createAllianceResultVO = new CreateAllianceResultVO();
         allianceEntity.copyPropertiesTo(createAllianceResultVO);
         createAllianceResultVO.setAffairTree(affairService.getAffairTree(allianceEntity.getId()));
-        createAllianceResultVO.setAffairMember(affairMemberService.getAffairMemberByAllianceId(allianceEntity.getId()));
         return SimpleResponse.ok(createAllianceResultVO);
     }
 
@@ -94,6 +93,7 @@ public class AllianceController {
     public SimpleResponse validCode(String code){
         return new SimpleResponse(allianceService.validName(code));
     }
+
 
     @ApiOperation(value = "填写盟真实信息", response =Long.class)
     @RequiredPermissions(alliance = AlliancePermissions.EditAllianceInfo)
@@ -125,7 +125,7 @@ public class AllianceController {
         return SimpleResponse.ok(allianceService.verifyAllianceName(name));
     }
 
-    @ApiOperation(value = "获取一个用户底下所有盟信息", response =Long.class)
+    @ApiOperation(value = "获取一个用 户底下所有盟信息", response =Long.class)
     @RequestMapping(value = "/alliance_list",method = RequestMethod.GET)
     public SimpleResponse getAllianceList(){
         return SimpleResponse.ok(allianceService.getAllianceList());

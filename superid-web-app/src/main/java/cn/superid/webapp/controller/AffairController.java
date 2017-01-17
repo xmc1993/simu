@@ -89,7 +89,7 @@ public class AffairController {
             return SimpleResponse.error("param can not be null");
         }
         int condition = affairService.canGenerateAffair(allianceId, affairId);
-        return new SimpleResponse(condition, "");
+        return new SimpleResponse(condition, null);
 
     }
 
@@ -180,10 +180,7 @@ public class AffairController {
     @ApiOperation(value = "移动事务", response = String.class, notes = "拥有权限,返回值中,0表示失败,1表示正在等待审核,2表示成功")
     @RequestMapping(value = "/move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.MOVE_AFFAIR)
-    public SimpleResponse moveAffair(Long affairMemberId, Long targetAffairId) {
-        if (targetAffairId == null) {
-            return SimpleResponse.error("参数不能为空");
-        }
+    public SimpleResponse moveAffair(@RequestParam() long affairMemberId, @RequestParam()long targetAffairId) {
         try {
             return SimpleResponse.ok(affairService.moveAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), targetAffairId, GlobalValue.currentRoleId()));
         } catch (Exception e) {
@@ -196,10 +193,8 @@ public class AffairController {
     @ApiOperation(value = "处理移动事务", response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/handle_move_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ACCEPT_MOVED_AFFAIR)
-    public SimpleResponse handleMoveAffair(Long allianceId, Long affairId, Long targetAffairId, Long roleId, boolean isAgree) {
-        if (allianceId == null || targetAffairId == null || affairId == null || roleId == null) {
-            return SimpleResponse.error("参数不能为空");
-        }
+    public SimpleResponse handleMoveAffair( long allianceId, long affairId, long targetAffairId, long roleId, boolean isAgree) {
+
         boolean result = affairService.handleMoveAffair(allianceId, affairId, targetAffairId, roleId, isAgree);
         return SimpleResponse.ok(result);
     }
@@ -208,15 +203,9 @@ public class AffairController {
     @RequestMapping(value = "/switch_role", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.CHECK_AFFAIR_HOMEPAGE)
     public SimpleResponse switchRole(Long affairMemberId, Long newRoleId) {
-        if (newRoleId == null) {
-            return SimpleResponse.error("参数不能为空");
-        }
+
         boolean result = affairService.switchRole(GlobalValue.currentAffairId(), GlobalValue.currentAllianceId(), newRoleId);
         return SimpleResponse.ok(result);
-    }
-
-    public SimpleResponse getOutAllianceAffair() {
-        return null;
     }
 
 

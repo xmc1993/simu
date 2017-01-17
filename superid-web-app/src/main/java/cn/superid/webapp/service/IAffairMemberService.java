@@ -4,6 +4,7 @@ import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.AffairMemberEntity;
@@ -63,15 +64,6 @@ public interface IAffairMemberService {
 
     boolean modifyAffairMemberPermissions(Long allianceId, Long affairId, Long toRoleId, String permissions) throws Exception;
 
-    /**
-     * 新增事务权限组
-     *
-     * @param affairId
-     * @param name
-     * @return
-     * @throws Exception
-     */
-    PermissionGroupEntity addPermissionGroup(Long allianceId, Long affairId, String name, String permissions) throws Exception;
 
     /**
      * 在申请加入事务之前检测能否加入该事务,返回异常情况code
@@ -199,20 +191,9 @@ public interface IAffairMemberService {
     int countAffairMember(long allianceId, long affairId);
 
 
-    public Map<Long, List<Object>> getAffairMember();
-
-    public Map<Long, List<Object>> getAffairMemberByAllianceId(long allianceId);
-
-    /**
-     * 获取自己在这个事务中的affairMember
-     * @param allianceId
-     * @param affairId
-     * @return
-     */
-    public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId,long affairId);
 
 
-    List<AffairRoleCard> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
+    List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 
 
     /**
@@ -226,4 +207,9 @@ public interface IAffairMemberService {
 
 
     AffairUserInfoVO getAffairUserInfo(long allianceId,long userId);
+
+    AffairRoleCard getRoleCard(long allianceId,long roleId,long affairId);
+
+    AffairRoleCard getDirectorCard(long allianceId,long affairId);
+
 }

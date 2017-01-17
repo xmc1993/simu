@@ -11,9 +11,8 @@ public class AffairRoleCard {//事务角色卡片
     private long roleId;
     private String roleTitle;
     private String username;
-    private String userId;
+    private long userId;
     private int gender;
-    private long affairMemberId;
     private String avatar;
     @ApiModelProperty("主事务id")
     private long belongAffairId;
@@ -21,6 +20,7 @@ public class AffairRoleCard {//事务角色卡片
     private String permissions;
     private String titleAbbr;
     private String nameAbbr;
+    private int type;
 
     public long getRoleId() {
         return roleId;
@@ -46,13 +46,6 @@ public class AffairRoleCard {//事务角色卡片
         this.gender = gender;
     }
 
-    public long getAffairMemberId() {
-        return affairMemberId;
-    }
-
-    public void setAffairMemberId(long affairMemberId) {
-        this.affairMemberId = affairMemberId;
-    }
 
     public String getAvatar() {
         return avatar;
@@ -94,11 +87,11 @@ public class AffairRoleCard {//事务角色卡片
         this.username = username;
     }
 
-    public String getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
@@ -117,4 +110,13 @@ public class AffairRoleCard {//事务角色卡片
     public void setNameAbbr(String nameAbbr) {
         this.nameAbbr = nameAbbr;
     }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
 }

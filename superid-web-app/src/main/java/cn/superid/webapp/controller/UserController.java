@@ -48,11 +48,6 @@ public class UserController {
     private IUserService userService;
 
     @Autowired
-    private IAffairMemberService affairMemberService;
-
-    @Autowired
-    private IRoleService roleService;
-    @Autowired
     private IAuth auth;
     public static Log LOG = LogFactory.getLog(UserController.class);
     private long userId;
@@ -414,11 +409,7 @@ public class UserController {
         }
     }
 
-    @ApiOperation(value = "得到该用户所有affairMemberId",response = String.class,notes = "")
-    @RequestMapping(value="/get_affairMember",method = RequestMethod.POST)
-    public SimpleResponse getAffairMember(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        return SimpleResponse.ok(affairMemberService.getAffairMember());
-    }
+
 
     @ApiOperation(value = "得到用户的公开性",response = String.class,notes = "")
     @RequestMapping(value="/get_public_property",method = RequestMethod.GET)
