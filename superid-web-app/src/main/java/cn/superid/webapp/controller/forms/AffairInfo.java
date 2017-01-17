@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller.forms;
 
+import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 import java.sql.Timestamp;
@@ -9,26 +10,28 @@ import java.util.Map;
 /**
  * Created by njuTms on 16/11/14.
  */
+@ApiModel
 public class AffairInfo {
     private long id;
     private String superid = "";
     private String name = "";
-    private long roleId;
-    @ApiModelProperty(notes = "用于右上角显示的角色")
-    private String roleTitle;
+    private String shortName;
     private String description = "";
     private int publicType;
     private String logoUrl = "";
-    private String shortName;
-    private boolean isStuck;
     private int guestLimit;
     private Timestamp modifyTime;
     private String covers = "";
     private Object overView;
     private String tags = "";
 
+    private long roleId;
+    @ApiModelProperty(notes = "用于右上角显示的角色")
+    private String roleTitle;
+    private boolean isStuck;
+
     //以下字段已跟cto确认返回
-    private long allianceId;
+    private long roleAllianceId;
     private long affairMemberId;
     private String permissions;
 
@@ -86,14 +89,6 @@ public class AffairInfo {
 
     public void setLogoUrl(String logoUrl) {
         this.logoUrl = logoUrl;
-    }
-
-    public long getAllianceId() {
-        return allianceId;
-    }
-
-    public void setAllianceId(long allianceId) {
-        this.allianceId = allianceId;
     }
 
     public String getPermissions() {
@@ -174,5 +169,13 @@ public class AffairInfo {
 
     public void setAffairMemberId(long affairMemberId) {
         this.affairMemberId = affairMemberId;
+    }
+
+    public long getRoleAllianceId() {
+        return roleAllianceId;
+    }
+
+    public void setRoleAllianceId(long roleAllianceId) {
+        this.roleAllianceId = roleAllianceId;
     }
 }

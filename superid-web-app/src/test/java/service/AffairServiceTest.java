@@ -4,6 +4,7 @@ import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.forms.AffairInfo;
+import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
@@ -26,7 +27,16 @@ public class AffairServiceTest {
     private IAffairService affairService;
 
     @Test
-    public void createAffairTest(){
+    public void createAffairTest() throws Exception {
+        CreateAffairForm createAffairForm = new CreateAffairForm();
+        createAffairForm.setParentAffairId(8195);
+        createAffairForm.setAllianceId(2400);
+        createAffairForm.setName("汤茂思的子事务1");
+        createAffairForm.setLogo(null);
+        createAffairForm.setDescription("测试");
+        createAffairForm.setPublicType(1);
+        createAffairForm.setOperationRoleId(3740);
+        affairService.createAffair(createAffairForm);
 
     }
     @Test

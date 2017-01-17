@@ -84,53 +84,44 @@ public class AffairService implements IAffairService {
 
     @Override
     @Transactional
-    public Map<String, Object> createAffair(CreateAffairForm createAffairForm) throws Exception {
-        long parentAffairId = createAffairForm.getAffairId();
-        long parentAllianceId = createAffairForm.getAllianceId();
-        AffairEntity parentAffair = AffairEntity.dao.findById(parentAffairId, parentAllianceId);
+    public AffairInfo createAffair(CreateAffairForm createAffairForm) throws Exception {
+        long parentAffairId = createAffairForm.getParentAffairId();
+        long allianceId = createAffairForm.getAllianceId();
+        AffairEntity parentAffair = AffairEntity.dao.findById(parentAffairId, allianceId);
         if (parentAffair == null) {
             throw new Exception("parent affair not found ");
         }
-        int count = AffairEntity.dao.eq("parentId", parentAffairId).partitionId(parentAllianceId).count();//已有数目
+        AffairEntity affairEntity = convert(parentAffair, createAffairForm);
 
+        long aid = AffairEntity.dao.getDRDSAutoId();
+        affairEntity.setId(aid);
+        String superId = StringUtil.generateId(aid, SuperIdNumber.AFFAIR_SUPERID);
+        affairEntity.setSuperid(superId);
+        affairEntity.save();
 
-        AffairEntity affairEntity = new AffairEntity();
-        affairEntity.setParentId(parentAffairId);
-        affairEntity.setOwnerRoleId(createAffairForm.getOperationRoleId());
-        affairEntity.setState(ValidState.Valid);
-        affairEntity.setType(parentAffair.getType());
-        affairEntity.setPublicType(createAffairForm.getPublicType());
-        affairEntity.setAllianceId(parentAffair.getAllianceId());
-        affairEntity.setShortName(createAffairForm.getLogo() != null ? createAffairForm.getLogo() : createAffairForm.getName());
-        affairEntity.setNameAbbr(PingYinUtil.getFirstSpell(createAffairForm.getName()));
-
-
-        affairEntity.setDescription(createAffairForm.getDescription() != null ? createAffairForm.getDescription() : "");
-        affairEntity.setName(createAffairForm.getName());
-        affairEntity.setLevel(parentAffair.getLevel() + 1);
-        affairEntity.setPathIndex(count + 1);
-        affairEntity.setPath(parentAffair.getPath() + '-' + affairEntity.getPathIndex());
-        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        saveAffair(affairEntity);
-
-        long folderId = fileService.createRootFolderForAffair(createAffairForm.getAllianceId(), affairEntity.getId(), createAffairForm.getOperationRoleId());
+        long folderId = fileService.createRootFolderForAffair(allianceId, affairEntity.getId(), createAffairForm.getOperationRoleId());
         affairEntity.setFolderId(folderId);
-        AffairEntity.dao.partitionId(createAffairForm.getAllianceId()).id(affairEntity.getId()).set("folderId", folderId);
+        AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId", folderId);
 
+        AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), createAffairForm.getOperationRoleId(), createAffairForm.getOperationRoleId());//作为创建者
 
-        AffairMemberEntity member = affairMemberService.addCreator(affairEntity.getAllianceId(), affairEntity.getId(), userService.currentUserId(), createAffairForm.getOperationRoleId());//作为创建者
+        AffairInfo affairInfo = new AffairInfo();
+        affairInfo.setId(affairEntity.getId());
+        affairInfo.setSuperid(affairEntity.getSuperid());
+        affairInfo.setName(affairEntity.getName());
+        affairInfo.setShortName(affairEntity.getShortName());
+        affairInfo.setDescription(affairEntity.getDescription());
+        affairInfo.setPublicType(affairEntity.getPublicType());
+        affairInfo.setLogoUrl(affairEntity.getLogoUrl());
+        affairInfo.setGuestLimit(affairEntity.getGuestLimit());
 
+        RoleEntity role = RoleEntity.dao.findById(createAffairForm.getOperationRoleId(),allianceId);
+        affairInfo.setRoleId(role.getId());
+        affairInfo.setRoleTitle(role.getTitle());
 
-        Map<String, Object> result = new HashedMap();
-        //FBI AffairEntity本来就有,生成这个AffairInfo不能根据当前的AffairEntity吗
-        result.put("affair", getAffairInfo(affairEntity.getAllianceId(), affairEntity.getId()));
-        result.put("affairMemberId", member.getId());
-        RoleCache _role = RoleCache.dao.findById(createAffairForm.getOperationRoleId());
-        if (_role == null) {
-            return null;
-        }
-        result.put("role", new SimpleRoleVO(createAffairForm.getOperationRoleId(), _role.getTitle()));
-        return result;
+        affairInfo.setAffairMemberId(member.getId());
+        affairInfo.setPermissions(member.getPermissions());
+        return affairInfo;
     }
 
     /**
@@ -572,26 +563,26 @@ public class AffairService implements IAffairService {
             long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
             RoleEntity tempRole = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
-            if(tempRole!= null){
+            if (tempRole != null) {
                 affairInfo.setRoleTitle(tempRole.getTitle());
-            }else {
+            } else {
                 affairInfo.setRoleTitle("");
             }
-            affairInfo.setAllianceId(tempAllianceId);
+            affairInfo.setRoleAllianceId(tempAllianceId);
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
 
             AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();
             if (affairMemberEntity != null) {
                 affairInfo.setAffairMemberId(affairMemberEntity.getId());
                 affairInfo.setPermissions(affairMemberEntity.getPermissions());
-            }else {
+            } else {
                 affairInfo.setAffairMemberId(0L);
                 affairInfo.setPermissions("");
             }
 
         } else {
             //没有affairUser的话就返回该用户在这个盟里最先创建的角色
-            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
+            RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
             affairInfo.setRoleTitle(roleEntity.getTitle());
             affairInfo.setRoleId(roleEntity.getId());
             affairInfo.setIsStuck(false);
@@ -677,6 +668,29 @@ public class AffairService implements IAffairService {
 
     private boolean isExist(String superid) {
         return AffairEntity.dao.eq("superid", superid).exists();
+    }
+
+    private AffairEntity convert(AffairEntity parentAffair, CreateAffairForm form) {
+        long parentAffairId = form.getParentAffairId();
+        long allianceId = form.getAllianceId();
+        int count = AffairEntity.dao.eq("parentId", parentAffairId).partitionId(allianceId).count();//已有数目
+        AffairEntity affairEntity = new AffairEntity();
+        affairEntity.setParentId(parentAffairId);
+        affairEntity.setOwnerRoleId(form.getOperationRoleId());
+        affairEntity.setState(ValidState.Valid);
+        affairEntity.setType(parentAffair.getType());
+        affairEntity.setPublicType(form.getPublicType());
+        affairEntity.setAllianceId(parentAffair.getAllianceId());
+        affairEntity.setShortName(form.getLogo() != null ? form.getLogo() : form.getName());
+        affairEntity.setNameAbbr(PingYinUtil.getFirstSpell(form.getName()));
+
+        affairEntity.setDescription(form.getDescription() != null ? form.getDescription() : "");
+        affairEntity.setName(form.getName());
+        affairEntity.setLevel(parentAffair.getLevel() + 1);
+        affairEntity.setPathIndex(count + 1);
+        affairEntity.setPath(parentAffair.getPath() + '-' + affairEntity.getPathIndex());
+        affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        return affairEntity;
     }
 
 }

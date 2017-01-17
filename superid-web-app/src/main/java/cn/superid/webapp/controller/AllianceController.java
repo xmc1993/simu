@@ -70,7 +70,7 @@ public class AllianceController {
             }
             CreateAffairForm createAffairForm = new CreateAffairForm();
             createAffairForm.setName(affairName);
-            createAffairForm.setAffairId(allianceEntity.getRootAffairId());
+            createAffairForm.setParentAffairId(allianceEntity.getRootAffairId());
             createAffairForm.setNumber(index++);
             createAffairForm.setAllianceId(allianceEntity.getId());
             createAffairForm.setOperationRoleId(allianceEntity.getOwnerRoleId());

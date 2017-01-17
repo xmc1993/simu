@@ -7,15 +7,21 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * Created by xiaofengxu on 16/8/31.
  */
 @ApiModel
-public class CreateAffairForm {
+public class CreateAffairForm extends Form{
     private String name;
-    private long affairId;
+    private Long parentAffairId;
     private Integer number;
     private long operationRoleId;
-    private int publicType;
+    private Integer publicType;
     private long allianceId;
     private String logo;
     private String description;
+
+    @Override
+    public void validate() throws IllegalArgumentException {
+        notEmpty("name",name);
+        notNull("publicType",publicType);
+    }
 
     public String getName() {
         return name;
@@ -25,12 +31,12 @@ public class CreateAffairForm {
         this.name = name;
     }
 
-    public long getAffairId() {
-        return affairId;
+    public long getParentAffairId() {
+        return parentAffairId;
     }
 
-    public void setAffairId(long affairId) {
-        this.affairId = affairId;
+    public void setParentAffairId(long parentAffairId) {
+        this.parentAffairId = parentAffairId;
     }
 
     public long getOperationRoleId() {
@@ -80,4 +86,5 @@ public class CreateAffairForm {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }
