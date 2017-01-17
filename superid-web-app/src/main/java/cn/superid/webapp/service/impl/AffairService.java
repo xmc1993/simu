@@ -350,7 +350,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId, String... params) {
-        return affairDao.getChildAffairs(allianceId,affairId,params);
+        return affairDao.getChildAffairs(allianceId, affairId, params);
     }
 
     @Override
@@ -393,7 +393,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public Map<String, Object> affairOverview(long allianceId, long affairId) {
+    public AffairOverviewVO affairOverview(long allianceId, long affairId) {
         int member = affairMemberService.countAffairMember(allianceId, affairId,null);
         int file = FileEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
         int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
