@@ -103,7 +103,7 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId", folderId);
 
-        AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), 3254, createAffairForm.getOperationRoleId());//作为创建者
+        AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), createAffairForm.getOperationRoleId(), createAffairForm.getOperationRoleId());//作为创建者
 
         AffairInfo affairInfo = new AffairInfo();
         affairInfo.setId(affairEntity.getId());
