@@ -6,16 +6,16 @@ import java.util.List;
  * Created by xiaofengxu on 17/1/17.
  */
 public class GetRoleCardsMap {
-    private String affairId;
+    private long affairId;
     private List<AffairRoleCard> roles;
-    private int masterCount;
+    private int officialCount;
     private int guestCount;
 
-    public String getAffairId() {
+    public long getAffairId() {
         return affairId;
     }
 
-    public void setAffairId(String affairId) {
+    public void setAffairId(long affairId) {
         this.affairId = affairId;
     }
 
@@ -27,12 +27,12 @@ public class GetRoleCardsMap {
         this.roles = roles;
     }
 
-    public int getMasterCount() {
-        return masterCount;
+    public int getOfficialCount() {
+        return officialCount;
     }
 
-    public void setMasterCount(int masterCount) {
-        this.masterCount = masterCount;
+    public void setOfficialCount(int officialCount) {
+        this.officialCount = officialCount;
     }
 
     public int getGuestCount() {

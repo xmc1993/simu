@@ -14,6 +14,7 @@ import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.AffairMemberEntity;
+import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.security.AffairPermissions;
 import cn.superid.webapp.security.GlobalValue;
@@ -115,19 +116,9 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = AffairRoleCard.class, notes = "如果要获取某几个子事务的话,目前先一个个获取")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(@RequestParam() Long allianceId,  @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
-        //TODO 权限检查
-        Map<String,List<AffairRoleCard>>  map= new HashMap<>();
-        String affairIds = searchAffairRoleConditions.getAffairIds();
-        if(StringUtil.isEmpty(affairIds)){
-            return new SimpleResponse(ResponseCode.NeedParams,null);
-        }else{
-            String[] affairList = affairIds.split(",");
-            for(String id:affairList){
-                map.put(id,affairMemberService.searchAffairRoleCards(allianceId, Long.parseLong(id), searchAffairRoleConditions));
-            }
-        }
-        return SimpleResponse.ok(map);
+    public SimpleResponse getAffairRoleCards(@RequestParam() Long roleId,  @RequestParam() Long affairId,@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+        RoleCache roleCache = RoleCache.dao.findById(roleId);//权限判断
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(roleCache.getAllianceId(),affairId,searchAffairRoleConditions));
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")

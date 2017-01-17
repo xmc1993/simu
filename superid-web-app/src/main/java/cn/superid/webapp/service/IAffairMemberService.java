@@ -213,7 +213,7 @@ public interface IAffairMemberService {
     public Map<Long, List<Object>> getAffairMemberByAffairId(long allianceId,long affairId);
 
 
-    GetRoleCardsMap searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
+    List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 
 
     /**

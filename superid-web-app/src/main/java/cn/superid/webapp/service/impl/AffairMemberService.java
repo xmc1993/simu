@@ -11,6 +11,7 @@ import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
+import cn.superid.webapp.enums.type.AffairMemberType;
 import cn.superid.webapp.enums.type.InvitationType;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AffairRoleCard;
@@ -445,14 +446,16 @@ public class AffairMemberService implements IAffairMemberService {
         return members;
     }
 
+
+
     @Override
-    public GetRoleCardsMap searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
+    public List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions) {
         if (conditions.getLimit() < 10 || conditions.getLimit() > 100) conditions.setLimit(20);
 
         long[] affairIds;
         if(StringUtil.isEmpty(conditions.getAffairIds())){
             affairIds = new long[1];
-            affairIds[1] =affairId;
+            affairIds[0] =affairId;
         }else{
             String[] ids =conditions.getAffairIds().split(",");
             affairIds = new long[ids.length];
@@ -460,11 +463,36 @@ public class AffairMemberService implements IAffairMemberService {
                 affairIds[i] = Long.parseLong(ids[i]);
             }
         }
+
+        List<GetRoleCardsMap> list = new ArrayList<>(affairIds.length);
         for(long id:affairIds){
+            GetRoleCardsMap getRoleCardsMap = new GetRoleCardsMap();
+            getRoleCardsMap.setAffairId(id);
             List<AffairRoleCard> affairRoleCards = affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+            getRoleCardsMap.setRoles(affairRoleCards);
+
+            if(conditions.isNeedCount()){
+                int officialCount=0,guestCount=0;
+                if(affairRoleCards.size()<conditions.getLimit()){//已经全部取完,这时候完全可以得到各自的官方和客方数目
+                    for(AffairRoleCard affairRoleCard:affairRoleCards){
+                        if(affairRoleCard.getType()== AffairMemberType.Official){
+                            officialCount++;
+                        }else{
+                            guestCount++;
+                        }
+                    }
+                }else{
+                    officialCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",id).eq("type",AffairMemberType.Official).count();
+                    guestCount = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId",id).eq("type",AffairMemberType.Guest).count();
+
+                }
+                getRoleCardsMap.setOfficialCount(officialCount);
+                getRoleCardsMap.setGuestCount(guestCount);
+            }
+            list.add(getRoleCardsMap);
         }
 
-        return new GetRoleCardsMap();
+        return list;
     }
 
     @Override
