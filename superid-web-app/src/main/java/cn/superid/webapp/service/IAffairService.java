@@ -1,5 +1,6 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.VO.AffairOverviewVO;
 import cn.superid.webapp.controller.forms.AffairInfo;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.AffairEntity;
@@ -8,7 +9,6 @@ import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by zp on 2016/7/26.
@@ -116,7 +116,7 @@ public interface IAffairService {
      * @param affairId
      * @return
      */
-    Map<String, Object> affairOverview(long allianceId, long affairId);
+    AffairOverviewVO affairOverview(long allianceId, long affairId);
 
     /**
      * 判断一个事务是否是另一个的子事务
