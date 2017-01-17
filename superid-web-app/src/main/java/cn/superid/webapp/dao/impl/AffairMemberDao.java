@@ -24,6 +24,15 @@ import java.util.List;
 public class AffairMemberDao implements IAffairMemberDao {
 
     @Override
+    public List<AffairEntity> getChildAffairs(long allianceId, long affairId, String... columns) {
+        AffairEntity currentAffair = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("path");
+        if(currentAffair==null){
+            return null;
+        }
+        return AffairEntity.dao.partitionId(allianceId).lk("path",currentAffair.getPath()+"%").selectList(columns);
+    }
+
+    @Override
     public List<AffairRoleCard> searchAffairRoles(long allianceId, long affairId, SearchAffairRoleConditions conditions) {//TODO  先简单点来,等我redis再改善点,取出所有roleId,然后在内存里面查。。。。
 
         boolean hasKey = StringUtil.notEmpty(conditions.getKey());
@@ -34,10 +43,20 @@ public class AffairMemberDao implements IAffairMemberDao {
                 "ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName,ta.type from ");
         ParameterBindings parameterBindings = new ParameterBindings();
 
-        sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id =? ");//查出满足所有要求的affairmember
 
-        parameterBindings.addIndexBinding(allianceId);
-        parameterBindings.addIndexBinding(affairId);
+        if(!conditions.isContainChild()){
+            sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id =? ");//查出满足所有要求的affairmember
+            parameterBindings.addIndexBinding(allianceId,affairId);
+        }else{
+            sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id in (0 ");//查出满足所有要求的affairmember
+            parameterBindings.addIndexBinding(allianceId);
+            List<AffairEntity> list = getChildAffairs(allianceId,affairId,"id");
+            for(AffairEntity affairEntity:list){
+                sql.append(",?");
+                parameterBindings.addIndexBinding(affairEntity.getId());
+            }
+            sql.append(") ");
+        }
 
         if (conditions.getActive() != null) {
             if (conditions.getActive()) {
