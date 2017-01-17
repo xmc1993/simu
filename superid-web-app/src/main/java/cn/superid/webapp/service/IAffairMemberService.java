@@ -64,15 +64,6 @@ public interface IAffairMemberService {
 
     boolean modifyAffairMemberPermissions(Long allianceId, Long affairId, Long toRoleId, String permissions) throws Exception;
 
-    /**
-     * 新增事务权限组
-     *
-     * @param affairId
-     * @param name
-     * @return
-     * @throws Exception
-     */
-    PermissionGroupEntity addPermissionGroup(Long allianceId, Long affairId, String name, String permissions) throws Exception;
 
     /**
      * 在申请加入事务之前检测能否加入该事务,返回异常情况code

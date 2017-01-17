@@ -24,6 +24,7 @@ import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAffairUserService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
@@ -47,6 +48,8 @@ public class AffairMemberService implements IAffairMemberService {
     private IAffairUserService affairUserService;
     @Autowired
     private IAffairMemberDao affairMemberDao;
+    @Autowired
+    private IAffairService affairService;
 
     @Override
     public AffairMemberEntity addMember(Long allianceId, Long affairId, Long roleId, String permissions) {
@@ -87,28 +90,10 @@ public class AffairMemberService implements IAffairMemberService {
         return updateCount > 0;
     }
 
-    @Override
-    public PermissionGroupEntity addPermissionGroup(Long allianceId, Long affairId, String name, String permissions) throws Exception {
-        boolean isExist = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
-        if (!isExist) {
-            throw new Exception("找不到该事务");
-        }
-        if (StringUtil.isEmpty(permissions)) {
-            throw new Exception("请选择正确的权限");
-        }
-        PermissionGroupEntity permissionGroupEntity = new PermissionGroupEntity();
-        permissionGroupEntity.setName(name);
-        permissionGroupEntity.setAffairId(affairId);
-        permissionGroupEntity.setPermissions(permissions);
-        permissionGroupEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
-        permissionGroupEntity.save();
-        return permissionGroupEntity;
-    }
 
     @Override
     public int canApplyForEnterAffair(Long allianceId, Long affairId, Long roleId) {
-        boolean affairIsFind = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
-        if (!affairIsFind) {
+        if(!affairService.affairExist(allianceId,affairId)){
             return ResponseCode.AffairNotExist;
         }
         boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("role_id", roleId).state(ValidState.Valid).exists();
@@ -128,7 +113,6 @@ public class AffairMemberService implements IAffairMemberService {
         if (code != 0) {
             return code;
         }
-
         AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
         affairMemberApplicationEntity.setRoleId(roleId);
         affairMemberApplicationEntity.setUserId(userService.currentUserId());
@@ -152,8 +136,7 @@ public class AffairMemberService implements IAffairMemberService {
             return ResponseCode.ApplicationNotExist;
         }
 
-        boolean isExist = AffairEntity.dao.id(affairMemberApplicationEntity.getAffairId()).partitionId(allianceId).exists();
-        if (!isExist) {
+        if(!affairService.affairExist(allianceId,affairId)){
             return ResponseCode.AffairNotExist;
         }
 
@@ -190,20 +173,14 @@ public class AffairMemberService implements IAffairMemberService {
     @Override
     public int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId) {
         //异常流程
-        boolean affairIsFind = AffairEntity.dao.id(affairId).partitionId(allianceId).exists();
-        if (!affairIsFind) {
+        if(!affairService.affairExist(allianceId,affairId)){
             return ResponseCode.AffairNotExist;
         }
+
         boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("roleId", beInvitedRoleId).state(ValidState.Valid).exists();
         if (isExist) {
             return ResponseCode.MemberIsExistInAffair;
         }
-        /*
-        boolean isInvited = InvitationEntity.dao.partitionId(allianceId).eq("beInvitedRoleId", beInvitedRoleId).state(DealState.ToCheck).exists();
-        if (isInvited) {
-            return ResponseCode.WaitForDeal;
-        }
-        */
         return ResponseCode.OK;
     }
 
