@@ -170,7 +170,7 @@ public class RoleService implements IRoleService {
 
     @Override
     public List<SimpleRoleVO> getRoles() {
-        StringBuilder sb = new StringBuilder("select id as roleId,title as roleName from role where user_id = ? ");
+        StringBuilder sb = new StringBuilder("select a.id as roleId,a.title as roleName, b.id as allianceId, b.name as allianceName from role a join alliance b on a.alliance_id = b.id where user_id = ? ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
         return SimpleRoleVO.dao.findListByNativeSql(sb.toString(),p);
