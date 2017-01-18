@@ -5,8 +5,12 @@ import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;
+import cn.superid.webapp.controller.VO.AffairOverviewVO;
 import cn.superid.webapp.controller.forms.AffairInfo;
-import cn.superid.webapp.enums.*;
+import cn.superid.webapp.dao.impl.SQLDao;
+import cn.superid.webapp.enums.IntBoolean;
+import cn.superid.webapp.enums.ResponseCode;
+import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.state.AffairMoveState;
 import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.enums.state.ValidState;
@@ -21,14 +25,15 @@ import cn.superid.webapp.service.forms.ModifyAffairInfoForm;
 import cn.superid.webapp.service.forms.SimpleRoleForm;
 import cn.superid.webapp.service.vo.AffairTreeVO;
 import cn.superid.webapp.service.vo.GetRoleVO;
-
 import cn.superid.webapp.utils.TimeUtil;
 import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by zp on 2016/8/8.
@@ -104,7 +109,7 @@ public class AffairService implements IAffairService {
         affairEntity.setFolderId(folderId);
         AffairEntity.dao.partitionId(allianceId).id(affairEntity.getId()).set("folderId", folderId);
 
-        AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), createAffairForm.getOperationRoleId(), createAffairForm.getOperationRoleId());//作为创建者
+        AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), userService.currentUserId(), createAffairForm.getOperationRoleId());//作为创建者
 
         AffairInfo affairInfo = new AffairInfo();
         affairInfo.setId(affairEntity.getId());
@@ -116,7 +121,7 @@ public class AffairService implements IAffairService {
         affairInfo.setLogoUrl(affairEntity.getLogoUrl());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
 
-        RoleEntity role = RoleEntity.dao.findById(createAffairForm.getOperationRoleId(),allianceId);
+        RoleEntity role = RoleEntity.dao.findById(createAffairForm.getOperationRoleId(), allianceId);
         affairInfo.setRoleId(role.getId());
         affairInfo.setRoleTitle(role.getTitle());
 
@@ -345,7 +350,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public List<AffairEntity> getAllChildAffairs(long allianceId, long affairId, String... params) {
-        return affairDao.getChildAffairs(allianceId,affairId,params);
+        return affairDao.getChildAffairs(allianceId, affairId, params);
     }
 
     @Override
@@ -388,18 +393,18 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public Map<String, Object> affairOverview(long allianceId, long affairId) {
+    public AffairOverviewVO affairOverview(long allianceId, long affairId) {
         int member = affairMemberService.countAffairMember(allianceId, affairId,null);
         int file = FileEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
         int announcement = AnnouncementEntity.dao.partitionId(allianceId).eq("affair_id", affairId).count();
         //TODO:事务这块待确定
         int task = 0;
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("member", member);
-        rsMap.put("file", file);
-        rsMap.put("announcement", announcement);
-        rsMap.put("task", task);
-        return rsMap;
+        AffairOverviewVO vo = new AffairOverviewVO();
+        vo.setMembers(member);
+        vo.setAnnouncements(announcement);
+        vo.setFiles(file);
+        vo.setTasks(task);
+        return vo;
     }
 
     @Override
@@ -670,13 +675,13 @@ public class AffairService implements IAffairService {
         int count = AffairEntity.dao.eq("parentId", parentAffairId).partitionId(allianceId).count();//已有数目
         AffairEntity affairEntity = new AffairEntity();
         affairEntity.setParentId(parentAffairId);
-        affairEntity.setOwnerRoleId(form.getOperationRoleId());
-        affairEntity.setState(ValidState.Valid);
-        affairEntity.setType(parentAffair.getType());
-        affairEntity.setPublicType(form.getPublicType());
-        affairEntity.setAllianceId(parentAffair.getAllianceId());
         affairEntity.setShortName(form.getLogo() != null ? form.getLogo() : form.getName());
         affairEntity.setNameAbbr(PingYinUtil.getFirstSpell(form.getName()));
+        affairEntity.setOwnerRoleId(form.getOperationRoleId());
+        affairEntity.setState(ValidState.Valid);
+        affairEntity.setPublicType(form.getPublicType());
+        affairEntity.setAllianceId(parentAffair.getAllianceId());
+        affairEntity.setType(parentAffair.getType());
 
         affairEntity.setDescription(form.getDescription() != null ? form.getDescription() : "");
         affairEntity.setName(form.getName());
@@ -684,6 +689,7 @@ public class AffairService implements IAffairService {
         affairEntity.setPathIndex(count + 1);
         affairEntity.setPath(parentAffair.getPath() + '-' + affairEntity.getPathIndex());
         affairEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
+        affairEntity.setModifyTime(affairEntity.getCreateTime());
         return affairEntity;
     }
 

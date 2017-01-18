@@ -7,11 +7,13 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * Created by xiaofengxu on 16/8/31.
  */
 @ApiModel
-public class CreateAffairForm extends Form{
+public class CreateAffairForm extends Form {
+    @ApiModelProperty(required = true, notes = "必填")
     private String name;
     private Long parentAffairId;
     private Integer number;
     private long operationRoleId;
+    @ApiModelProperty(required = true, notes = "必填")
     private Integer publicType;
     private long allianceId;
     private String logo;
@@ -19,8 +21,8 @@ public class CreateAffairForm extends Form{
 
     @Override
     public void validate() throws IllegalArgumentException {
-        notEmpty("name",name);
-        notNull("publicType",publicType);
+        notEmpty("name", name);
+        notNull("publicType", publicType);
     }
 
     public String getName() {

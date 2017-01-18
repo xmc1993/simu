@@ -1,9 +1,13 @@
 package cn.superid.webapp.controller.VO;
 
+import cn.superid.jpa.orm.ConditionalDao;
+
 /**
  * Created by jizhenya on 16/11/22.
  */
 public class SimpleRoleVO {
+
+    public final static ConditionalDao dao = new ConditionalDao(SimpleRoleVO.class);
 
     private long roleId;
     private String roleName;
