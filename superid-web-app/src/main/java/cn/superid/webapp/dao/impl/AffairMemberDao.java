@@ -34,7 +34,7 @@ public class AffairMemberDao implements IAffairMemberDao {
         String key = "%" + conditions.getKey() + "%";
 
 
-        StringBuilder sql = new StringBuilder("select r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender," +
+        StringBuilder sql = new StringBuilder("select distinct r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender," +
                 "ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName,ta.type from ");
         ParameterBindings parameterBindings = new ParameterBindings();
 
