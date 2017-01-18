@@ -11,6 +11,7 @@ import cn.superid.webapp.model.RoleEntity;
 import cn.superid.webapp.security.AlliancePermissions;
 import cn.superid.webapp.security.GlobalValue;
 import cn.superid.webapp.service.IAllianceService;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -38,6 +40,9 @@ public class AllianceMemberController {
 
     @Autowired
     private IAllianceService allianceService;
+
+    @Autowired
+    private IAllianceUserService allianceUserService;
 
     @ApiOperation(value = "搜索用户", response = boolean.class, notes = "在盟内需要权限的接口都要传入roleId")
     @RequestMapping(value = "/search_user", method = RequestMethod.POST)
@@ -72,5 +77,12 @@ public class AllianceMemberController {
         List<RoleEntity> invalidRoles = roleService.getInvalidRoles(GlobalValue.currentAllianceId());
         return SimpleResponse.ok(invalidRoles);
     }
+
+    @ApiOperation(value = "接受邀请", response = boolean.class, notes = "接受邀请")
+    @RequestMapping(value = "/agree_invitation", method = RequestMethod.POST)
+    public SimpleResponse agreeInvitation(@RequestParam Long invitationId ,@RequestParam Long alliacneId ,@RequestParam String dealReason) {
+        return SimpleResponse.ok(allianceUserService.agreeInvitationToAlliance(invitationId,alliacneId,dealReason));
+    }
+
 
 }

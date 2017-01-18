@@ -380,11 +380,7 @@ public class AffairMemberService implements IAffairMemberService {
     @Override
     public int countAffairMember(long allianceId, long affairId,Integer type) {
         ConditionalDao dao = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId);
-        if(type==null){
-            return dao.count();
-        }else{
-            return dao.eq("type",type).count();
-        }
+        return type==null?dao.count():dao.eq("type",type).count();
     }
 
 
@@ -476,16 +472,13 @@ public class AffairMemberService implements IAffairMemberService {
             affairRoleCard.setPermissions(affairMemberEntity.getPermissions());
             affairRoleCard.setType(affairMemberEntity.getType());
         }
-
         RoleEntity roleEntity = RoleEntity.dao.findById(roleId,allianceId);
-
         affairRoleCard.setRoleId(roleEntity.getId());
         affairRoleCard.setRoleTitle(roleEntity.getTitle());
         affairRoleCard.setBelongAffairId(roleEntity.getBelongAffairId());
 
         AffairEntity belongAffair = AffairEntity.dao.partitionId(allianceId).id(roleEntity.getBelongAffairId()).selectOne("name");
         affairRoleCard.setBelongAffairName(belongAffair.getName());
-
 
         UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(roleEntity.getUserId());
         affairRoleCard.setAvatar(userBaseInfo.getAvatar());

@@ -31,6 +31,12 @@ public class RoleController {
         return new SimpleResponse(ResponseCode.OK,roleService.getUserAllianceRoles());
     }
 
+    @ApiOperation(value = "得到当前用户所有角色", response = String.class, notes = "")
+    @RequestMapping(value = "/roles",method = RequestMethod.GET)
+    public SimpleResponse getUserRoles(){
+        return new SimpleResponse(ResponseCode.OK,roleService.getRoles());
+    }
+
     @ApiOperation(value = "", response = String.class, notes = "")
     @RequestMapping(value = "/edit_public_type",method = RequestMethod.POST)
     public SimpleResponse editPublicType(@RequestBody RolePublicTypeListForm roles){

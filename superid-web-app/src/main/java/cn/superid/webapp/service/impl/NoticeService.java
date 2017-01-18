@@ -1,12 +1,18 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.controller.VO.InvitationVO;
+import cn.superid.webapp.dao.IInvitationDao;
 import cn.superid.webapp.enums.NoticeType;
 import cn.superid.webapp.notice.SendMessageTemplate;
 import cn.superid.webapp.notice.thrift.C2c;
 import cn.superid.webapp.notice.thrift.Msg;
 import cn.superid.webapp.service.INoticeService;
+import cn.superid.webapp.service.IUserService;
 import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by xmc1993 on 16/12/16.
@@ -15,6 +21,17 @@ import org.springframework.stereotype.Service;
 public class NoticeService implements INoticeService {
     private static final int SYSTEM = 10;//系统通知(消息类型)
     private static final int MSG = 0;//消息(数据类型)
+
+    @Autowired
+    private IInvitationDao invitationDao;
+
+    @Autowired
+    private IUserService userService;
+
+    @Override
+    public List<InvitationVO> getInvitationList() {
+        return invitationDao.getInvitationList(userService.currentUserId());
+    }
 
     @Override
     public boolean atSomeone(long frRid, String roleName, long frUid, String userName, long toUid, long relateId, long atRole) throws TException {

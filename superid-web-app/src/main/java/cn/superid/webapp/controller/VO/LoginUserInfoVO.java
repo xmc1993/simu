@@ -17,6 +17,7 @@ public class LoginUserInfoVO {
     private long homepageAffairId;
     private long personalRoleId;
     private long personalAllianceId;
+    private long personalAffairId;
     private String superid;
     private boolean isAuthenticated;
     private int gender;
@@ -92,5 +93,13 @@ public class LoginUserInfoVO {
 
     public void setGender(int gender) {
         this.gender = gender;
+    }
+
+    public long getPersonalAffairId() {
+        return personalAffairId;
+    }
+
+    public void setPersonalAffairId(long personalAffairId) {
+        this.personalAffairId = personalAffairId;
     }
 }

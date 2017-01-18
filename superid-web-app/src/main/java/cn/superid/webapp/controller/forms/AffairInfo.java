@@ -24,6 +24,7 @@ public class AffairInfo {
     private String covers = "";
     private Object overView;
     private String tags = "";
+    private long ownerRoleId = 0L;
 
     private long roleId;
     @ApiModelProperty(notes = "用于右上角显示的角色")
@@ -177,5 +178,13 @@ public class AffairInfo {
 
     public void setRoleAllianceId(long roleAllianceId) {
         this.roleAllianceId = roleAllianceId;
+    }
+
+    public long getOwnerRoleId() {
+        return ownerRoleId;
+    }
+
+    public void setOwnerRoleId(long ownerRoleId) {
+        this.ownerRoleId = ownerRoleId;
     }
 }
