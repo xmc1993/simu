@@ -33,7 +33,6 @@ public class SendMessageTemplate {
         }else if (c2c.getType() == MSG){
             affairId = c2c.getChat().getAid();
         }
-        System.out.println(c2c.getChat().getAid() + "---------------");
         //根据hash算法得到要取得连接的url
         String url;
         try {

@@ -19,7 +19,8 @@ public class NoticeEntity extends ExecutableModel {
     private int type; //消息类型
     private Timestamp createTime;
     private long userId;  //接受消息的用户Id
-    private String data;   //消息的具体内容，格式是json字符串
+    private String content;   //消息的具体内容，格式是json字符串
+    private String urls;
 
     @Id
     @Column(name = "id")
@@ -63,12 +64,20 @@ public class NoticeEntity extends ExecutableModel {
         this.type = type;
     }
 
-    public String getData() {
-        return data;
+    public String getContent() {
+        return content;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUrls() {
+        return urls;
+    }
+
+    public void setUrls(String urls) {
+        this.urls = urls;
     }
 }
 

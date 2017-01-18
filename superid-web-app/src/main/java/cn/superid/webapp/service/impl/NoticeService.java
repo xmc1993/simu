@@ -1,11 +1,13 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.utils.Converter;
 import cn.superid.webapp.controller.VO.InvitationVO;
+import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.dao.IInvitationDao;
-import cn.superid.webapp.enums.NoticeType;
 import cn.superid.webapp.model.NoticeEntity;
 import cn.superid.webapp.notice.NoticeGenerator;
 import cn.superid.webapp.notice.SendMessageTemplate;
+import cn.superid.webapp.notice.chat.Constant.C2CType;
 import cn.superid.webapp.notice.thrift.C2c;
 import cn.superid.webapp.notice.thrift.Msg;
 import cn.superid.webapp.service.INoticeService;
@@ -23,7 +25,6 @@ import java.util.List;
 @Service
 public class NoticeService implements INoticeService {
     private static final int SYSTEM = 10;//系统通知(消息类型)
-    private static final int MSG = 0;//消息(数据类型)
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -75,11 +76,10 @@ public class NoticeService implements INoticeService {
     }
 
     @Override
-    public void allianceInvitation(long toUid, long invitationId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception {
-        NoticeEntity noticeEntity = NoticeGenerator.getAllianceInvitation(toUid, invitationId, allianceName, inviterId, inviterName, inviterRoleTitle);
-        //noticeEntity.save();
-        Msg msg = newMsg(toUid);
-        C2c c2c = newC2c(msg, noticeEntity);
+    public void allianceInvitation(long toUid, long invitationId, long allianceId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception {
+        NoticeVO noticeVO = NoticeGenerator.getAllianceInvitation(toUid, invitationId, allianceId, allianceName, inviterId, inviterName, inviterRoleTitle);
+        C2c c2c = newC2c(toUid, noticeVO);
+        saveNoticeEntity(noticeVO);
         SendMessageTemplate.sendNotice(c2c);
     }
 
@@ -104,19 +104,27 @@ public class NoticeService implements INoticeService {
         return null;
     }
 
-    private C2c newC2c(Msg msg, NoticeEntity noticeEntity) throws Exception {
+    private void saveNoticeEntity(NoticeVO noticeVO) throws Exception {
+        NoticeEntity noticeEntity = Converter.convert(NoticeEntity.class, noticeVO);
+        noticeEntity.setUrls(objectMapper.writeValueAsString(noticeVO.getUrls()));
+        noticeEntity.save();
+        noticeVO.setId(noticeEntity.getId());
+    }
+
+    private C2c newC2c(long toUid, NoticeVO noticeVO) throws Exception {
         C2c c2c = new C2c();
-        c2c.setType(MSG);
-        c2c.setChat(msg);
-        c2c.setData(objectMapper.writeValueAsString(noticeEntity));
+        c2c.setType(C2CType.SYSTEM_NOTICE);
+        c2c.setParams(Long.toString(toUid));
+        c2c.setData(objectMapper.writeValueAsString(noticeVO));
         return c2c;
     }
 
-    private Msg newMsg(long toUid) {
-        Msg msg = new Msg();
-        msg.setType(SYSTEM);
-        msg.setToUid(toUid);
-        return msg;
+    private String join(long[] ids) {
+        StringBuilder sb = new StringBuilder();
+        for (long id : ids) {
+            sb.append(id).append(',');
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
     }
-
 }

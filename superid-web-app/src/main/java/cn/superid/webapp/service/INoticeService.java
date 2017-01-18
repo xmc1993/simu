@@ -15,6 +15,7 @@ public interface INoticeService {
     public List<InvitationVO> getInvitationList();
 
     boolean atSomeone(long frRid, String roleName, long frUid, String userName, long toUid, long relateId, long atRole) throws TException;
+
     void atSomeone(long toUid, long fromUid, String fromUname, String fromRoleTitle, long relatedId, String relateName) throws Exception;
 
     void taskCreated() throws Exception;
@@ -31,7 +32,7 @@ public interface INoticeService {
 
     void allianceFriendApplyAccepted() throws Exception;
 
-    void allianceInvitation(long toUid, long invitationId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception;
+    void allianceInvitation(long toUid, long invitationId, long allianceId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception;
 
     void affairJoinSuccess() throws Exception;
 

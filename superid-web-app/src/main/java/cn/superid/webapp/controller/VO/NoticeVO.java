@@ -1,5 +1,6 @@
 package cn.superid.webapp.controller.VO;
 
+import cn.superid.webapp.notice.Link;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -11,19 +12,18 @@ import java.sql.Timestamp;
 @ApiModel
 public class NoticeVO {
     private int id;
-    @ApiModelProperty(notes = "")
+    @ApiModelProperty(notes = "0未读 1已读")
     private short state;  //规则见ValidState类
+    @ApiModelProperty(notes = "消息类型")
     private int type; //消息类型
+    @ApiModelProperty(notes = "创建时间")
     private Timestamp createTime;
+    @ApiModelProperty("接受消息的用户Id")
     private long userId;  //接受消息的用户Id
-
-    private long linkId;     //链接Id，有可能是邀请的Id，也有可能是任务的Id，根据type来具体解释
-    private long fromUserId;  //消息发起者的userId
-    private String fromUserName;  //消息发起者姓名
-    private String fromRoleTitle;  //消息发起者的职务
-    private String allianceName;  //盟名称
-    private String taskName;       //任务名称
-    private String affairName;
+    @ApiModelProperty(notes = "消息内容")
+    private String content;
+    @ApiModelProperty(notes = "消息内容中链接描述数组")
+    private Link[] urls;
 
     public int getId() {
         return id;
@@ -65,59 +65,19 @@ public class NoticeVO {
         this.userId = userId;
     }
 
-    public long getLinkId() {
-        return linkId;
+    public String getContent() {
+        return content;
     }
 
-    public void setLinkId(long linkId) {
-        this.linkId = linkId;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public long getFromUserId() {
-        return fromUserId;
+    public Link[] getUrls() {
+        return urls;
     }
 
-    public void setFromUserId(long fromUserId) {
-        this.fromUserId = fromUserId;
-    }
-
-    public String getFromUserName() {
-        return fromUserName;
-    }
-
-    public void setFromUserName(String fromUserName) {
-        this.fromUserName = fromUserName;
-    }
-
-    public String getFromRoleTitle() {
-        return fromRoleTitle;
-    }
-
-    public void setFromRoleTitle(String fromRoleTitle) {
-        this.fromRoleTitle = fromRoleTitle;
-    }
-
-    public String getAllianceName() {
-        return allianceName;
-    }
-
-    public void setAllianceName(String allianceName) {
-        this.allianceName = allianceName;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getAffairName() {
-        return affairName;
-    }
-
-    public void setAffairName(String affairName) {
-        this.affairName = affairName;
+    public void setUrls(Link[] urls) {
+        this.urls = urls;
     }
 }

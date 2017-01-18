@@ -20,4 +20,5 @@ public interface C2CType {
     int GET_UNREAD_COUNT = 13;
     int QUERY_ANNOUNCEMENT_MSG = 14;//查询公告下面的所有聊天
     int UPDATE_CACHE = 15;
+    int SYSTEM_NOTICE = 16;    //系统通知
 }
