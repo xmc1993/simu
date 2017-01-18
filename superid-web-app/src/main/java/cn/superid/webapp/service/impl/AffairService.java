@@ -542,6 +542,7 @@ public class AffairService implements IAffairService {
         affairInfo.setId(affairEntity.getId());
         affairInfo.setLogoUrl(affairEntity.getLogoUrl());
         affairInfo.setName(affairEntity.getName());
+        affairInfo.setOwnerRoleId(affairEntity.getOwnerRoleId());
         affairInfo.setShortName(affairEntity.getShortName());
         affairInfo.setPublicType(affairEntity.getPublicType());
 //        affairInfo.setIsStuck(affairEntity.getIsStuck());

@@ -12,7 +12,7 @@ public class SimpleRoleVO {
     private long roleId;
     private String roleName;
     private String allianceName;
-    private String allianceId;
+    private long allianceId;
 
     public SimpleRoleVO(long roleId, String roleName) {
         this.roleId = roleId;
@@ -45,11 +45,11 @@ public class SimpleRoleVO {
         this.allianceName = allianceName;
     }
 
-    public String getAllianceId() {
+    public long getAllianceId() {
         return allianceId;
     }
 
-    public void setAllianceId(String allianceId) {
+    public void setAllianceId(long allianceId) {
         this.allianceId = allianceId;
     }
 }
