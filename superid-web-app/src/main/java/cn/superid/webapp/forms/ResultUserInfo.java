@@ -32,6 +32,7 @@ public class ResultUserInfo extends ExecutableModel{
     private String email = "";
     private String mobile = "";
     private Long personalRoleId = 0L;
+    private Long personalAffairId = 0L;
     private String idCard = "";
     private int marriageStatus = 0;
     private int educationLevel;
@@ -251,6 +252,14 @@ public class ResultUserInfo extends ExecutableModel{
 
     public void setHomepageAffairId(Long homepageAffairId) {
         this.homepageAffairId = homepageAffairId;
+    }
+
+    public Long getPersonalAffairId() {
+        return personalAffairId;
+    }
+
+    public void setPersonalAffairId(Long personalAffairId) {
+        this.personalAffairId = personalAffairId;
     }
 
     @Transient

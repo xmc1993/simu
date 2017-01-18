@@ -34,6 +34,7 @@ public class UserEntity extends ExecutableModel {
     private String mobile = "";
     private long personalRoleId;
     private long personalAllianceId;
+    private long personalAffairId;
     private String idCard = "";
     private int marriageStatus;
     private int educationLevel;
@@ -329,5 +330,11 @@ public class UserEntity extends ExecutableModel {
         isAuthenticated = authenticated;
     }
 
+    public long getPersonalAffairId() {
+        return personalAffairId;
+    }
 
+    public void setPersonalAffairId(long personalAffairId) {
+        this.personalAffairId = personalAffairId;
+    }
 }

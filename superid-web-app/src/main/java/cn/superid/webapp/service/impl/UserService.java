@@ -181,6 +181,7 @@ public class UserService implements IUserService {
         userEntity.setSuperid(superIdCode);
         userEntity.setPersonalRoleId(allianceEntity.getOwnerRoleId());
         userEntity.setPersonalAllianceId(allianceEntity.getId());
+        userEntity.setPersonalAffairId(allianceEntity.getRootAffairId());
         userEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         userEntity.setNameAbbr(PingYinUtil.getFirstSpell(userEntity.getRealname()));
         userEntity.update();
