@@ -560,15 +560,16 @@ public class AffairService implements IAffairService {
         if (lastOperateRole != null) {
             //有的话就把roleId和roleName返回给前端
             long tempRoleId = lastOperateRole.getRoleId();
-            long tempAllianceId = lastOperateRole.getAllianceId();
             affairInfo.setRoleId(tempRoleId);
-            RoleEntity tempRole = RoleEntity.dao.id(tempRoleId).partitionId(tempAllianceId).selectOne("title");
+            RoleCache tempRole = RoleCache.dao.findById(tempRoleId);
             if (tempRole != null) {
                 affairInfo.setRoleTitle(tempRole.getTitle());
+                affairInfo.setRoleAllianceId(tempRole.getAllianceId());
             } else {
                 affairInfo.setRoleTitle("");
+                affairInfo.setRoleAllianceId(0L);
             }
-            affairInfo.setRoleAllianceId(tempAllianceId);
+
             affairInfo.setIsStuck(lastOperateRole.getIsStuck());
 
             AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();

@@ -17,11 +17,7 @@ public class AffairUserService implements IAffairUserService {
     @Override
     public AffairUserEntity addAffairUser(long allianceId, long affairId, long userId, long roleId) {
         AffairUserEntity affairUserEntity = getAffairUser(allianceId,affairId,userId);
-        if(affairUserEntity != null){
-            affairUserEntity.setRoleId(roleId);
-            affairUserEntity.update();
-        }
-        else {
+        if(affairUserEntity == null){
             affairUserEntity = new AffairUserEntity();
             affairUserEntity.setAffairId(affairId);
             affairUserEntity.setAllianceId(allianceId);
