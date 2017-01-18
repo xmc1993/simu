@@ -39,14 +39,14 @@ public class AffairMemberDao implements IAffairMemberDao {
         ParameterBindings parameterBindings = new ParameterBindings();
 
 
-        if(!conditions.isContainChild()){
+        if (!conditions.isContainChild()) {
             sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id =? ");//查出满足所有要求的affairmember
-            parameterBindings.addIndexBinding(allianceId,affairId);
-        }else{
+            parameterBindings.addIndexBinding(allianceId, affairId);
+        } else {
             sql.append("(select *  from affair_member am where am.alliance_id = ? and affair_id in (0 ");//查出满足所有要求的affairmember
             parameterBindings.addIndexBinding(allianceId);
-            List<AffairEntity> list = affairDao.getChildAffairs(allianceId,affairId,"id");
-            for(AffairEntity affairEntity:list){
+            List<AffairEntity> list = affairDao.getChildAffairs(allianceId, affairId, "id");
+            for (AffairEntity affairEntity : list) {
                 sql.append(",?");
                 parameterBindings.addIndexBinding(affairEntity.getId());
             }
@@ -83,12 +83,12 @@ public class AffairMemberDao implements IAffairMemberDao {
         sql.append(" order by am.modify_time asc limit ? ");
         parameterBindings.addIndexBinding(conditions.getLimit());
 
-        return  AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
+        return AffairMemberEntity.getSession().findListByNativeSql(AffairRoleCard.class, sql.toString(), parameterBindings.getIndexParametersArray());
     }
 
     @Override
-    public List<AffairMemberSearchVo>  searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination) {
-        StringBuilder sb = new StringBuilder("select distinct u.id,u.username as username , u.superid as superid ,u.gender as gender,r.title as roleTitle,a.name as belongAffair" +
+    public List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination) {
+        StringBuilder sb = new StringBuilder("select distinct u.id as userId,u.username as username , u.superid as superid ,u.gender as gender,u.avatar as avatar,r.title as roleTitle,a.name as belongAffair" +
                 " from (select affair_id,role_id from affair_member where alliance_id= ? and affair_id ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
@@ -113,10 +113,10 @@ public class AffairMemberDao implements IAffairMemberDao {
         sb.append("join (select id,name from affair where alliance_id= ?) a on r.belong_affair_id=a.id ");
         p.addIndexBinding(allianceId);
         sb.append("join (select user_id from alliance_user where state= ? and alliance_id= ? ) au on au.user_id=r.user_id ");
-        if(conditions.isAllianceUser())p.addIndexBinding(0);
+        if (conditions.isAllianceUser()) p.addIndexBinding(0);
         else p.addIndexBinding(1);
         p.addIndexBinding(allianceId);
-        sb.append("join (select id,username,superid,gender from user ");
+        sb.append("join (select id,username,superid,gender,avatar from user ");
         if (cn.superid.jpa.util.StringUtil.notEmpty(conditions.getKey())) {
             sb.append("where username like ? or name_abbr like ? ");
             p.addIndexBinding("%" + conditions.getKey() + "%");

@@ -6,7 +6,9 @@ package cn.superid.webapp.service.vo;
 public class AffairMemberSearchVo {
     private String username;
     private String superid;
+    private long userId;
     private int gender;
+    private String avatar;
     private String roleTitle;
     //主事务
     private String belongAffair;
@@ -49,5 +51,21 @@ public class AffairMemberSearchVo {
 
     public void setBelongAffair(String belongAffair) {
         this.belongAffair = belongAffair;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
