@@ -22,20 +22,22 @@ public class NoticeServiceTest {
 
     @Test
     public void testTaskOverDue() throws TException {
-        boolean result = noticeService.taskOverDue(123L, "xmc", 456L, "xmc's task", 3);
-        System.out.println("The result is:" + result);
     }
 
     @Test
     public void testDisableAffair() throws TException {
-        boolean result = updateChatCacheService.disableAffair(123L);
-        System.out.println("The result is:" + result);
     }
 
     @Test
     public void testAffairMoveApplyAccepted() throws TException {
-        boolean res = noticeService.affairMoveApplyAccepted(1911L, 7620L, "", 0L, "");
-        System.out.println(res);
+    }
+
+    @Test
+    public void testAllianceInvitation() throws Exception {
+        while (true) {
+            noticeService.allianceInvitation(1912, 1, "test", 2400, "cdd", "manager");
+            Thread.sleep(5000);
+        }
     }
 }
 
