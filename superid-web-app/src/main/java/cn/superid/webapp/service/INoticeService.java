@@ -1,11 +1,16 @@
 package cn.superid.webapp.service;
 
+import cn.superid.webapp.controller.VO.InvitationVO;
 import org.apache.thrift.TException;
+
+import java.util.List;
 
 /**
  * Created by xmc1993 on 16/12/15.
  */
 public interface INoticeService {
+
+    public List<InvitationVO> getInvitationList();
 
     boolean atSomeone(long frRid, String roleName, long frUid, String userName, long toUid, long relateId, long atRole) throws TException;
 
