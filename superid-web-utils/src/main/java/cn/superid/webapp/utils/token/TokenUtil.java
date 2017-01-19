@@ -41,7 +41,7 @@ public final class TokenUtil {
      * @param uid 用户ID
      * @return
      */
-    public static boolean invaildLoginToken(Long uid, String token) {
+    public static boolean invalidLoginToken(Long uid, String token) {
         Jedis jedis = RedisTemplate.getJedis();
         if (jedis != null) {
             boolean res = jedis.srem(getKey(uid), token) != 0;

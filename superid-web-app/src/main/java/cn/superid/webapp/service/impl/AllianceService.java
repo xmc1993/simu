@@ -63,7 +63,6 @@ public class AllianceService  implements IAllianceService {
 
         allianceUserService.addAllianceUser(allianceEntity.getId(), allianceCreateForm.getUserId());
 
-
         RoleEntity roleEntity = roleService.createRole(allianceCreateForm.getRoleTitle(), allianceEntity.getId(),
                 allianceCreateForm.getUserId(), 0L, AffairPermissionRoleType.OWNER, 1);
 

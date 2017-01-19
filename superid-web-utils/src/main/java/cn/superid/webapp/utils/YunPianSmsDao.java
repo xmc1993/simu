@@ -1,8 +1,8 @@
 package cn.superid.webapp.utils;
 
-import com.sun.deploy.net.URLEncoder;
 import com.yunpian.sdk.model.*;
 import com.yunpian.sdk.service.*;
+import java.net.URLEncoder;
 
 /**
  * Created by njuTms on 16/10/26.
@@ -45,8 +45,10 @@ public class YunPianSmsDao {
     }
 
     public static void main(String args[]){
-        //sendSMSMessageToForeignMobile("+886980377771","1233");
+//        sendSMSMessageToForeignMobile("+886980377771","1233","");
     }
+
+
 
     /*
     public static void testTpl() {

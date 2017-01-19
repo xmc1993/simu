@@ -291,8 +291,6 @@ public class UserController {
         userEntity.setChatToken(chatToken);
         auth.authUser(userEntity.getId(), chatToken);
         CheckFrequencyUtil.reset(token);
-
-
         LoginUserInfoVO loginUserInfoVO = new LoginUserInfoVO();
         userEntity.copyPropertiesTo(loginUserInfoVO);
 

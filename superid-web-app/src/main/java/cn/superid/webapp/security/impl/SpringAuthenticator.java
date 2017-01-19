@@ -35,7 +35,7 @@ public class SpringAuthenticator implements IAuth {
     public void unAuthUser() {
         Long userId = (Long)getCurrentHttpSession().getAttribute("userId");
         String chatToken = (String)getCurrentHttpSession().getAttribute("chatToken");
-        TokenUtil.invaildLoginToken(userId, chatToken);
+        TokenUtil.invalidLoginToken(userId, chatToken);
         getCurrentHttpSession().removeAttribute("userId");
         getCurrentHttpSession().removeAttribute("chatToken");
         getCurrentHttpSession().invalidate();
