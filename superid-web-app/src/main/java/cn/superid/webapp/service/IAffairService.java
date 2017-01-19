@@ -171,5 +171,19 @@ public interface IAffairService {
      */
     boolean affairExist(long allianceId,long affairId);
 
+    /**
+     *
+     * @param affairId
+     * @return
+     */
+    boolean stickAffair(long allianceId,long affairId,boolean isStuck);
+
+    /**
+     *
+     * @param affairId
+     * @return
+     */
+    boolean setHomepage(long affairId);
+
 
 }

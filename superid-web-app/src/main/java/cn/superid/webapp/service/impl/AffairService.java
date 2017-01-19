@@ -12,6 +12,7 @@ import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.state.AffairMoveState;
+import cn.superid.webapp.enums.state.StuckState;
 import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.AffairMemberType;
@@ -112,23 +113,7 @@ public class AffairService implements IAffairService {
 
         AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), userService.currentUserId(), createAffairForm.getOperationRoleId());//作为创建者
 
-        AffairInfo affairInfo = new AffairInfo();
-        affairInfo.setId(affairEntity.getId());
-        affairInfo.setSuperid(affairEntity.getSuperid());
-        affairInfo.setName(affairEntity.getName());
-        affairInfo.setShortName(affairEntity.getShortName());
-        affairInfo.setDescription(affairEntity.getDescription());
-        affairInfo.setPublicType(affairEntity.getPublicType());
-        affairInfo.setLogoUrl(affairEntity.getLogoUrl());
-        affairInfo.setGuestLimit(affairEntity.getGuestLimit());
-
-        RoleEntity role = RoleEntity.dao.findById(createAffairForm.getOperationRoleId(), allianceId);
-        affairInfo.setRoleId(role.getId());
-        affairInfo.setRoleTitle(role.getTitle());
-
-        affairInfo.setAffairMemberId(member.getId());
-        affairInfo.setPermissions(member.getPermissions());
-        return affairInfo;
+        return getAffairInfo(allianceId,affairEntity.getId());
     }
 
     /**
@@ -619,6 +604,16 @@ public class AffairService implements IAffairService {
     @Override
     public boolean affairExist(long allianceId, long affairId) {
         return AffairEntity.dao.partitionId(allianceId).id(affairId).state(ValidState.Valid).exists();
+    }
+
+    @Override
+    public boolean stickAffair(long allianceId,long affairId,boolean isStuck) {
+        return AffairUserEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).set("state", isStuck)>0;
+    }
+
+    @Override
+    public boolean setHomepage(long affairId) {
+        return UserEntity.dao.id(userService.currentUserId()).set("homepage_affair_id",affairId)>0;
     }
 
 
