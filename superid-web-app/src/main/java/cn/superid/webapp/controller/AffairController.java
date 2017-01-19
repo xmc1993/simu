@@ -57,9 +57,9 @@ public class AffairController {
         }
     }
 
-    @ApiOperation(value = "获取直接子事务", response = List.class)
+    @ApiOperation(value = "获取直接子事务", response = List.class, notes = "暂时未用")
     @RequestMapping(value = "/direct_children", method = RequestMethod.GET)
-    @RequiredPermissions()
+    @RequiredPermissions(affair = AffairPermissions.CHILD_AFFAIR)
     public SimpleResponse getAllDirectChildAffair(@RequestParam Long affairMemberId) {
         try {
             return SimpleResponse.ok(affairService.getAllDirectChildAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId()));
@@ -156,6 +156,18 @@ public class AffairController {
             e.printStackTrace();
             return SimpleResponse.ok(AffairMoveState.FAIL);
         }
+    }
+
+    @ApiOperation(value = "置顶事务", response = Boolean.class, notes = "放哪还未确定")
+    @RequestMapping(value = "/stick_affair", method = RequestMethod.POST)
+    public SimpleResponse stickAffair(@RequestParam Long allianceId, @RequestParam Long affairId, @RequestParam boolean isStuck) {
+        return SimpleResponse.ok(affairService.stickAffair(allianceId,affairId,isStuck));
+    }
+
+    @ApiOperation(value = "设置主页", response = Boolean.class, notes = "放哪还未确定")
+    @RequestMapping(value = "/set_homepage", method = RequestMethod.POST)
+    public SimpleResponse setHomepage(@RequestParam Long allianceId, @RequestParam Long affairId) {
+        return SimpleResponse.ok(affairService.setHomepage(affairId));
     }
 
     @ApiOperation(value = "处理移动事务", response = Boolean.class, notes = "拥有权限")
