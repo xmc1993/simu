@@ -25,6 +25,8 @@ public interface INoticeService {
      */
     List<NoticeVO> search(long userId, Integer state, Integer type) throws Exception;
 
+    boolean markAsRead(long id);
+
     boolean atSomeone(long frRid, String roleName, long frUid, String userName, long toUid, long relateId, long atRole) throws TException;
 
     void atSomeone(long toUid, long fromUid, String fromUname, String fromRoleTitle, long relatedId, String relateName) throws Exception;

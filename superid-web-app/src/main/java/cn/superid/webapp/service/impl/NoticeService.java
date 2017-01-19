@@ -5,6 +5,7 @@ import cn.superid.utils.Converter;
 import cn.superid.webapp.controller.VO.InvitationVO;
 import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.dao.IInvitationDao;
+import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.NoticeEntity;
 import cn.superid.webapp.notice.Link;
 import cn.superid.webapp.notice.NoticeGenerator;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Service
 public class NoticeService implements INoticeService {
-    private static final int SYSTEM = 10;//系统通知(消息类型)
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -57,6 +58,14 @@ public class NoticeService implements INoticeService {
             voList.add(noticeVO);
         }
         return voList;
+    }
+
+    @Override
+    public boolean markAsRead(long id) {
+        NoticeEntity noticeEntity = NoticeEntity.dao.findById(id);
+        noticeEntity.setState(ValidState.Invalid);
+        noticeEntity.save();
+        return true;
     }
 
     @Override

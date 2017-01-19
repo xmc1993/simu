@@ -8,6 +8,7 @@ import cn.superid.webapp.service.impl.UserService;
 import com.wordnik.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,12 @@ public class NoticeController {
     public SimpleResponse search(@RequestParam(required = false) Integer state,
                                  @RequestParam(required = false) Integer type) throws Exception {
         return SimpleResponse.ok(noticeService.search(userService.currentUserId(), state, type));
+    }
+
+    @ApiOperation(value = "将消息标记为已读", response = Boolean.class)
+    @RequestMapping(value = "{id}/mark_as_read", method = RequestMethod.POST)
+    public SimpleResponse markAsRead(@PathVariable Long id) throws Exception {
+        return SimpleResponse.ok(noticeService.markAsRead(id));
     }
 
 
