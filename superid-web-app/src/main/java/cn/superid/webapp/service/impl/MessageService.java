@@ -1,7 +1,6 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.enums.MessageColumn;
-import cn.superid.webapp.notice.proto.Message;
 import cn.superid.webapp.service.IMessageService;
 import cn.superid.webapp.service.IRedisMessageService;
 import cn.superid.webapp.utils.AliOTSDao;
@@ -38,30 +37,6 @@ public class MessageService implements IMessageService {
 
     private final static Direction direction = Direction.BACKWARD;
     private OTSClient client = AliOTSDao.otsClient;
-
-    @Override
-    public boolean sendNotice(Message.NoticeMsg noticeMsg) throws InterruptedException, IOException, KeeperException {
-//        String url = NodeUtil.getNodeByKey(noticeMsg.getAffairId());
-//        String[] infos = url.split(":");
-//        String host = infos[0];
-//        int port = Integer.valueOf(infos[1]);
-//        Socket socket = TcpConnectorsPool.getTcpConnectorByHostAndPort(host, port);
-//        if (socket == null) {
-//            socket = TcpConnectorsPool.newTcpConnector(host, port);
-//        }
-//        if (socket == null) {
-//            return false;
-//        }
-//        try {
-//            OutputStream outputStream = socket.getOutputStream();
-//            noticeMsg.writeTo(outputStream);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-
-        return true;
-    }
 
     @Override
     public void insertIntoTable(Long toUserId, Long relatedId, HashMap<String, Object> params) {

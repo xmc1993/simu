@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  */
 @ApiModel
 public class NoticeVO {
-    private int id;
+    private long id;
     @ApiModelProperty(notes = "0未读 1已读")
     private short state;  //规则见ValidState类
     @ApiModelProperty(notes = "消息类型")
@@ -25,11 +25,11 @@ public class NoticeVO {
     @ApiModelProperty(notes = "消息内容中链接描述数组")
     private Link[] urls;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -4,7 +4,6 @@ import cn.superid.webapp.notice.chat.Constant.C2CType;
 import cn.superid.webapp.notice.chat.exception.NotLoginException;
 import cn.superid.webapp.notice.chat.proto.C2C;
 import cn.superid.webapp.notice.chat.proto.Message;
-import cn.superid.webapp.notice.tcp.Composer;
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 
@@ -32,6 +31,7 @@ public class ChatClient {
     private Composer composer;//原始byte流处理类
     private int port;
     private long userId;
+    private String host;
     private String token;
     private boolean loginSuccess;
     private Map<String, AsyncRequestHandler> requestCache = new HashMap<>();//有返回结果的request的缓存池
@@ -39,8 +39,9 @@ public class ChatClient {
     private Thread pingThread;   //监听inputstream的的线程
     private boolean consumeMessageThreadSignal;
     private boolean pingThreadSignal;
+    private int failPingCount =0;
     private boolean pingSuccess = false;
-    private int pingInterval = 10000;
+    private int pingInterval = 3*60*1000;
     private int pingTimeOut = 5000;
     private static ChatClient singleInstance;
 
@@ -57,34 +58,38 @@ public class ChatClient {
 
     //连接到服务器，物理连接
     private void connectSocket(String host, int port) throws IOException {
+        if(socket!=null&&socket.isConnected()){
+            socket.close();
+            inputStream.close();
+            outputStream.close();
+        }
         socket = new Socket(host, port);
         inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
-        System.out.println("连接服务器成功");
+        System.out.println("连接服务器成功"+host+":"+port);
         //监听来自服务器的消息，将字节流读到byte数据并发送给Composer处理
     }
 
     //连接并登陆到服务器
-    public void connectChatServer(String host, int port, long userId, String token, MessageHandler messageHandler) throws IOException {
-        this.port = port;
+    public void connectChatServer(String ip, long userId, String token, MessageHandler messageHandler) throws IOException {
+        String[] tmp = ip.split(":");
+        this.host = tmp[0];
+        this.port = Integer.parseInt(tmp[1])-1;
         this.userId = userId;
         this.token = token;
         //设置客户端Message处理器
         if (messageHandler != null) this.messageHandler = messageHandler;
         if (messageHandler == null) throw new RuntimeException("message Handler must not be null");
-        //如果Socket没有连接上，就先连接socket
-        if (socket == null || socket.isClosed() || !socket.isConnected()) {
-            connectSocket(host, port);
-        }
+//        //如果Socket没有连接上，就先连接socket
+//        if (socket == null || socket.isClosed() || !socket.isConnected()) {
+//        }
+        connectSocket(host, port);
         //设置消息监听线程
         consumeMessageThread = new Thread(new MessageListenerRunnable());
         consumeMessageThreadSignal = true;
         consumeMessageThread.start();
 
-        //设置心跳检测线程
-        pingThread = new Thread(new PingRunnable());
-        pingThreadSignal = true;
-        pingThread.start();
+
 
         //如果composer没有被正确设置，则设置composer
         if (composer == null) {
@@ -92,17 +97,25 @@ public class ChatClient {
         }
         //登陆到服务器
         loginServer(userId, token);
+
+        //设置心跳检测线程
+        pingThread = new Thread(new PingRunnable());
+        pingThreadSignal = true;
+        pingThread.start();
+
     }
 
     //关闭服务器的连接
-    public void closeConnect() throws Exception {
+    public void closeConnect() throws IOException {
         //关闭线程
         consumeMessageThreadSignal = false;
         pingThreadSignal = false;
-        inputStream.close();
-        outputStream.close();
-        socket.close();
-        socket = null;
+        if(inputStream!=null){
+            inputStream.close();
+            outputStream.close();
+            socket.close();
+            socket = null;
+        }
     }
 
     //发送普通消息
@@ -164,7 +177,9 @@ public class ChatClient {
             @Override
             public void onError(C2C c2c) {
                 try {
-                    closeConnect();
+                    System.out.println(c2c.getData());
+                    Thread.sleep(5000);//先观望一些,让子弹飞一会儿
+//                    closeConnect();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -190,7 +205,7 @@ public class ChatClient {
                         messageHandler.handleNewLogin(c2c.getData());
                         break;
                     case C2CType.REDIRECT:
-                        connectChatServer(c2c.getData(), port, userId, token, null);
+                        connectChatServer(c2c.getData(),  userId, token, messageHandler);
                         break;
                     case C2CType.RESPONSE:
                         AsyncRequestHandler success = requestCache.get(c2c.getRequestId());
@@ -200,7 +215,7 @@ public class ChatClient {
                         }
                         break;
                     case C2CType.ERROR:
-                        System.out.println("onMessage error" + c2c.getType());
+                        System.out.println("onMessage error" + c2c.getData());
                         AsyncRequestHandler error = requestCache.get(c2c.getRequestId());
                         if (error != null) {
                             error.onError(c2c);
@@ -300,21 +315,26 @@ public class ChatClient {
     private class PingRunnable implements Runnable {
         @Override
         public void run() {
-            System.out.println("ping线程开始工作");
             C2C ping = new C2C(C2CType.PING, null);
             while (pingThreadSignal) {
                 try {
-                    outputStream.write(codec.encode(ping));
-                    outputStream.flush();
-                    pingSuccess = false;
-                    Thread.sleep(pingTimeOut);
-                    if (!pingSuccess) {
-                        closeConnect();
-                        messageHandler.handleDisconnect();
-                    } else {
-                        System.out.println("ping 成功！！！");
-                        Thread.sleep(pingInterval);
+                    Thread.sleep(pingInterval);
+                    if(socket!=null&&socket.isConnected()){
+                        outputStream.write(codec.encode(ping));
+                        outputStream.flush();
+                        pingSuccess = false;
+                        Thread.sleep(pingTimeOut);
+                        if (!pingSuccess) {
+                            failPingCount++;
+                            if(failPingCount==3){
+                                closeConnect();
+                                messageHandler.handleDisconnect();
+                            }
+                        } else {
+                            System.out.println("ping 成功！！！");
+                        }
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

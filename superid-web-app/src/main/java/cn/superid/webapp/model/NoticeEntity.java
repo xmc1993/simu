@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "notice")
 public class NoticeEntity extends ExecutableModel {
     public final static ConditionalDao dao = new ConditionalDao(NoticeEntity.class);
-    private int id;
+    private long id;
     private short state;  //规则见ValidState类
     private int type; //消息类型
     private Timestamp createTime;
@@ -24,11 +24,11 @@ public class NoticeEntity extends ExecutableModel {
 
     @Id
     @Column(name = "id")
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

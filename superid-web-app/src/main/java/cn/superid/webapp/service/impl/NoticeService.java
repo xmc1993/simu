@@ -1,22 +1,24 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.utils.Converter;
 import cn.superid.webapp.controller.VO.InvitationVO;
 import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.dao.IInvitationDao;
+import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.model.NoticeEntity;
+import cn.superid.webapp.notice.Link;
 import cn.superid.webapp.notice.NoticeGenerator;
 import cn.superid.webapp.notice.SendMessageTemplate;
 import cn.superid.webapp.notice.chat.Constant.C2CType;
 import cn.superid.webapp.notice.thrift.C2c;
-import cn.superid.webapp.notice.thrift.Msg;
 import cn.superid.webapp.service.INoticeService;
-import cn.superid.webapp.service.IUserService;
 import org.apache.thrift.TException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,18 +26,46 @@ import java.util.List;
  */
 @Service
 public class NoticeService implements INoticeService {
-    private static final int SYSTEM = 10;//系统通知(消息类型)
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private IInvitationDao invitationDao;
 
-    @Autowired
-    private IUserService userService;
+    @Override
+    public List<InvitationVO> getInvitationList(long userId) {
+        return invitationDao.getInvitationList(userId);
+    }
 
     @Override
-    public List<InvitationVO> getInvitationList() {
-        return invitationDao.getInvitationList(userService.currentUserId());
+    public List<NoticeVO> search(long userId, Integer state, Integer type) throws Exception {
+        ConditionalDao conditionalDao = NoticeEntity.dao.eq("userId", userId);
+        if (state != null)
+            conditionalDao = conditionalDao.eq("state", state);
+        if (type != null) {
+            if (type == 1)//@我，见 NoticeType 类
+                conditionalDao = conditionalDao.eq("type", 10);
+            if (type == 2)//任务相关
+                conditionalDao = conditionalDao.ge("type", 20).le("type", 49);
+            if (type == 3)//系统
+                conditionalDao = conditionalDao.ge("type", 50).le("type", 99);
+        }
+        List<NoticeEntity> noticeEntities = conditionalDao.selectList(NoticeEntity.class);
+        List<NoticeVO> voList = new ArrayList<>(noticeEntities.size());
+        for (NoticeEntity noticeEntity : noticeEntities) {
+            NoticeVO noticeVO = Converter.convert(NoticeVO.class, noticeEntity);
+            noticeVO.setUrls(objectMapper.readValue(noticeEntity.getUrls(), Link[].class));
+            voList.add(noticeVO);
+        }
+        return voList;
+    }
+
+    @Override
+    public boolean markAsRead(long id) {
+        NoticeEntity noticeEntity = NoticeEntity.dao.findById(id);
+        noticeEntity.setState(ValidState.Invalid);
+        noticeEntity.save();
+        return true;
     }
 
     @Override
@@ -97,11 +127,6 @@ public class NoticeService implements INoticeService {
 
     @Override
     public void affairMoveApplyRejected() throws Exception {
-    }
-
-    @Override
-    public List<NoticeEntity> search(Long userId, Short state, Integer type) {
-        return null;
     }
 
     private void saveNoticeEntity(NoticeVO noticeVO) throws Exception {

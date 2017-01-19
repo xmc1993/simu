@@ -21,8 +21,7 @@ public class ChatClientTest {
     long toUserId = 1911l;
     long toRoleId = 3675l;
     long affairId = 7620l;
-    private String host = "localhost";
-    private int port = 10110;
+    private String host = "192.168.1.100:7041";
 
 //    @Before
 //    public void loginServer() throws Exception {
@@ -30,23 +29,28 @@ public class ChatClientTest {
 //        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
 //    }
 
-//    @Test
-//    public void sendNormalMsg() throws Exception {
-//        ChatClient chatClient = ChatClient.getSingleInstance();
-//        int counter = 1;
-//        while (true) {
-//            String name = "test";
-//            String content = "count" + counter++;
-//            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, name, content);
-//            chatClient.sendMessage(message, new MessageAsyncRequestHandler());
-//            Thread.sleep(2000);
-//        }
-//    }
+    @Test
+    public void sendNormalMsg() throws Exception {
+        ChatClient chatClient = ChatClient.getSingleInstance();
+        chatClient.connectChatServer(host, userId, "xxx", new SimpleMessageHandler());
+        int counter = 1;
+        while (true) {
+            String name = "test";
+            String content = "count" + counter++;
+            Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, name, content);
+            try {
+                chatClient.sendMessage(message, new MessageAsyncRequestHandler());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Thread.sleep(5000);
+        }
+    }
 
     @Test
     public void sendQueryMessage() throws Exception {
         ChatClient chatClient = ChatClient.getSingleInstance();
-        chatClient.connectChatServer("localhost", 7040, userId, "xxx", new SimpleMessageHandler());
+        chatClient.connectChatServer(host, userId, "xxx", new SimpleMessageHandler());
         Thread.sleep(3000);
         while (true) {
             Message message = Message.getAffairChatMsg(MessageSubType.DEFAULT, affairId, userId, roleId, toUserId, toRoleId, null, null);

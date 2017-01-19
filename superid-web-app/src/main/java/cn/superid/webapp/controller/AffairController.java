@@ -34,7 +34,7 @@ public class AffairController {
 
     @RequestMapping(value = "/get_permissions", method = RequestMethod.GET)
     public SimpleResponse getPermissionsMap() {
-        return SimpleResponse.ok(JSON.toJSON(AffairPermissions.getAllAffairPermissions()));
+        return SimpleResponse.ok(AffairPermissions.getAllAffairPermissions());
     }
 
     /**

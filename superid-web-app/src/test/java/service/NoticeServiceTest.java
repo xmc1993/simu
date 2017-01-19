@@ -1,5 +1,6 @@
 package service;
 
+import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.service.INoticeService;
 import cn.superid.webapp.service.IUpdateChatCacheService;
 import org.apache.thrift.TException;
@@ -10,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by xmc1993 on 16/12/19.
@@ -21,6 +23,12 @@ public class NoticeServiceTest {
     private INoticeService noticeService;
     @Autowired
     private IUpdateChatCacheService updateChatCacheService;
+
+    @Test
+    public void testNoticeSearch() throws Exception {
+        List<NoticeVO> noticeVOList = noticeService.search(1912l, 0, 2);
+        System.out.println(noticeVOList);
+    }
 
     @Test
     public void testTaskOverDue() throws TException {
