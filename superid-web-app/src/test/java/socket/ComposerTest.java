@@ -1,7 +1,7 @@
 package socket;
 
 import cn.superid.webapp.notice.chat.proto.C2C;
-import cn.superid.webapp.notice.tcp.Composer;
+import cn.superid.webapp.notice.chat.Composer;
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 import org.junit.Test;

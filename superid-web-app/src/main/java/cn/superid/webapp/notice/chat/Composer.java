@@ -1,4 +1,4 @@
-package cn.superid.webapp.notice.tcp;
+package cn.superid.webapp.notice.chat;
 
 import cn.superid.webapp.notice.chat.proto.C2C;
 import com.baidu.bjf.remoting.protobuf.Codec;

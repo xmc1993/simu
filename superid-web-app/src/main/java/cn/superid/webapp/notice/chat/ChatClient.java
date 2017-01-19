@@ -4,7 +4,6 @@ import cn.superid.webapp.notice.chat.Constant.C2CType;
 import cn.superid.webapp.notice.chat.exception.NotLoginException;
 import cn.superid.webapp.notice.chat.proto.C2C;
 import cn.superid.webapp.notice.chat.proto.Message;
-import cn.superid.webapp.notice.tcp.Composer;
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 
