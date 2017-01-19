@@ -4,10 +4,8 @@ import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
-import cn.superid.utils.ObjectUtil;
 import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.AffairUserInfoVO;
-import cn.superid.webapp.controller.VO.SimpleRoleVO;
 import cn.superid.webapp.controller.forms.SimpleRoleCard;
 import cn.superid.webapp.dao.IAffairMemberDao;
 import cn.superid.webapp.enums.ResponseCode;
@@ -15,36 +13,30 @@ import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.AffairMemberType;
 import cn.superid.webapp.enums.type.InvitationType;
-import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.*;
-import cn.superid.webapp.model.cache.RoleCache;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
 import cn.superid.webapp.service.IAffairMemberService;
 import cn.superid.webapp.service.IAffairService;
 import cn.superid.webapp.service.IAffairUserService;
-import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
-import cn.superid.webapp.service.vo.AffairMemberVO;
 import cn.superid.webapp.utils.TimeUtil;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xiaofengxu on 16/9/2.
  */
 @Service
 public class AffairMemberService implements IAffairMemberService {
-    @Autowired
-    private IUserService userService;
+
     @Autowired
     private IAffairUserService affairUserService;
     @Autowired
@@ -94,7 +86,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public int canApplyForEnterAffair(Long allianceId, Long affairId, Long roleId) {
-        if(!affairService.affairExist(allianceId,affairId)){
+        if (!affairService.affairExist(allianceId, affairId)) {
             return ResponseCode.AffairNotExist;
         }
         boolean isExist = AffairMemberEntity.dao.partitionId(allianceId).eq("affair_id", affairId).eq("role_id", roleId).state(ValidState.Valid).exists();
@@ -109,14 +101,14 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int applyForEnterAffair(Long allianceId, Long affairId, Long roleId, String applyReason) {
+    public int applyForEnterAffair(long userId, long allianceId, long affairId, long roleId, String applyReason) {
         int code = canApplyForEnterAffair(allianceId, affairId, roleId);
         if (code != 0) {
             return code;
         }
         AffairMemberApplicationEntity affairMemberApplicationEntity = new AffairMemberApplicationEntity();
         affairMemberApplicationEntity.setRoleId(roleId);
-        affairMemberApplicationEntity.setUserId(userService.currentUserId());
+        affairMemberApplicationEntity.setUserId(userId);
         affairMemberApplicationEntity.setAffairId(affairId);
         affairMemberApplicationEntity.setAllianceId(allianceId);
         affairMemberApplicationEntity.setState(DealState.ToCheck);
@@ -130,14 +122,14 @@ public class AffairMemberService implements IAffairMemberService {
 
 
     @Override
-    public int agreeAffairMemberApplication(Long allianceId, Long affairId, Long applicationId, Long dealRoleId, String dealReason) {
+    public int agreeAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason) {
 
         AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId, affairId);
         if ((affairMemberApplicationEntity == null) || (affairMemberApplicationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.ApplicationNotExist;
         }
 
-        if(!affairService.affairExist(allianceId,affairId)){
+        if (!affairService.affairExist(allianceId, affairId)) {
             return ResponseCode.AffairNotExist;
         }
 
@@ -148,7 +140,7 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberApplicationEntity.setState(DealState.Agree);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
-        affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
+        affairMemberApplicationEntity.setDealUserId(userId);
         affairMemberApplicationEntity.setDealReason(dealReason);
         affairMemberApplicationEntity.update();
 
@@ -156,7 +148,7 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int rejectAffairMemberApplication(Long allianceId, Long affairId, Long applicationId, Long dealRoleId, String dealReason) {
+    public int rejectAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason) {
         AffairMemberApplicationEntity affairMemberApplicationEntity = AffairMemberApplicationEntity.dao.findById(applicationId, affairId);
         if (affairMemberApplicationEntity == null) {
             return ResponseCode.ApplicationNotExist;
@@ -165,7 +157,7 @@ public class AffairMemberService implements IAffairMemberService {
         affairMemberApplicationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         affairMemberApplicationEntity.setState(DealState.Reject);
         affairMemberApplicationEntity.setDealRoleId(dealRoleId);
-        affairMemberApplicationEntity.setDealUserId(userService.currentUserId());
+        affairMemberApplicationEntity.setDealUserId(userId);
         affairMemberApplicationEntity.setDealReason(dealReason);
         affairMemberApplicationEntity.update();
         return ResponseCode.OK;
@@ -174,7 +166,7 @@ public class AffairMemberService implements IAffairMemberService {
     @Override
     public int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId) {
         //异常流程
-        if(!affairService.affairExist(allianceId,affairId)){
+        if (!affairService.affairExist(allianceId, affairId)) {
             return ResponseCode.AffairNotExist;
         }
 
@@ -192,15 +184,15 @@ public class AffairMemberService implements IAffairMemberService {
         for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
-        if((roleIds == null||(roleIds.length==0))){
+        if ((roleIds == null || (roleIds.length == 0))) {
             return ResponseCode.OK;
         }
-        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
-        if((null == roleEntities)||(roleEntities.size()==0)){
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id", roleIds).selectList("id", "userId", "allianceId", "title");
+        if ((null == roleEntities) || (roleEntities.size() == 0)) {
             return ResponseCode.RoleNotExist;
         }
-        for ( RoleEntity role: roleEntities) {
-            if(role == null){
+        for (RoleEntity role : roleEntities) {
+            if (role == null) {
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟外角色
@@ -246,15 +238,15 @@ public class AffairMemberService implements IAffairMemberService {
         for (int i = 0; i < roles.size(); i++) {
             roleIds[i] = roles.get(i);
         }
-        if((roleIds == null||(roleIds.length==0))){
+        if ((roleIds == null || (roleIds.length == 0))) {
             return ResponseCode.OK;
         }
-        List<RoleEntity> roleEntities = RoleEntity.dao.in("id",roleIds).selectList("id","userId","allianceId","title");
-        if((null == roleEntities)||(roleEntities.size()==0)){
+        List<RoleEntity> roleEntities = RoleEntity.dao.in("id", roleIds).selectList("id", "userId", "allianceId", "title");
+        if ((null == roleEntities) || (roleEntities.size() == 0)) {
             return ResponseCode.RoleNotExist;
         }
-        for (RoleEntity role: roleEntities) {
-            if(role == null){
+        for (RoleEntity role : roleEntities) {
+            if (role == null) {
                 return ResponseCode.RoleNotExist;
             }
             //不能是盟内角色
@@ -368,7 +360,7 @@ public class AffairMemberService implements IAffairMemberService {
                 paths[i] = sb.toString();
             }
         }
-        return  AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
+        return AffairEntity.dao.partitionId(allianceId).in("path", paths).selectList(Long.class, "owner_role_id");
     }
 
 
@@ -378,11 +370,10 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int countAffairMember(long allianceId, long affairId,Integer type) {
+    public int countAffairMember(long allianceId, long affairId, Integer type) {
         ConditionalDao dao = AffairMemberEntity.dao.partitionId(allianceId).eq("affairId", affairId);
-        return type==null?dao.count():dao.eq("type",type).count();
+        return type == null ? dao.count() : dao.eq("type", type).count();
     }
-
 
 
     @Override
@@ -390,37 +381,37 @@ public class AffairMemberService implements IAffairMemberService {
         if (conditions.getLimit() < 10 || conditions.getLimit() > 100) conditions.setLimit(20);
 
         long[] affairIds;
-        if(StringUtil.isEmpty(conditions.getAffairIds())){
+        if (StringUtil.isEmpty(conditions.getAffairIds())) {
             affairIds = new long[1];
-            affairIds[0] =affairId;
-        }else{
-            String[] ids =conditions.getAffairIds().split(",");
+            affairIds[0] = affairId;
+        } else {
+            String[] ids = conditions.getAffairIds().split(",");
             affairIds = new long[ids.length];
-            for(int i=0;i<ids.length;i++){//TODO 判断id是不是当前id的子事务,并且
+            for (int i = 0; i < ids.length; i++) {//TODO 判断id是不是当前id的子事务,并且
                 affairIds[i] = Long.parseLong(ids[i]);
             }
         }
 
         List<GetRoleCardsMap> list = new ArrayList<>(affairIds.length);
-        for(long id:affairIds){
+        for (long id : affairIds) {
             GetRoleCardsMap getRoleCardsMap = new GetRoleCardsMap();
             getRoleCardsMap.setAffairId(id);
-            List<AffairRoleCard> affairRoleCards = affairMemberDao.searchAffairRoles(allianceId,affairId,conditions);
+            List<AffairRoleCard> affairRoleCards = affairMemberDao.searchAffairRoles(allianceId, affairId, conditions);
             getRoleCardsMap.setRoles(affairRoleCards);
 
-            if(conditions.isNeedCount()){
-                int officialCount=0,guestCount=0;
-                if(affairRoleCards.size()<conditions.getLimit()){//已经全部取完,这时候完全可以得到各自的官方和客方数目
-                    for(AffairRoleCard affairRoleCard:affairRoleCards){
-                        if(affairRoleCard.getType()== AffairMemberType.Official){
+            if (conditions.isNeedCount()) {
+                int officialCount = 0, guestCount = 0;
+                if (affairRoleCards.size() < conditions.getLimit()) {//已经全部取完,这时候完全可以得到各自的官方和客方数目
+                    for (AffairRoleCard affairRoleCard : affairRoleCards) {
+                        if (affairRoleCard.getType() == AffairMemberType.Official) {
                             officialCount++;
-                        }else{
+                        } else {
                             guestCount++;
                         }
                     }
-                }else{
-                    officialCount = this.countAffairMember(allianceId,affairId,AffairMemberType.Official);
-                    guestCount = this.countAffairMember(allianceId,affairId,AffairMemberType.Guest);
+                } else {
+                    officialCount = this.countAffairMember(allianceId, affairId, AffairMemberType.Official);
+                    guestCount = this.countAffairMember(allianceId, affairId, AffairMemberType.Guest);
 
                 }
                 getRoleCardsMap.setOfficialCount(officialCount);
@@ -441,7 +432,7 @@ public class AffairMemberService implements IAffairMemberService {
     @Override
     public AffairUserInfoVO getAffairUserInfo(long allianceId, long userId) {
         UserEntity userEntity = UserEntity.dao.findById(userId);
-        if(null == userEntity){
+        if (null == userEntity) {
             return null;
         }
         AffairUserInfoVO affairUserInfoVO = new AffairUserInfoVO();
@@ -453,26 +444,24 @@ public class AffairMemberService implements IAffairMemberService {
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(userId);
-        List<SimpleRoleCard> simpleRoleCards = RoleEntity.getSession().findListByNativeSql(SimpleRoleCard.class,sql,p);
+        List<SimpleRoleCard> simpleRoleCards = RoleEntity.getSession().findListByNativeSql(SimpleRoleCard.class, sql, p);
         affairUserInfoVO.setSimpleRoleCards(simpleRoleCards);
 
         return affairUserInfoVO;
     }
 
 
-
-
-    private AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId,boolean needMemberInfo) {
+    private AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId, boolean needMemberInfo) {
         AffairRoleCard affairRoleCard = new AffairRoleCard();
-        if(needMemberInfo){
-            AffairMemberEntity affairMemberEntity = this.getAffairMemberInfo(allianceId,affairId,roleId);
-            if(affairMemberEntity==null){
+        if (needMemberInfo) {
+            AffairMemberEntity affairMemberEntity = this.getAffairMemberInfo(allianceId, affairId, roleId);
+            if (affairMemberEntity == null) {
                 return null;
             }
             affairRoleCard.setPermissions(affairMemberEntity.getPermissions());
             affairRoleCard.setType(affairMemberEntity.getType());
         }
-        RoleEntity roleEntity = RoleEntity.dao.findById(roleId,allianceId);
+        RoleEntity roleEntity = RoleEntity.dao.findById(roleId, allianceId);
         affairRoleCard.setRoleId(roleEntity.getId());
         affairRoleCard.setRoleTitle(roleEntity.getTitle());
         affairRoleCard.setBelongAffairId(roleEntity.getBelongAffairId());
@@ -492,16 +481,16 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId) {
-        return getRoleCard(allianceId,affairId,roleId,true);
+        return getRoleCard(allianceId, affairId, roleId, true);
     }
 
     @Override
     public AffairRoleCard getDirectorCard(long allianceId, long affairId) {
         AffairEntity affairEntity = AffairEntity.dao.partitionId(allianceId).id(affairId).selectOne("ownerRoleId");
-        if(affairEntity==null){
-            return  null;
+        if (affairEntity == null) {
+            return null;
         }
-        AffairRoleCard affairRoleCard= getRoleCard(allianceId,affairId,affairEntity.getOwnerRoleId());
+        AffairRoleCard affairRoleCard = getRoleCard(allianceId, affairId, affairEntity.getOwnerRoleId());
         affairRoleCard.setType(AffairMemberType.Official);
         affairRoleCard.setPermissions("*");
         return affairRoleCard;

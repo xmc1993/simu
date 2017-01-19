@@ -50,7 +50,7 @@ public class AffairMemberController {
     @RequestMapping(value = "/agree_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_ROLE})
     public SimpleResponse agreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
-        int code = affairMemberService.agreeAffairMemberApplication(GlobalValue.currentAllianceId(),
+        int code = affairMemberService.agreeAffairMemberApplication(userService.currentUserId(), GlobalValue.currentAllianceId(),
                 GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
         return new SimpleResponse(code, null);
 
@@ -60,8 +60,7 @@ public class AffairMemberController {
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_ROLE})
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
-        int code = affairMemberService.rejectAffairMemberApplication(GlobalValue.currentAllianceId(),
-                GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        int code = affairMemberService.rejectAffairMemberApplication(userService.currentUserId(), GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
         return new SimpleResponse(code, null);
 
     }
@@ -83,7 +82,7 @@ public class AffairMemberController {
                 return SimpleResponse.ok(null);
             }
         }
-        code = affairMemberService.applyForEnterAffair(targetAllianceId, targetAffairId, roleId, applyReason);
+        code = affairMemberService.applyForEnterAffair(userService.currentUserId(), targetAllianceId, targetAffairId, roleId, applyReason);
         return new SimpleResponse(code, null);
     }
 
@@ -114,9 +113,9 @@ public class AffairMemberController {
 
     @ApiOperation(value = "获取事务内的所有角色,分布加载", response = GetRoleCardsMap.class, notes = "获取的是一个list<GetRoleCardsMap>")
     @RequestMapping(value = "/get_role_cards", method = RequestMethod.POST)
-    public SimpleResponse getAffairRoleCards(@RequestParam() Long roleId,  @RequestParam() Long affairId,@RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
+    public SimpleResponse getAffairRoleCards(@RequestParam() Long roleId, @RequestParam() Long affairId, @RequestBody SearchAffairRoleConditions searchAffairRoleConditions) {
         RoleCache roleCache = RoleCache.dao.findById(roleId);//权限判断
-        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(roleCache.getAllianceId(),affairId,searchAffairRoleConditions));
+        return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(roleCache.getAllianceId(), affairId, searchAffairRoleConditions));
     }
 
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
@@ -137,19 +136,18 @@ public class AffairMemberController {
     @RequestMapping(value = "/get_affair_user_info", method = RequestMethod.GET)
     public SimpleResponse getAffairUserInfo(@RequestParam() Long allianceId, @RequestParam() Long userId) {
         AffairUserInfoVO affairUserInfoVO = affairMemberService.getAffairUserInfo(allianceId, userId);
-        if(affairUserInfoVO != null){
+        if (affairUserInfoVO != null) {
             return SimpleResponse.ok(affairUserInfoVO);
-        }else {
-            return new SimpleResponse(ResponseCode.Error,null);
+        } else {
+            return new SimpleResponse(ResponseCode.Error, null);
         }
     }
 
     @ApiOperation(value = "获取某个事务责任人的角色卡片", response = AffairRoleCard.class, notes = "")
     @RequestMapping(value = "/get_director_card", method = RequestMethod.GET)
     public SimpleResponse getDirectorCard(@RequestParam() long allianceId, @RequestParam() long affairId) {
-        return SimpleResponse.ok(affairMemberService.getDirectorCard(allianceId,affairId));
+        return SimpleResponse.ok(affairMemberService.getDirectorCard(allianceId, affairId));
     }
-
 
 
 }

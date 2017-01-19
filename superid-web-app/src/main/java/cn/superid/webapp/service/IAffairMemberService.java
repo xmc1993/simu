@@ -84,7 +84,7 @@ public interface IAffairMemberService {
      * @param applyReason
      * @return
      */
-    int applyForEnterAffair(Long allianceId, Long affairId, Long roleId, String applyReason);
+    int applyForEnterAffair(long userId, long allianceId, long affairId, long roleId, String applyReason);
 
 
     /**
@@ -95,7 +95,7 @@ public interface IAffairMemberService {
      * @param dealReason
      * @return
      */
-    int agreeAffairMemberApplication(Long allianceId, Long affairId, Long applicationId, Long dealRoleId, String dealReason);
+    int agreeAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason);
 
     /**
      * 拒绝加入事务的申请
@@ -105,7 +105,7 @@ public interface IAffairMemberService {
      * @param dealReason
      * @return
      */
-    int rejectAffairMemberApplication(Long allianceId, Long affairId, Long applicationId, Long dealRoleId, String dealReason);
+    int rejectAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason);
 
     /**
      * 在邀请加入事务之前检测异常情况,返回异常情况code
@@ -119,6 +119,7 @@ public interface IAffairMemberService {
 
     /**
      * 邀请盟内角色加入事务
+     *
      * @param allianceId
      * @param affairId
      * @param inviteRoleId
@@ -130,6 +131,7 @@ public interface IAffairMemberService {
 
     /**
      * 邀请盟外角色加入事务
+     *
      * @param allianceId
      * @param affairId
      * @param inviteRoleId
@@ -188,9 +190,7 @@ public interface IAffairMemberService {
      * @param affairId
      * @return
      */
-    int countAffairMember(long allianceId, long affairId,Integer type);
-
-
+    int countAffairMember(long allianceId, long affairId, Integer type);
 
 
     List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
@@ -198,18 +198,19 @@ public interface IAffairMemberService {
 
     /**
      * 搜索事务的盟内成员列表，并提供分页和多条件排序
+     *
      * @param allianceId
      * @param affairId
      * @param conditions
      * @return
      */
-    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions,Pagination pagination);
+    List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination);
 
 
-    AffairUserInfoVO getAffairUserInfo(long allianceId,long userId);
+    AffairUserInfoVO getAffairUserInfo(long allianceId, long userId);
 
-    AffairRoleCard getRoleCard(long allianceId,long roleId,long affairId);
+    AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId);
 
-    AffairRoleCard getDirectorCard(long allianceId,long affairId);
+    AffairRoleCard getDirectorCard(long allianceId, long affairId);
 
 }
