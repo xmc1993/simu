@@ -9,6 +9,9 @@ public class Link {
     private int end;
     private long id;
 
+    public Link() {
+    }
+
     public Link(int type, int begin, int end, long id) {
         this.type = type;
         this.begin = begin;
