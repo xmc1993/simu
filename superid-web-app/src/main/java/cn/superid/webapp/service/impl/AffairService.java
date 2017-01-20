@@ -113,7 +113,7 @@ public class AffairService implements IAffairService {
 
         AffairMemberEntity member = affairMemberService.addCreator(allianceId, affairEntity.getId(), userService.currentUserId(), createAffairForm.getOperationRoleId());//作为创建者
 
-        return getAffairInfo(allianceId,affairEntity.getId());
+        return getAffairInfo(allianceId,affairEntity.getId(),0L);
     }
 
     /**
@@ -518,7 +518,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public AffairInfo getAffairInfo(long allianceId, long affairId) {
+    public AffairInfo getAffairInfo(long allianceId, long affairId, long roleId) {
         long userId = userService.currentUserId();
 
         AffairInfo affairInfo = new AffairInfo();
@@ -541,38 +541,44 @@ public class AffairService implements IAffairService {
         affairInfo.setCovers(affairEntity.getCovers());
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
 
-        //先找affairUser表看里面有没有该用户在该事务的最后一次操作角色
-        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);
-        if (lastOperateRole != null) {
-            //有的话就把roleId和roleName返回给前端
-            long tempRoleId = lastOperateRole.getRoleId();
-            affairInfo.setRoleId(tempRoleId);
-            RoleCache tempRole = RoleCache.dao.findById(tempRoleId);
-            if (tempRole != null) {
-                affairInfo.setRoleTitle(tempRole.getTitle());
-                affairInfo.setRoleAllianceId(tempRole.getAllianceId());
-            } else {
-                affairInfo.setRoleTitle("");
-                affairInfo.setRoleAllianceId(0L);
-            }
+        long tempRoleId = 0;
+        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);;
 
-            affairInfo.setIsStuck(lastOperateRole.getIsStuck());
-
-            AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();
-            if (affairMemberEntity != null) {
-                affairInfo.setAffairMemberId(affairMemberEntity.getId());
-                affairInfo.setPermissions(affairMemberEntity.getPermissions());
-            } else {
-                affairInfo.setAffairMemberId(0L);
-                affairInfo.setPermissions("");
-            }
-
-        } else {
+        if(roleId != 0){
+            //指定roleId就用roleId
+            tempRoleId = roleId;
+        }else if(roleId == 0 & lastOperateRole != null){
+            //没有指定role且affairUser表中有,就按照表中来
+            tempRoleId = lastOperateRole.getRoleId();
+        }else {
             //没有affairUser的话就返回该用户在这个盟里最先创建的角色
             RoleEntity roleEntity = RoleEntity.dao.partitionId(allianceId).eq("user_id", userService.currentUserId()).asc("create_time").selectOne("id", "title");
             affairInfo.setRoleTitle(roleEntity.getTitle());
             affairInfo.setRoleId(roleEntity.getId());
             affairInfo.setIsStuck(false);
+            affairInfo.setAffairMemberId(0L);
+            affairInfo.setPermissions("");
+            return affairInfo;
+        }
+        affairInfo.setRoleId(tempRoleId);
+        RoleCache tempRole = RoleCache.dao.findById(tempRoleId);
+        if (tempRole != null) {
+            affairInfo.setRoleTitle(tempRole.getTitle());
+            affairInfo.setRoleAllianceId(tempRole.getAllianceId());
+        } else {
+            affairInfo.setRoleTitle("");
+            affairInfo.setRoleAllianceId(0L);
+        }
+        if(lastOperateRole != null){
+            affairInfo.setIsStuck(lastOperateRole.getIsStuck());
+        }else{
+            affairInfo.setIsStuck(false);
+        }
+        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id", tempRoleId).eq("affair_id", affairId).selectOne();
+        if (affairMemberEntity != null) {
+            affairInfo.setAffairMemberId(affairMemberEntity.getId());
+            affairInfo.setPermissions(affairMemberEntity.getPermissions());
+        } else {
             affairInfo.setAffairMemberId(0L);
             affairInfo.setPermissions("");
         }

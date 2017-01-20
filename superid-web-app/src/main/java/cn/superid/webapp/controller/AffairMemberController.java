@@ -150,4 +150,10 @@ public class AffairMemberController {
     }
 
 
+    @ApiOperation(value = "退出事务", response = String.class)
+    @RequestMapping(value = "/quit_affair", method = RequestMethod.POST)
+    public SimpleResponse inviteToEnterAffair(long affairMemberId) {
+        return SimpleResponse.ok(true);
+    }
+
 }

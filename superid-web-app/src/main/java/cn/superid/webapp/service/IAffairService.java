@@ -143,7 +143,7 @@ public interface IAffairService {
      * @param affairId
      * @return
      */
-    AffairInfo getAffairInfo(long allianceId, long affairId);
+    AffairInfo getAffairInfo(long allianceId, long affairId, long roleId);
 
     /**
      * 切换角色
