@@ -126,8 +126,11 @@ public class AffairController {
 
     @ApiOperation(value = "获取事务首页必要的信息", response = AffairInfo.class, notes = "publicType事务公开性:0完全公开 1盟内可见 2成员可见")
     @RequestMapping(value = "/info", method = RequestMethod.GET)
-    public SimpleResponse getAffairInfo(@RequestParam Long allianceId, @RequestParam Long affairId) {
-        AffairInfo affairInfo = affairService.getAffairInfo(allianceId, affairId);
+    public SimpleResponse getAffairInfo(@RequestParam Long allianceId, @RequestParam Long affairId, Long roleId) {
+        if(roleId == null){
+            roleId = 0L;
+        }
+        AffairInfo affairInfo = affairService.getAffairInfo(allianceId, affairId,roleId);
         return SimpleResponse.ok(affairInfo);
     }
 
