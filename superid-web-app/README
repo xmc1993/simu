@@ -1,3 +1,10 @@
 1.凡是model/cache里面对应的数据库有更新,必须通过cache操作,否则是脏数据(如果能确保缓存中没有这个数据,例外)
 2.保存操作可以不通过cache
 3.id查询尽量通过cache
+
+部署方案
+到superid-webapi-2.0工程目录下运行
+mvn clean package -Dmaven.test.skip=true&& scp superid-web-app/target/superid-web-app-1.0-SNAPSHOT.war simu@superid.cn:/home/simu/tomcat/apache-tomcat-8.5.11/webapps/mk.war
+
+然后登录服务器运行
+./webapp.sh
