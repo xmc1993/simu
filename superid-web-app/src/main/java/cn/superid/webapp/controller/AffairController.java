@@ -183,8 +183,7 @@ public class AffairController {
 
     @ApiOperation(value = "切换事务角色", response = Boolean.class, notes = "拥有权限")
     @RequestMapping(value = "/switch_role", method = RequestMethod.POST)
-    @RequiredPermissions(affair = AffairPermissions.CHECK_AFFAIR_HOMEPAGE)
-    public SimpleResponse switchRole(@RequestParam Long affairMemberId, @RequestParam Long newRoleId) {
-        return SimpleResponse.ok(affairService.switchRole(GlobalValue.currentAffairId(), GlobalValue.currentAllianceId(), newRoleId));
+    public SimpleResponse switchRole(@RequestParam Long affairId,@RequestParam Long allianceId, @RequestParam Long newRoleId) {
+        return SimpleResponse.ok(affairService.switchRole(affairId, allianceId, newRoleId));
     }
 }

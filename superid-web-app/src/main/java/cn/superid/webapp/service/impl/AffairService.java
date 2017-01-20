@@ -587,10 +587,6 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean switchRole(long affairId, long allianceId, long newRoleId) {
-        AffairMemberEntity affairMemberEntity = AffairMemberEntity.dao.partitionId(allianceId).eq("role_id",newRoleId).eq("affair_id",affairId).state(ValidState.Valid).selectOne();
-        if(affairMemberEntity == null){
-            return false;
-        }
         return AffairUserEntity.dao.partitionId(allianceId).eq("affairId", affairId).eq("userId", userService.currentUserId()).set("roleId", newRoleId) > 0;
     }
 
