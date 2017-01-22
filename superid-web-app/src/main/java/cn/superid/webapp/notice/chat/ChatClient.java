@@ -120,6 +120,9 @@ public class ChatClient {
 
     //发送普通消息
     public void sendMessage(Message message, AsyncRequestHandler messageAsyncHandler) throws Exception {
+        if(socket==null||socket.isClosed()){
+            return;
+        }
         checkLogin();
         String requestId = generateRequestId(userId);
         C2C c2c = new C2C(C2CType.MSG, requestId);
