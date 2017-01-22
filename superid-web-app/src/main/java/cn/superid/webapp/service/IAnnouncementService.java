@@ -95,7 +95,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public Map<String,Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId);
+    public AnnouncementDetailVO getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId);
 
     /**
      * 搜索公告

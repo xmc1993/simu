@@ -215,7 +215,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public Map<String, Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
+    public AnnouncementDetailVO getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
         List<EditDistanceForm> operations = new ArrayList<>();
         List<String> entityMaps = new ArrayList<>();
 
@@ -300,10 +300,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
 
         Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("announcement", result);
-        rsMap.put("history",operations);
-        rsMap.put("entityMaps",entityMaps);
-        return rsMap;
+        return new AnnouncementDetailVO(result,operations,entityMaps);
     }
 
     @Override

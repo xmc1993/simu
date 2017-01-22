@@ -17,6 +17,7 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private long roleId;
     private boolean isStuck;//是否置顶
     private String path;
+    private long ownRoleId;
     private long parentId;
     private boolean isIndex;//是否主页事务
     private Timestamp modifyTime; //修改时间
@@ -127,6 +128,14 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
 
     public void setModifyTime(Timestamp modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public long getOwnRoleId() {
+        return ownRoleId;
+    }
+
+    public void setOwnRoleId(long ownRoleId) {
+        this.ownRoleId = ownRoleId;
     }
 
     @Override
