@@ -5,6 +5,3 @@
 部署方案
 到superid-webapi-2.0工程目录下运行
 mvn clean package -Dmaven.test.skip=true&& scp superid-web-app/target/superid-web-app-1.0-SNAPSHOT.war simu@superid.cn:/home/simu/tomcat/apache-tomcat-8.5.11/webapps/mk.war&&ssh simu@192.168.1.100 "/home/simu/webapp.sh"
-
-然后登录服务器运行
-./webapp.sh

@@ -31,8 +31,12 @@ public class UtilTest {
         Assert.assertTrue(CheckFrequencyUtil.isFrequent("test"));
     }
 
-    private void test(@NotNull String a){
-        System.out.println(a);
+    @Test
+    public void test (){
+        int b=10000,c=b;
+        b>>=7;
+        c=c/128;
+        System.out.println(c);
     }
 
     @Test
