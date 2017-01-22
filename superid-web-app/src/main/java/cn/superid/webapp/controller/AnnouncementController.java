@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,18 +125,30 @@ public class AnnouncementController {
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse save(Long announcementId , String contentState){
-
-        if(announcementId == null ){
-            return SimpleResponse.error("参数不正确");
-        }
+    public SimpleResponse save(@RequestParam() Long announcementId ,@RequestParam() String contentState ,@RequestParam() String title){
         try{
             ContentState content = JSON.parseObject(contentState,ContentState.class);
-            boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
+            boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId(),title);
             return SimpleResponse.ok(result);
         }catch (Exception e){
-            return SimpleResponse.error("ContentState is invaild");
+            return SimpleResponse.error(null);
         }
+    }
+
+    @ApiOperation(value = "修改公告公开性",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/modify_public_type", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.EDIT_ANNOUNCEMENT)
+    public SimpleResponse modifyPublicType(@RequestParam() Long announcementId , @RequestParam() Integer publicType , @RequestParam() Long affairMemberId){
+
+        return SimpleResponse.ok(announcementService.modifyPublicType(announcementId,publicType,GlobalValue.currentAllianceId()));
+    }
+
+    @ApiOperation(value = "修改置顶",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/modify_stuck", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.EDIT_ANNOUNCEMENT)
+    public SimpleResponse modifyStuck(@RequestParam() Long announcementId , @RequestParam() Integer isStuck , @RequestParam() Long affairMemberId){
+
+        return SimpleResponse.ok(announcementService.modifyStuck(announcementId,isStuck,GlobalValue.currentAllianceId()));
     }
 
     @ApiOperation(value = "保存草稿",response = String.class, notes = "拥有权限")

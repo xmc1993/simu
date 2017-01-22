@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.dao.impl.AnnouncementDao;
 import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.*;
@@ -39,7 +40,7 @@ public class AnnouncementService implements IAnnouncementService{
     private static final int SNAPSHOT_INTERVAL = 30 ;
 
     @Override
-    public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId) {
+    public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId ,String title) {
         RoleCache role = RoleCache.dao.findById(roleId);
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcementEntity == null){
@@ -56,6 +57,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setModifierUserId(role.getUserId());
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementEntity.setTitle(title);
         announcementEntity.update();
 
         //第三步,把这条新记录存在历史记录里
@@ -70,6 +72,17 @@ public class AnnouncementService implements IAnnouncementService{
             generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),allianceId,history.getId());
         }
         return result>0;
+    }
+
+    @Override
+    public boolean modifyPublicType(long announcementId, int publicType, long allianceId) {
+
+        return AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("public_type",publicType)>0;
+    }
+
+    @Override
+    public boolean modifyStuck(long announcementId, int isStuck, long allianceId) {
+        return AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("is_top",isStuck)>0;
     }
 
 

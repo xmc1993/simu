@@ -25,7 +25,18 @@ public interface IAnnouncementService {
      * @param roleId
      * @return
      */
-    public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId);
+    public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId , String title);
+
+    /**
+     * 修改公开性
+     * @param announcementId
+     * @param publicType
+     * @param allianceId
+     * @return
+     */
+    public boolean modifyPublicType(long announcementId, int publicType, long allianceId);
+
+    public boolean modifyStuck(long announcementId, int isStuck, long allianceId);
 
     /**
      * 创建公告
