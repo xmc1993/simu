@@ -36,14 +36,14 @@ public class AnnouncementController {
 
     @ApiOperation(value = "根据事务得到公告id",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_id_by_affair", method = RequestMethod.GET)
-    public SimpleResponse getIdByAffair(Long allianceId , Long affairId , boolean isContainChild) {
+    public SimpleResponse getIdByAffair(@RequestParam() Long allianceId ,@RequestParam() Long affairId ,@RequestParam() boolean isContainChild) {
         return SimpleResponse.ok(announcementService.getIdByAffair(affairId,allianceId,isContainChild));
     }
 
     @ApiOperation(value = "根据事务得到公告草稿id",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_draft_by_affair", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse getDraftByAffair(Long affairMemberId) {
+    public SimpleResponse getDraftByAffair(@RequestParam() Long affairMemberId) {
         List<SimpleDraftIdVO> simpleDraftIdVOs = announcementService.getDraftByAffair(GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),GlobalValue.currentRoleId());
         if(simpleDraftIdVOs == null){
             simpleDraftIdVOs = new ArrayList<>();
