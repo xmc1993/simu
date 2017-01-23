@@ -17,12 +17,15 @@ import java.util.List;
 public class NoticeGenerator {
 
     private static final String ALLIANCE_INVITATION = "% ?邀请您加入盟?, ?";//M1 角色名+用户名+邀请您加入盟+盟名称，立即处理 %不需要链接
-    private static final String AFFAIR_INVITATION = "% ?邀请您的角色 % % 加入盟? ?，立即处理";//角色名＋用户名＋邀请您加入＋盟名称＋事务名称＋，立即处理
+    private static final String AFFAIR_INVITATION = "% ?邀请您的角色 % % 加入盟? ?，?";//角色名＋用户名＋邀请您加入＋盟名称＋事务名称＋，立即处理
 
 
     //生成邀请加入盟的消息通知 TODO 缓存批量查询
 
-    public static NoticeEntity generateAllianceInvitationNotice(long beInvitedUserId, long invitationId, long allianceId, long inviteUserId, long inviteRoleId) {
+    public static NoticeEntity generateAllianceInvitationNotice(InvitationEntity invitationEntity) {
+        long inviteUserId = invitationEntity.getInviteUserId();
+        long allianceId = invitationEntity.getAllianceId();
+        long inviteRoleId = invitationEntity.getInviteRoleId();
         UserEntity user = UserEntity.dao.id(inviteUserId).selectOne("username");
         AllianceEntity alliance = AllianceEntity.dao.id(allianceId).selectOne("name");
         RoleEntity role = RoleEntity.dao.partitionId(allianceId).id(inviteRoleId).selectOne("title");
@@ -30,7 +33,7 @@ public class NoticeGenerator {
             return null;
         }
 
-        NoticeEntity noticeVO = getGeneral(beInvitedUserId);
+        NoticeEntity noticeVO = getGeneral(invitationEntity.getBeInvitedUserId());
         noticeVO.setType(NoticeType.ALLIANCE_INVITATION);
         List<Link> links = generate(noticeVO,ALLIANCE_INVITATION,role.getTitle(),user.getUsername(),alliance.getName(),"立即处理");
         Link tmp = links.get(0);
@@ -43,7 +46,7 @@ public class NoticeGenerator {
 
         tmp =links.get(2);
         tmp.setType(LinkType.INVITATION);
-        tmp.setId(invitationId);
+        tmp.setId(invitationEntity.getId());
 
         noticeVO.setUrls(JSON.toJSONString(links));
         return noticeVO;
@@ -86,6 +89,10 @@ public class NoticeGenerator {
         RoleEntity invitedRole = RoleEntity.dao.partitionId(invitation.getAllianceId()).id(invitation.getInviteRoleId()).selectOne("title","allianceId");
         AffairEntity affair = AffairEntity.dao.partitionId(invitation.getAllianceId()).id(invitation.getAffairId()).selectOne("name");
         AllianceEntity invitedAlliance = AllianceEntity.dao.id(invitedRole.getAllianceId()).selectOne("name");
+
+        if(user==null||alliance==null||role==null||invitedRole==null||affair==null||invitedAlliance==null){
+            return null;
+        }
 
         NoticeEntity noticeVO = getGeneral(invitation.getBeInvitedUserId());
         noticeVO.setType(NoticeType.AFFAIR_INVITATION);

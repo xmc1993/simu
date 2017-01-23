@@ -49,6 +49,10 @@ public class NoticeServiceTest {
     public void testAllianceInvitation() throws Exception {
         InvitationEntity invitationEntity = InvitationEntity.dao.findById(1,2397);
         noticeService.allianceInvitation(invitationEntity);
+
+        InvitationEntity invitation1 = InvitationEntity.dao.findById(5,2397);
+        noticeService.affairInvitation(invitation1);
+
     }
 
 

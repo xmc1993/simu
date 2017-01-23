@@ -95,27 +95,28 @@ public class NoticeService implements INoticeService {
     public void allianceFriendApplyAccepted() throws Exception {
     }
 
-    //TODO
-    @Override
-    public void allianceInvitation(InvitationEntity entity) {
 
-        NoticeEntity noticeVO = NoticeGenerator.generateAllianceInvitationNotice(entity.getBeInvitedUserId(), entity.getId(),entity.getAllianceId(),
-                 entity.getInviteUserId(), entity.getInviteRoleId());
-        C2c c2c = newC2c(entity.getBeInvitedUserId(), noticeVO);
-        if(noticeVO!=null){
-            System.out.println(noticeVO);
-            noticeVO.save();
+    private void handleNotice(NoticeEntity notice,long toUserId){
+        if(notice!=null){
+            System.out.println(notice);
+            C2c c2c = newC2c(toUserId, notice);
+            notice.save();
             SendMessageTemplate.sendNotice(c2c);
         }
 
     }
 
+    //TODO
+    @Override
+    public void allianceInvitation(InvitationEntity entity) {
+        NoticeEntity notice = NoticeGenerator.generateAllianceInvitationNotice(entity);
+        handleNotice(notice,entity.getBeInvitedUserId());
+    }
+
     @Override
     public void affairInvitation(InvitationEntity invitation) {
         NoticeEntity noticeEntity = NoticeGenerator.generateAffairInvitationNotice(invitation);
-        C2c c2c = newC2c(invitation.getBeInvitedUserId(), noticeEntity);
-        noticeEntity.save();
-
+        handleNotice(noticeEntity,invitation.getBeInvitedUserId());
     }
 
     @Override
