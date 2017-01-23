@@ -48,7 +48,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
         //第一步,更新最近一条历史记录的increment
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
-        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",compareTwoPapers(old,contentState));
+        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",JSONObject.toJSONString(compareTwoPapers(old,contentState)));
 
         //第二步,改变原有记录
         announcementEntity.setVersion(announcementEntity.getVersion()+1);
@@ -546,7 +546,7 @@ public class AnnouncementService implements IAnnouncementService{
                 case 1:
                     //从左边变化来,比原来多一步增加操作
                     List<TotalBlock> one = new ArrayList<>();
-                    int location = 0;
+                    int location = -1;
                     for(int i = 0 ; i < insert.size() ;i++){
                         InsertForm in = insert.get(i);
                         if(in.getPosition() == y){
@@ -555,8 +555,8 @@ public class AnnouncementService implements IAnnouncementService{
                             break;
                         }
                     }
-                    one.add(0,history.get(x));
-                    if(location != 0){
+                    one.add(0,history.get(x-1));
+                    if(location != -1){
                         insert.set(location,new InsertForm(y,one));
                     }else{
                         insert.add(new InsertForm(y,one));
@@ -567,7 +567,7 @@ public class AnnouncementService implements IAnnouncementService{
                 case 2:
                     if(temp == 1){
                         //说明进行了一步替换
-                        replace.add(new ReplaceForm(y,history.get(x)));
+                        replace.add(new ReplaceForm(y,history.get(x-1)));
                         x = x - 1;
                         y = y - 1;
                         count++;

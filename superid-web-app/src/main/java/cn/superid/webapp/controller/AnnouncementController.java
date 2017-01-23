@@ -113,12 +113,13 @@ public class AnnouncementController {
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
     public SimpleResponse save(@RequestParam() Long announcementId ,@RequestParam() String contentState ,@RequestParam() String title, @RequestParam() Long affairMemberId){
         try{
-            ContentState content = JSON.parseObject(contentState,ContentState.class);
-            boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId(),title);
-            return SimpleResponse.ok(result);
+
         }catch (Exception e){
             return SimpleResponse.error(null);
         }
+        ContentState content = JSON.parseObject(contentState,ContentState.class);
+        boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId(),title);
+        return SimpleResponse.ok(result);
     }
 
     @ApiOperation(value = "修改公告公开性",response = String.class, notes = "拥有权限")
