@@ -103,10 +103,14 @@ public class AffairController {
     @RequestMapping(value = "/update_covers", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
     public SimpleResponse updateCovers(@RequestParam Long affairMemberId, @RequestParam String coverList) {
-        if (affairService.updateCovers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), coverList))
-            return SimpleResponse.ok("添加成功");
-        else
-            return SimpleResponse.error("添加失败");
+        return SimpleResponse.ok(affairService.updateCovers(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), coverList));
+    }
+
+    @ApiOperation(value = "更新标签", response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/update_tags", method = RequestMethod.POST)
+    @RequiredPermissions(affair = AffairPermissions.EDIT_AFFAIR_INFO)
+    public SimpleResponse updateTags(@RequestParam Long affairMemberId, @RequestParam String tags) {
+        return SimpleResponse.ok(affairService.updateTags(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), tags));
     }
 
     @ApiOperation(value = "事务概览", response = AffairOverviewVO.class, notes = "拥有权限")

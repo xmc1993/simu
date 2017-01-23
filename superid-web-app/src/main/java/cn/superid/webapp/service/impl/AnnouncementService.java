@@ -76,13 +76,25 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public boolean modifyPublicType(long announcementId, int publicType, long allianceId) {
-
-        return AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("public_type",publicType)>0;
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setPublicType(publicType);
+        announcementEntity.update();
+        return AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("version",announcementEntity.getVersion()).set("public_type",publicType)>0;
     }
 
     @Override
     public boolean modifyStuck(long announcementId, int isStuck, long allianceId) {
-        return AnnouncementEntity.dao.id(announcementId).partitionId(allianceId).set("is_top",isStuck)>0;
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setIsTop(isStuck);
+        announcementEntity.update();
+
+        return AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("version",announcementEntity.getVersion()).set("is_top",isStuck)>0;
     }
 
 
@@ -430,7 +442,7 @@ public class AnnouncementService implements IAnnouncementService{
                 ContentState contentState = JSON.parseObject(content,ContentState.class);
                 contentState.setEntityMap(JSON.parseObject(history.getEntityMap(),Object.class));
                 result.setAffairId(history.getAffairId());
-                result.setContent(JSONObject.toJSONString(contentState));
+//                result.setContent(JSONObject.toJSONString(contentState));
                 result.setCreatorId(history.getCreatorId());
                 result.setCreatorUserId(history.getCreatorUserId());
                 result.setTitle(history.getTitle());

@@ -101,6 +101,8 @@ public interface IAffairService {
      */
     boolean updateCovers(long allianceId, long affairId, String urls);
 
+    boolean updateTags(long allianceId, long affairId, String tags);
+
     /**
      * 获取
      *

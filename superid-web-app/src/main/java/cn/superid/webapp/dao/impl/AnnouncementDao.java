@@ -46,7 +46,7 @@ public class AnnouncementDao implements IAnnouncementDao{
     public List<SimpleAnnouncementVO> getOverview(String ids, long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){

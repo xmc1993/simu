@@ -42,6 +42,7 @@ public class AffairEntity extends ExecutableModel {
     private String covers = "";
     private int guestLimit = 0;
     private int guestNumber = 0;
+    private String tag ="";
 
     private List<AffairEntity> children;
 
@@ -256,5 +257,13 @@ public class AffairEntity extends ExecutableModel {
 
     public void setNameAbbr(String nameAbbr) {
         this.nameAbbr = nameAbbr;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }
