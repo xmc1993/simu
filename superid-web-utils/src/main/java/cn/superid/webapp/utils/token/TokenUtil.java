@@ -1,7 +1,7 @@
 package cn.superid.webapp.utils.token;
 
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import redis.clients.jedis.Jedis;
 
 import java.util.Set;

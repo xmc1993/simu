@@ -1,6 +1,9 @@
 package service;
 
-import cn.superid.webapp.controller.VO.NoticeVO;
+import cn.superid.webapp.model.InvitationEntity;
+import cn.superid.webapp.model.NoticeEntity;
+import cn.superid.webapp.notice.Link;
+import cn.superid.webapp.notice.NoticeGenerator;
 import cn.superid.webapp.service.INoticeService;
 import cn.superid.webapp.service.IUpdateChatCacheService;
 import org.apache.thrift.TException;
@@ -10,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,7 +28,7 @@ public class NoticeServiceTest {
 
     @Test
     public void testNoticeSearch() throws Exception {
-        List<NoticeVO> noticeVOList = noticeService.search(1912l, 0, 2);
+        List<NoticeEntity> noticeVOList = noticeService.search(1912l, 0, 2);
         System.out.println(noticeVOList);
     }
 
@@ -42,12 +44,11 @@ public class NoticeServiceTest {
     public void testAffairMoveApplyAccepted() throws TException {
     }
 
+
     @Test
     public void testAllianceInvitation() throws Exception {
-        while (true) {
-            noticeService.allianceInvitation(1912, 1, 111, "test", 2400, "cdd", "manager");
-            Thread.sleep(5000);
-        }
+        InvitationEntity invitationEntity = InvitationEntity.dao.findById(1,2397);
+        noticeService.allianceInvitation(invitationEntity);
     }
 
 

@@ -1,8 +1,8 @@
 package cn.superid.webapp.controller;
 
 import cn.superid.webapp.controller.VO.InvitationVO;
-import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.forms.SimpleResponse;
+import cn.superid.webapp.model.NoticeEntity;
 import cn.superid.webapp.service.INoticeService;
 import cn.superid.webapp.service.impl.UserService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -32,7 +32,7 @@ public class NoticeController {
         return SimpleResponse.ok(noticeService.getInvitationList(userService.currentUserId()));
     }
 
-    @ApiOperation(value = "查询通知列表", response = NoticeVO.class, notes = "state 0未读 1已读，type 1@我的 2任务提醒 3 系统通知")
+    @ApiOperation(value = "查询通知列表", response = NoticeEntity.class, notes = "state 0未读 1已读，type 1@我的 2任务提醒 3 系统通知")
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public SimpleResponse search(@RequestParam(required = false) Integer state,
                                  @RequestParam(required = false) Integer type) throws Exception {

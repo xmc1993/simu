@@ -1,6 +1,6 @@
 package service;
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 
 import cn.superid.webapp.utils.TimeUtil;

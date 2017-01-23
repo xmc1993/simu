@@ -25,10 +25,6 @@ public class ComposerTest {
 //                System.out.println("on message:" + c2C);
 //            }
 //        };
-//        Message message = new Message();
-//        message.content = "hi";
-//        C2C c2c = new C2C(C2CType.MARK_READ_TIME, "mookRequestId");
-//        c2c.setChat(message);
 //        byte[] compose = composer.compose(codec.encode(c2c));
 //
 //        byte[] bytes = new byte[5];
@@ -42,47 +38,47 @@ public class ComposerTest {
 //        composer.feed(bytes1);
 //
 //    }
-//
-//    @Test
-//    public void testCombinePackage() throws Exception {
-//        Composer composer = new Composer() {
-//            @Override
-//            public void onMessage(C2C c2c) {
-//                System.out.println("on message:" + c2c);
-//                System.out.println("--------------不同消息的分隔符---------");
-//
-//            }
-//        };
-//        String resource1 = "dasdsagdaskdsgkafdkgfdl ldashkfgdslgfldalsflsahdlfjadhsfhjkasdlhfhlshjfjhlha bljkjdfsahfjhfhlhls";
-//        String resource2 = "    // Positional Access Operations\n" +
-//                "\n" +
-//                "    @SuppressWarnings(\"unchecked\")\n" +
-//                "    E elementData(int index) {\n" +
-//                "        return (E) elementData[index];\n" +
-//                "    }\n" +
-//                "\n" +
-//                "    /** \n" +
-//                "     * Returns the element at the specified position in this list.\n" +
-//                "     *\n" +
-//                "     * @param  index index of the element to return\n" +
-//                "     * @return the element at the specified position in this list\n" +
-//                "     * @throws IndexOutOfBoundsException {@inheritDoc}\n" +
-//                "     */\n" +
-//                "    public E get(int index) {\n" +
-//                "        rangeCheck(index);\n" +
-//                "\n" +
-//                "        return elementData(index);\n" +
-//                "    }";
-//        byte[] bytes1 = composer.compose(resource1.getBytes("utf-8"));
-//        byte[] bytes2 = composer.compose(resource2.getBytes("utf-8"));
-//        int length = bytes1.length;
-//        int length1 = bytes2.length;
-//        byte[] bytes = new byte[length + length1];
-//        System.arraycopy(bytes1, 0, bytes, 0, length);
-//        System.arraycopy(bytes2, 0, bytes, length, length1);
-//        composer.feed(bytes);
-//
-//    }
+
+    @Test
+    public void testCombinePackage() throws Exception {
+        Composer composer = new Composer() {
+            @Override
+            public void onMessage(C2C c2c) {
+                System.out.println("on message:" + c2c);
+                System.out.println("--------------不同消息的分隔符---------");
+
+            }
+        };
+        String resource1 = "dasdsagdaskdsgkafdkgfdl ldashkfgdslgfldalsflsahdlfjadhsfhjkasdlhfhlshjfjhlha bljkjdfsahfjhfhlhls";
+        String resource2 = "    // Positional Access Operations\n" +
+                "\n" +
+                "    @SuppressWarnings(\"unchecked\")\n" +
+                "    E elementData(int index) {\n" +
+                "        return (E) elementData[index];\n" +
+                "    }\n" +
+                "\n" +
+                "    /** \n" +
+                "     * Returns the element at the specified position in this list.\n" +
+                "     *\n" +
+                "     * @param  index index of the element to return\n" +
+                "     * @return the element at the specified position in this list\n" +
+                "     * @throws IndexOutOfBoundsException {@inheritDoc}\n" +
+                "     */\n" +
+                "    public E get(int index) {\n" +
+                "        rangeCheck(index);\n" +
+                "\n" +
+                "        return elementData(index);\n" +
+                "    }";
+        byte[] bytes1 = composer.compose(resource1.getBytes("utf-8"));
+        byte[] bytes2 = composer.compose(resource2.getBytes("utf-8"));
+        int length = bytes1.length;
+        int length1 = bytes2.length;
+        byte[] bytes = new byte[length + length1];
+        System.arraycopy(bytes1, 0, bytes, 0, length);
+        System.arraycopy(bytes2, 0, bytes, length, length1);
+        composer.feed(bytes);
+
+    }
 
     @Test
     public void testLength() {

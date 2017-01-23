@@ -2,6 +2,8 @@ package cn.superid.webapp.model;
 
 import cn.superid.jpa.orm.ConditionalDao;
 import cn.superid.jpa.orm.ExecutableModel;
+import com.alibaba.fastjson.JSON;
+import com.wordnik.swagger.annotations.ApiModel;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -12,6 +14,7 @@ import java.sql.Timestamp;
  * Created by jessiechen on 17/01/17.
  */
 @Table(name = "notice")
+@ApiModel
 public class NoticeEntity extends ExecutableModel {
     public final static ConditionalDao dao = new ConditionalDao(NoticeEntity.class);
     private long id;
@@ -78,6 +81,11 @@ public class NoticeEntity extends ExecutableModel {
 
     public void setUrls(String urls) {
         this.urls = urls;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 }
 

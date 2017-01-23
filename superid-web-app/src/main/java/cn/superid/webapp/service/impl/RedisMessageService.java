@@ -1,6 +1,6 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.webapp.forms.Message;
 import cn.superid.webapp.service.IRedisMessageService;
 import com.google.gson.Gson;

@@ -3,15 +3,20 @@ package util;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.model.UserEntity;
+import cn.superid.webapp.notice.chat.Constant.C2CType;
+import cn.superid.webapp.notice.chat.proto.C2C;
 import cn.superid.webapp.utils.Timer;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.Timer;
+import com.baidu.bjf.remoting.protobuf.Codec;
+import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 import com.sun.istack.internal.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +27,8 @@ import java.util.List;
 @RunWith(util.JUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:META-INF/spring/spring-all-test.xml")
 public class UtilTest {
+    private static Codec<C2C>  codec = ProtobufProxy.create(C2C.class);
+
     @Test
     public void testCheckFrequency(){
         Assert.assertFalse(CheckFrequencyUtil.isFrequent("test"));
@@ -33,10 +40,13 @@ public class UtilTest {
 
     @Test
     public void test (){
-        int b=10000,c=b;
-        b>>=7;
-        c=c/128;
-        System.out.println(c);
+        C2C ping = new C2C(C2CType.PING, null);
+        try {
+
+            System.out.println(codec.encode(ping));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

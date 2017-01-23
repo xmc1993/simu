@@ -2,7 +2,7 @@ package cn.superid.webapp.service;
 
 
 import cn.superid.webapp.controller.VO.InvitationVO;
-import cn.superid.webapp.controller.VO.NoticeVO;
+import cn.superid.webapp.model.InvitationEntity;
 import cn.superid.webapp.model.NoticeEntity;
 import org.apache.thrift.TException;
 
@@ -23,7 +23,7 @@ public interface INoticeService {
      * @param type   消息类型，可选
      * @return
      */
-    List<NoticeVO> search(long userId, Integer state, Integer type) throws Exception;
+    List<NoticeEntity> search(long userId, Integer state, Integer type);
 
     boolean markAsRead(long id);
 
@@ -45,7 +45,9 @@ public interface INoticeService {
 
     void allianceFriendApplyAccepted() throws Exception;
 
-    void allianceInvitation(long toUid, long invitationId, long allianceId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception;
+    void allianceInvitation(InvitationEntity invitationEntity);
+
+    void affairInvitation(InvitationEntity invitationEntity);
 
     void affairJoinSuccess() throws Exception;
 

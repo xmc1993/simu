@@ -1,8 +1,7 @@
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.core.Session;
 import cn.superid.jpa.exceptions.JdbcRuntimeException;
-import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.jpa.util.ParameterBindings;
@@ -14,7 +13,6 @@ import org.junit.Assert;
 import org.springframework.beans.BeanUtils;
 import org.testng.annotations.Test;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

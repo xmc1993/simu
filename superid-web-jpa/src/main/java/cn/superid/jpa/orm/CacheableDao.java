@@ -1,6 +1,6 @@
 package cn.superid.jpa.orm;
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.*;
 import redis.clients.jedis.Jedis;
