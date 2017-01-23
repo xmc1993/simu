@@ -111,7 +111,7 @@ public class AnnouncementController {
     @ApiOperation(value = "保存",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @RequiredPermissions(affair = AffairPermissions.ADD_ANNOUNCEMENT)
-    public SimpleResponse save(@RequestParam() Long announcementId ,@RequestParam() String contentState ,@RequestParam() String title){
+    public SimpleResponse save(@RequestParam() Long announcementId ,@RequestParam() String contentState ,@RequestParam() String title, @RequestParam() Long affairMemberId){
         try{
             ContentState content = JSON.parseObject(contentState,ContentState.class);
             boolean result = announcementService.save(content,announcementId,GlobalValue.currentAllianceId(),GlobalValue.currentRoleId(),title);
