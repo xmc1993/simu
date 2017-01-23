@@ -194,24 +194,21 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
-        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        if(result != null){
-//            //显示最新的user
-//            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
-//            if(userNameAndRoleNameVO != null){
-//                result.setRoleTitle(userNameAndRoleNameVO.getRoleTitle());
-//                result.setRealname(userNameAndRoleNameVO.getUsername());
-//                result.setAvatar(userNameAndRoleNameVO.getAvatar());
-//            }
-            //显示老user
-            RoleCache role = RoleCache.dao.findById(result.getModifierId());
-            UserBaseInfo user = UserBaseInfo.dao.findById(result.getModifierUserId());
-            result.setAvatar(user.getAvatar());
-            result.setRoleName(role.getTitle());
-            result.setUsername(user.getUsername());
+    public ModifyAnnouncementResponseVO getDetail(long announcementId, long allianceId) {
+
+        ModifyAnnouncementResponseVO modifyAnnouncementResponseVO = announcementDao.getDetail(announcementId,allianceId);
+        if(modifyAnnouncementResponseVO != null){
+            RoleCache role = RoleCache.dao.findById(modifyAnnouncementResponseVO.getModifierId());
+            UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(modifyAnnouncementResponseVO.getModifierUserId());
+            if(role != null){
+                modifyAnnouncementResponseVO.setRoleName(role.getTitle());
+            }
+            if(userBaseInfo != null){
+                modifyAnnouncementResponseVO.setUsername(userBaseInfo.getUsername());
+            }
         }
-        return result;
+
+        return modifyAnnouncementResponseVO;
     }
 
     @Override
@@ -279,6 +276,7 @@ public class AnnouncementService implements IAnnouncementService{
         result.setId(announcement.getId());
         result.setCreateTime(announcement.getModifyTime());
         result.setCreatorId(announcement.getModifierId());
+        result.setVersion(version);
         result.setState(announcement.getState());
         //组织返回结果
         AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",version).selectOne();
@@ -298,8 +296,6 @@ public class AnnouncementService implements IAnnouncementService{
             c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
             result.setContent(JSONObject.toJSONString(c));
         }
-
-        Map<String, Object> rsMap = new HashMap<>();
         return new AnnouncementDetailVO(result,operations,entityMaps);
     }
 

@@ -20,6 +20,7 @@ public class AnnouncementForm {
     private String roleName;
     private String username;
     private String avatar;
+    private int version;
 
     public long getId() {
         return id;
@@ -123,5 +124,13 @@ public class AnnouncementForm {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

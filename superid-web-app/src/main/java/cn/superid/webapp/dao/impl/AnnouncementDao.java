@@ -71,6 +71,15 @@ public class AnnouncementDao implements IAnnouncementDao{
     }
 
     @Override
+    public ModifyAnnouncementResponseVO getDetail(long announcementId, long allianceId) {
+        StringBuilder sql = new StringBuilder("select version,modify_time,id as announcementId , title ,modifier_id,modifier_user_id  from announcement  where alliance_id = ? and id = ? ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(announcementId);
+        return AnnouncementEntity.getSession().findOneByNativeSql(ModifyAnnouncementResponseVO.class,sql.toString(),p);
+    }
+
+    @Override
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
         StringBuilder sql = new StringBuilder("select id ,modify_time,title from announcement_draft  where alliance_id = ? and affair_id = ? and creator_id = ? and state = 0 order by modify_time desc ");
         ParameterBindings p = new ParameterBindings();

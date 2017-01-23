@@ -15,6 +15,8 @@ public interface IAnnouncementDao {
 
     public List<AnnouncementVersionVO> getAllVersion(long allianceId , long announcementId);
 
+    public ModifyAnnouncementResponseVO getDetail(long announcementId , long allianceId);
+
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId);
 
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);

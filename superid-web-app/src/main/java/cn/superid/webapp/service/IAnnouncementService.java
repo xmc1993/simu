@@ -84,7 +84,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public AnnouncementEntity getDetail(long announcementId , long allianceId);
+    public ModifyAnnouncementResponseVO getDetail(long announcementId , long allianceId);
 
     /**
      * 得到公告详情(高配版)
