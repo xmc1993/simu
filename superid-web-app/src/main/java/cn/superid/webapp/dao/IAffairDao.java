@@ -15,4 +15,7 @@ public interface IAffairDao {
      * @return
      */
     List<AffairEntity> getChildAffairs(long allianceId, long affairId, String... columns);
+
+
+
 }

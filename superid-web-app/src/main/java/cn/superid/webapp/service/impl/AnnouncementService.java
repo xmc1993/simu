@@ -1,5 +1,6 @@
 package cn.superid.webapp.service.impl;
 
+import cn.superid.webapp.dao.impl.AnnouncementDao;
 import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.webapp.controller.VO.*;
@@ -39,7 +40,7 @@ public class AnnouncementService implements IAnnouncementService{
     private static final int SNAPSHOT_INTERVAL = 30 ;
 
     @Override
-    public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId) {
+    public boolean save(ContentState contentState, long announcementId, long allianceId , long roleId ,String title) {
         RoleCache role = RoleCache.dao.findById(roleId);
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
         if(announcementEntity == null){
@@ -47,7 +48,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
         //第一步,更新最近一条历史记录的increment
         ContentState old = JSON.parseObject(announcementEntity.getContent(),ContentState.class);
-        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",compareTwoPapers(old,contentState));
+        int result = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcementId",announcementId).eq("version",announcementEntity.getVersion()).set("increment",JSONObject.toJSONString(compareTwoPapers(old,contentState)));
 
         //第二步,改变原有记录
         announcementEntity.setVersion(announcementEntity.getVersion()+1);
@@ -56,6 +57,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setModifierUserId(role.getUserId());
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementEntity.setTitle(title);
         announcementEntity.update();
 
         //第三步,把这条新记录存在历史记录里
@@ -70,6 +72,29 @@ public class AnnouncementService implements IAnnouncementService{
             generateSnapshot(announcementId,announcementEntity.getVersion(),announcementEntity.getContent(),allianceId,history.getId());
         }
         return result>0;
+    }
+
+    @Override
+    public boolean modifyPublicType(long announcementId, int publicType, long allianceId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setPublicType(publicType);
+        announcementEntity.update();
+        return AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("version",announcementEntity.getVersion()).set("public_type",publicType)>0;
+    }
+
+    @Override
+    public boolean modifyStuck(long announcementId, int isStuck, long allianceId) {
+        AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
+        if(announcementEntity == null){
+            return false;
+        }
+        announcementEntity.setIsTop(isStuck);
+        announcementEntity.update();
+
+        return AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("version",announcementEntity.getVersion()).set("is_top",isStuck)>0;
     }
 
 
@@ -181,28 +206,25 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public AnnouncementEntity getDetail(long announcementId, long allianceId) {
-        AnnouncementEntity result = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        if(result != null){
-//            //显示最新的user
-//            UserNameAndRoleNameVO userNameAndRoleNameVO = roleService.getUserNameAndRoleName(result.getModifierId());
-//            if(userNameAndRoleNameVO != null){
-//                result.setRoleTitle(userNameAndRoleNameVO.getRoleTitle());
-//                result.setRealname(userNameAndRoleNameVO.getUsername());
-//                result.setAvatar(userNameAndRoleNameVO.getAvatar());
-//            }
-            //显示老user
-            RoleCache role = RoleCache.dao.findById(result.getModifierId());
-            UserBaseInfo user = UserBaseInfo.dao.findById(result.getModifierUserId());
-            result.setAvatar(user.getAvatar());
-            result.setRoleName(role.getTitle());
-            result.setUsername(user.getUsername());
+    public ModifyAnnouncementResponseVO getDetail(long announcementId, long allianceId) {
+
+        ModifyAnnouncementResponseVO modifyAnnouncementResponseVO = announcementDao.getDetail(announcementId,allianceId);
+        if(modifyAnnouncementResponseVO != null){
+            RoleCache role = RoleCache.dao.findById(modifyAnnouncementResponseVO.getModifierId());
+            UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(modifyAnnouncementResponseVO.getModifierUserId());
+            if(role != null){
+                modifyAnnouncementResponseVO.setRoleName(role.getTitle());
+            }
+            if(userBaseInfo != null){
+                modifyAnnouncementResponseVO.setUsername(userBaseInfo.getUsername());
+            }
         }
-        return result;
+
+        return modifyAnnouncementResponseVO;
     }
 
     @Override
-    public Map<String, Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
+    public AnnouncementForm getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
         List<EditDistanceForm> operations = new ArrayList<>();
         List<String> entityMaps = new ArrayList<>();
 
@@ -252,12 +274,14 @@ public class AnnouncementService implements IAnnouncementService{
         int lower = version-offsetTail;
         List<AnnouncementHistoryEntity> lowHistories = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).lt("version",version+1).gt("version",lower).desc("version").selectList();
         for(AnnouncementHistoryEntity a : lowHistories){
-            EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
-            operations.add(e);
-            entityMaps.add(a.getEntityMap());
+            if(a.getVersion() != 1){
+                EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
+                operations.add(e);
+                entityMaps.add(a.getEntityMap());
+            }
         }
-        if(lower < 0){
-            for(int i = lower ; i < 0 ; i++){
+        if(lower <= 0){
+            for(int i = lower ; i <= 0 ; i++){
                 operations.add(null);
                 entityMaps.add(null);
             }
@@ -266,6 +290,7 @@ public class AnnouncementService implements IAnnouncementService{
         result.setId(announcement.getId());
         result.setCreateTime(announcement.getModifyTime());
         result.setCreatorId(announcement.getModifierId());
+        result.setVersion(version);
         result.setState(announcement.getState());
         //组织返回结果
         AnnouncementHistoryEntity h = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).eq("version",version).selectOne();
@@ -285,18 +310,20 @@ public class AnnouncementService implements IAnnouncementService{
             c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
             result.setContent(JSONObject.toJSONString(c));
         }
-
-        Map<String, Object> rsMap = new HashMap<>();
-        rsMap.put("announcement", result);
-        rsMap.put("history",operations);
-        rsMap.put("entityMaps",entityMaps);
-        return rsMap;
+        result.setHistorys(operations);
+        result.setEntityMaps(entityMaps);
+        return result;
     }
 
     @Override
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild) {
 
         return announcementDao.searchAnnouncement(content,affairId,allianceId,containChild);
+    }
+
+    @Override
+    public List<AnnouncementVersionVO> getAllVersion(long announcementId, long allianceId) {
+        return announcementDao.getAllVersion(allianceId,announcementId);
     }
 
     @Override
@@ -364,14 +391,14 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
         return announcementDao.getAnnouncementHistoryList(affairId,allianceId,count,time);
     }
 
     @Override
-    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId) {
+    public SimpleAnnouncementHistoryVO getHistoryVersion(long announcementId, int version, long allianceId) {
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        SimpleAnnouncementVO result = new SimpleAnnouncementVO();
+        SimpleAnnouncementHistoryVO result = new SimpleAnnouncementHistoryVO();
         if(announcementEntity == null){
             return null;
         }
@@ -415,7 +442,7 @@ public class AnnouncementService implements IAnnouncementService{
                 ContentState contentState = JSON.parseObject(content,ContentState.class);
                 contentState.setEntityMap(JSON.parseObject(history.getEntityMap(),Object.class));
                 result.setAffairId(history.getAffairId());
-                result.setContent(JSONObject.toJSONString(contentState));
+//                result.setContent(JSONObject.toJSONString(contentState));
                 result.setCreatorId(history.getCreatorId());
                 result.setCreatorUserId(history.getCreatorUserId());
                 result.setTitle(history.getTitle());
@@ -531,7 +558,7 @@ public class AnnouncementService implements IAnnouncementService{
                 case 1:
                     //从左边变化来,比原来多一步增加操作
                     List<TotalBlock> one = new ArrayList<>();
-                    int location = 0;
+                    int location = -1;
                     for(int i = 0 ; i < insert.size() ;i++){
                         InsertForm in = insert.get(i);
                         if(in.getPosition() == y){
@@ -540,8 +567,8 @@ public class AnnouncementService implements IAnnouncementService{
                             break;
                         }
                     }
-                    one.add(0,history.get(x));
-                    if(location != 0){
+                    one.add(0,history.get(x-1));
+                    if(location != -1){
                         insert.set(location,new InsertForm(y,one));
                     }else{
                         insert.add(new InsertForm(y,one));
@@ -552,7 +579,7 @@ public class AnnouncementService implements IAnnouncementService{
                 case 2:
                     if(temp == 1){
                         //说明进行了一步替换
-                        replace.add(new ReplaceForm(y,history.get(x)));
+                        replace.add(new ReplaceForm(y,history.get(x-1)));
                         x = x - 1;
                         y = y - 1;
                         count++;

@@ -1,6 +1,7 @@
 package cn.superid.webapp.controller.forms;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Created by jizhenya on 16/10/8.
@@ -20,6 +21,10 @@ public class AnnouncementForm {
     private String roleName;
     private String username;
     private String avatar;
+    private int version;
+
+    private List<EditDistanceForm> historys;
+    private List<String> entityMaps;
 
     public long getId() {
         return id;
@@ -123,5 +128,29 @@ public class AnnouncementForm {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public List<EditDistanceForm> getHistorys() {
+        return historys;
+    }
+
+    public void setHistorys(List<EditDistanceForm> historys) {
+        this.historys = historys;
+    }
+
+    public List<String> getEntityMaps() {
+        return entityMaps;
+    }
+
+    public void setEntityMaps(List<String> entityMaps) {
+        this.entityMaps = entityMaps;
     }
 }

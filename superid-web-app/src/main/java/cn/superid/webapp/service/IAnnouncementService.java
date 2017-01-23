@@ -25,7 +25,18 @@ public interface IAnnouncementService {
      * @param roleId
      * @return
      */
-    public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId);
+    public boolean save(ContentState contentState , long announcementId , long allianceId , long roleId , String title);
+
+    /**
+     * 修改公开性
+     * @param announcementId
+     * @param publicType
+     * @param allianceId
+     * @return
+     */
+    public boolean modifyPublicType(long announcementId, int publicType, long allianceId);
+
+    public boolean modifyStuck(long announcementId, int isStuck, long allianceId);
 
     /**
      * 创建公告
@@ -73,7 +84,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public AnnouncementEntity getDetail(long announcementId , long allianceId);
+    public ModifyAnnouncementResponseVO getDetail(long announcementId , long allianceId);
 
     /**
      * 得到公告详情(高配版)
@@ -84,7 +95,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public Map<String,Object> getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId);
+    public AnnouncementForm getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId);
 
     /**
      * 搜索公告
@@ -94,6 +105,8 @@ public interface IAnnouncementService {
      * @return
      */
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);
+
+    public List<AnnouncementVersionVO> getAllVersion(long announcementId, long allianceId);
 
     //公告接口第二部分:公告草稿部分
 
@@ -148,7 +161,7 @@ public interface IAnnouncementService {
      * @param time
      * @return
      */
-    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId , long allianceId , int count, Timestamp time);
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId , long allianceId , int count, Timestamp time);
 
     /**
      * 回退到某个版本
@@ -157,7 +170,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId);
+    public SimpleAnnouncementHistoryVO getHistoryVersion(long announcementId, int version, long allianceId);
 
 
     //公告接口第四部分:比对公告内容等方法

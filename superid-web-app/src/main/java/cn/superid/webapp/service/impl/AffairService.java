@@ -341,8 +341,12 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean updateCovers(long allianceId, long affairId, String urls) {
-        AffairEntity.dao.id(affairId).partitionId(allianceId).set("covers", urls);
-        return true;
+        return AffairEntity.dao.id(affairId).partitionId(allianceId).set("covers", urls)>0;
+    }
+
+    @Override
+    public boolean updateTags(long allianceId, long affairId, String tags) {
+        return AffairEntity.dao.id(affairId).partitionId(allianceId).set("tag", tags)>0;
     }
 
 
@@ -535,8 +539,7 @@ public class AffairService implements IAffairService {
         affairInfo.setSuperid(affairEntity.getSuperid());
         affairInfo.setGuestLimit(affairEntity.getGuestLimit());
         affairInfo.setModifyTime(affairEntity.getModifyTime());
-        //TODO 还没有标签
-        affairInfo.setTags("");
+        affairInfo.setTags(affairEntity.getTag());
 
         affairInfo.setCovers(affairEntity.getCovers());
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));

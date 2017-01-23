@@ -1,10 +1,7 @@
 package cn.superid.webapp.dao.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementHistoryVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
-import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.dao.IAnnouncementDao;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
@@ -49,7 +46,7 @@ public class AnnouncementDao implements IAnnouncementDao{
     public List<SimpleAnnouncementVO> getOverview(String ids, long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content as content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){
@@ -62,6 +59,24 @@ public class AnnouncementDao implements IAnnouncementDao{
         List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementVO.class,sql.toString(),p);
 
         return result;
+    }
+
+    @Override
+    public List<AnnouncementVersionVO> getAllVersion(long allianceId, long announcementId) {
+        StringBuilder sql = new StringBuilder("select version,create_time from announcement_history  where alliance_id = ? and announcement_id = ? order by create_time desc ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(announcementId);
+        return AnnouncementEntity.getSession().findListByNativeSql(AnnouncementVersionVO.class,sql.toString(),p);
+    }
+
+    @Override
+    public ModifyAnnouncementResponseVO getDetail(long announcementId, long allianceId) {
+        StringBuilder sql = new StringBuilder("select version,modify_time,id as announcementId , title ,modifier_id,modifier_user_id  from announcement  where alliance_id = ? and id = ? ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(announcementId);
+        return AnnouncementEntity.getSession().findOneByNativeSql(ModifyAnnouncementResponseVO.class,sql.toString(),p);
     }
 
     @Override
@@ -113,9 +128,9 @@ public class AnnouncementDao implements IAnnouncementDao{
     }
 
     @Override
-    public List<SimpleAnnouncementHistoryVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time) {
+    public List<SimpleAnnouncementVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time) {
         StringBuilder sql = new StringBuilder("select a.*,b.name as affairName from (" +
-                "select announcement_id as id,max(version) as version,title,affair_id,thumb_content as content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
+                "select announcement_id as id,max(version) as version,title,affair_id,thumb_content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
                 "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
                 "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
                 "on a.affair_id = b.id");
@@ -128,6 +143,6 @@ public class AnnouncementDao implements IAnnouncementDao{
         p.addIndexBinding(time);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
-        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementVO.class,sql.toString(),p);
     }
 }
