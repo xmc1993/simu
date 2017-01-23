@@ -106,6 +106,8 @@ public interface IAnnouncementService {
      */
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);
 
+    public List<AnnouncementVersionVO> getAllVersion(long announcementId, long allianceId);
+
     //公告接口第二部分:公告草稿部分
 
     /**

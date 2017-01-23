@@ -1,10 +1,7 @@
 package cn.superid.webapp.dao.impl;
 
 import cn.superid.jpa.util.ParameterBindings;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementHistoryVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementIdVO;
-import cn.superid.webapp.controller.VO.SimpleAnnouncementVO;
-import cn.superid.webapp.controller.VO.SimpleDraftIdVO;
+import cn.superid.webapp.controller.VO.*;
 import cn.superid.webapp.dao.IAnnouncementDao;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AnnouncementEntity;
@@ -62,6 +59,15 @@ public class AnnouncementDao implements IAnnouncementDao{
         List<SimpleAnnouncementVO> result = AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementVO.class,sql.toString(),p);
 
         return result;
+    }
+
+    @Override
+    public List<AnnouncementVersionVO> getAllVersion(long allianceId, long announcementId) {
+        StringBuilder sql = new StringBuilder("select version,create_time from announcement_history  where alliance_id = ? and announcement_id = ? order by create_time desc ");
+        ParameterBindings p = new ParameterBindings();
+        p.addIndexBinding(allianceId);
+        p.addIndexBinding(announcementId);
+        return AnnouncementEntity.getSession().findListByNativeSql(AnnouncementVersionVO.class,sql.toString(),p);
     }
 
     @Override

@@ -310,6 +310,11 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
+    public List<AnnouncementVersionVO> getAllVersion(long announcementId, long allianceId) {
+        return announcementDao.getAllVersion(allianceId,announcementId);
+    }
+
+    @Override
     public List<SimpleDraftIdVO> getDraftByAffair(long affairId, long allianceId, long roleId) {
         return announcementDao.getDraftByAffair(affairId,allianceId,roleId);
     }

@@ -82,6 +82,12 @@ public class AnnouncementController {
         return SimpleResponse.ok(result);
     }
 
+    @ApiOperation(value = "得到公告所有版本",response = String.class, notes = "拥有权限")
+    @RequestMapping(value = "/get_all_version", method = RequestMethod.GET)
+    public SimpleResponse searchAnnouncement(@RequestParam() Long announcementId ,@RequestParam() Long allianceId) {
+        return SimpleResponse.ok(announcementService.getAllVersion(announcementId,allianceId));
+    }
+
     @ApiOperation(value = "查看详细公告",response = String.class, notes = "拥有权限")
     @RequestMapping(value = "/get_detail", method = RequestMethod.GET)
     public SimpleResponse getDetail(@RequestParam() Long announcementId ,@RequestParam() Long allianceId ){
