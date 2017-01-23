@@ -161,7 +161,7 @@ public interface IAnnouncementService {
      * @param time
      * @return
      */
-    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId , long allianceId , int count, Timestamp time);
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId , long allianceId , int count, Timestamp time);
 
     /**
      * 回退到某个版本
@@ -170,7 +170,7 @@ public interface IAnnouncementService {
      * @param allianceId
      * @return
      */
-    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId);
+    public SimpleAnnouncementHistoryVO getHistoryVersion(long announcementId, int version, long allianceId);
 
 
     //公告接口第四部分:比对公告内容等方法

@@ -128,9 +128,9 @@ public class AnnouncementDao implements IAnnouncementDao{
     }
 
     @Override
-    public List<SimpleAnnouncementHistoryVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time) {
+    public List<SimpleAnnouncementVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time) {
         StringBuilder sql = new StringBuilder("select a.*,b.name as affairName from (" +
-                "select announcement_id as id,max(version) as version,title,affair_id,thumb_content as content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
+                "select announcement_id as id,max(version) as version,title,affair_id,thumb_content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
                 "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
                 "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
                 "on a.affair_id = b.id");
@@ -143,6 +143,6 @@ public class AnnouncementDao implements IAnnouncementDao{
         p.addIndexBinding(time);
         p.addIndexBinding(allianceId);
         p.addIndexBinding(affairId);
-        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementHistoryVO.class,sql.toString(),p);
+        return AnnouncementEntity.getSession().findListByNativeSql(SimpleAnnouncementVO.class,sql.toString(),p);
     }
 }

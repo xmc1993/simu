@@ -391,14 +391,14 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public List<SimpleAnnouncementHistoryVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
+    public List<SimpleAnnouncementVO> getHistoryOverview(long affairId, long allianceId, int count, Timestamp time) {
         return announcementDao.getAnnouncementHistoryList(affairId,allianceId,count,time);
     }
 
     @Override
-    public SimpleAnnouncementVO getHistoryVersion(long announcementId, int version, long allianceId) {
+    public SimpleAnnouncementHistoryVO getHistoryVersion(long announcementId, int version, long allianceId) {
         AnnouncementEntity announcementEntity = AnnouncementEntity.dao.findById(announcementId,allianceId);
-        SimpleAnnouncementVO result = new SimpleAnnouncementVO();
+        SimpleAnnouncementHistoryVO result = new SimpleAnnouncementHistoryVO();
         if(announcementEntity == null){
             return null;
         }

@@ -21,5 +21,5 @@ public interface IAnnouncementDao {
 
     public List<SimpleAnnouncementIdVO> searchAnnouncement(String content, Long affairId, Long allianceId, boolean containChild);
 
-    public List<SimpleAnnouncementHistoryVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time);
+    public List<SimpleAnnouncementVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time);
 }
