@@ -212,7 +212,7 @@ public class AnnouncementService implements IAnnouncementService{
     }
 
     @Override
-    public AnnouncementDetailVO getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
+    public AnnouncementForm getDetails(long announcementId, int offsetHead, int offsetTail, int version, long allianceId) {
         List<EditDistanceForm> operations = new ArrayList<>();
         List<String> entityMaps = new ArrayList<>();
 
@@ -262,12 +262,14 @@ public class AnnouncementService implements IAnnouncementService{
         int lower = version-offsetTail;
         List<AnnouncementHistoryEntity> lowHistories = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).lt("version",version+1).gt("version",lower).desc("version").selectList();
         for(AnnouncementHistoryEntity a : lowHistories){
-            EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
-            operations.add(e);
-            entityMaps.add(a.getEntityMap());
+            if(a.getVersion() != 1){
+                EditDistanceForm e = JSON.parseObject(a.getDecrement(),EditDistanceForm.class);
+                operations.add(e);
+                entityMaps.add(a.getEntityMap());
+            }
         }
-        if(lower < 0){
-            for(int i = lower ; i < 0 ; i++){
+        if(lower <= 0){
+            for(int i = lower ; i <= 0 ; i++){
                 operations.add(null);
                 entityMaps.add(null);
             }
@@ -296,7 +298,9 @@ public class AnnouncementService implements IAnnouncementService{
             c.setEntityMap(JSON.parseObject(h.getEntityMap(), Object.class));
             result.setContent(JSONObject.toJSONString(c));
         }
-        return new AnnouncementDetailVO(result,operations,entityMaps);
+        result.setHistorys(operations);
+        result.setEntityMaps(entityMaps);
+        return result;
     }
 
     @Override
