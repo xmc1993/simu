@@ -1,6 +1,5 @@
 package cn.superid.webapp.controller.VO;
 
-import com.taobao.api.internal.mapping.ApiField;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 

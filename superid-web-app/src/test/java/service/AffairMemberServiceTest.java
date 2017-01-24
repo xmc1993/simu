@@ -2,6 +2,7 @@ package service;
 
 import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.forms.AffairRoleCard;
+import cn.superid.webapp.forms.GetRoleCardsMap;
 import cn.superid.webapp.forms.SearchAffairMemberConditions;
 import cn.superid.webapp.forms.SearchAffairRoleConditions;
 import cn.superid.webapp.model.RoleEntity;
@@ -75,28 +76,28 @@ public class AffairMemberServiceTest {
 //
 //    }
 //
-//    @Test
-//    public void testSearchAffairRoles() throws Exception {
-//        RoleEntity role = RoleEntity.dao.findById(3528L, 2198);
-//
-//        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
-//
-//        List<AffairRoleCard> list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-//
-//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-//
-//        conditions.setActive(true);
-//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-//
-//        conditions.setInAlliance(true);
-//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-//
-//
-//        conditions.setKey("zp");
-//        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
-//
-//
-//    }
+    @Test
+    public void testSearchAffairRoles() throws Exception {
+        RoleEntity role = RoleEntity.dao.findById(3528L, 2198);
+
+        SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
+
+        List<GetRoleCardsMap> list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+
+        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+
+        conditions.setActive(true);
+        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+
+        conditions.setInAlliance(true);
+        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+
+
+        conditions.setKey("zp");
+        list1 = affairMemberService.searchAffairRoleCards(testAllianceId, testAffairId, conditions);
+
+
+    }
 
     @Test
     public void searchAffairMembers1() {

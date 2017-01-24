@@ -35,7 +35,7 @@ public class AffairMemberDao implements IAffairMemberDao {
 
 
         StringBuilder sql = new StringBuilder("select distinct r.id as role_id,r.belong_affair_id,r.title as role_title ,r.title_abbr,u.username,u.id as user_id ,u.name_abbr,u.avatar, u.gender," +
-                "ta.permissions,a.name as belongAffairName , alliance.id as allianceId,alliance.name as allianceName,ta.type from ");
+                "ta.permissions,a.name as belongAffairName ,ta.type from ");
         ParameterBindings parameterBindings = new ParameterBindings();
 
 
@@ -60,7 +60,7 @@ public class AffairMemberDao implements IAffairMemberDao {
                 sql.append(" and am.state>0 ");
             }
         }
-        sql.append(" )  ta  join role r  join affair a join user u join alliance on a.id = r.belong_affair_id and ta.role_id = r.id and r.user_id = u.id and alliance.id = r.alliance_id where 1=1 ");
+        sql.append(" )  ta  join role r  join affair a join user u  on a.id = r.belong_affair_id and ta.role_id = r.id and r.user_id = u.id  where 1=1 ");
 
         if (hasKey) {
             sql.append(" and ( r.title like ? or r.title_abbr like ? or u.username like ? or u.name_abbr like ? ) ");

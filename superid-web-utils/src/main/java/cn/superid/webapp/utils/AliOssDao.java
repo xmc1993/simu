@@ -4,17 +4,11 @@ import com.aliyun.api.AliyunClient;
 import com.aliyun.api.AliyunRequest;
 import com.aliyun.api.AliyunResponse;
 import com.aliyun.api.DefaultAliyunClient;
-import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.auth.ServiceSignature;
-import com.aliyun.oss.common.comm.RequestMessage;
 import com.aliyun.oss.common.utils.BinaryUtil;
-import com.aliyun.oss.common.utils.DateUtil;
-import com.aliyun.oss.internal.OSSMultipartOperation;
-import com.aliyun.oss.internal.OSSRequestMessageBuilder;
+
 import com.aliyun.oss.model.*;
-import com.taobao.api.ApiException;
-import com.taobao.api.ApiRuleException;
 import com.taobao.api.internal.mapping.ApiField;
 import com.taobao.api.internal.mapping.ApiListField;
 import com.taobao.api.internal.util.RequestCheckUtils;
@@ -22,10 +16,7 @@ import com.taobao.api.internal.util.TaobaoHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -195,7 +186,7 @@ public class AliOssDao {
                 throw new RuntimeException(response.getMessage());
             }
             return outputSnapShotFile.getObject();
-        } catch (ApiException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -325,9 +316,13 @@ public class AliOssDao {
             return SubmitSnapshotJobResponse.class;
         }
 
-        public void check() throws ApiRuleException {
-            RequestCheckUtils.checkNotEmpty(this.input, "input");
-            RequestCheckUtils.checkNotEmpty(this.snapshotConfig, "snapshotConfig");
+        public void check() {
+            try {
+                RequestCheckUtils.checkNotEmpty(this.input, "input");
+                RequestCheckUtils.checkNotEmpty(this.snapshotConfig, "snapshotConfig");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public Map<String, String> getHeaderMap() {
@@ -442,8 +437,12 @@ public class AliOssDao {
             return QuerySnapshotJobListResponse.class;
         }
 
-        public void check() throws ApiRuleException {
-            RequestCheckUtils.checkNotEmpty(this.snapshotJobIds, "snapshotJobIds");
+        public void check()  {
+            try {
+                RequestCheckUtils.checkNotEmpty(this.snapshotJobIds, "snapshotJobIds");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         public Map<String, String> getHeaderMap() {

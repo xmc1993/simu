@@ -189,7 +189,7 @@ public class AnnouncementController {
             return SimpleResponse.ok(announcementService.createAnnouncement(title,GlobalValue.currentAffairId(),GlobalValue.currentAllianceId(),taskId,GlobalValue.currentRoleId(),isTop,publicType,contentState));
         }catch (Exception e){
             e.printStackTrace();
-            return SimpleResponse.error("ContentState is invaild");
+            return SimpleResponse.error("ContentState is invalid");
         }
 
     }
