@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class AnnouncementForm {
 
-    private long id;
+    private long announcementId;
     private String title;
     private long creatorId;
     private String content;
@@ -26,12 +26,12 @@ public class AnnouncementForm {
     private List<EditDistanceForm> historys;
     private List<String> entityMaps;
 
-    public long getId() {
-        return id;
+    public long getAnnouncementId() {
+        return announcementId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setAnnouncementId(long announcementId) {
+        this.announcementId = announcementId;
     }
 
     public String getTitle() {

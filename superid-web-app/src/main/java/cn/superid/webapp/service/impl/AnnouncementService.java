@@ -287,7 +287,7 @@ public class AnnouncementService implements IAnnouncementService{
             }
         }
         AnnouncementForm result = new AnnouncementForm();
-        result.setId(announcement.getId());
+        result.setAnnouncementId(announcement.getId());
         result.setCreateTime(announcement.getModifyTime());
         result.setCreatorId(announcement.getModifierId());
         result.setVersion(version);
