@@ -46,7 +46,7 @@ public class AnnouncementDao implements IAnnouncementDao{
     public List<SimpleAnnouncementVO> getOverview(String ids, long allianceId) {
         String[] idList = ids.split(",");
 
-        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id , affair_id , thumb_content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
+        StringBuilder sql = new StringBuilder("select a.* , b.name as affairName from (select title , id as announcementId , affair_id , thumb_content, modifier_id as creatorId, modifier_user_id as creatorUserId from announcement where id in ( 0 ");
         ParameterBindings p = new ParameterBindings();
 
         for(String id : idList){
@@ -131,7 +131,7 @@ public class AnnouncementDao implements IAnnouncementDao{
     public List<SimpleAnnouncementVO> getAnnouncementHistoryList(long affairId, long allianceId, int count, Timestamp time) {
         StringBuilder sql = new StringBuilder("select a.*,b.name as affairName from (" +
                 "select announcement_id as id,max(version) as version,title,affair_id,thumb_content,creator_id,creator_user_id from announcement_history where alliance_id = ? and affair_id = ?  create_time <= ? and id not in (" +
-                "select id from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
+                "select id as announcementId from announcement_history where alliance_id = ? and affair_id = ?  modify_time <= ? and state = 1 ) order by announcement_id ) a " +
                 "join (select name , id from affair where alliance_id = ? and id = ? ) b " +
                 "on a.affair_id = b.id");
         ParameterBindings p = new ParameterBindings();

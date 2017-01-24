@@ -9,7 +9,7 @@ import javax.persistence.Transient;
 public class SimpleAnnouncementVO {
 
     private String title;
-    private long id;
+    private long announcementId;
     private long affairId;
     private String thumbContent;
     private String affairName;
@@ -34,12 +34,12 @@ public class SimpleAnnouncementVO {
         this.title = title;
     }
 
-    public long getId() {
-        return id;
+    public long getAnnouncementId() {
+        return announcementId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setAnnouncementId(long announcementId) {
+        this.announcementId = announcementId;
     }
 
     public long getAffairId() {
