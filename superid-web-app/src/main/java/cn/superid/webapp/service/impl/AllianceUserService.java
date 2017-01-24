@@ -32,6 +32,9 @@ public class AllianceUserService implements IAllianceUserService {
 
     @Autowired
     private IAffairMemberService affairMemberService;
+
+    @Autowired
+    private INoticeService noticeService;
     @Override
     public AllianceUserEntity addAllianceUser(long allianceId, long userId) {
         AllianceUserEntity allianceUserEntity = new AllianceUserEntity();
@@ -50,23 +53,23 @@ public class AllianceUserService implements IAllianceUserService {
             beInvitedRoleId = addAllianceUserForm.getRoleId();
             beInvitedUserId = addAllianceUserForm.getUserId();
             //同一个人被邀请了两次并且角色都是一样的话,暂定直接覆盖
-            InvitationEntity existedInvitation = InvitationEntity.dao.partitionId(allianceId).eq("be_invited_role_id",beInvitedRoleId)
+            InvitationEntity invitationEntity = InvitationEntity.dao.partitionId(allianceId).eq("be_invited_role_id",beInvitedRoleId)
                     .eq("be_invited_user_id",beInvitedUserId).selectOne();
-            if(existedInvitation != null) {
-                existedInvitation.setAffairId(addAllianceUserForm.getMainAffairId());
-                existedInvitation.setInviteUserId(inviteUserId);
-                existedInvitation.setInviteRoleId(roleId);
-                existedInvitation.setInviteReason(addAllianceUserForm.getComment());
-                existedInvitation.setBeInvitedUserId(addAllianceUserForm.getUserId());
-                existedInvitation.setBeInvitedRoleId(addAllianceUserForm.getRoleId());
-                existedInvitation.setBeInvitedRoleTitle(addAllianceUserForm.getRoleTitle());
-                existedInvitation.setPermissions(addAllianceUserForm.getPermissions());
-                existedInvitation.setModifyTime(TimeUtil.getCurrentSqlTime());
-                existedInvitation.update();
+            if(invitationEntity != null) {
+                invitationEntity.setAffairId(addAllianceUserForm.getMainAffairId());
+                invitationEntity.setInviteUserId(inviteUserId);
+                invitationEntity.setInviteRoleId(roleId);
+                invitationEntity.setInviteReason(addAllianceUserForm.getComment());
+                invitationEntity.setBeInvitedUserId(addAllianceUserForm.getUserId());
+                invitationEntity.setBeInvitedRoleId(addAllianceUserForm.getRoleId());
+                invitationEntity.setBeInvitedRoleTitle(addAllianceUserForm.getRoleTitle());
+                invitationEntity.setPermissions(addAllianceUserForm.getPermissions());
+                invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
+                invitationEntity.update();
             }
             //生成一份新的邀请
             else {
-                InvitationEntity invitationEntity = new InvitationEntity();
+                invitationEntity = new InvitationEntity();
                 invitationEntity.setAllianceId(allianceId);
                 invitationEntity.setAffairId(addAllianceUserForm.getMainAffairId());
                 invitationEntity.setInviteUserId(inviteUserId);
@@ -82,6 +85,8 @@ public class AllianceUserService implements IAllianceUserService {
                 invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
                 invitationEntity.save();
             }
+            noticeService.allianceInvitation(invitationEntity);
+
             //TODO 给被邀请人发送消息通知
         }
 
