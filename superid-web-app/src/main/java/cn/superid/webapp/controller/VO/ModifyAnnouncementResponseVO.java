@@ -15,6 +15,7 @@ public class ModifyAnnouncementResponseVO {
     private long modifierUserId;
     private String roleName;
     private String username;
+    private String thumbContent;
 
     public long getAnnouncementId() {
         return announcementId;
@@ -62,6 +63,14 @@ public class ModifyAnnouncementResponseVO {
 
     public void setModifierUserId(long modifierUserId) {
         this.modifierUserId = modifierUserId;
+    }
+
+    public String getThumbContent() {
+        return thumbContent;
+    }
+
+    public void setThumbContent(String thumbContent) {
+        this.thumbContent = thumbContent;
     }
 
     @Transient
