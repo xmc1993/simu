@@ -107,15 +107,7 @@ public interface IAffairMemberService {
      */
     int rejectAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason);
 
-    /**
-     * 在邀请加入事务之前检测异常情况,返回异常情况code
-     *
-     * @param allianceId
-     * @param affairId
-     * @param beInvitedRoleId
-     * @return
-     */
-    int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId);
+
 
     /**
      * 邀请盟内角色加入事务

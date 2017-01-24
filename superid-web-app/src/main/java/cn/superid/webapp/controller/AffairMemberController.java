@@ -60,7 +60,8 @@ public class AffairMemberController {
     @RequestMapping(value = "/reject_affair_member_application", method = RequestMethod.POST)
     @RequiredPermissions(affair = {AffairPermissions.ADD_AFFAIR_ROLE})
     public SimpleResponse disagreeAffairMemberApplication(long affairMemberId, long applicationId, String dealReason) {
-        int code = affairMemberService.rejectAffairMemberApplication(userService.currentUserId(), GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
+        int code = affairMemberService.rejectAffairMemberApplication(userService.currentUserId(), GlobalValue.currentAllianceId(),
+                GlobalValue.currentAffairId(), applicationId, GlobalValue.currentRoleId(), dealReason);
         return new SimpleResponse(code, null);
 
     }
@@ -86,6 +87,7 @@ public class AffairMemberController {
         return new SimpleResponse(code, null);
     }
 
+
     @ApiOperation(value = "邀请加入事务", response = String.class)
     @RequiredPermissions(affair = AffairPermissions.ADD_AFFAIR_ROLE)
     @RequestMapping(value = "/invite_to_enter_affair", method = RequestMethod.POST)
@@ -93,12 +95,14 @@ public class AffairMemberController {
         List<Long> allianceRoles = roles.getAllianceRoles();
         List<Long> outAllianceRoles = roles.getOutAllianceRoles();
         //邀请盟内
-        int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), GlobalValue.currentRoleId(), userService.currentUserId(), allianceRoles);
+        int code = affairMemberService.inviteAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
+                GlobalValue.currentRoleId(), userService.currentUserId(), allianceRoles);
         if (code != 0) {
             return new SimpleResponse(code, null);
         }
         //邀请盟外
-        code = affairMemberService.inviteOutAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(), GlobalValue.currentRoleId(), userService.currentUserId(), outAllianceRoles);
+        code = affairMemberService.inviteOutAllianceRoleToEnterAffair(GlobalValue.currentAllianceId(), GlobalValue.currentAffairId(),
+                GlobalValue.currentRoleId(), userService.currentUserId(), outAllianceRoles);
         return new SimpleResponse(code, null);
 
     }
@@ -132,7 +136,7 @@ public class AffairMemberController {
     }
 
 
-    @ApiOperation(value = "获取一个用户在一个事务中的信息", response = AffairUserInfoVO.class, notes = "")
+    @ApiOperation(value = "获取一个用户在一个事务中的信息", response = AffairUserInfoVO.class, notes = "用于显示盟成员的整个信息,包括公开的个人信息")
     @RequestMapping(value = "/get_affair_user_info", method = RequestMethod.GET)
     public SimpleResponse getAffairUserInfo(@RequestParam() Long allianceId, @RequestParam() Long userId) {
         AffairUserInfoVO affairUserInfoVO = affairMemberService.getAffairUserInfo(allianceId, userId);

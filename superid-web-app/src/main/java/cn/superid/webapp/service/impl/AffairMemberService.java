@@ -163,8 +163,8 @@ public class AffairMemberService implements IAffairMemberService {
         return ResponseCode.OK;
     }
 
-    @Override
-    public int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId) {
+
+    private int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId) {
         //异常流程
         if (!affairService.affairExist(allianceId, affairId)) {
             return ResponseCode.AffairNotExist;

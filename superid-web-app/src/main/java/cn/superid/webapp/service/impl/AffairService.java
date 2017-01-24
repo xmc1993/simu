@@ -689,7 +689,6 @@ public class AffairService implements IAffairService {
         affairEntity.setPublicType(form.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
         affairEntity.setType(parentAffair.getType());
-
         affairEntity.setDescription(form.getDescription() != null ? form.getDescription() : "");
         affairEntity.setName(form.getName());
         affairEntity.setLevel(parentAffair.getLevel() + 1);
