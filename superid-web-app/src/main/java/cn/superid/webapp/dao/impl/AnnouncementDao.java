@@ -72,7 +72,7 @@ public class AnnouncementDao implements IAnnouncementDao{
 
     @Override
     public ModifyAnnouncementResponseVO getDetail(long announcementId, long allianceId) {
-        StringBuilder sql = new StringBuilder("select version,modify_time,id as announcementId , title ,modifier_id,modifier_user_id  from announcement  where alliance_id = ? and id = ? ");
+        StringBuilder sql = new StringBuilder("select version,modify_time,id as announcementId , title ,modifier_id,modifier_user_id ,thumb_content from announcement  where alliance_id = ? and id = ? ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(announcementId);

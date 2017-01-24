@@ -57,6 +57,7 @@ public class AnnouncementService implements IAnnouncementService{
         announcementEntity.setModifierUserId(role.getUserId());
         announcementEntity.setDecrement(JSONObject.toJSONString(compareTwoPapers(contentState,old)));
         announcementEntity.setContent(JSONObject.toJSONString(contentState));
+        announcementEntity.setThumbContent(getThumb(getBlock(contentState)));
         announcementEntity.setTitle(title);
         announcementEntity.update();
 
