@@ -59,5 +59,19 @@ public class AnnouncementVersionVO {
         this.avatar = avatar;
     }
 
+    public long getCreatorId() {
+        return creatorId;
+    }
 
+    public void setCreatorId(long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public long getCreatorUserId() {
+        return creatorUserId;
+    }
+
+    public void setCreatorUserId(long creatorUserId) {
+        this.creatorUserId = creatorUserId;
+    }
 }
