@@ -150,21 +150,12 @@ public class RoleService implements IRoleService {
     @Override
     public List<AllianceRolesVO> getUserAllianceRoles(){
 
-        //这样的格式是王海青强烈要求。。。。
         StringBuilder sb = new StringBuilder(SQLDao.GET_USER_ALLIANCE_ROLES);
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(userService.currentUserId());
         p.addIndexBinding(userService.currentUserId());
         List<AllianceRolesVO> allianceRolesVOs = AllianceEntity.getSession().findListByNativeSql(AllianceRolesVO.class,sb.toString(),p);
-        //把个人盟和个人角色过滤掉
-        UserEntity userEntity = userService.getCurrentUser();
-        for(AllianceRolesVO allianceRolesVO : allianceRolesVOs){
-            if((allianceRolesVO.getRoleId() == userEntity.getPersonalRoleId())
-                    &&(allianceRolesVO.getAllianceId() == userEntity.getPersonalAllianceId())){
-                allianceRolesVOs.remove(allianceRolesVO);
-                break;
-            }
-        }
+
         return allianceRolesVOs;
     }
 

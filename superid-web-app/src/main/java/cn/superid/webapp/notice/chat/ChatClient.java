@@ -41,7 +41,7 @@ public class ChatClient {
     private boolean pingThreadSignal;
     private int failPingCount =0;
     private boolean pingSuccess = false;
-    private int pingInterval = 3*60*1000;
+    private int pingInterval = 3*1000;
     private int pingTimeOut = 5000;
     private static ChatClient singleInstance;
 
@@ -120,11 +120,15 @@ public class ChatClient {
 
     //发送普通消息
     public void sendMessage(Message message, AsyncRequestHandler messageAsyncHandler) throws Exception {
+        if(socket==null||socket.isClosed()){
+            return;
+        }
         checkLogin();
         String requestId = generateRequestId(userId);
         C2C c2c = new C2C(C2CType.MSG, requestId);
         c2c.setChat(message);
-        outputStream.write(codec.encode(c2c));
+
+        outputStream.write(composer.compose(codec.encode(c2c)));
         outputStream.flush();
         requestCache.put(requestId, messageAsyncHandler);
     }
@@ -137,7 +141,7 @@ public class ChatClient {
         C2C c2c = new C2C(C2CType.ROOM_MSG_QUERY, requestId);
         c2c.setParams(param.toString());
         c2c.setChat(message);
-        outputStream.write(codec.encode(c2c));
+        outputStream.write(composer.compose(codec.encode(c2c)));
         outputStream.flush();
         requestCache.put(requestId, messageAsyncHandler);
     }
@@ -148,7 +152,7 @@ public class ChatClient {
         String requestId = generateRequestId(userId);
         C2C c2c = new C2C(C2CType.GET_UNREAD_COUNT, requestId);
         c2c.setChat(message);
-        outputStream.write(codec.encode(c2c));
+        outputStream.write(composer.compose(codec.encode(c2c)));
         outputStream.flush();
         requestCache.put(requestId, messageAsyncHandler);
     }
@@ -164,7 +168,7 @@ public class ChatClient {
         C2C c2c = new C2C(C2CType.SIGN_IN, requestId);
         c2c.setParams(connectParam.toString());
         c2c.setRequestId(requestId);
-        outputStream.write(codec.encode(c2c));
+        outputStream.write(composer.compose(codec.encode(c2c)));
         outputStream.flush();
         AsyncRequestHandler loginHandler = new AsyncRequestHandler() {
             @Override
@@ -320,7 +324,7 @@ public class ChatClient {
                 try {
                     Thread.sleep(pingInterval);
                     if(socket!=null&&socket.isConnected()){
-                        outputStream.write(codec.encode(ping));
+                        outputStream.write(composer.compose(codec.encode(ping)));
                         outputStream.flush();
                         pingSuccess = false;
                         Thread.sleep(pingTimeOut);

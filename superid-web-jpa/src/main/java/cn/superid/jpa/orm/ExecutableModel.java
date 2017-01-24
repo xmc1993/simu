@@ -3,7 +3,7 @@ package cn.superid.jpa.orm;
 
 import cn.superid.jpa.core.AbstractSession;
 import cn.superid.jpa.core.Session;
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.ParameterBindings;
 

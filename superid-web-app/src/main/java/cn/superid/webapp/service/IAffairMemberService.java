@@ -107,15 +107,7 @@ public interface IAffairMemberService {
      */
     int rejectAffairMemberApplication(long userId, long allianceId, long affairId, long applicationId, long dealRoleId, String dealReason);
 
-    /**
-     * 在邀请加入事务之前检测异常情况,返回异常情况code
-     *
-     * @param allianceId
-     * @param affairId
-     * @param beInvitedRoleId
-     * @return
-     */
-    int canInviteToEnterAffair(Long allianceId, Long affairId, Long beInvitedRoleId);
+
 
     /**
      * 邀请盟内角色加入事务
@@ -195,7 +187,6 @@ public interface IAffairMemberService {
 
     List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
 
-
     /**
      * 搜索事务的盟内成员列表，并提供分页和多条件排序
      *
@@ -207,10 +198,29 @@ public interface IAffairMemberService {
     List<AffairMemberSearchVo> searchAffairMembers(long allianceId, long affairId, SearchAffairMemberConditions conditions, Pagination pagination);
 
 
+    /**
+     * 显示用户在盟内的所有角色以及公开的个人信息
+     * @param allianceId
+     * @param userId
+     * @return
+     */
     AffairUserInfoVO getAffairUserInfo(long allianceId, long userId);
 
+    /**
+     * 获取某个角色的角色卡片
+     * @param allianceId
+     * @param roleId
+     * @param affairId
+     * @return
+     */
     AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId);
 
+    /**
+     * 获取事务负责人的角色卡片
+     * @param allianceId
+     * @param affairId
+     * @return
+     */
     AffairRoleCard getDirectorCard(long allianceId, long affairId);
 
 }

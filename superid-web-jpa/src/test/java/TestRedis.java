@@ -1,16 +1,14 @@
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.orm.ModelMeta;
 import cn.superid.jpa.util.BinaryUtil;
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 import model.BaseUser;
-import org.junit.Assert;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 

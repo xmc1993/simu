@@ -3,7 +3,7 @@ package cn.superid.jpa.core;
 import cn.superid.jpa.cache.ICache;
 import cn.superid.jpa.orm.FieldAccessor;
 import cn.superid.jpa.orm.ModelMeta;
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.util.BinaryUtil;
 import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;

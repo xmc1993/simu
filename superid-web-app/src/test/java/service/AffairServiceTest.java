@@ -71,7 +71,7 @@ public class AffairServiceTest {
     @Test
     public void validAffairTest(){
         try {
-            affairService.validAffair(43L,1070L);
+            affairService.enableAffair(43L,1070L);
         }catch (Exception e){
             e.printStackTrace();
         }

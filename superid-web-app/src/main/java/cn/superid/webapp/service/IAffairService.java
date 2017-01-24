@@ -59,7 +59,7 @@ public interface IAffairService {
      * @return
      * @throws Exception
      */
-    boolean validAffair(long allianceId, long affairId) throws Exception;
+    boolean enableAffair(long allianceId, long affairId) throws Exception;
 
     /**
      * 在正式操作一个事务之前,检测是否有特殊情况需要处理
@@ -179,7 +179,7 @@ public interface IAffairService {
      * @param affairId
      * @return
      */
-    boolean affairExist(long allianceId,long affairId);
+    boolean isValidAffair(long allianceId, long affairId);
 
     /**
      *

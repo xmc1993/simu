@@ -1,24 +1,21 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.jpa.orm.ConditionalDao;
-import cn.superid.utils.Converter;
 import cn.superid.webapp.controller.VO.InvitationVO;
-import cn.superid.webapp.controller.VO.NoticeVO;
 import cn.superid.webapp.dao.IInvitationDao;
 import cn.superid.webapp.enums.state.ValidState;
-import cn.superid.webapp.model.NoticeEntity;
-import cn.superid.webapp.notice.Link;
+import cn.superid.webapp.model.*;
 import cn.superid.webapp.notice.NoticeGenerator;
 import cn.superid.webapp.notice.SendMessageTemplate;
 import cn.superid.webapp.notice.chat.Constant.C2CType;
 import cn.superid.webapp.notice.thrift.C2c;
 import cn.superid.webapp.service.INoticeService;
+import com.alibaba.fastjson.JSON;
 import org.apache.thrift.TException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,8 +35,8 @@ public class NoticeService implements INoticeService {
     }
 
     @Override
-    public List<NoticeVO> search(long userId, Integer state, Integer type) throws Exception {
-        ConditionalDao conditionalDao = NoticeEntity.dao.eq("userId", userId);
+    public List<NoticeEntity> search(long userId, Integer state, Integer type) {
+        ConditionalDao conditionalDao = cn.superid.webapp.model.NoticeEntity.dao.eq("userId", userId);
         if (state != null)
             conditionalDao = conditionalDao.eq("state", state);
         if (type != null) {
@@ -50,19 +47,12 @@ public class NoticeService implements INoticeService {
             if (type == 3)//系统
                 conditionalDao = conditionalDao.ge("type", 50).le("type", 99);
         }
-        List<NoticeEntity> noticeEntities = conditionalDao.selectList(NoticeEntity.class);
-        List<NoticeVO> voList = new ArrayList<>(noticeEntities.size());
-        for (NoticeEntity noticeEntity : noticeEntities) {
-            NoticeVO noticeVO = Converter.convert(NoticeVO.class, noticeEntity);
-            noticeVO.setUrls(objectMapper.readValue(noticeEntity.getUrls(), Link[].class));
-            voList.add(noticeVO);
-        }
-        return voList;
+        return conditionalDao.selectList();
     }
 
     @Override
     public boolean markAsRead(long id) {
-        NoticeEntity noticeEntity = NoticeEntity.dao.findById(id);
+        cn.superid.webapp.model.NoticeEntity noticeEntity = cn.superid.webapp.model.NoticeEntity.dao.findById(id);
         noticeEntity.setState(ValidState.Invalid);
         noticeEntity.save();
         return true;
@@ -105,12 +95,28 @@ public class NoticeService implements INoticeService {
     public void allianceFriendApplyAccepted() throws Exception {
     }
 
+
+    private void handleNotice(NoticeEntity notice,long toUserId){
+        if(notice!=null){
+            System.out.println(notice);
+            C2c c2c = newC2c(toUserId, notice);
+            notice.save();
+            SendMessageTemplate.sendNotice(c2c);
+        }
+
+    }
+
+    //TODO
     @Override
-    public void allianceInvitation(long toUid, long invitationId, long allianceId, String allianceName, long inviterId, String inviterName, String inviterRoleTitle) throws Exception {
-        NoticeVO noticeVO = NoticeGenerator.getAllianceInvitation(toUid, invitationId, allianceId, allianceName, inviterId, inviterName, inviterRoleTitle);
-        C2c c2c = newC2c(toUid, noticeVO);
-        saveNoticeEntity(noticeVO);
-        SendMessageTemplate.sendNotice(c2c);
+    public void allianceInvitation(InvitationEntity entity) {
+        NoticeEntity notice = NoticeGenerator.generateAllianceInvitationNotice(entity);
+        handleNotice(notice,entity.getBeInvitedUserId());
+    }
+
+    @Override
+    public void affairInvitation(InvitationEntity invitation) {
+        NoticeEntity noticeEntity = NoticeGenerator.generateAffairInvitationNotice(invitation);
+        handleNotice(noticeEntity,invitation.getBeInvitedUserId());
     }
 
     @Override
@@ -129,18 +135,12 @@ public class NoticeService implements INoticeService {
     public void affairMoveApplyRejected() throws Exception {
     }
 
-    private void saveNoticeEntity(NoticeVO noticeVO) throws Exception {
-        NoticeEntity noticeEntity = Converter.convert(NoticeEntity.class, noticeVO);
-        noticeEntity.setUrls(objectMapper.writeValueAsString(noticeVO.getUrls()));
-        noticeEntity.save();
-        noticeVO.setId(noticeEntity.getId());
-    }
 
-    private C2c newC2c(long toUid, NoticeVO noticeVO) throws Exception {
+    private C2c newC2c(long toUid, NoticeEntity noticeVO){
         C2c c2c = new C2c();
         c2c.setType(C2CType.SYSTEM_NOTICE);
         c2c.setParams(Long.toString(toUid));
-        c2c.setData(objectMapper.writeValueAsString(noticeVO));
+        c2c.setData(JSON.toJSONString(noticeVO));
         return c2c;
     }
 

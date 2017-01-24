@@ -1,6 +1,7 @@
 package cn.superid.jpa.cache.impl;
 
 import cn.superid.jpa.cache.ICache;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.orm.ExecutableModel;
 import cn.superid.jpa.util.BinaryUtil;
 

@@ -27,5 +27,6 @@ public class NoticeType {
     public static final int AFFAIR_MOVE_APPLY = 81;//移动事务申请
     public static final int AFFAIR_MOVE_APPLY_ACCEPTED = 82;//移动事务申请成功
     public static final int AFFAIR_MOVE_APPLY_REJECTED = 83;//移动事务申请失败
+    public static final int AFFAIR_INVITATION = 84;//邀请盟外角色加入事务
 
 }

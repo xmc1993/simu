@@ -7,15 +7,12 @@ import cn.superid.jpa.util.StringUtil;
 import cn.superid.utils.PingYinUtil;
 import cn.superid.webapp.controller.VO.AffairOverviewVO;
 import cn.superid.webapp.controller.forms.AffairInfo;
-import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.webapp.enums.IntBoolean;
 import cn.superid.webapp.enums.ResponseCode;
 import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.state.AffairMoveState;
-import cn.superid.webapp.enums.state.StuckState;
 import cn.superid.webapp.enums.state.TaskState;
 import cn.superid.webapp.enums.state.ValidState;
-import cn.superid.webapp.enums.type.AffairMemberType;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.CreateAffairForm;
 import cn.superid.webapp.model.*;
@@ -239,7 +236,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public boolean validAffair(long allianceId, long affairId) throws Exception {
+    public boolean enableAffair(long allianceId, long affairId) throws Exception {
 
         AffairEntity affairEntity = AffairEntity.dao.id(affairId).partitionId(allianceId).selectOne("path");
         if (affairEntity == null) {
@@ -254,16 +251,16 @@ public class AffairService implements IAffairService {
     public int canGenerateAffair(long allianceId, long affairId) {
         boolean isExist = AffairEntity.dao.partitionId(allianceId).id(affairId).exists();
         if (!isExist) {
-            return ResponseCode.AffairNotExist;
+            return ResponseCode.AFFAIR_INVALID;
         }
         boolean hasChild = AffairEntity.dao.partitionId(allianceId).eq("parentId", affairId).exists();
         if (hasChild) {
-            return ResponseCode.HasChild;
+            return ResponseCode.HAS_CHILD;
         }
 
         //TODO 检测交易表里有没有affairId是本事务的交易,return
         if (1 == 2) {
-            return ResponseCode.HasTrade;
+            return ResponseCode.HAS_TRADE;
         }
         return ResponseCode.OK;
     }
@@ -607,7 +604,7 @@ public class AffairService implements IAffairService {
     }
 
     @Override
-    public boolean affairExist(long allianceId, long affairId) {
+    public boolean isValidAffair(long allianceId, long affairId) {
         return AffairEntity.dao.partitionId(allianceId).id(affairId).state(ValidState.Valid).exists();
     }
 
@@ -689,7 +686,6 @@ public class AffairService implements IAffairService {
         affairEntity.setPublicType(form.getPublicType());
         affairEntity.setAllianceId(parentAffair.getAllianceId());
         affairEntity.setType(parentAffair.getType());
-
         affairEntity.setDescription(form.getDescription() != null ? form.getDescription() : "");
         affairEntity.setName(form.getName());
         affairEntity.setLevel(parentAffair.getLevel() + 1);

@@ -1,5 +1,5 @@
 import cn.superid.jpa.core.impl.JdbcSessionFactory;
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import com.alibaba.druid.pool.DruidDataSource;
 import redis.clients.jedis.JedisPoolConfig;
 

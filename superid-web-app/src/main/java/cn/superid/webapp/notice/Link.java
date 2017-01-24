@@ -19,6 +19,11 @@ public class Link {
         this.id = id;
     }
 
+    public Link(int begin,int end){
+        this.begin = begin;
+        this.end = end;
+    }
+
     public int getBegin() {
         return begin;
     }

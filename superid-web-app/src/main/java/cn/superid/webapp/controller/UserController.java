@@ -12,8 +12,6 @@ import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.UserEntity;
 import cn.superid.webapp.model.UserPrivateInfoEntity;
 import cn.superid.webapp.security.IAuth;
-import cn.superid.webapp.service.IAffairMemberService;
-import cn.superid.webapp.service.IRoleService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.CheckFrequencyUtil;
 import cn.superid.webapp.utils.PasswordEncryptor;
@@ -71,7 +69,6 @@ public class UserController {
      * @param token
      * @return
      */
-
     @ApiOperation(value = "获取注册验证码", httpMethod = "GET", response = String.class, notes = "不允许同一个IP地址频繁访问,若是手机,格式为+86 15***")
     @NotLogin
     @RequestMapping(value = "/get_register_code", method = RequestMethod.GET)
@@ -84,11 +81,11 @@ public class UserController {
             return new SimpleResponse(ResponseCode.BadRequest,null);
         }else {
             if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
-                return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
+                return new SimpleResponse(ResponseCode.INVALID_MOBILE_FORMAT,"该手机号格式不正确");
             }
 
             if(userService.validToken(token)){
-                return new SimpleResponse(ResponseCode.HasRegistered,"此账号已被注册");
+                return new SimpleResponse(ResponseCode.HAS_REGISTERED,"此账号已被注册");
             }
 
             return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.registerCode));
@@ -135,13 +132,13 @@ public class UserController {
                 return new SimpleResponse(ResponseCode.BadRequest,null);
             }else {
                 if(userService.validTokenForReset(token)){//没有注册的号码
-                    return new SimpleResponse(ResponseCode.NotRegistered,"该账号不存在");
+                    return new SimpleResponse(ResponseCode.NotRegistered,null);
                 }
                 auth.setSessionAttr("token",token);
                 return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.checkIdentityCode));
             }
         }catch (Exception e){
-            return new SimpleResponse(ResponseCode.BadRequest,"访问过于频繁");
+            return new SimpleResponse(ResponseCode.Frequency,null);
         }
 
     }
@@ -180,11 +177,11 @@ public class UserController {
         }
 
         if(userService.validToken(token)){
-            return new SimpleResponse(ResponseCode.HasRegistered,"该账号已注册");
+            return new SimpleResponse(ResponseCode.HAS_REGISTERED,"该账号已注册");
         }
 
         if((!StringUtil.isEmail(token))&&(!MobileUtil.isValidFormat(token))){
-            return new SimpleResponse(ResponseCode.InvalidMobileFormat,"该手机号格式不正确");
+            return new SimpleResponse(ResponseCode.INVALID_MOBILE_FORMAT,"该手机号格式不正确");
         }
         UserEntity result = userService.createUser(token,password,username);
         if(result!=null){

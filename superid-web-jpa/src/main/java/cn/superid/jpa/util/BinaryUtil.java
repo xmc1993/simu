@@ -1,6 +1,6 @@
 package cn.superid.jpa.util;
 
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 
 import java.sql.Timestamp;
 import java.util.Date;

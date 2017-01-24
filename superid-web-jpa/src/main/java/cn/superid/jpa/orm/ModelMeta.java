@@ -3,7 +3,7 @@ package cn.superid.jpa.orm;
 import cn.superid.jpa.annotation.CacheField;
 import cn.superid.jpa.annotation.Cacheable;
 import cn.superid.jpa.annotation.PartitionId;
-import cn.superid.jpa.cache.impl.RedisTemplate;
+import cn.superid.jpa.cache.RedisTemplate;
 import cn.superid.jpa.util.BinaryUtil;
 import cn.superid.jpa.util.StringUtil;
 import org.apache.commons.collections.map.HashedMap;
