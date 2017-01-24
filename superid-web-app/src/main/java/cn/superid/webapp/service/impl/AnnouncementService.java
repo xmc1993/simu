@@ -324,7 +324,20 @@ public class AnnouncementService implements IAnnouncementService{
 
     @Override
     public List<AnnouncementVersionVO> getAllVersion(long announcementId, long allianceId) {
-        return announcementDao.getAllVersion(allianceId,announcementId);
+        List<AnnouncementVersionVO> announcementVersionVOList = announcementDao.getAllVersion(allianceId,announcementId);
+        for(AnnouncementVersionVO announcementVersionVO : announcementVersionVOList){
+            RoleCache role = RoleCache.dao.findById(announcementVersionVO.getCreatorId());
+            UserBaseInfo userBaseInfo = UserBaseInfo.dao.findById(announcementVersionVO.getCreatorUserId());
+            if(role != null){
+                announcementVersionVO.setRoleName(role.getTitle());
+            }
+            if(userBaseInfo != null){
+                announcementVersionVO.setAvatar(userBaseInfo.getAvatar());
+                announcementVersionVO.setUsername(userBaseInfo.getUsername());
+            }
+        }
+
+        return announcementVersionVOList;
     }
 
     @Override

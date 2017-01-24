@@ -63,7 +63,7 @@ public class AnnouncementDao implements IAnnouncementDao{
 
     @Override
     public List<AnnouncementVersionVO> getAllVersion(long allianceId, long announcementId) {
-        StringBuilder sql = new StringBuilder("select version,create_time from announcement_history  where alliance_id = ? and announcement_id = ? order by create_time desc ");
+        StringBuilder sql = new StringBuilder("select version,create_time,creator_id,creator_user_id from announcement_history  where alliance_id = ? and announcement_id = ? order by create_time desc ");
         ParameterBindings p = new ParameterBindings();
         p.addIndexBinding(allianceId);
         p.addIndexBinding(announcementId);
