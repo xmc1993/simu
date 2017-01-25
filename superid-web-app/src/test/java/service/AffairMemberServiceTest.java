@@ -24,8 +24,8 @@ import java.util.List;
 public class AffairMemberServiceTest {
     @Autowired
     private IAffairMemberService affairMemberService;
-    private long testAllianceId = 2400;
-    private long testAffairId = 8195;
+    private long testAllianceId =  2397;
+    private long testAffairId =8192L ;
 
 //    @Test
 //    public void addMemberTest() {
@@ -78,7 +78,7 @@ public class AffairMemberServiceTest {
 //
     @Test
     public void testSearchAffairRoles() throws Exception {
-        RoleEntity role = RoleEntity.dao.findById(3528L, 2198);
+        RoleEntity role = RoleEntity.dao.findById(8192L, 2397);
 
         SearchAffairRoleConditions conditions = new SearchAffairRoleConditions();
 
