@@ -235,7 +235,7 @@ public class AnnouncementService implements IAnnouncementService{
         }
         String present = announcement.getContent();
         String content = present;
-        //以下用于得到首要的版本的contentState
+        //以下用于得到首要的版本的contentState,如果没有传version的话,则默认得到最新版本
         if(version < 1 | version > announcement.getVersion()){ version = announcement.getVersion();}
         if(version != announcement.getVersion()){
             List<AnnouncementHistoryEntity> hs = AnnouncementHistoryEntity.dao.partitionId(allianceId).eq("announcement_id",announcementId).gt("version",version).desc("version").selectList();

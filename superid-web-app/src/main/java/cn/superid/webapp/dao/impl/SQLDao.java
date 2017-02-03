@@ -7,34 +7,6 @@ package cn.superid.webapp.dao.impl;
 public class SQLDao {
 
     /**
-     * affairService相关的sql语句
-     */
-    public static String GET_ALL_OFFICIALS = "select a.role_id as roleId , a.permissions as permissions , b.user_id as userId , b.title as title , d.name as affairName , d.id as affairId from " +
-            "(select af.role_id , af.permissions from affair_member af where af.state = 1 and af.affair_id = ? and af.alliance_id = ? and af.permission_group_id < 4 ) a " +
-            " join (select bf.title , bf.id , bf.belong_affair_id , bf.user_id from role bf where bf.alliance_id = ? ) b " +
-            " join (select df.id , df.name from affair df where df.alliance_id = ? ) d " +
-            " on a.role_id = b.id and b.belong_affair_id = d.id ";
-
-
-    public static String GET_AFFAIR_TREE = "select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid , a.public_type ,a.owner_role_id, b.is_stuck , a.path , b.role_id as roleId ,a.modify_time from " +
-            "(select * from affair where alliance_id = ? and state = 0 ) a " +
-            "left join (select role_id,affair_id,is_stuck from affair_user where alliance_id = ? and user_id = ? ) b " +
-            "on a.id = b.affair_id ";
-
-    public static String GET_AFFAIR_TREE_BY_USER = "select a.id , a.parent_id , a.name , a.short_name , a.alliance_id , a.superid ,a.owner_role_id, a.public_type , b.is_stuck , a.path , b.role_id as roleId,a.modify_time from " +
-            "(select * from affair where alliance_id in (" +
-            "select alliance_id from role where user_id = ? ) and state = 0 ) a " +
-            "left join (select role_id,affair_id,is_stuck from affair_user where user_id = ? ) b " +
-            "on a.id = b.affair_id ";
-
-    //获取用户的盟外事务
-    public static String GET_OUT_ALLIANCE_AFFAIRS = "select * from " +
-            "(select au.affair_id from affair_user au where au.user_id = ? and au.alliance_id not in " +
-            "(select alu.alliance_id from alliance_user alu where alu.user_id = ?)) b " +
-            "join affair a " +
-            "on a.id = b.affair_id ";
-
-    /**
      * userService相关的sql语句
      */
     //获取用户的所有盟下的所有角色
@@ -43,9 +15,5 @@ public class SQLDao {
             "join" +
             "(select r.id as role_id,r.title,r.alliance_id,r.public_type from role r where r.user_id = ?) t2 " +
             "on t1.id = t2.alliance_id order by alliance_id";
-
-
-
-
 
 }
