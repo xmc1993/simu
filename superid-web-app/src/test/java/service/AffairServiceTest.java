@@ -1,5 +1,7 @@
 package service;
 
+import cn.superid.webapp.dao.IAffairDao;
+import cn.superid.webapp.dao.IAllianceDao;
 import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.Expr;
 import cn.superid.jpa.util.ParameterBindings;
@@ -25,6 +27,9 @@ import java.util.List;
 public class AffairServiceTest {
     @Autowired
     private IAffairService affairService;
+
+    @Autowired
+    private IAffairDao affairDao;
 
     @Test
     public void createAffairTest() throws Exception {
@@ -173,11 +178,8 @@ public class AffairServiceTest {
         List<AffairInfo> result = new ArrayList<>();
         long userId = 1899;
         //先从角色表中找到该用户的所有角色所在的盟,然后在affairMember表中找到不在之前盟中的角色的affairMember的affairId,最后从Affair中取
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(userId);
-        p.addIndexBinding(userId);
         long startTime = System.currentTimeMillis();
-        result = AffairEntity.getSession().findListByNativeSql(AffairEntity.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS,p);
+        result = affairDao.getOutAllianceAffair(userId);
         long endTime = System.currentTimeMillis();
         System.out.println(endTime-startTime);
     }
