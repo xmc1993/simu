@@ -457,7 +457,7 @@ public class AffairMemberService implements IAffairMemberService {
     private AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId, boolean needMemberInfo) {
         AffairRoleCard affairRoleCard = new AffairRoleCard();
         if (needMemberInfo) {
-            AffairMemberEntity affairMemberEntity = this.getAffairMemberInfo(allianceId, affairId, roleId);
+            AffairMemberEntity affairMemberEntity = getAffairMemberInfo(allianceId, affairId, roleId);
             if (affairMemberEntity == null) {
                 return null;
             }
@@ -484,7 +484,7 @@ public class AffairMemberService implements IAffairMemberService {
 
     @Override
     public AffairRoleCard getRoleCard(long allianceId, long roleId, long affairId) {
-        return getRoleCard(allianceId, affairId, roleId, true);
+        return getRoleCard(allianceId, roleId, affairId, true);
     }
 
     @Override
@@ -493,7 +493,10 @@ public class AffairMemberService implements IAffairMemberService {
         if (affairEntity == null) {
             return null;
         }
-        AffairRoleCard affairRoleCard = getRoleCard(allianceId, affairId, affairEntity.getOwnerRoleId());
+        AffairRoleCard affairRoleCard = getRoleCard(allianceId, affairEntity.getOwnerRoleId(), affairId);
+        if(affairRoleCard == null){
+            return null;
+        }
         affairRoleCard.setType(AffairMemberType.Official);
         affairRoleCard.setPermissions("*");
         return affairRoleCard;
