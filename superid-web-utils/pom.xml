@@ -104,8 +104,6 @@
             <groupId>com.taobao</groupId>
             <artifactId>taobao-sdk</artifactId>
             <version>1447355351010-20151202</version>
-            <systemPath>${project.basedir}/lib/taobao-sdk-java-auto.jar</systemPath>
-            <scope>system</scope>
         </dependency>
         <!--国际短信-->
         <!-- https://mvnrepository.com/artifact/com.yunpian.sdk/yunpian-java-sdk -->

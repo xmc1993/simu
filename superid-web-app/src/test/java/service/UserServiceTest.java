@@ -215,5 +215,8 @@ public class UserServiceTest{
         timer.end();
     }
 
-
+    @Test
+    public void testGetRegisterCode(){
+        boolean result = userService.getVerifyCode("+86 13951882082","SMS_4455521");
+    }
 }
