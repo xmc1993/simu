@@ -519,7 +519,7 @@ public class AffairService implements IAffairService {
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
 
         long tempRoleId = 0;
-        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);;
+        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);
 
         if(roleId != 0){
             //指定roleId就用roleId
