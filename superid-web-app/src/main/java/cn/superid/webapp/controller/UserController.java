@@ -87,8 +87,7 @@ public class UserController {
             if(userService.validToken(token)){
                 return new SimpleResponse(ResponseCode.HAS_REGISTERED,"此账号已被注册");
             }
-
-            return new SimpleResponse(ResponseCode.OK,userService.getVerifyCode(token, SmsType.registerCode));
+            return  new SimpleResponse(userService.getVerifyCode(token, SmsType.registerCode));
         }
     }
 

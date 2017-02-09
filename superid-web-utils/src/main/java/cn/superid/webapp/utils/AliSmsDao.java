@@ -77,6 +77,9 @@ public class AliSmsDao {
         AlibabaAliqinFcSmsNumSendResponse rsp;
         try {
             rsp = client.execute(req);
+            if(rsp==null||rsp.getResult()==null){
+                return false;
+            }
 //            System.out.println(rsp.getBody());
             return rsp.getResult().getSuccess();
         } catch (ApiException e) {

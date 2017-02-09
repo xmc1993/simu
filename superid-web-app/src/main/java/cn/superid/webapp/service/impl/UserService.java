@@ -1,10 +1,7 @@
 package cn.superid.webapp.service.impl;
 
-import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.utils.*;
 import cn.superid.webapp.controller.forms.ChangePublicTypeForm;
-import cn.superid.webapp.enums.IntBoolean;
-import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.type.PublicType;
 import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.*;
@@ -16,17 +13,12 @@ import cn.superid.webapp.service.IAllianceService;
 import cn.superid.webapp.service.IUserService;
 import cn.superid.webapp.utils.*;
 import org.apache.commons.lang.StringUtils;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -167,24 +159,23 @@ public class UserService implements IUserService {
         userEntity.setCreateTime(TimeUtil.getCurrentSqlTime());
         userEntity.save();
 
-        String superIdCode = cn.superid.jpa.util.StringUtil.generateId(userEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
-
+        String abbr = PingYinUtil.getFirstSpell(userEntity.getRealname());
         AllianceCreateForm allianceCreateForm = new AllianceCreateForm();
         allianceCreateForm.setName(userEntity.getRealname() + "的事务");
         allianceCreateForm.setUserId(userEntity.getId());
-        allianceCreateForm.setCode(superIdCode);//因为userId是唯一的
         allianceCreateForm.setIsPersonal(true);
         allianceCreateForm.setRoleTitle(userEntity.getRealname());
+        allianceCreateForm.setCode(abbr);
 
         AllianceEntity allianceEntity = allianceService.createAlliance(allianceCreateForm);
 
-        userEntity.setSuperid(superIdCode);
         userEntity.setPersonalRoleId(allianceEntity.getOwnerRoleId());
         userEntity.setPersonalAllianceId(allianceEntity.getId());
         userEntity.setPersonalAffairId(allianceEntity.getRootAffairId());
         userEntity.setHomepageAffairId(allianceEntity.getRootAffairId());
         userEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
-        userEntity.setNameAbbr(PingYinUtil.getFirstSpell(userEntity.getRealname()));
+        userEntity.setNameAbbr(abbr);
+        userEntity.setSuperid(allianceEntity.getSuperid());
         userEntity.update();
 
         UserPrivateInfoEntity userPrivateInfoEntity = new UserPrivateInfoEntity();
@@ -202,9 +193,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserEntity findByToken(String token) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setRealname("zp");
-        userEntity.save();
+
         if (StringUtil.isEmail(token)) {
             return UserEntity.dao.eq("email", token).selectOne();
         } else if (StringUtil.isMobile(token)) {

@@ -11,7 +11,7 @@ import java.util.Date;
 public class BinaryUtil {
 
 
-    public static byte[] getBytes(Object o){
+    public static final byte[] getBytes(Object o){
         if(o==null){
             return new byte[0];
         }
@@ -77,7 +77,7 @@ public class BinaryUtil {
     }
 
 
-    public static Object getValue(byte[] bytes,Class<?> clazz) {
+    public static final Object getValue(byte[] bytes,Class<?> clazz) {
         if(bytes==null||bytes.length==0){
             return null;
         }
@@ -135,13 +135,13 @@ public class BinaryUtil {
 
 
 
-    public static byte[] toBytes(byte data) {
+    public static final byte[] toBytes(byte data) {
         return new byte[]{data};
     }
-    public static byte[] toBytes(byte[] data) {
+    public static final byte[] toBytes(byte[] data) {
         return data;
     }
-    public static byte[] toBytes(short data) {
+    public static final byte[] toBytes(short data) {
         if(data<Byte.MAX_VALUE){
             return toBytes((byte) data);
         }
@@ -150,7 +150,7 @@ public class BinaryUtil {
                 (byte)((data) & 0xff),
         };
     }
-    public static byte[] toBytes(short[] data) {
+    public static final byte[] toBytes(short[] data) {
         if (data == null) return null;
         // ----------
         byte[] byts = new byte[data.length * 2];
@@ -159,13 +159,13 @@ public class BinaryUtil {
         return byts;
     }
     
-    public static byte[] toBytes(char data) {
+    public static final byte[] toBytes(char data) {
         return new byte[] {
                 (byte)((data >> 8) & 0xff),
                 (byte)(data  & 0xff),
         };
     }
-    public static byte[] toBytes(char[] data) {
+    public static final byte[] toBytes(char[] data) {
         if (data == null) return null;
         byte[] byts = new byte[data.length * 2];
         for (int i = 0; i < data.length; i++)
@@ -173,7 +173,7 @@ public class BinaryUtil {
         return byts;
     }
     
-    public static byte[] toBytes(int data) {
+    public static final byte[] toBytes(int data) {
         if(data<Short.MAX_VALUE){
             return toBytes((short) data);
         }
@@ -184,7 +184,7 @@ public class BinaryUtil {
                 (byte)((data) & 0xff),
         };
     }
-    public static byte[] toBytes(int[] data) {
+    public static final byte[] toBytes(int[] data) {
         if (data == null) return null;
         byte[] byts = new byte[data.length * 4];
         for (int i = 0; i < data.length; i++)
@@ -192,7 +192,7 @@ public class BinaryUtil {
         return byts;
     }
 
-    public static byte[] toBytes(long data) {//节省redis存储内存
+    public static final byte[] toBytes(long data) {//节省redis存储内存
         if(data<Integer.MAX_VALUE){
             return toBytes((int) data);
         }
@@ -208,7 +208,7 @@ public class BinaryUtil {
         };
     }
 
-    public static byte[] toBytes(long[] data) {
+    public static final byte[] toBytes(long[] data) {
         if (data == null) return null;
         // ----------
         byte[] byts = new byte[data.length * 8];
@@ -217,11 +217,11 @@ public class BinaryUtil {
         return byts;
     }
 
-    public static byte[] toBytes(float data) {
+    public static final byte[] toBytes(float data) {
         return toBytes(Float.floatToRawIntBits(data));
     }
 
-    public static byte[] toBytes(float[] data) {
+    public static final byte[] toBytes(float[] data) {
         if (data == null) return null;
         // ----------
         byte[] byts = new byte[data.length * 4];
@@ -230,14 +230,14 @@ public class BinaryUtil {
         return byts;
     }
 
-    public static byte[] toBytes(Date date) {
+    public static final byte[] toBytes(Date date) {
         return toBytes(date.getTime());
     }
 
-    public static byte[] toBytes(double data) {
+    public static final byte[] toBytes(double data) {
         return toBytes(Double.doubleToRawLongBits(data));
     }
-    public static byte[] toBytes(double[] data) {
+    public static final byte[] toBytes(double[] data) {
         if (data == null) return null;
         // ----------
         byte[] byts = new byte[data.length * 8];
@@ -246,10 +246,10 @@ public class BinaryUtil {
         return byts;
     }
 
-    public static byte[] toBytes(boolean data) {
+    public static final byte[] toBytes(boolean data) {
         return new byte[]{(byte)(data ? 0x01 : 0x00)}; // bool -> {1 byte}
     }
-    public static byte[] toBytes(boolean[] data) {
+    public static final byte[] toBytes(boolean[] data) {
         if (data == null) return null;
         // ----------
         int len = data.length;
@@ -264,14 +264,14 @@ public class BinaryUtil {
 
         return byts;
     }
-    public static byte[] toBytes(String data) {
+    public static final byte[] toBytes(String data) {
         return (data == null) ? null : data.getBytes();
     }
-    public static byte[] toBytes(Timestamp timestamp){
+    public static final byte[] toBytes(Timestamp timestamp){
         return  toBytes(timestamp.getTime());
     }
 
-    public static byte[] toBytes(String[] data) {
+    public static final byte[] toBytes(String[] data) {
 
         if (data == null) return null;
         int totalLength = 0;
@@ -304,22 +304,22 @@ public class BinaryUtil {
     }
 
 
-    public static byte toByte(byte[] data) {
+    public static final byte toByte(byte[] data) {
         return (data == null || data.length == 0) ? 0x0 : data[0];
     }
-    public static byte[] toByteArray(byte[] data) {
+    public static final byte[] toByteArray(byte[] data) {
         return data;
     }
 
 
-    public static short toShort(byte[] data) {
+    public static final short toShort(byte[] data) {
         if(data.length==1){
             return (short)data[0];
         }
         return (short)(
                 (0xff & data[0]) << 8   | (0xff & data[1]) << 0);
     }
-    public static short[] toShortArray(byte[] data) {
+    public static final short[] toShortArray(byte[] data) {
         if (data == null || data.length % 2 != 0) return null;
 
         short[] shts = new short[data.length / 2];
@@ -333,14 +333,14 @@ public class BinaryUtil {
     }
 
 
-    public static char toChar(byte[] data) {
+    public static final char toChar(byte[] data) {
         if (data == null || data.length != 2) return 0x0;
         return (char)(
                 (0xff & data[0]) << 8   | (0xff & data[1]) << 0
         );
     }
 
-    public static char[] toCharArray(byte[] data) {
+    public static final char[] toCharArray(byte[] data) {
         if (data == null || data.length % 2 != 0) return null;
         char[] chrs = new char[data.length / 2];
         for (int i = 0; i < chrs.length; i++) {
@@ -352,7 +352,7 @@ public class BinaryUtil {
         return chrs;
     }
 
-    public static int toInt(byte[] data) {
+    public static final int toInt(byte[] data) {
         if(data.length==2||data.length==1){
             return (int)toShort(data);
         }
@@ -365,7 +365,7 @@ public class BinaryUtil {
                         (0xff & data[3]) << 0
         );
     }
-    public static int[] toIntArray(byte[] data) {
+    public static final int[] toIntArray(byte[] data) {
         if (data == null || data.length % 4 != 0) return null;
         int[] ints = new int[data.length / 4];
         for (int i = 0; i < ints.length; i++)
@@ -377,7 +377,7 @@ public class BinaryUtil {
             } );
         return ints;
     }
-    public static long toLong(byte[] data) {
+    public static final long toLong(byte[] data) {
         if(data.length==4||data.length==2||data.length==1){
             return (long) toInt(data);
         }
@@ -395,7 +395,7 @@ public class BinaryUtil {
                         (long)(0xff & data[7]) << 0
         );
     }
-    public static long[] toLongArray(byte[] data) {
+    public static final long[] toLongArray(byte[] data) {
         if (data == null || data.length % 8 != 0) return null;
         // ----------
         long[] lngs = new long[data.length / 8];
@@ -414,19 +414,19 @@ public class BinaryUtil {
         return lngs;
     }
 
-    public static Timestamp toTimestamp(byte[] data){
+    public static final Timestamp toTimestamp(byte[] data){
         return new Timestamp(toLong(data));
     }
 
-    public static Date toDate(byte[] data){
+    public static final Date toDate(byte[] data){
         return new Date(toLong(data));
     }
 
-    public static float toFloat(byte[] data) {
+    public static final float toFloat(byte[] data) {
         if (data == null || data.length != 4) return 0x0;
         return Float.intBitsToFloat(toInt(data));
     }
-    public static float[] toFloatArray(byte[] data) {
+    public static final float[] toFloatArray(byte[] data) {
         if (data == null || data.length % 4 != 0) return null;
         float[] flts = new float[data.length / 4];
         for (int i = 0; i < flts.length; i++) {
@@ -440,13 +440,13 @@ public class BinaryUtil {
         return flts;
     }
 
-    public static double toDouble(byte[] data) {
+    public static final double toDouble(byte[] data) {
         if (data == null || data.length != 8) return 0x0;
         return Double.longBitsToDouble(toLong(data));
     }
 
 
-    public static double[] toDoubleArray(byte[] data) {
+    public static final double[] toDoubleArray(byte[] data) {
         if (data == null) return null;
         if (data.length % 8 != 0) return null;
         double[] dbls = new double[data.length / 8];
@@ -465,10 +465,10 @@ public class BinaryUtil {
         return dbls;
     }
 
-    public static boolean toBoolean(byte[] data) {
+    public static final boolean toBoolean(byte[] data) {
         return (data == null || data.length == 0) ? false : data[0] != 0x00;
     }
-    public static boolean[] toBooleanArray(byte[] data) {
+    public static final boolean[] toBooleanArray(byte[] data) {
 
         if (data == null || data.length < 4) return null;
         int len = toInt(new byte[]{data[0], data[1], data[2], data[3]});
@@ -480,7 +480,7 @@ public class BinaryUtil {
         return bools;
     }
 
-    public static byte[][] toBytesArray(String[] data){
+    public static final byte[][] toBytesArray(String[] data){
         if(data==null) return null;
         byte[][] bytes = new byte[data.length+1][];
         bytes[0] = RedisTemplate.getHmFeature();
@@ -491,10 +491,10 @@ public class BinaryUtil {
         return bytes;
     }
 
-    public static String toString(byte[] data) {
+    public static final String toString(byte[] data) {
         return (data == null) ? null : new String(data);
     }
-    public static String[] toStringArray(byte[] data) {
+    public static final String[] toStringArray(byte[] data) {
         if (data == null || data.length < 4) return null;
 
         byte[] bBuff = new byte[4];

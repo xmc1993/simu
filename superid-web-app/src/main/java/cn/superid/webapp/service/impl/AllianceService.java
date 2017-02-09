@@ -3,6 +3,7 @@ package cn.superid.webapp.service.impl;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
 import cn.superid.webapp.controller.VO.SimpleRoleVO;
+import cn.superid.webapp.enums.SuperIdNumber;
 import cn.superid.webapp.enums.state.CertificationState;
 import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.forms.AllianceCertificationForm;
@@ -71,10 +72,11 @@ public class AllianceService  implements IAllianceService {
 
         RoleEntity.dao.id(roleEntity.getId()).partitionId(allianceEntity.getId()).set("belongAffairId", affairEntity.getId());//更新所属事务
 
+        String superid = StringUtil.generateId(allianceEntity.getId(), SuperIdNumber.COMMON_CODE_LENGTH);
         allianceEntity.setOwnerRoleId(roleEntity.getId());
         allianceEntity.setRootAffairId(affairEntity.getId());
-        AllianceEntity.dao.id(allianceEntity.getId()).set("ownerRoleId", roleEntity.getId(), "rootAffairId", affairEntity.getId());//更新拥有者和根事务
-
+        allianceEntity.setCode(superid);
+        allianceEntity.update();
 
         return allianceEntity;
 
