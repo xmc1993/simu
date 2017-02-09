@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class NoticeGenerator {
 
-    private static final String ALLIANCE_INVITATION = "% ?邀请您加入盟?, ?";//M1 角色名+用户名+邀请您加入盟+盟名称，立即处理 %不需要链接
+    private static final String ALLIANCE_INVITATION = "% ? 邀请您加入盟?, ?";//M1 角色名+用户名+邀请您加入盟+盟名称，立即处理 %不需要链接
     private static final String AFFAIR_INVITATION = "% ?邀请您的角色 % % 加入盟? ?，?";//角色名＋用户名＋邀请您加入＋盟名称＋事务名称＋，立即处理
 
 
@@ -65,7 +65,7 @@ public class NoticeGenerator {
                 begin = result.length();
                 result.append(params[paramIndex++]);
                 end = result.length();
-                Link link = new Link(begin,end-1);
+                Link link = new Link(begin,end);
                 links.add(link);
 
             }else if(tmp=='%'){
