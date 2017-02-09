@@ -1,6 +1,7 @@
 package cn.superid.webapp.service.impl;
 
 import cn.superid.webapp.dao.IAffairDao;
+import cn.superid.webapp.dao.IAllianceDao;
 import cn.superid.webapp.dao.impl.SQLDao;
 import cn.superid.jpa.util.ParameterBindings;
 import cn.superid.jpa.util.StringUtil;
@@ -51,6 +52,8 @@ public class AffairService implements IAffairService {
     private IAffairUserService affairUserService;
     @Autowired
     private IAffairDao affairDao;
+    @Autowired
+    private IAllianceDao allianceDao;
 
 
     @Override
@@ -351,21 +354,12 @@ public class AffairService implements IAffairService {
     public List<SimpleRoleForm> getAllRoles(long allianceId, long affairId) {
         List<SimpleRoleForm> result = new ArrayList<>();
         //第一步,查本盟中的affairmember,防止跨库join
-        StringBuilder sql = new StringBuilder(SQLDao.GET_ALL_OFFICIALS);
-        ParameterBindings p1 = new ParameterBindings();
-        p1.addIndexBinding(affairId);
-        p1.addIndexBinding(allianceId);
-        p1.addIndexBinding(allianceId);
-        p1.addIndexBinding(allianceId);
-
-        List<GetRoleVO> selfMember = RoleEntity.dao.getSession().findListByNativeSql(GetRoleVO.class, sql.toString(), p1);
+        List<GetRoleVO> selfMember = affairDao.getOfficials(affairId,allianceId);
         for (GetRoleVO g : selfMember) {
             UserBaseInfo user = UserBaseInfo.dao.findById(g.getUserId());
             SimpleRoleForm s = new SimpleRoleForm(g.getRoleId(), user.getUsername(), g.getTitle(), g.getPermissions(), g.getAffairId(), g.getAffairName());
             result.add(s);
         }
-
-
         //第二步,把非本盟的官方加入
         List<AffairMemberEntity> otherMember = affairMemberService.getAffairGuestMembers(allianceId, affairId);
         for (AffairMemberEntity a : otherMember) {
@@ -374,8 +368,6 @@ public class AffairService implements IAffairService {
             SimpleRoleForm s = new SimpleRoleForm(a.getRoleId(), user.getUsername(), role.getTitle(), a.getPermissions(), -1, "");
             result.add(s);
         }
-
-
         return result;
     }
 
@@ -425,12 +417,7 @@ public class AffairService implements IAffairService {
     public AffairTreeVO getAffairTree(long allianceId) {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-        StringBuilder sb = new StringBuilder(SQLDao.GET_AFFAIR_TREE);
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(allianceId);
-        p.addIndexBinding(user.getId());
-        List<AffairTreeVO> affairList = AffairEntity.getSession().findListByNativeSql(AffairTreeVO.class, sb.toString(), p);
+        List<AffairTreeVO> affairList = affairDao.getAffairTree(allianceId,user.getId());
         //生成树
         long homepageAffairId = userService.getCurrentUser().getHomepageAffairId();
         for (AffairTreeVO a : affairList) {
@@ -448,19 +435,9 @@ public class AffairService implements IAffairService {
     public List<AffairTreeVO> getAffairTreeByUser() {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
-        StringBuilder sb = new StringBuilder(SQLDao.GET_AFFAIR_TREE_BY_USER);
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(user.getId());
-        p.addIndexBinding(user.getId());
-        List<AffairTreeVO> affairList = AffairEntity.getSession().findListByNativeSql(AffairTreeVO.class, sb.toString(), p);
-
-        //把所有affairMemberId为null的事务名
-
+        List<AffairTreeVO> affairList = affairDao.getAffairTreeByUser(user.getId());
         //第二步,取出所有allianceId;
-        StringBuilder sql = new StringBuilder("select distinct alliance_id from role where user_id = ? ");
-        ParameterBindings pb = new ParameterBindings();
-        pb.addIndexBinding(user.getId());
-        List<Long> ids = AffairEntity.getSession().findListByNativeSql(Long.class, sql.toString(), pb);
+        List<Long> ids = allianceDao.getAllianceIdOfUser(user.getId());
 
         List<AffairTreeVO> result = new ArrayList<>();
         for (Long id : ids) {
@@ -542,7 +519,7 @@ public class AffairService implements IAffairService {
         affairInfo.setOverView(JSON.toJSON(affairOverview(allianceId, affairId)));
 
         long tempRoleId = 0;
-        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);;
+        AffairUserEntity lastOperateRole = affairUserService.getAffairUser(allianceId, affairId, userId);
 
         if(roleId != 0){
             //指定roleId就用roleId
@@ -596,10 +573,7 @@ public class AffairService implements IAffairService {
         long userId = userService.currentUserId();
         //TODO 返回格式还没定
         //找到allianceUser里该用户的盟,然后从affairUser里找到不在之前盟中的affair,join affair表
-        ParameterBindings p = new ParameterBindings();
-        p.addIndexBinding(userId);
-        p.addIndexBinding(userId);
-        result = AffairEntity.getSession().findListByNativeSql(AffairInfo.class, SQLDao.GET_OUT_ALLIANCE_AFFAIRS, p);
+        result = affairDao.getOutAllianceAffair(userId);
         return result;
     }
 
