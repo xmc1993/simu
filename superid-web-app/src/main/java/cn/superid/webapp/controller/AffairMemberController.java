@@ -122,10 +122,28 @@ public class AffairMemberController {
         return SimpleResponse.ok(affairMemberService.searchAffairRoleCards(roleCache.getAllianceId(), affairId, searchAffairRoleConditions));
     }
 
+    @ApiOperation(value = "获取不在事务的盟内外角色", response = GetRoleCardsMap.class, notes = "获取的是一个list<GetRoleCardsMap>")
+    @RequestMapping(value = "/search_other_roles", method = RequestMethod.POST)
+    public SimpleResponse searchOtherRoles(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchRoleConditions conditions) {
+        if (conditions.getCount() > 100 && conditions.getCount() < 10)
+            conditions.setCount(20);
+        if (conditions.getPage() < 1)
+            conditions.setPage(1);
+        if(conditions.getSection() < 1){
+            conditions.setSection(1);
+        }
+        Pagination pagination = new Pagination(conditions.getPage(), conditions.getCount()*conditions.getSection(), conditions.isNeedTotal());
+        List<OtherRoleCard> list = affairMemberService.searchOtherRoles(affairId,allianceId,conditions,pagination);
+        ListVO<OtherRoleCard> listVO = new ListVO<>(list, conditions.getPage(), conditions.getCount(), pagination.getTotal());
+        return SimpleResponse.ok(listVO);
+    }
+
+
+
     @ApiOperation(value = "获取事务内的所有成员", response = AffairRoleCard.class, notes = "包含分页")
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public SimpleResponse getAffairMembers(@RequestParam() Long allianceId, @RequestParam() Long affairId, @RequestBody SearchAffairMemberConditions conditions) {
-        if (conditions.getCount() <= 100 && conditions.getCount() >= 10)
+        if (conditions.getCount() > 100 && conditions.getCount() < 10)
             conditions.setCount(20);
         if (conditions.getPage() < 1)
             conditions.setPage(1);

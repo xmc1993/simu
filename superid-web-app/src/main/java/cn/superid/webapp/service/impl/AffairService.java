@@ -428,6 +428,11 @@ public class AffairService implements IAffairService {
             }
         }
         AffairTreeVO result = createTree(affairList);
+        if(result != null){
+            if(user.getPersonalAllianceId() == allianceId){
+                result.setPersonal(true);
+            }
+        }
         return result;
     }
 
@@ -435,6 +440,7 @@ public class AffairService implements IAffairService {
     public List<AffairTreeVO> getAffairTreeByUser() {
         //第一步,得到当前user,然后根据他角色所在的盟,拿出所有事务,并且拿出affairMemberId来检测是否在这个事务中(这边未减少读取数据库次数,将其移入内存处理)
         UserEntity user = userService.getCurrentUser();
+        long allianceId = user.getPersonalAllianceId();
         List<AffairTreeVO> affairList = affairDao.getAffairTreeByUser(user.getId());
         //第二步,取出所有allianceId;
         List<Long> ids = allianceDao.getAllianceIdOfUser(user.getId());
@@ -443,11 +449,12 @@ public class AffairService implements IAffairService {
         for (Long id : ids) {
             AffairTreeVO a = createTree(getTreeByAlliance(affairList, id));
             if (a != null) {
+                if(allianceId == id){
+                    a.setPersonal(true);
+                }
                 result.add(a);
             }
-
         }
-
         return result;
     }
 

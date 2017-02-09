@@ -13,10 +13,7 @@ import cn.superid.webapp.enums.state.DealState;
 import cn.superid.webapp.enums.state.ValidState;
 import cn.superid.webapp.enums.type.AffairMemberType;
 import cn.superid.webapp.enums.type.InvitationType;
-import cn.superid.webapp.forms.AffairRoleCard;
-import cn.superid.webapp.forms.GetRoleCardsMap;
-import cn.superid.webapp.forms.SearchAffairMemberConditions;
-import cn.superid.webapp.forms.SearchAffairRoleConditions;
+import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.*;
 import cn.superid.webapp.model.cache.UserBaseInfo;
 import cn.superid.webapp.security.AffairPermissionRoleType;
@@ -424,6 +421,11 @@ public class AffairMemberService implements IAffairMemberService {
         }
 
         return list;
+    }
+
+    @Override
+    public List<OtherRoleCard> searchOtherRoles(long affairId, long allianceId, SearchRoleConditions conditions, Pagination pagination) {
+        return affairMemberDao.searchOtherRoles(allianceId,affairId,conditions,pagination);
     }
 
     @Override

@@ -3,10 +3,7 @@ package cn.superid.webapp.service;
 import cn.superid.jpa.util.Pagination;
 import cn.superid.webapp.controller.VO.AffairUserInfoVO;
 import cn.superid.webapp.controller.forms.AddAffairRoleForm;
-import cn.superid.webapp.forms.AffairRoleCard;
-import cn.superid.webapp.forms.GetRoleCardsMap;
-import cn.superid.webapp.forms.SearchAffairMemberConditions;
-import cn.superid.webapp.forms.SearchAffairRoleConditions;
+import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.model.PermissionGroupEntity;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
@@ -186,6 +183,8 @@ public interface IAffairMemberService {
 
 
     List<GetRoleCardsMap> searchAffairRoleCards(long allianceId, long affairId, SearchAffairRoleConditions conditions);
+
+    List<OtherRoleCard> searchOtherRoles(long affairId, long allianceId, SearchRoleConditions conditions, Pagination pagination);
 
     /**
      * 搜索事务的盟内成员列表，并提供分页和多条件排序

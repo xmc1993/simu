@@ -6,9 +6,7 @@ import cn.superid.utils.ArrayUtil;
 import cn.superid.utils.StringUtil;
 import cn.superid.webapp.dao.IAffairDao;
 import cn.superid.webapp.dao.IAffairMemberDao;
-import cn.superid.webapp.forms.AffairRoleCard;
-import cn.superid.webapp.forms.SearchAffairMemberConditions;
-import cn.superid.webapp.forms.SearchAffairRoleConditions;
+import cn.superid.webapp.forms.*;
 import cn.superid.webapp.model.AffairEntity;
 import cn.superid.webapp.model.AffairMemberEntity;
 import cn.superid.webapp.service.vo.AffairMemberSearchVo;
@@ -144,6 +142,37 @@ public class AffairMemberDao implements IAffairMemberDao {
         if (conditions.isReverseSort()) sb.append(" desc ");
         else sb.append(" asc ");
         return AffairMemberEntity.getSession().findListByNativeSql(AffairMemberSearchVo.class, sb.toString(), p, pagination);
+    }
+
+    @Override
+    public List<OtherRoleCard> searchOtherRoles(long allianceId, long affairId, SearchRoleConditions conditions, Pagination pagination) {
+        if(conditions.isAllianceUser() == false){
+            //盟外角色
+            StringBuilder sb = new StringBuilder("select distinct a.id as roleId , a.title as roleTitle , b.id as userId , b.username , b.avatar from " +
+                    "(select id , title , user_id from role where alliance_id <> ? ) a join " +
+                    "(select id , username from user where username like ? or name_abbr like ? or superid like ? ) b on a.user_id = b.id ");
+
+            ParameterBindings p = new ParameterBindings();
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+
+            return AffairMemberEntity.getSession().findListByNativeSql(OtherRoleCard.class,sb.toString(),p,pagination);
+        }else{
+            //盟内角色,不在该事务中的
+            StringBuilder sb = new StringBuilder("select distinct a.id as roleId , a.title as roleTitle , b.id as userId , b.username , b.avatar from " +
+                    "(select id , title , user_id from role where alliance_id = ? and id not in (select role_id from affair_member where alliance_id = ? and affair_id = ? ) ) a join " +
+                    "(select id , username , avatar from user where username like ? or name_abbr like ? or superid like ? ) b on a.user_id = b.id  order by b.id ");
+            ParameterBindings p = new ParameterBindings();
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(allianceId);
+            p.addIndexBinding(affairId);
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            p.addIndexBinding("%" + conditions.getKey() + "%");
+            return AffairMemberEntity.getSession().findListByNativeSql(OtherRoleCard.class,sb.toString(),p,pagination);
+        }
     }
 
 }

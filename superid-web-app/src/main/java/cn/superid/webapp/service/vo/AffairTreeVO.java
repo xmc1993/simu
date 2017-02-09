@@ -16,6 +16,7 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
     private String shortName;
     private long roleId;
     private boolean isStuck;//是否置顶
+    private boolean isPersonal = false;//是否个人事务
     private String path;
     private long ownerRoleId;
     private long parentId;
@@ -136,6 +137,14 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
 
     public void setOwnerRoleId(long ownerRoleId) {
         this.ownerRoleId = ownerRoleId;
+    }
+
+    public boolean isPersonal() {
+        return isPersonal;
+    }
+
+    public void setPersonal(boolean personal) {
+        isPersonal = personal;
     }
 
     @Override
