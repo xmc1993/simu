@@ -148,7 +148,9 @@ public class ContractService implements IContractService {
     @Override
     public boolean undoSign(long allianceId, long operationRoleId, long contractId) {
         ContractEntity contract = ContractEntity.dao.findById(contractId);
+
         ContractRoleEntity signer = ContractRoleEntity.dao.partitionId(contractId).eq("role_id",operationRoleId).selectOne();
+
         RoleEntity role = RoleEntity.dao.findById(operationRoleId,allianceId);
         //如果不存在或者状态已经生效，则无法撤销
         if(contract == null | contract.getState() == 3 | signer == null | signer.getSignature() != 1 | role == null){
