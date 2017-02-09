@@ -45,4 +45,6 @@ public class RoleController {
         }
         return new SimpleResponse(ResponseCode.OK,roleService.editPublicType(roles.getRoles()));
     }
+
+
 }
