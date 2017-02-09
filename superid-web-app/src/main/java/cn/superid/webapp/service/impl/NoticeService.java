@@ -101,7 +101,7 @@ public class NoticeService implements INoticeService {
             System.out.println(notice);
             C2c c2c = newC2c(toUserId, notice);
             notice.save();
-            SendMessageTemplate.sendNotice(c2c);
+//            SendMessageTemplate.sendNotice(c2c);
         }
 
     }

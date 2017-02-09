@@ -163,7 +163,7 @@ public class AffairMemberDao implements IAffairMemberDao {
             //盟内角色,不在该事务中的
             StringBuilder sb = new StringBuilder("select distinct a.id as roleId , a.title as roleTitle , b.id as userId , b.username , b.avatar from " +
                     "(select id , title , user_id from role where alliance_id = ? and id not in (select role_id from affair_member where alliance_id = ? and affair_id = ? ) ) a join " +
-                    "(select id , username from user where username like ? or name_abbr like ? or superid like ? ) b on a.user_id = b.id ");
+                    "(select id , username , avatar from user where username like ? or name_abbr like ? or superid like ? ) b on a.user_id = b.id  order by b.id ");
             ParameterBindings p = new ParameterBindings();
             p.addIndexBinding(allianceId);
             p.addIndexBinding(allianceId);
