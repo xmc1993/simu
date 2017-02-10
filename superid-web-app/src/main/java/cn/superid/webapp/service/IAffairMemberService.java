@@ -131,25 +131,19 @@ public interface IAffairMemberService {
 
     /**
      * 同意别人邀请自己进入事务的请求
-     *
-     * @param allianceId   当前盟
-     * @param affairId     当前事务
      * @param invitationId
      * @param dealReason
      * @return
      */
-    int agreeInvitation(long allianceId, long affairId, long invitationId, String dealReason);
+    int agreeInvitation(long invitationId, String dealReason);
 
     /**
      * 拒绝别人的邀请
-     *
-     * @param allianceId
-     * @param affairId
      * @param invitationId
      * @param dealReason
      * @return
      */
-    int rejectInvitation(long allianceId, long affairId, long invitationId, String dealReason);
+    int rejectInvitation(long invitationId, String dealReason);
 
     /**
      * 判断一个角色是不是一个事务的某个父事务的负责人

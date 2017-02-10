@@ -292,8 +292,10 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int agreeInvitation(long allianceId, long affairId, long invitationId, String dealReason) {
-        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId, affairId);
+    public int agreeInvitation(long invitationId, String dealReason) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.id(invitationId).selectOne();
+        long affairId = invitationEntity.getAffairId();
+        long allianceId = invitationEntity.getAllianceId();
         if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.INVITATION_INVALID;
         }
@@ -315,8 +317,8 @@ public class AffairMemberService implements IAffairMemberService {
     }
 
     @Override
-    public int rejectInvitation(long allianceId, long affairId, long invitationId, String dealReason) {
-        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId, affairId);
+    public int rejectInvitation(long invitationId, String dealReason) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.id(invitationId).selectOne();
         if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.INVITATION_INVALID;
         }

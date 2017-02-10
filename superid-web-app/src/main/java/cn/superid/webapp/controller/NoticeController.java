@@ -52,14 +52,14 @@ public class NoticeController {
 
     @ApiOperation(value = "同意某个事务成员邀请", notes = "")
     @RequestMapping(value = "/agree_invitation", method = RequestMethod.GET)
-    public SimpleResponse agreeInvitation(@RequestParam() long allianceId, @RequestParam() long affairId,@RequestParam() long invitationId) {
-        return SimpleResponse.ok(affairMemberService.agreeInvitation(allianceId,affairId,invitationId,""));
+    public SimpleResponse agreeInvitation(@RequestParam() long invitationId) {
+        return new SimpleResponse(affairMemberService.agreeInvitation(invitationId,""),null);
     }
 
     @ApiOperation(value = "拒绝某个事务成员邀请", response = AffairRoleCard.class, notes = "")
     @RequestMapping(value = "/reject_invitation", method = RequestMethod.GET)
-    public SimpleResponse rejectInvitation(@RequestParam() long allianceId, @RequestParam() long affairId,@RequestParam() long invitationId,String reason) {
-        return SimpleResponse.ok(affairMemberService.rejectInvitation(allianceId,affairId,invitationId,reason));
+    public SimpleResponse rejectInvitation(@RequestParam() long invitationId,String reason) {
+        return new SimpleResponse(affairMemberService.rejectInvitation(invitationId,reason),null);
     }
 
 }
