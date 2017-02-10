@@ -77,12 +77,4 @@ public class AllianceMemberController {
         List<RoleEntity> invalidRoles = roleService.getInvalidRoles(GlobalValue.currentAllianceId());
         return SimpleResponse.ok(invalidRoles);
     }
-
-    @ApiOperation(value = "接受邀请", response = boolean.class, notes = "接受邀请")
-    @RequestMapping(value = "/agree_invitation", method = RequestMethod.POST)
-    public SimpleResponse agreeInvitation(@RequestParam Long invitationId ,@RequestParam Long alliacneId ,@RequestParam String dealReason) {
-        return SimpleResponse.ok(allianceUserService.agreeInvitationToAlliance(invitationId,alliacneId,dealReason));
-    }
-
-
 }

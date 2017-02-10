@@ -5,6 +5,7 @@ import cn.superid.webapp.forms.AffairRoleCard;
 import cn.superid.webapp.forms.SimpleResponse;
 import cn.superid.webapp.model.NoticeEntity;
 import cn.superid.webapp.service.IAffairMemberService;
+import cn.superid.webapp.service.IAllianceUserService;
 import cn.superid.webapp.service.INoticeService;
 import cn.superid.webapp.service.impl.UserService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -31,6 +32,9 @@ public class NoticeController {
     @Autowired
     private IAffairMemberService affairMemberService;
 
+    @Autowired
+    private IAllianceUserService allianceUserService;
+
     @ApiOperation(value = "接受邀请", response = InvitationVO.class, notes = "")
     @RequestMapping(value = "/get_list", method = RequestMethod.GET)
     public SimpleResponse getToken() {
@@ -51,9 +55,15 @@ public class NoticeController {
     }
 
     @ApiOperation(value = "同意某个事务成员邀请", notes = "")
-    @RequestMapping(value = "/agree_invitation", method = RequestMethod.GET)
+    @RequestMapping(value = "/agree_affair_invitation", method = RequestMethod.GET)
     public SimpleResponse agreeInvitation(@RequestParam() long invitationId) {
         return new SimpleResponse(affairMemberService.agreeInvitation(invitationId,""),null);
+    }
+
+    @ApiOperation(value = "接受加入盟邀请", response = boolean.class, notes = "接受邀请")
+    @RequestMapping(value = "/agree_alliance_invitation", method = RequestMethod.GET)
+    public SimpleResponse agreeInvitation(@RequestParam Long invitationId ) {
+        return SimpleResponse.ok(allianceUserService.agreeInvitationToAlliance(invitationId));
     }
 
     @ApiOperation(value = "拒绝某个事务成员邀请", response = AffairRoleCard.class, notes = "")

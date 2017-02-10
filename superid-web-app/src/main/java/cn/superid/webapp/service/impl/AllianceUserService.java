@@ -95,8 +95,9 @@ public class AllianceUserService implements IAllianceUserService {
     }
 
     @Override
-    public boolean agreeInvitationToAlliance(long invitationId, long allianceId,String dealReason) {
-        InvitationEntity invitationEntity = InvitationEntity.dao.findById(invitationId,allianceId);
+    public boolean agreeInvitationToAlliance(long invitationId) {
+        InvitationEntity invitationEntity = InvitationEntity.dao.id(invitationId).selectOne();
+        long allianceId = invitationEntity.getAllianceId();
         long beInvitedUserId = invitationEntity.getBeInvitedUserId();
         //检测是否是本人,或许可以不要?
         if(userService.currentUserId() != beInvitedUserId){
@@ -123,7 +124,7 @@ public class AllianceUserService implements IAllianceUserService {
         //添加affairMember,暂定为参与人
         affairMemberService.addMember(allianceId,invitationEntity.getAffairId(),beInvitedRoleId, AffairPermissionRoleType.PARTICIPANT);
 
-        invitationEntity.setDealReason(dealReason);
+        invitationEntity.setDealReason("");
         invitationEntity.setState(DealState.Agree);
         invitationEntity.setModifyTime(TimeUtil.getCurrentSqlTime());
         invitationEntity.update();
