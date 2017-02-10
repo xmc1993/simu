@@ -299,7 +299,7 @@ public class AffairMemberService implements IAffairMemberService {
         if ((invitationEntity == null) || (invitationEntity.getState() != DealState.ToCheck)) {
             return ResponseCode.INVITATION_INVALID;
         }
-        if (affairService.isValidAffair(allianceId,affairId)) {
+        if (!affairService.isValidAffair(allianceId,affairId)) {
             return ResponseCode.AFFAIR_INVALID;
         }
 
