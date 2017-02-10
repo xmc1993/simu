@@ -139,12 +139,12 @@ public class AffairTreeVO implements Comparable<AffairTreeVO> {
         this.ownerRoleId = ownerRoleId;
     }
 
-    public boolean isPersonal() {
+    public boolean getIsPersonal() {
         return isPersonal;
     }
 
-    public void setPersonal(boolean personal) {
-        isPersonal = personal;
+    public void setIsPersonal(boolean isPersonal) {
+        this.isPersonal = isPersonal;
     }
 
     @Override

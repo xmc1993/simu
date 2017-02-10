@@ -430,7 +430,7 @@ public class AffairService implements IAffairService {
         AffairTreeVO result = createTree(affairList);
         if(result != null){
             if(user.getPersonalAllianceId() == allianceId){
-                result.setPersonal(true);
+                result.setIsPersonal(true);
             }
         }
         return result;
@@ -450,7 +450,7 @@ public class AffairService implements IAffairService {
             AffairTreeVO a = createTree(getTreeByAlliance(affairList, id));
             if (a != null) {
                 if(allianceId == id){
-                    a.setPersonal(true);
+                    a.setIsPersonal(true);
                 }
                 result.add(a);
             }
@@ -591,7 +591,7 @@ public class AffairService implements IAffairService {
 
     @Override
     public boolean stickAffair(long allianceId,long affairId,boolean isStuck) {
-        return AffairUserEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).set("state", isStuck)>0;
+        return AffairUserEntity.dao.partitionId(allianceId).eq("affair_id",affairId).eq("user_id",userService.currentUserId()).set("is_stuck", isStuck)>0;
     }
 
     @Override
